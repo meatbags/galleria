@@ -1,0 +1,17 @@
+div, * {
+	box-sizing: border-box;
+}
+
+html, body {
+	font-family: Arial, sans-serif;
+	font-size: 20px;
+	line-height: 1.2;
+	letter-spacing: 1px;
+	margin: 0;
+	padding: 0;
+}
+
+a {
+	text-decoration: none;
+	color: inherit;
+}

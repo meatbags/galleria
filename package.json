@@ -1,0 +1,25 @@
+{
+  "name": "galleria",
+  "version": "1.0.0",
+  "description": "",
+  "main": "src/js/app.js",
+  "scripts": {
+    "webpack": "webpack",
+    "watch": "webpack --watch"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/meatbags/galleria.git"
+  },
+  "author": "meatbags",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/meatbags/galleria/issues"
+  },
+  "homepage": "https://github.com/meatbags/galleria#readme",
+  "devDependencies": {
+    "babel-core": "^6.26.0",
+    "babel-loader": "^7.1.2",
+    "webpack": "^3.6.0"
+  }
+}

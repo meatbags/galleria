@@ -1,0 +1,68 @@
+.hud {
+	z-index: $zHUD;
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100vw;
+	height: 100%;
+	color: $black;
+	
+	.hud__title {
+		position: absolute;
+		opacity: 0.5;
+		right: 0;
+		display: inline-block;
+		padding: $space;
+		text-align: right;
+	}
+	
+	.hud__time {
+		display: inline-block;
+	}
+	
+	.hud__prompt {
+		position: absolute;
+		left: 50%;
+		top: 50%;
+		-webkit-transform: translate(-50%, -50%);
+		transform: translate(-50%, -50%);
+		opacity: 0;
+		transition: 0.5s;
+		color: white;
+		
+		&.active {
+			opacity: 1;
+		}
+	}
+	
+	.hud__pause {
+		position: absolute;
+		width: 100%;
+		height: 75vh;
+		background: $translucent;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		left: 50%;
+		top: 50%;
+		-webkit-transform: translate(-50%, -50%);
+		transform: translate(-50%, -50%);
+		opacity: 0;
+		transition: 0.5s;
+		
+		.hud__pause__inner {
+			cursor: pointer;	
+		}
+		
+		&.active {
+			opacity: 1;	
+		}
+	}
+	
+	.hud__credits {
+		position: absolute;
+		bottom: 0;
+		right: 0;
+		padding: $space;
+	}
+}
