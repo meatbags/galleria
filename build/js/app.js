@@ -99,6 +99,10 @@ var App = {
 	}
 };
 
+window.onload = App.init;
+
+/// OLD CODE for ref
+
 var AppOld = {
 	init: function init() {
 
@@ -138,7 +142,6 @@ var AppOld = {
 
 	controls: function controls() {
 		// cursor
-
 		App.controls = new THREE.PointerLockControls(App.camera, new THREE.Vector3(Math.PI / 8, 0, 0));
 		App.scene.add(App.controls.getObject());
 
@@ -363,10 +366,6 @@ var AppOld = {
 	}
 };
 
-window.onload = function () {
-	App.init();
-};
-
 /***/ }),
 /* 1 */
 /***/ (function(module, exports, __webpack_require__) {
@@ -415,6 +414,10 @@ var _Player = __webpack_require__(3);
 
 var _Player2 = _interopRequireDefault(_Player);
 
+var _RayTracer = __webpack_require__(5);
+
+var _RayTracer2 = _interopRequireDefault(_RayTracer);
+
 __webpack_require__(4);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
@@ -442,13 +445,18 @@ Scene.prototype = {
 
     // world
     this.scene = new THREE.Scene();
-    this.scene.add(new THREE.Mesh(new THREE.BoxBufferGeometry(10000, 0.5, 10), new THREE.MeshPhysicalMaterial({
+    this.scene.add(new THREE.Mesh(new THREE.BoxBufferGeometry(10, 0.5, 10), new THREE.MeshPhysicalMaterial({
       color: 0xaaaaaa
-    })), new THREE.AmbientLight(0xffffff, 0.5), new THREE.Sky().mesh);
+    })), new THREE.AmbientLight(0xffffff, 0.5));
+    var sky = new THREE.Sky();
+    var sun = new THREE.PointLight(0xffffff, 0.9, 55000);
+    sun.position.set(sky.uniforms.sunPosition.value.x, sky.uniforms.sunPosition.value.y, sky.uniforms.sunPosition.value.z);
+
+    this.scene.add(sun, sky.mesh);
   },
 
   resize: function resize() {
-    var width = window.innerWidth / 2,
+    var width = window.innerWidth,
         height = Math.min(480, window.innerHeight * 0.75);
     this.camera.aspect = width / height;
     this.camera.updateProjectionMatrix();
@@ -839,6 +847,85 @@ THREE.Sky.SkyShader = {
 		'	float sundisk = smoothstep( sunAngularDiameterCos, sunAngularDiameterCos + 0.00002, cosTheta );', '	L0 += ( vSunE * 19000.0 * Fex ) * sundisk;', '	vec3 texColor = ( Lin + L0 ) * 0.04 + vec3( 0.0, 0.0003, 0.00075 );', '	vec3 curr = Uncharted2Tonemap( ( log2( 2.0 / pow( luminance, 4.0 ) ) ) * texColor );', '	vec3 color = curr * whiteScale;', '	vec3 retColor = pow( color, vec3( 1.0 / ( 1.2 + ( 1.2 * vSunfade ) ) ) );', '	gl_FragColor = vec4( retColor, 1.0 );', '}'].join('\n')
 
 };
+
+/***/ }),
+/* 5 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _Maths = __webpack_require__(6);
+
+var RayTracer = function RayTracer() {
+  this.precision = 0.5;
+  this.maxLength = 20;
+};
+
+RayTracer.prototype = {
+  trace: function trace(point, vector, objects) {
+    vector = (0, _Maths.Normalise)(vector);
+    var steps = this.maxLength / this.precision;
+    var dx = vector.x * this.precision;
+    var dy = vector.y * this.precision;
+    var dz = vector.z * this.precision;
+    var collision = false;
+
+    for (var i = 0; i < steps; i += 1) {
+      point.x += dx;
+      point.y += dy;
+      point.z += dz;
+
+      for (var j = 0; j < objects.length; j += 1) {
+        if (objects[j].collision(point)) {
+          collision = true;
+          break;
+        }
+      }
+
+      if (collision) break;
+    }
+
+    return point;
+  }
+};
+
+exports.default = RayTracer;
+
+/***/ }),
+/* 6 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+var Normalise = function Normalise(vec) {
+  var mag = Mag3(vec);
+
+  if (mag != 0) {
+    vec.x /= mag;
+    vec.y /= mag;
+    vec.z /= mag;
+  }
+
+  return vec;
+};
+
+var Mag3 = function Mag3(vec) {
+  var mag = Math.sqrt(vec.x * vec.x + vec.y * vec.y + vec.z * vec.z);
+
+  return mag;
+};
+
+exports.Normalise = Normalise;
+exports.Mag3 = Mag3;
 
 /***/ })
 /******/ ]);

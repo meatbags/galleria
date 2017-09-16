@@ -20,6 +20,13 @@ const App = {
 	}
 };
 
+window.onload = App.init;
+
+
+
+
+/// OLD CODE for ref
+
 var AppOld = {
 	init: function() {
 
@@ -62,7 +69,6 @@ var AppOld = {
 
 	controls: function() {
 		// cursor
-
 		App.controls = new THREE.PointerLockControls(App.camera, new THREE.Vector3(Math.PI / 8, 0, 0));
 		App.scene.add(App.controls.getObject());
 
@@ -303,7 +309,3 @@ var AppOld = {
 		}
 	}
 };
-
-window.onload = function() {
-	App.init();
-}
