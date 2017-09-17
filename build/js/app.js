@@ -101,271 +101,6 @@ var App = {
 
 window.onload = App.init;
 
-/// OLD CODE for ref
-
-var AppOld = {
-	init: function init() {
-
-		App.camera = new THREE.PerspectiveCamera(65, window.innerWidth / window.innerHeight, 0.1, 2000000);
-		App.camera.lookAt(new THREE.Vector3(0, 0, 0));
-		App.render = new THREE.WebGLRenderer({ antialias: true });
-		App.render.setPixelRatio(window.devicePixelRatio);
-		App.render.setClearColor(0xf9e5a2, 1);
-		document.body.appendChild(App.render.domElement);
-
-		// loaders
-
-		App.OBJLoader = new THREE.OBJLoader();
-		App.TextureLoader = new THREE.TextureLoader();
-
-		// player
-
-		App.player = new Player(new THREE.Vector3(0, 24, 0));
-		// build scene
-
-		App.loadAssets();
-
-		// events/ controls
-
-		window.onresize = App.resize;
-		App.resize();
-		App.controls();
-
-		// run
-
-		App.loop();
-		setTimeout(function () {
-			App.timer.pause();
-			console.log("paused");
-		}, 100);
-	},
-
-	controls: function controls() {
-		// cursor
-		App.controls = new THREE.PointerLockControls(App.camera, new THREE.Vector3(Math.PI / 8, 0, 0));
-		App.scene.add(App.controls.getObject());
-
-		$(window).on("click", function () {
-			if (App.controls.enabled) {
-				App.controls.enabled = false;
-				App.timer.pause();
-				document.exitPointerLock = document.exitPointerLock || document.mozExitPointerLock || document.webkitExitPointerLock;
-				document.exitPointerLock();
-				$(".hud__pause").addClass("active");
-			} else {
-				var element = document.body;
-				App.controls.enabled = true;
-				App.timer.resume();
-				element.requestPointerLock = element.requestPointerLock || element.mozRequestPointerLock || element.webkitRequestPointerLock;
-				element.requestPointerLock();
-				$(".hud__pause").removeClass("active");
-			}
-		});
-
-		// keyboard
-
-		App.keys = {
-			up: false,
-			down: false,
-			left: false,
-			right: false,
-			Q: false,
-			E: false
-		};
-		document.addEventListener("keydown", function (e) {
-			switch (e.keyCode) {
-				case 38:
-				case 87:
-					App.keys.up = true;
-					break;
-				case 37:
-				case 65:
-					App.keys.left = true;
-					break;
-				case 40:
-				case 83:
-					App.keys.down = true;
-					break;
-				case 39:
-				case 68:
-					App.keys.right = true;
-					break;
-				case 81:
-					App.keys.Q = true;
-					break;
-				case 69:
-					App.keys.E = true;
-					break;
-			}
-		}, false);
-		document.addEventListener("keyup", function (e) {
-			switch (e.keyCode) {
-				case 38:
-				case 87:
-					App.keys.up = false;
-					break;
-				case 37:
-				case 65:
-					App.keys.left = false;
-					break;
-				case 40:
-				case 83:
-					App.keys.down = false;
-					break;
-				case 39:
-				case 68:
-					App.keys.right = false;
-					break;
-			}
-		}, false);
-	},
-
-	loadAssets: function loadAssets() {
-
-		// containers
-
-		App.assets = {};
-		App.assets.light = {};
-		App.logic = {
-			focalPoints: [],
-			terrain: {
-				walls: [],
-				platforms: [],
-				ramps: []
-			}
-		};
-		App.assets.images = [];
-		App.scene = new THREE.Scene();
-		App.animation = [];
-
-		// build world
-
-		World.globalObjects();
-		World.outside();
-		World.room1();
-		World.room2();
-		World.room3();
-
-		// set start room
-
-		App.currentRoom = 0;
-
-		$(".artwork").each(function (i, e) {
-			var src, title, mesh, tex;
-
-			// create a picture frame
-
-			mesh = new THREE.Mesh(new THREE.PlaneBufferGeometry(1, 1, 2, 2), new THREE.MeshLambertMaterial({
-				color: 0xffffff,
-				side: THREE.DoubleSide
-			}));
-			title = $(e).children(".artwork__title").html();
-			src = $(e).children(".artwork__image").html();
-			tex = App.TextureLoader.load(src, function () {
-				mesh.scale.x = tex.image.naturalWidth / 1000.0;
-				mesh.scale.y = tex.image.naturalHeight / 1000.0;
-			});
-			mesh.material.map = tex;
-			mesh.rotation.set(0, Math.PI * 0.5, 0);
-			mesh.position.set(-3.9, 1.8, -i * 2);
-
-			App.assets.images.push(mesh);
-
-			// add button
-
-			App.logic.focalPoints.push(new FocalPoint(mesh, title));
-		});
-
-		App.assets.water = new THREE.Water();
-		App.assets.water.mesh.position.set(0, 0.25, 0);
-	},
-
-	resize: function resize() {
-		// resize window
-
-		var w, h;
-
-		w = window.innerWidth;
-		h = Math.floor(window.innerHeight * 0.75);
-
-		App.camera.aspect = w / h;
-		App.camera.updateProjectionMatrix();
-		App.render.setSize(w, h);
-	},
-
-	update: function update(delta, interval) {
-		// room specific updates
-
-		World.checkRoom();
-		World.updateRoom(delta);
-
-		// animation
-
-		for (var i = App.animation.length - 1; i > -1; i -= 1) {
-			var anim = App.animation[i];
-
-			if (anim.isComplete()) App.animation.splice(i, 1);else anim.animate(delta);
-		}
-
-		// water
-
-		// App.assets.water.update(delta);
-
-		// player, camera
-
-		App.controls.update();
-		App.player.rotation = App.controls.getYaw();
-		App.player.update(delta, App.keys, App.logic.terrain);
-		App.controls.getObject().position.set(App.player.position.x, App.player.position.y + App.player.getHeight(), App.player.position.z);
-		App.assets.light.area.position.set(App.player.position);
-
-		// interaction logic
-
-		var check, pos, pitch, yaw;
-
-		check = false;
-		pos = App.controls.getObject().position;
-		pitch = App.controls.getPitch();
-		yaw = App.controls.getYaw();
-
-		for (var i = 0; i < App.logic.focalPoints.length; i += 1) {
-			var fp = App.logic.focalPoints[i];
-
-			if (fp.collision(pos, pitch, yaw)) {
-				check = true;
-			}
-		}
-
-		if (check) {
-			if (!$(".hud__prompt").hasClass("active")) {
-				$(".hud__prompt").addClass("active");
-			}
-		} else {
-			$(".hud__prompt").removeClass("active");
-		}
-	},
-
-	draw: function draw() {
-		// draw scene
-
-		App.render.render(App.scene, App.camera);
-	},
-
-	loop: function loop() {
-		// main loop
-
-		requestAnimationFrame(App.loop);
-		App.timer.update();
-		App.timer.nextFrame();
-
-		if (!App.timer.paused) {
-			App.update(App.timer.delta, App.timer.interval);
-			App.draw();
-			$(".hud__time").html(Math.floor(App.player.position.x * 10) / 10 + ", " + Math.floor(App.player.position.y * 10) / 10 + ", " + Math.floor(App.player.position.z * 10) / 10 + "<br />current level: " + App.currentRoom + "<br />speed: " + App.player.speed + "m/s");
-		}
-	}
-};
-
 /***/ }),
 /* 1 */
 /***/ (function(module, exports, __webpack_require__) {
@@ -414,11 +149,13 @@ var _Player = __webpack_require__(3);
 
 var _Player2 = _interopRequireDefault(_Player);
 
-var _RayTracer = __webpack_require__(5);
+var _RayTracer = __webpack_require__(4);
 
 var _RayTracer2 = _interopRequireDefault(_RayTracer);
 
-__webpack_require__(4);
+var _Loader = __webpack_require__(7);
+
+__webpack_require__(6);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -451,11 +188,10 @@ Scene.prototype = {
 
     // world
     this.scene = new THREE.Scene();
-    this.scene.add(new THREE.Mesh(new THREE.BoxBufferGeometry(100, 0.1, 100), new THREE.MeshPhysicalMaterial({
-      color: 0xffffff
-    })), new THREE.AmbientLight(0xffffff, 0.5));
+    this.scene.add(new THREE.Mesh(new THREE.BoxBufferGeometry(100, 0.1, 100), _Loader.Materials.concrete), new THREE.AmbientLight(0xffffff, 0.5));
     var sky = new THREE.Sky();
     var sun = new THREE.PointLight(0xffffff, 0.9, 55000);
+
     sun.position.set(sky.uniforms.sunPosition.value.x, sky.uniforms.sunPosition.value.y, sky.uniforms.sunPosition.value.z);
 
     this.scene.add(sun, sky.mesh, this.raytracer.object);
@@ -470,20 +206,11 @@ Scene.prototype = {
   },
 
   onMouseDown: function onMouseDown(e) {
-    this.emitRay(e);
+    this.raytracer.emitRayFromScreen(e, this.renderer.domElement, this.camera, []);
   },
 
   onMouseMove: function onMouseMove(e) {
-    this.emitRay(e);
-  },
-
-  emitRay: function emitRay(e) {
-    var rect = this.renderer.domElement.getBoundingClientRect();
-    var mouseX = ((e.clientX - rect.left) / this.renderer.domElement.width - 0.5) * 2;
-    var mouseY = ((e.clientY - rect.top) / this.renderer.domElement.height - 0.5) * 2;
-    var fov = this.camera.fov * Math.PI / 180.;
-    var vec = new THREE.Vector3(Math.sin(-this.camera.rotation.y + mouseX * fov), Math.sin(this.camera.rotation.x - (mouseY + mouseY / this.camera.aspect) * 0.5 * fov), -Math.cos(-this.camera.rotation.y + mouseX * fov));
-    var point = this.raytracer.trace(this.camera.position, vec, []);
+    this.raytracer.emitRayFromScreen(e, this.renderer.domElement, this.camera, []);
   },
 
   update: function update(delta) {
@@ -736,6 +463,112 @@ Player.prototype = {
 "use strict";
 
 
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _Maths = __webpack_require__(5);
+
+var RayTracer = function RayTracer() {
+  this.precision = 1;
+  this.maxLength = 20;
+  this.object = new THREE.Mesh(new THREE.SphereBufferGeometry(0.25, 8), new THREE.MeshLambertMaterial({
+    color: 0xffffff,
+    emissive: 0xffffff
+  }));
+  var rect = new THREE.Mesh(new THREE.BoxBufferGeometry(0.1, 10, 0.1), new THREE.MeshLambertMaterial({ emissive: 0xffffff }));
+  rect.position.y = -5;
+  this.object.add(rect);
+};
+
+RayTracer.prototype = {
+  trace: function trace(point, vector, objects) {
+    // raytracing function
+
+    vector = (0, _Maths.Normalise)(vector);
+    var steps = this.maxLength / this.precision;
+    var dx = vector.x * this.precision;
+    var dy = vector.y * this.precision;
+    var dz = vector.z * this.precision;
+    var collision = false;
+
+    for (var i = 0; i < steps; i += 1) {
+      point.x += dx;
+      point.y += dy;
+      point.z += dz;
+
+      if (point.y < 0) break;
+
+      for (var j = 0; j < objects.length; j += 1) {
+        if (objects[j].collision(point)) {
+          collision = true;
+          break;
+        }
+      }
+
+      if (collision) break;
+    }
+
+    this.object.position.set(point.x, point.y, point.z);
+
+    return point;
+  },
+
+  emitRayFromScreen: function emitRayFromScreen(event, domElement, camera, objects) {
+    //
+
+    var rect = domElement.getBoundingClientRect();
+    var mouseX = ((event.clientX - rect.left) / domElement.width - 0.5) * 2;
+    var mouseY = ((event.clientY - rect.top) / domElement.height - 0.5) * 2;
+    var fov = camera.fov * Math.PI / 180.;
+    var fovY = fov - fov * Math.abs(mouseX) * 0.5;
+    var vec = new THREE.Vector3(Math.sin(-camera.rotation.y + mouseX * fov), Math.sin(camera.rotation.x - (mouseY * 0.5 + mouseY / camera.aspect * 0.5) * fovY), -Math.cos(-camera.rotation.y + mouseX * fov));
+    var point = this.trace(camera.position, vec, objects);
+
+    return point;
+  }
+};
+
+exports.default = RayTracer;
+
+/***/ }),
+/* 5 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+var Normalise = function Normalise(vec) {
+  var mag = Mag3(vec);
+
+  if (mag != 0) {
+    vec.x /= mag;
+    vec.y /= mag;
+    vec.z /= mag;
+  }
+
+  return vec;
+};
+
+var Mag3 = function Mag3(vec) {
+  var mag = Math.sqrt(vec.x * vec.x + vec.y * vec.y + vec.z * vec.z);
+
+  return mag;
+};
+
+exports.Normalise = Normalise;
+exports.Mag3 = Mag3;
+
+/***/ }),
+/* 6 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
 /**
  * @author zz85 / https://github.com/zz85
  *
@@ -864,7 +697,7 @@ THREE.Sky.SkyShader = {
 };
 
 /***/ }),
-/* 5 */
+/* 7 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -873,82 +706,20 @@ THREE.Sky.SkyShader = {
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
+var Models = {};
 
-var _Maths = __webpack_require__(6);
-
-var RayTracer = function RayTracer() {
-  this.precision = 0.5;
-  this.maxLength = 20;
-  this.object = new THREE.Mesh(new THREE.SphereBufferGeometry(0.5, 16), new THREE.MeshLambertMaterial({
+var Materials = {
+  concrete: new THREE.MeshPhysicalMaterial({
+    clearCoat: 0,
+    clearCoatRoughness: 1,
+    reflectivity: 0,
     color: 0xffffff,
-    emissive: 0xffffff
-  }));
+    emissive: 0x888888
+  })
 };
 
-RayTracer.prototype = {
-  trace: function trace(point, vector, objects) {
-    vector = (0, _Maths.Normalise)(vector);
-    var steps = this.maxLength / this.precision;
-    var dx = vector.x * this.precision;
-    var dy = vector.y * this.precision;
-    var dz = vector.z * this.precision;
-    var collision = false;
-
-    for (var i = 0; i < steps; i += 1) {
-      point.x += dx;
-      point.y += dy;
-      point.z += dz;
-
-      if (point.y < 0) break;
-
-      for (var j = 0; j < objects.length; j += 1) {
-        if (objects[j].collision(point)) {
-          collision = true;
-          break;
-        }
-      }
-
-      if (collision) break;
-    }
-
-    this.object.position.set(point.x, point.y, point.z);
-
-    return point;
-  }
-};
-
-exports.default = RayTracer;
-
-/***/ }),
-/* 6 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-var Normalise = function Normalise(vec) {
-  var mag = Mag3(vec);
-
-  if (mag != 0) {
-    vec.x /= mag;
-    vec.y /= mag;
-    vec.z /= mag;
-  }
-
-  return vec;
-};
-
-var Mag3 = function Mag3(vec) {
-  var mag = Math.sqrt(vec.x * vec.x + vec.y * vec.y + vec.z * vec.z);
-
-  return mag;
-};
-
-exports.Normalise = Normalise;
-exports.Mag3 = Mag3;
+exports.Models = Models;
+exports.Materials = Materials;
 
 /***/ })
 /******/ ]);
