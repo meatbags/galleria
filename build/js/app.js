@@ -234,7 +234,7 @@ Scene.prototype = {
     this.scene = new THREE.Scene();
     this.model = new _Physics.PhysicsModel();
 
-    this.model.add(new _Physics.Box(new THREE.Vector3(0, 5, -5), new THREE.Vector3(6, 10, 2)), new _Physics.Box(new THREE.Vector3(0, 0, -5), new THREE.Vector3(4, 1, 4)));
+    this.model.add(new _Physics.Box(new THREE.Vector3(0, 5, -25), new THREE.Vector3(6, 10, 2)), new _Physics.Box(new THREE.Vector3(0, 0, -25), new THREE.Vector3(4, 1, 4)), new _Physics.Box(new THREE.Vector3(0, 1.8, -7), new THREE.Vector3(3, .4, 2)), new _Physics.Ramp(new THREE.Vector3(0, 1, -10), new THREE.Vector3(3, 2, 4), 0), new _Physics.Ramp(new THREE.Vector3(0, 1, -4), new THREE.Vector3(3, 2, 4), 2), new _Physics.Ramp(new THREE.Vector3(-3, 1, -7), new THREE.Vector3(3, 2, 2), 1), new _Physics.Ramp(new THREE.Vector3(3, 1, -7), new THREE.Vector3(3, 2, 2), 3));
 
     this.scene.add(new THREE.Mesh(new THREE.BoxBufferGeometry(1000, 0.1, 1000), _Loader.Materials.concrete), new THREE.AmbientLight(0xffffff, 0.5));
     var sky = new THREE.Sky();
@@ -255,11 +255,12 @@ Scene.prototype = {
   },
 
   onMouseDown: function onMouseDown(e) {
-    this.raytracer.emitRayFromScreen(e, this.renderer.domElement, this.camera, this.model.contents);
+    var ray = this.raytracer.emitRayFromScreen(e, this.renderer.domElement, this.camera, this.model.contents);
+    this.player.setTarget({ x: ray.end.x, y: ray.end.y, z: ray.end.z }, ray.yaw);
   },
 
   onMouseMove: function onMouseMove(e) {
-    this.raytracer.emitRayFromScreen(e, this.renderer.domElement, this.camera, this.model.contents);
+    var ray = this.raytracer.emitRayFromScreen(e, this.renderer.domElement, this.camera, this.model.contents);
   },
 
   update: function update(delta) {
@@ -288,8 +289,16 @@ Object.defineProperty(exports, "__esModule", {
 
 var _Physics = __webpack_require__(5);
 
+var _Maths = __webpack_require__(8);
+
 var Player = function Player(position) {
 	this.position = position;
+	this.target = {
+		active: false,
+		position: position,
+		yaw: 0,
+		radius: 0.5
+	};
 	this.pitch = 0;
 	this.yaw = 0;
 	this.speed = 5.5;
@@ -359,46 +368,56 @@ Player.prototype = {
 		}, false);
 	},
 
+	setTarget: function setTarget(pos, yaw) {
+		this.target.active = true;
+		this.target.position = pos;
+		this.target.yaw = yaw;
+	},
+
 	update: function update(delta, objects) {
-		var rotate = (this.keys.left ? 1 : 0) + (this.keys.right ? -1 : 0);
-		var move = (this.keys.up ? -1 : 0) + (this.keys.down ? 1 : 0);
-		var dx = Math.sin(this.yaw) * this.speed * delta * move;
-		var dz = Math.cos(this.yaw) * this.speed * delta * move;
-		var nextX = this.position.x + dx;
-		var nextZ = this.position.z + dz;
-		var testX = { x: nextX, y: this.position.y, z: this.position.z };
-		var testZ = { x: this.position.x, y: this.position.y, z: nextZ };
-		var collisionX = false;
-		var collisionZ = false;
+		if (this.keys.up || this.keys.down) {
+			// disable automatic walk
+			this.target.active = false;
 
-		// XZ collisions
-		for (var i = 0; i < objects.length; i += 1) {
-			var obj = objects[i];
+			var move = (this.keys.up ? -1 : 0) + (this.keys.down ? 1 : 0);
+			var dx = Math.sin(this.yaw) * this.speed * delta * move;
+			var dz = Math.cos(this.yaw) * this.speed * delta * move;
+			var nextX = this.position.x + dx;
+			var nextZ = this.position.z + dz;
+			var testX = { x: nextX, y: this.position.y, z: this.position.z };
+			var testZ = { x: this.position.x, y: this.position.y, z: nextZ };
+			var collisionX = false;
+			var collisionZ = false;
 
-			if (obj.type === _Physics.TYPE_BOX || obj.type === _Physics.TYPE_RAMP) {
-				// test next X position
-				if (obj.collision(testX)) {
-					var y = obj.getTop(testX);
+			// XZ collisions
+			for (var i = 0; i < objects.length; i += 1) {
+				var obj = objects[i];
 
-					if (Math.abs(this.position.y - y) > this.climbThreshold) {
-						collisionX = true;
+				if (obj.type === _Physics.TYPE_BOX || obj.type === _Physics.TYPE_RAMP) {
+					// test next X position
+					if (obj.collision(testX)) {
+						var y = obj.getTop(testX);
+
+						if (Math.abs(this.position.y - y) > this.climbThreshold) {
+							collisionX = true;
+						}
 					}
-				}
 
-				// test next Z position
-				if (obj.collision(testZ)) {
-					var _y = obj.getTop(testZ);
+					// test next Z position
+					if (obj.collision(testZ)) {
+						var _y = obj.getTop(testZ);
 
-					if (Math.abs(this.position.y - _y) > this.climbThreshold) {
-						collisionZ = true;
+						if (Math.abs(this.position.y - _y) > this.climbThreshold) {
+							collisionZ = true;
+						}
 					}
 				}
 			}
-		}
 
-		// update XZ position
-		this.position.x = collisionX ? this.position.x : nextX;
-		this.position.z = collisionZ ? this.position.z : nextZ;
+			// update XZ position
+			this.position.x = collisionX ? this.position.x : nextX;
+			this.position.z = collisionZ ? this.position.z : nextZ;
+		}
 
 		// get next Y position
 		var nextY = 0;
@@ -413,154 +432,29 @@ Player.prototype = {
 			}
 		}
 
-		// update Y position
-		this.position.y += (nextY - this.position.y) * 0.25;
+		this.position.y += (nextY - this.position.y) * 0.5;
 
-		// update rotation
-		this.yaw += this.rotationSpeed * delta * rotate;
+		// get next rotation
+		if (this.keys.left || this.keys.right) {
+			// disable automatic walk
+			this.target.active = false;
+
+			var rotate = (this.keys.left ? 1 : 0) + (this.keys.right ? -1 : 0);
+			this.yaw += this.rotationSpeed * delta * rotate;
+		}
+
+		// auto walk and look
+		if (this.target.active) {
+			if ((0, _Maths.Dist2D)(this.position, this.target.position) > this.target.radius) {
+				this.position.x += (this.target.position.x - this.position.x) * 0.05;
+				this.position.z += (this.target.position.z - this.position.z) * 0.05;
+			}
+			this.yaw += (this.target.yaw - this.yaw) * 0.05;
+		}
 	}
 };
 
 exports.default = Player;
-
-/*
-function Player(position) {
-	this.position = position;
-	this.target = new THREE.Vector3(position.x, position.y, position.z);
-	this.rotation = 0;
-	this.walkTime = 0;
-	this.height = 1.8; // eye height
-	this.halfHeight = this.height / 2;
-	this.headHeight = 0;
-	this.speed = 12; // m/s
-	this.speeds = {dev: 12, game: 3};
-	this.rateOfChange = 0.3;
-}
-
-Player.prototype = {
-	update: function(delta, controls, terrain) {
-		var forward, strafe, next, mag;
-
-		// dev stuff
-
-		if (controls.Q) {
-			if (this.position.y < 8) {
-				this.position = this.target = Vec3(0, 24, 0);
-			} else
-				this.position.y -= 8;
-			controls.Q = false;
-		}
-
-		if (controls.E) {
-			if (this.speed == this.speeds.dev)
-				this.speed = this.speeds.game;
-			else
-				this.speed = this.speeds.dev;
-			controls.E = false;
-		}
-
-		// find next position
-
-		next = {x:0, y:0, z:0};
-		forward = ((controls.up) ? 1 : 0) + ((controls.down) ? -1 : 0);
-		strafe  = ((controls.left) ? 1 : 0) + ((controls.right) ? -1 : 0);
-		next.x = strafe * -Math.sin(this.rotation + Math.PI/2) + forward * -Math.sin(this.rotation);
-		next.z = forward * -Math.cos(this.rotation) + strafe * -Math.cos(this.rotation + Math.PI/2);
-		mag = Math.sqrt(Math.pow(next.x, 2) + Math.pow(next.z, 2));
-
-		if (mag != 0) {
-			next.z /= mag;
-			next.x /= mag;
-		}
-
-		next.x = next.x * this.speed * delta + this.target.x;
-		next.y = this.position.y;
-		next.z = next.z * this.speed * delta + this.target.z;
-
-		// check for wall collisions
-
-		var collision, nextX, nextZ;
-
-		collision = {x: false, y: false, z: false};
-		nextX = {x:next.x, y:next.y, z:this.target.z};
-		nextZ = {x:this.target.x, y:next.y, z:next.z};
-
-
-		for (var i=0; i<terrain.walls.length; i+=1) {
-			var wall = terrain.walls[i];
-
-			if (wall.collision3D(nextX)) {
-				if (wall.getTop() > next.y + this.halfHeight) {
-					collision.x = true;
-				}
-			} if (wall.collision3D(nextZ)) {
-				if (wall.getTop() > next.y + this.halfHeight) {
-					collision.z = true;
-				}
-			}
-		}
-
-		next.x = (collision.x) ? this.target.x : next.x;
-		next.z = (collision.z) ? this.target.z : next.z;
-
-		// climb onto platforms, ramps, walls
-
-		var top, objects;
-
-		nextX = {x:next.x, y:next.y, z:this.target.z};
-		nextZ = {x:this.target.x, y:next.y, z:next.z};
-		objects = terrain.platforms.concat(terrain.ramps, terrain.walls);
-		top = {x: -1, z: -1};
-
-		for (var i=0; i<objects.length; i+=1) {
-			var obj = objects[i];
-
-			// x direction
-
-			if (obj.collision2D(nextX)) {
-				var y = obj.getTop(nextX);
-
-				if (y > top.x && Math.abs(y - next.y) < this.halfHeight) {
-					top.x = y;
-				}
-			}
-
-			// z direction
-
-			if (obj.collision2D(nextZ)) {
-				var y = obj.getTop(nextZ);
-
-				if (y > top.z && Math.abs(y - next.y) < this.halfHeight) {
-					top.z = y;
-				}
-			}
-		}
-
-		next.x = (top.x == -1) ? this.target.x : next.x;
-		next.z = (top.z == -1) ? this.target.z : next.z;
-
-		if (top.x != -1 || top.z != -1) {
-			next.y = Math.max(top.x, top.z);
-		}
-
-		// alter player position
-
-		this.target = next;
-		this.position.z += (this.target.z - this.position.z) * this.rateOfChange;
-		this.position.x += (this.target.x - this.position.x) * this.rateOfChange;
-		this.position.y += (this.target.y - this.position.y) * this.rateOfChange;
-
-		// alter head height
-
-		//this.walkTime += (forward || strafe) ? delta : 0;
-		//this.headHeight = Math.sin(this.walkTime * 6) * 0.05;
-	},
-
-	getHeight: function() {
-		return this.height;
-	}
-};
-*/
 
 /***/ }),
 /* 5 */
@@ -605,10 +499,32 @@ Box.prototype = {
 	}
 };
 
-var Ramp = function Ramp(pos, dim, type) {
+var Ramp = function Ramp(pos, dim, dir) {
 	this.type = TYPE_RAMP;
-	this.ramp = new _BoundingBox.BoundingRamp(pos, dim);
+	this.dir = dir;
+	this.ramp = new _BoundingBox.BoundingRamp(pos, dim, dir);
 	this.object = new THREE.Mesh(new THREE.BoxBufferGeometry(dim.x, dim.y, dim.z), _Loader.Materials.dev);
+	var plane = new THREE.Mesh(new THREE.BoxBufferGeometry(1, 0.05, 1), _Loader.Materials.wireframe);
+
+	if (dir == 0) {
+		plane.scale.x = dim.x;
+		plane.scale.z = Math.sqrt(dim.z * dim.z + dim.y * dim.y);
+		plane.rotation.x = -Math.atan2(dim.y, dim.z);
+	} else if (dir == 1) {
+		plane.scale.z = dim.z;
+		plane.scale.x = Math.sqrt(dim.x * dim.x + dim.y * dim.y);
+		plane.rotation.z = Math.atan2(dim.y, dim.x);
+	} else if (dir == 2) {
+		plane.scale.x = dim.x;
+		plane.scale.z = Math.sqrt(dim.z * dim.z + dim.y * dim.y);
+		plane.rotation.x = Math.atan2(dim.y, dim.z);
+	} else {
+		plane.scale.z = dim.z;
+		plane.scale.x = Math.sqrt(dim.x * dim.x + dim.y * dim.y);
+		plane.rotation.z = -Math.atan2(dim.y, dim.x);
+	}
+
+	this.object.add(plane);
 	this.object.position.set(pos.x, pos.y, pos.z);
 };
 
@@ -690,9 +606,9 @@ BoundingBox.prototype = {
   }
 };
 
-var BoundingRamp = function BoundingRamp(pos, dim, type) {
+var BoundingRamp = function BoundingRamp(pos, dim, dir) {
   this.box = new BoundingBox(pos, dim);
-  this.type = type;
+  this.direction = dir;
 };
 
 BoundingRamp.prototype = {
@@ -707,11 +623,11 @@ BoundingRamp.prototype = {
   getTop: function getTop(pos) {
     var top = this.box.box.y.min;
 
-    if (this.type === 0) {
+    if (this.direction === 0) {
       top += (pos.z - this.box.box.z.min) / this.box.box.z.size * this.box.box.y.size;
-    } else if (this.type === 1) {
+    } else if (this.direction === 1) {
       top += (pos.x - this.box.box.x.min) / this.box.box.x.size * this.box.box.y.size;
-    } else if (this.type === 2) {
+    } else if (this.direction === 2) {
       top += (this.box.box.z.max - pos.z) / this.box.box.z.size * this.box.box.y.size;
     } else {
       top += (this.box.box.x.max - pos.x) / this.box.box.x.size * this.box.box.y.size;
@@ -792,10 +708,18 @@ RayTracer.prototype = {
     var mouseY = ((event.clientY - rect.top) / domElement.height - 0.5) * 2;
     var fov = camera.fov * Math.PI / 180.;
     var fovY = fov - fov * Math.abs(mouseX) * 0.5;
-    var vec = new THREE.Vector3(Math.sin(-camera.rotation.y + mouseX * fov), Math.sin(camera.rotation.x - (mouseY * 0.5 + mouseY / camera.aspect * 0.5) * fovY), -Math.cos(-camera.rotation.y + mouseX * fov));
-    var point = this.trace(camera.position, vec, objects);
+    var yaw = -camera.rotation.y + mouseX * fov;
+    var pitch = camera.rotation.x - (mouseY * 0.5 + mouseY / camera.aspect * 0.5) * fovY;
+    var vec = new THREE.Vector3(Math.sin(yaw), Math.sin(pitch), -Math.cos(yaw));
+    var endPoint = this.trace(camera.position, vec, objects);
+    var ray = {
+      start: camera.position,
+      end: endPoint,
+      yaw: camera.rotation.y - mouseX * fov,
+      pitch: pitch
+    };
 
-    return point;
+    return ray;
   }
 };
 
@@ -829,8 +753,15 @@ var Mag3 = function Mag3(vec) {
   return mag;
 };
 
+var Dist2D = function Dist2D(a, b) {
+  var dist = Math.sqrt(Math.pow(b.x - a.x, 2) + Math.pow(b.z - a.z, 2));
+
+  return dist;
+};
+
 exports.Normalise = Normalise;
 exports.Mag3 = Mag3;
+exports.Dist2D = Dist2D;
 
 /***/ }),
 /* 9 */

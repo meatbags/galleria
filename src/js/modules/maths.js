@@ -16,4 +16,10 @@ const Mag3 = function(vec) {
   return mag;
 }
 
-export { Normalise, Mag3 };
+const Dist2D = function(a, b) {
+  const dist = Math.sqrt(Math.pow(b.x - a.x, 2) + Math.pow(b.z - a.z, 2));
+
+  return dist;
+}
+
+export { Normalise, Mag3, Dist2D };

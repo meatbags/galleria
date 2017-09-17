@@ -31,13 +31,38 @@ Box.prototype = {
 	}
 };
 
-const Ramp = function(pos, dim, type) {
+const Ramp = function(pos, dim, dir) {
 	this.type = TYPE_RAMP;
-	this.ramp = new BoundingRamp(pos, dim);
+	this.dir = dir;
+	this.ramp = new BoundingRamp(pos, dim, dir);
 	this.object = new THREE.Mesh(
 		new THREE.BoxBufferGeometry(dim.x, dim.y, dim.z),
 		Materials.dev
 	);
+	const plane = new THREE.Mesh(
+		new THREE.BoxBufferGeometry(1, 0.05, 1),
+		Materials.wireframe
+	);
+
+	if (dir == 0) {
+		plane.scale.x = dim.x;
+		plane.scale.z = Math.sqrt(dim.z * dim.z + dim.y * dim.y);
+		plane.rotation.x = -Math.atan2(dim.y, dim.z);
+	} else if (dir == 1) {
+		plane.scale.z = dim.z;
+		plane.scale.x = Math.sqrt(dim.x * dim.x + dim.y * dim.y);
+		plane.rotation.z = Math.atan2(dim.y, dim.x);
+	} else if (dir == 2) {
+		plane.scale.x = dim.x;
+		plane.scale.z = Math.sqrt(dim.z * dim.z + dim.y * dim.y);
+		plane.rotation.x = Math.atan2(dim.y, dim.z);
+	} else {
+		plane.scale.z = dim.z;
+		plane.scale.x = Math.sqrt(dim.x * dim.x + dim.y * dim.y);
+		plane.rotation.z = -Math.atan2(dim.y, dim.x);
+	}
+
+	this.object.add(plane);
 	this.object.position.set(pos.x, pos.y, pos.z);
 }
 

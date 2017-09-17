@@ -32,8 +32,13 @@ Scene.prototype = {
     this.model = new PhysicsModel();
 
     this.model.add(
-      new Box(new THREE.Vector3(0, 5, -5), new THREE.Vector3(6, 10, 2)),
-      new Box(new THREE.Vector3(0, 0, -5), new THREE.Vector3(4, 1, 4))
+      new Box(new THREE.Vector3(0, 5, -25), new THREE.Vector3(6, 10, 2)),
+      new Box(new THREE.Vector3(0, 0, -25), new THREE.Vector3(4, 1, 4)),
+      new Box(new THREE.Vector3(0, 1.8, -7), new THREE.Vector3(3, .4, 2)),
+      new Ramp(new THREE.Vector3(0, 1, -10), new THREE.Vector3(3, 2, 4), 0),
+      new Ramp(new THREE.Vector3(0, 1, -4), new THREE.Vector3(3, 2, 4), 2),
+      new Ramp(new THREE.Vector3(-3, 1, -7), new THREE.Vector3(3, 2, 2), 1),
+      new Ramp(new THREE.Vector3(3, 1, -7), new THREE.Vector3(3, 2, 2), 3)
     );
 
     this.scene.add(
@@ -65,11 +70,12 @@ Scene.prototype = {
   },
 
   onMouseDown: function(e) {
-    this.raytracer.emitRayFromScreen(e, this.renderer.domElement, this.camera, this.model.contents);
+    const ray = this.raytracer.emitRayFromScreen(e, this.renderer.domElement, this.camera, this.model.contents);
+    this.player.setTarget({x: ray.end.x, y: ray.end.y, z: ray.end.z}, ray.yaw);
   },
 
   onMouseMove: function(e) {
-    this.raytracer.emitRayFromScreen(e, this.renderer.domElement, this.camera, this.model.contents);
+    const ray = this.raytracer.emitRayFromScreen(e, this.renderer.domElement, this.camera, this.model.contents);
   },
 
   update: function(delta) {

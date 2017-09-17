@@ -39,9 +39,9 @@ BoundingBox.prototype = {
   }
 };
 
-const BoundingRamp = function(pos, dim, type) {
+const BoundingRamp = function(pos, dim, dir) {
   this.box = new BoundingBox(pos, dim);
-  this.type = type;
+  this.direction = dir;
 }
 
 BoundingRamp.prototype = {
@@ -56,11 +56,11 @@ BoundingRamp.prototype = {
   getTop: function(pos) {
     let top = this.box.box.y.min;
 
-    if (this.type === 0) {
+    if (this.direction === 0) {
       top += ((pos.z - this.box.box.z.min) / this.box.box.z.size) * this.box.box.y.size;
-    } else if (this.type === 1) {
+    } else if (this.direction === 1) {
       top += ((pos.x - this.box.box.x.min) / this.box.box.x.size) * this.box.box.y.size;
-    } else if (this.type === 2) {
+    } else if (this.direction === 2) {
       top += ((this.box.box.z.max - pos.z) / this.box.box.z.size) * this.box.box.y.size;
     } else {
       top += ((this.box.box.x.max - pos.x) / this.box.box.x.size) * this.box.box.y.size;

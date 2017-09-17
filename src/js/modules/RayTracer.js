@@ -59,14 +59,22 @@ RayTracer.prototype = {
     const mouseY = ((event.clientY - rect.top) / domElement.height - 0.5) * 2;
     const fov = camera.fov * Math.PI / 180.;
     const fovY = fov - (fov * Math.abs(mouseX) * 0.5);
+    const yaw = -camera.rotation.y + mouseX * fov;
+    const pitch = camera.rotation.x - (mouseY * 0.5 + (mouseY / camera.aspect) * 0.5) * fovY;
     const vec = new THREE.Vector3(
-      Math.sin(-camera.rotation.y + mouseX * fov),
-      Math.sin(camera.rotation.x - (mouseY * 0.5 + (mouseY / camera.aspect) * 0.5) * fovY),
-      -Math.cos(-camera.rotation.y + mouseX * fov)
+      Math.sin(yaw),
+      Math.sin(pitch),
+      -Math.cos(yaw)
     );
-    const point = this.trace(camera.position, vec, objects);
+    const endPoint = this.trace(camera.position, vec, objects);
+    const ray = {
+      start: camera.position,
+      end: endPoint,
+      yaw: camera.rotation.y - mouseX * fov,
+      pitch: pitch,
+    };
 
-    return point;
+    return ray;
   }
 };
 
