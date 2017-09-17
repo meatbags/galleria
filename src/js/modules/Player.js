@@ -1,10 +1,13 @@
+import { TYPE_BOX, TYPE_RAMP } from './Physics';
+
 const Player = function(position) {
 	this.position = position;
 	this.pitch = 0;
 	this.yaw = 0;
-	this.speed = 5;
+	this.speed = 5.5;
 	this.height = 1.8;
-	this.rotationSpeed = Math.PI / 2;
+	this.climbThreshold = 1;
+	this.rotationSpeed = Math.PI * 0.75;
 	this.init();
 };
 
@@ -68,11 +71,65 @@ Player.prototype = {
 		}, false);
 	},
 
-	update: function(delta) {
+	update: function(delta, objects) {
 		const rotate = ((this.keys.left) ? 1 : 0) + ((this.keys.right) ? -1 : 0);
 		const move = ((this.keys.up) ? -1: 0) + ((this.keys.down) ? 1 : 0);
-		this.position.x += Math.sin(this.yaw) * this.speed * delta * move;
-		this.position.z += Math.cos(this.yaw) * this.speed * delta * move;
+		const dx = Math.sin(this.yaw) * this.speed * delta * move;
+		const dz = Math.cos(this.yaw) * this.speed * delta * move;
+		const nextX = this.position.x + dx;
+		const nextZ = this.position.z + dz;
+		const testX = {x: nextX, y: this.position.y, z: this.position.z};
+		const testZ = {x: this.position.x, y: this.position.y, z: nextZ};
+		let collisionX = false;
+		let collisionZ = false;
+
+		// XZ collisions
+		for (let i=0; i<objects.length; i+=1) {
+			const obj = objects[i];
+
+			if (obj.type === TYPE_BOX || obj.type === TYPE_RAMP) {
+				// test next X position
+				if (obj.collision(testX)) {
+					const y = obj.getTop(testX);
+
+					if (Math.abs(this.position.y - y) > this.climbThreshold) {
+						collisionX = true;
+					}
+				}
+
+				// test next Z position
+				if (obj.collision(testZ)) {
+					const y = obj.getTop(testZ);
+
+					if (Math.abs(this.position.y - y) > this.climbThreshold) {
+						collisionZ = true;
+					}
+				}
+			}
+		}
+
+		// update XZ position
+		this.position.x = (collisionX) ? this.position.x : nextX;
+		this.position.z = (collisionZ) ? this.position.z : nextZ;
+
+		// get next Y position
+		let nextY = 0;
+
+		for (let i=0; i<objects.length; i+=1) {
+			const obj = objects[i];
+
+			if (obj.collision2D(this.position)) {
+				const y = obj.getTop(this.position);
+
+				if (Math.abs(this.position.y - y) <= this.climbThreshold)
+					nextY = y;
+			}
+		}
+
+		// update Y position
+		this.position.y += (nextY - this.position.y) * 0.25;
+
+		// update rotation
 		this.yaw += this.rotationSpeed * delta * rotate;
 	},
 };

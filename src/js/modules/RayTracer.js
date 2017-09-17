@@ -1,23 +1,19 @@
 import { Normalise } from './Maths';
+import { Materials } from'./Loader';
 
 const RayTracer = function() {
-  this.precision = 1;
-  this.maxLength = 20;
+  this.precision = 0.25;
+  this.maxLength = 15;
   this.object = new THREE.Object3D();
 
+  const light = new THREE.PointLight(0xffffff, 0.25, 5, 2);
   const ball = new THREE.Mesh(
-    new THREE.SphereBufferGeometry(0.1, 16),
-    new THREE.MeshLambertMaterial({
-      color: 0xffffff,
-      emissive: 0xffffff
-    })
+    new THREE.SphereBufferGeometry(0.5, 16),
+    Materials.concrete
   );
-  ball.add(
-    new THREE.PointLight(0xffffff, 0.25, 5, 2)
-  );
-  ball.position.y = 0.5;
+  light.position.y = 1;
 
-  this.object.add(ball);
+  this.object.add(ball, light);
 };
 
 RayTracer.prototype = {
@@ -56,7 +52,7 @@ RayTracer.prototype = {
   },
 
   emitRayFromScreen(event, domElement, camera, objects) {
-    //
+    // convert mouse position to 3D space
 
     const rect = domElement.getBoundingClientRect();
     const mouseX = ((event.clientX - rect.left) / domElement.width - 0.5) * 2;

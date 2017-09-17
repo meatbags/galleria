@@ -1,6 +1,7 @@
 import Player from './Player';
 import RayTracer from './RayTracer';
 import { Materials } from './Loader';
+import { Box, Ramp, PhysicsModel } from './Physics';
 import './SkyShader.js';
 
 const Scene = function() {
@@ -28,15 +29,22 @@ Scene.prototype = {
 
     // world
     this.scene = new THREE.Scene();
+    this.model = new PhysicsModel();
+
+    this.model.add(
+      new Box(new THREE.Vector3(0, 5, -5), new THREE.Vector3(6, 10, 2)),
+      new Box(new THREE.Vector3(0, 0, -5), new THREE.Vector3(4, 1, 4))
+    );
+
     this.scene.add(
       new THREE.Mesh(
-        new THREE.BoxBufferGeometry(100, 0.1, 100),
+        new THREE.BoxBufferGeometry(1000, 0.1, 1000),
         Materials.concrete
       ),
       new THREE.AmbientLight(0xffffff, 0.5)
     );
     let sky = new THREE.Sky();
-    let sun = new THREE.PointLight(0xffffff, 0.9, 100);//55000);
+    let sun = new THREE.PointLight(0xffffff, 0.9, 40500);
 
     sun.position.set(
       sky.uniforms.sunPosition.value.x,
@@ -45,6 +53,7 @@ Scene.prototype = {
     )
 
     this.scene.add(sun, sky.mesh, this.raytracer.object);
+    this.scene.add(this.model.object);
   },
 
   resize: function() {
@@ -56,15 +65,15 @@ Scene.prototype = {
   },
 
   onMouseDown: function(e) {
-    this.raytracer.emitRayFromScreen(e, this.renderer.domElement, this.camera, []);
+    this.raytracer.emitRayFromScreen(e, this.renderer.domElement, this.camera, this.model.contents);
   },
 
   onMouseMove: function(e) {
-    this.raytracer.emitRayFromScreen(e, this.renderer.domElement, this.camera, []);
+    this.raytracer.emitRayFromScreen(e, this.renderer.domElement, this.camera, this.model.contents);
   },
 
   update: function(delta) {
-    this.player.update(delta);
+    this.player.update(delta, this.model.contents);
     this.camera.position.set(this.player.position.x, this.player.position.y + this.player.height, this.player.position.z);
     this.camera.rotation.y = this.player.yaw;
   },
