@@ -3,19 +3,21 @@ import { Normalise } from './Maths';
 const RayTracer = function() {
   this.precision = 1;
   this.maxLength = 20;
-  this.object = new THREE.Mesh(
-    new THREE.SphereBufferGeometry(0.25, 8),
+  this.object = new THREE.Object3D();
+
+  const ball = new THREE.Mesh(
+    new THREE.SphereBufferGeometry(0.1, 16),
     new THREE.MeshLambertMaterial({
       color: 0xffffff,
       emissive: 0xffffff
     })
   );
-  const rect = new THREE.Mesh(
-    new THREE.BoxBufferGeometry(0.1, 10, 0.1),
-    new THREE.MeshLambertMaterial({ emissive: 0xffffff })
+  ball.add(
+    new THREE.PointLight(0xffffff, 0.25, 5, 2)
   );
-  rect.position.y = -5;
-  this.object.add(rect);
+  ball.position.y = 0.5;
+
+  this.object.add(ball);
 };
 
 RayTracer.prototype = {

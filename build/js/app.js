@@ -190,7 +190,7 @@ Scene.prototype = {
     this.scene = new THREE.Scene();
     this.scene.add(new THREE.Mesh(new THREE.BoxBufferGeometry(100, 0.1, 100), _Loader.Materials.concrete), new THREE.AmbientLight(0xffffff, 0.5));
     var sky = new THREE.Sky();
-    var sun = new THREE.PointLight(0xffffff, 0.9, 55000);
+    var sun = new THREE.PointLight(0xffffff, 0.9, 100); //55000);
 
     sun.position.set(sky.uniforms.sunPosition.value.x, sky.uniforms.sunPosition.value.y, sky.uniforms.sunPosition.value.z);
 
@@ -472,13 +472,16 @@ var _Maths = __webpack_require__(5);
 var RayTracer = function RayTracer() {
   this.precision = 1;
   this.maxLength = 20;
-  this.object = new THREE.Mesh(new THREE.SphereBufferGeometry(0.25, 8), new THREE.MeshLambertMaterial({
+  this.object = new THREE.Object3D();
+
+  var ball = new THREE.Mesh(new THREE.SphereBufferGeometry(0.1, 16), new THREE.MeshLambertMaterial({
     color: 0xffffff,
     emissive: 0xffffff
   }));
-  var rect = new THREE.Mesh(new THREE.BoxBufferGeometry(0.1, 10, 0.1), new THREE.MeshLambertMaterial({ emissive: 0xffffff }));
-  rect.position.y = -5;
-  this.object.add(rect);
+  ball.add(new THREE.PointLight(0xffffff, 0.25, 5, 2));
+  ball.position.y = 0.5;
+
+  this.object.add(ball);
 };
 
 RayTracer.prototype = {
@@ -715,6 +718,13 @@ var Materials = {
     reflectivity: 0,
     color: 0xffffff,
     emissive: 0x888888
+  }),
+  canvas: new THREE.MeshPhysicalMaterial({
+    clearCoat: 0,
+    clearCoatRoughness: 0.5,
+    reflectivity: 0.25,
+    color: 0xffffff,
+    emissive: 0x444444
   })
 };
 

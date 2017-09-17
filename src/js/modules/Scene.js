@@ -36,7 +36,7 @@ Scene.prototype = {
       new THREE.AmbientLight(0xffffff, 0.5)
     );
     let sky = new THREE.Sky();
-    let sun = new THREE.PointLight(0xffffff, 0.9, 55000);
+    let sun = new THREE.PointLight(0xffffff, 0.9, 100);//55000);
 
     sun.position.set(
       sky.uniforms.sunPosition.value.x,
