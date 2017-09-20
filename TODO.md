@@ -1,3 +1,5 @@
 # To do
 
-- more accurate ray-tracing
+- improve ray-tracing accuracy
+- collision check on automatic walk
+- pan with mouse

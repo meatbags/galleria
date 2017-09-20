@@ -4,7 +4,9 @@ var gulp = require("gulp"),
 
 gulp.task("sass", function(){
   return gulp.src("./src/scss/style.scss", {style: "compressed"})
-	  .pipe(sass())
+	  .pipe(sass({
+			includePaths: require('node-normalize-scss').includePaths
+		}))
 	  .pipe(gulp.dest("./build/css"))
 	  .pipe(cleanCSS({
 		    keepSpecialComments: 0

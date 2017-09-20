@@ -60,7 +60,7 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 1);
+/******/ 	return __webpack_require__(__webpack_require__.s = 3);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -73,7 +73,9 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-var Models = {};
+exports.Materials = exports.Models = undefined;
+
+__webpack_require__(8);
 
 var Materials = {
   concrete: new THREE.MeshPhysicalMaterial({
@@ -102,6 +104,22 @@ var Materials = {
   })
 };
 
+var Models = {
+  mainBuilding: new THREE.Mesh()
+};
+
+// load textures and models
+
+var loader = new THREE.OBJLoader();
+loader.load(appRoot + './assets/3d/hangar.obj', function (obj) {
+  Models.mainBuilding.geometry = obj.children[0].geometry;
+  Models.mainBuilding.material = Materials.concrete;
+
+  for (var i = 0; i < obj.children.length; i += 1) {
+    Models.mainBuilding.add(new THREE.Mesh(obj.children[i].geometry, Materials.concrete));
+  }
+});
+
 exports.Models = Models;
 exports.Materials = Materials;
 
@@ -112,11 +130,162 @@ exports.Materials = Materials;
 "use strict";
 
 
-var _Timer = __webpack_require__(2);
+Object.defineProperty(exports, "__esModule", {
+	value: true
+});
+exports.TYPE_RAMP = exports.TYPE_BOX = exports.Box = exports.Ramp = exports.PhysicsModel = undefined;
+
+var _BoundingBox = __webpack_require__(7);
+
+var _Loader = __webpack_require__(0);
+
+var TYPE_BOX = 'TYPE_BOX';
+var TYPE_RAMP = 'TYPE_RAMP';
+
+var Box = function Box(pos, dim) {
+	this.type = TYPE_BOX;
+	this.box = new _BoundingBox.BoundingBox(pos, dim);
+	this.object = new THREE.Mesh(new THREE.BoxBufferGeometry(dim.x, dim.y, dim.z), _Loader.Materials.dev);
+	var cloned = this.object.clone();
+	cloned.material = _Loader.Materials.wireframe;
+	this.object.add(cloned);
+	this.object.position.set(pos.x, pos.y, pos.z);
+};
+
+Box.prototype = {
+	collision: function collision(pos) {
+		return this.box.collision(pos);
+	},
+
+	collision2D: function collision2D(pos) {
+		return this.box.collision2D(pos);
+	},
+
+	getTop: function getTop(pos) {
+		return this.box.getTop(pos);
+	}
+};
+
+var Ramp = function Ramp(pos, dim, dir) {
+	this.type = TYPE_RAMP;
+	this.dir = dir;
+	this.ramp = new _BoundingBox.BoundingRamp(pos, dim, dir);
+	this.object = new THREE.Mesh(new THREE.BoxBufferGeometry(dim.x, dim.y, dim.z), _Loader.Materials.dev);
+	var plane = new THREE.Mesh(new THREE.BoxBufferGeometry(1, 0.05, 1), _Loader.Materials.wireframe);
+
+	if (dir == 0) {
+		plane.scale.x = dim.x;
+		plane.scale.z = Math.sqrt(dim.z * dim.z + dim.y * dim.y);
+		plane.rotation.x = -Math.atan2(dim.y, dim.z);
+	} else if (dir == 1) {
+		plane.scale.z = dim.z;
+		plane.scale.x = Math.sqrt(dim.x * dim.x + dim.y * dim.y);
+		plane.rotation.z = Math.atan2(dim.y, dim.x);
+	} else if (dir == 2) {
+		plane.scale.x = dim.x;
+		plane.scale.z = Math.sqrt(dim.z * dim.z + dim.y * dim.y);
+		plane.rotation.x = Math.atan2(dim.y, dim.z);
+	} else {
+		plane.scale.z = dim.z;
+		plane.scale.x = Math.sqrt(dim.x * dim.x + dim.y * dim.y);
+		plane.rotation.z = -Math.atan2(dim.y, dim.x);
+	}
+
+	this.object.add(plane);
+	this.object.position.set(pos.x, pos.y, pos.z);
+};
+
+Ramp.prototype = {
+	collision: function collision(pos) {
+		return this.ramp.collision(pos);
+	},
+
+	collision2D: function collision2D(pos) {
+		return this.ramp.collision2D(pos);
+	},
+
+	getTop: function getTop(pos) {
+		return this.ramp.getTop(pos);
+	}
+};
+
+var PhysicsModel = function PhysicsModel() {
+	this.contents = [];
+	this.object = new THREE.Object3D();
+};
+
+PhysicsModel.prototype = {
+	add: function add() {
+		for (var i = 0; i < arguments.length; i += 1) {
+			this.contents.push(arguments[i]);
+			this.object.add(arguments[i].object);
+		}
+	}
+};
+
+exports.PhysicsModel = PhysicsModel;
+exports.Ramp = Ramp;
+exports.Box = Box;
+exports.TYPE_BOX = TYPE_BOX;
+exports.TYPE_RAMP = TYPE_RAMP;
+
+/***/ }),
+/* 2 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+var getNormalisedVec3 = function getNormalisedVec3(vec) {
+  var mag = getMagnitudeVec3(vec);
+
+  if (mag != 0) {
+    vec.x /= mag;
+    vec.y /= mag;
+    vec.z /= mag;
+  }
+
+  return vec;
+};
+
+var getMagnitudeVec3 = function getMagnitudeVec3(vec) {
+  var mag = Math.sqrt(vec.x * vec.x + vec.y * vec.y + vec.z * vec.z);
+
+  return mag;
+};
+
+var getDistanceVec3 = function getDistanceVec3(a, b) {
+  var dist = Math.sqrt(Math.pow(b.x - a.x, 2) + Math.pow(b.y - a.y, 2) + Math.pow(b.z - a.z, 2));
+
+  return dist;
+};
+
+var getDistanceVec2 = function getDistanceVec2(a, b) {
+  var dist = Math.sqrt(Math.pow(b.x - a.x, 2) + Math.pow(b.z - a.z, 2));
+
+  return dist;
+};
+
+exports.getNormalisedVec3 = getNormalisedVec3;
+exports.getMagnitudeVec3 = getMagnitudeVec3;
+exports.getDistanceVec2 = getDistanceVec2;
+exports.getDistanceVec3 = getDistanceVec3;
+
+/***/ }),
+/* 3 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _Timer = __webpack_require__(4);
 
 var _Timer2 = _interopRequireDefault(_Timer);
 
-var _Scene = __webpack_require__(3);
+var _Scene = __webpack_require__(5);
 
 var _Scene2 = _interopRequireDefault(_Scene);
 
@@ -144,7 +313,7 @@ var App = {
 window.onload = App.init;
 
 /***/ }),
-/* 2 */
+/* 4 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -177,7 +346,7 @@ Timer.prototype = {
 exports.default = Timer;
 
 /***/ }),
-/* 3 */
+/* 5 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -187,19 +356,19 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _Player = __webpack_require__(4);
+var _Player = __webpack_require__(6);
 
 var _Player2 = _interopRequireDefault(_Player);
 
-var _RayTracer = __webpack_require__(7);
+var _RayTracer = __webpack_require__(9);
 
 var _RayTracer2 = _interopRequireDefault(_RayTracer);
 
 var _Loader = __webpack_require__(0);
 
-var _Physics = __webpack_require__(5);
+var _Physics = __webpack_require__(1);
 
-__webpack_require__(9);
+__webpack_require__(10);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -224,6 +393,22 @@ Scene.prototype = {
     });
     document.body.append(this.renderer.domElement);
 
+    // hud elements
+    this.hud = {
+      turnThreshold: 0.225,
+      left: document.getElementsByClassName('hud__left')[0],
+      right: document.getElementsByClassName('hud__right')[0],
+      isBelowTurnThreshold: function isBelowTurnThreshold(x) {
+        return x < self.hud.turnThreshold * self.renderer.domElement.width;
+      },
+      isAboveTurnThreshold: function isAboveTurnThreshold(x) {
+        return x > (1 - self.hud.turnThreshold) * self.renderer.domElement.width;
+      },
+      isOutsideTurnThreshold: function isOutsideTurnThreshold(x) {
+        return self.hud.isBelowTurnThreshold(x) || self.hud.isAboveTurnThreshold(x);
+      }
+    };
+
     // user
     this.player = new _Player2.default(new THREE.Vector3(0, 0, 0));
     this.camera = new THREE.PerspectiveCamera(55, 1, 0.1, 2000000);
@@ -235,6 +420,8 @@ Scene.prototype = {
     this.model = new _Physics.PhysicsModel();
 
     this.model.add(new _Physics.Box(new THREE.Vector3(0, 5, -25), new THREE.Vector3(6, 10, 2)), new _Physics.Box(new THREE.Vector3(0, 0, -25), new THREE.Vector3(4, 1, 4)), new _Physics.Box(new THREE.Vector3(0, 1.8, -7), new THREE.Vector3(3, .4, 2)), new _Physics.Ramp(new THREE.Vector3(0, 1, -10), new THREE.Vector3(3, 2, 4), 0), new _Physics.Ramp(new THREE.Vector3(0, 1, -4), new THREE.Vector3(3, 2, 4), 2), new _Physics.Ramp(new THREE.Vector3(-3, 1, -7), new THREE.Vector3(3, 2, 2), 1), new _Physics.Ramp(new THREE.Vector3(3, 1, -7), new THREE.Vector3(3, 2, 2), 3));
+
+    this.scene.add(this.player.object, _Loader.Models.mainBuilding);
 
     this.scene.add(new THREE.Mesh(new THREE.BoxBufferGeometry(1000, 0.1, 1000), _Loader.Materials.concrete), new THREE.AmbientLight(0xffffff, 0.5));
     var sky = new THREE.Sky();
@@ -248,7 +435,7 @@ Scene.prototype = {
 
   resize: function resize() {
     var width = window.innerWidth;
-    var height = Math.min(480, window.innerHeight * 0.75);
+    var height = 540; //Math.min(520, window.innerHeight * 0.75);
     this.camera.aspect = width / height;
     this.camera.updateProjectionMatrix();
     this.renderer.setSize(width, height);
@@ -256,11 +443,33 @@ Scene.prototype = {
 
   onMouseDown: function onMouseDown(e) {
     var ray = this.raytracer.emitRayFromScreen(e, this.renderer.domElement, this.camera, this.model.contents);
-    this.player.setTarget({ x: ray.end.x, y: ray.end.y, z: ray.end.z }, ray.yaw);
+
+    if (this.hud.isOutsideTurnThreshold(e.clientX)) {
+      this.player.setTarget(this.player.position, ray.yaw);
+    } else {
+      this.player.setTarget({ x: ray.end.x, y: ray.end.y, z: ray.end.z }, ray.yaw);
+    }
   },
 
   onMouseMove: function onMouseMove(e) {
     var ray = this.raytracer.emitRayFromScreen(e, this.renderer.domElement, this.camera, this.model.contents);
+
+    if (this.hud.isBelowTurnThreshold(e.clientX)) {
+      if (!this.hud.left.classList.contains('active')) {
+        this.hud.left.classList.add('active');
+      }
+    } else if (this.hud.isAboveTurnThreshold(e.clientX)) {
+      if (!this.hud.right.classList.contains('active')) {
+        this.hud.right.classList.add('active');
+      }
+    } else {
+      if (this.hud.left.classList.contains('active')) {
+        this.hud.left.classList.remove('active');
+      }
+      if (this.hud.right.classList.contains('active')) {
+        this.hud.right.classList.remove('active');
+      }
+    }
   },
 
   update: function update(delta) {
@@ -277,7 +486,7 @@ Scene.prototype = {
 exports.default = Scene;
 
 /***/ }),
-/* 4 */
+/* 6 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -287,11 +496,12 @@ Object.defineProperty(exports, "__esModule", {
 	value: true
 });
 
-var _Physics = __webpack_require__(5);
+var _Physics = __webpack_require__(1);
 
-var _Maths = __webpack_require__(8);
+var _Maths = __webpack_require__(2);
 
 var Player = function Player(position) {
+	this.object = new THREE.Object3D();
 	this.position = position;
 	this.target = {
 		active: false,
@@ -311,6 +521,9 @@ var Player = function Player(position) {
 Player.prototype = {
 	init: function init() {
 		this.bindControls();
+		var light = new THREE.PointLight(0xffffff, 0.25, 20, 2);
+		light.position.set(0, 2, 0);
+		this.object.add(light);
 	},
 
 	bindControls: function bindControls() {
@@ -445,125 +658,22 @@ Player.prototype = {
 
 		// auto walk and look
 		if (this.target.active) {
-			if ((0, _Maths.Dist2D)(this.position, this.target.position) > this.target.radius) {
+			if ((0, _Maths.getDistanceVec2)(this.position, this.target.position) > this.target.radius) {
 				this.position.x += (this.target.position.x - this.position.x) * 0.05;
 				this.position.z += (this.target.position.z - this.position.z) * 0.05;
 			}
 			this.yaw += (this.target.yaw - this.yaw) * 0.05;
 		}
+
+		// move THREE reference
+		this.object.position.set(this.position.x, this.position.y, this.position.z);
 	}
 };
 
 exports.default = Player;
 
 /***/ }),
-/* 5 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-	value: true
-});
-exports.TYPE_RAMP = exports.TYPE_BOX = exports.Box = exports.Ramp = exports.PhysicsModel = undefined;
-
-var _BoundingBox = __webpack_require__(6);
-
-var _Loader = __webpack_require__(0);
-
-var TYPE_BOX = 'TYPE_BOX';
-var TYPE_RAMP = 'TYPE_RAMP';
-
-var Box = function Box(pos, dim) {
-	this.type = TYPE_BOX;
-	this.box = new _BoundingBox.BoundingBox(pos, dim);
-	this.object = new THREE.Mesh(new THREE.BoxBufferGeometry(dim.x, dim.y, dim.z), _Loader.Materials.dev);
-	var cloned = this.object.clone();
-	cloned.material = _Loader.Materials.wireframe;
-	this.object.add(cloned);
-	this.object.position.set(pos.x, pos.y, pos.z);
-};
-
-Box.prototype = {
-	collision: function collision(pos) {
-		return this.box.collision(pos);
-	},
-
-	collision2D: function collision2D(pos) {
-		return this.box.collision2D(pos);
-	},
-
-	getTop: function getTop(pos) {
-		return this.box.getTop(pos);
-	}
-};
-
-var Ramp = function Ramp(pos, dim, dir) {
-	this.type = TYPE_RAMP;
-	this.dir = dir;
-	this.ramp = new _BoundingBox.BoundingRamp(pos, dim, dir);
-	this.object = new THREE.Mesh(new THREE.BoxBufferGeometry(dim.x, dim.y, dim.z), _Loader.Materials.dev);
-	var plane = new THREE.Mesh(new THREE.BoxBufferGeometry(1, 0.05, 1), _Loader.Materials.wireframe);
-
-	if (dir == 0) {
-		plane.scale.x = dim.x;
-		plane.scale.z = Math.sqrt(dim.z * dim.z + dim.y * dim.y);
-		plane.rotation.x = -Math.atan2(dim.y, dim.z);
-	} else if (dir == 1) {
-		plane.scale.z = dim.z;
-		plane.scale.x = Math.sqrt(dim.x * dim.x + dim.y * dim.y);
-		plane.rotation.z = Math.atan2(dim.y, dim.x);
-	} else if (dir == 2) {
-		plane.scale.x = dim.x;
-		plane.scale.z = Math.sqrt(dim.z * dim.z + dim.y * dim.y);
-		plane.rotation.x = Math.atan2(dim.y, dim.z);
-	} else {
-		plane.scale.z = dim.z;
-		plane.scale.x = Math.sqrt(dim.x * dim.x + dim.y * dim.y);
-		plane.rotation.z = -Math.atan2(dim.y, dim.x);
-	}
-
-	this.object.add(plane);
-	this.object.position.set(pos.x, pos.y, pos.z);
-};
-
-Ramp.prototype = {
-	collision: function collision(pos) {
-		return this.ramp.collision(pos);
-	},
-
-	collision2D: function collision2D(pos) {
-		return this.ramp.collision2D(pos);
-	},
-
-	getTop: function getTop(pos) {
-		return this.ramp.getTop(pos);
-	}
-};
-
-var PhysicsModel = function PhysicsModel() {
-	this.contents = [];
-	this.object = new THREE.Object3D();
-};
-
-PhysicsModel.prototype = {
-	add: function add() {
-		for (var i = 0; i < arguments.length; i += 1) {
-			this.contents.push(arguments[i]);
-			this.object.add(arguments[i].object);
-		}
-	}
-};
-
-exports.PhysicsModel = PhysicsModel;
-exports.Ramp = Ramp;
-exports.Box = Box;
-exports.TYPE_BOX = TYPE_BOX;
-exports.TYPE_RAMP = TYPE_RAMP;
-
-/***/ }),
-/* 6 */
+/* 7 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -641,7 +751,122 @@ exports.BoundingBox = BoundingBox;
 exports.BoundingRamp = BoundingRamp;
 
 /***/ }),
-/* 7 */
+/* 8 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+THREE.OBJLoader = function (e) {
+  this.manager = void 0 !== e ? e : THREE.DefaultLoadingManager, this.materials = null, this.regexp = { vertex_pattern: /^v\s+([\d|\.|\+|\-|e|E]+)\s+([\d|\.|\+|\-|e|E]+)\s+([\d|\.|\+|\-|e|E]+)/, normal_pattern: /^vn\s+([\d|\.|\+|\-|e|E]+)\s+([\d|\.|\+|\-|e|E]+)\s+([\d|\.|\+|\-|e|E]+)/, uv_pattern: /^vt\s+([\d|\.|\+|\-|e|E]+)\s+([\d|\.|\+|\-|e|E]+)/, face_vertex: /^f\s+(-?\d+)\s+(-?\d+)\s+(-?\d+)(?:\s+(-?\d+))?/, face_vertex_uv: /^f\s+(-?\d+)\/(-?\d+)\s+(-?\d+)\/(-?\d+)\s+(-?\d+)\/(-?\d+)(?:\s+(-?\d+)\/(-?\d+))?/, face_vertex_uv_normal: /^f\s+(-?\d+)\/(-?\d+)\/(-?\d+)\s+(-?\d+)\/(-?\d+)\/(-?\d+)\s+(-?\d+)\/(-?\d+)\/(-?\d+)(?:\s+(-?\d+)\/(-?\d+)\/(-?\d+))?/, face_vertex_normal: /^f\s+(-?\d+)\/\/(-?\d+)\s+(-?\d+)\/\/(-?\d+)\s+(-?\d+)\/\/(-?\d+)(?:\s+(-?\d+)\/\/(-?\d+))?/, object_pattern: /^[og]\s*(.+)?/, smoothing_pattern: /^s\s+(\d+|on|off)/, material_library_pattern: /^mtllib /, material_use_pattern: /^usemtl / };
+}, THREE.OBJLoader.prototype = { constructor: THREE.OBJLoader, load: function load(e, t, r, a) {
+    var i = this,
+        s = new THREE.FileLoader(i.manager);s.setPath(this.path), s.load(e, function (e) {
+      t(i.parse(e));
+    }, r, a);
+  }, setPath: function setPath(e) {
+    this.path = e;
+  }, setMaterials: function setMaterials(e) {
+    this.materials = e;
+  }, _createParserState: function _createParserState() {
+    var e = { objects: [], object: {}, vertices: [], normals: [], uvs: [], materialLibraries: [], startObject: function startObject(e, t) {
+        if (this.object && this.object.fromDeclaration === !1) return this.object.name = e, void (this.object.fromDeclaration = t !== !1);var r = this.object && "function" == typeof this.object.currentMaterial ? this.object.currentMaterial() : void 0;if (this.object && "function" == typeof this.object._finalize && this.object._finalize(!0), this.object = { name: e || "", fromDeclaration: t !== !1, geometry: { vertices: [], normals: [], uvs: [] }, materials: [], smooth: !0, startMaterial: function startMaterial(e, t) {
+            var r = this._finalize(!1);r && (r.inherited || r.groupCount <= 0) && this.materials.splice(r.index, 1);var a = { index: this.materials.length, name: e || "", mtllib: Array.isArray(t) && t.length > 0 ? t[t.length - 1] : "", smooth: void 0 !== r ? r.smooth : this.smooth, groupStart: void 0 !== r ? r.groupEnd : 0, groupEnd: -1, groupCount: -1, inherited: !1, clone: function clone(e) {
+                var t = { index: "number" == typeof e ? e : this.index, name: this.name, mtllib: this.mtllib, smooth: this.smooth, groupStart: 0, groupEnd: -1, groupCount: -1, inherited: !1 };return t.clone = this.clone.bind(t), t;
+              } };return this.materials.push(a), a;
+          }, currentMaterial: function currentMaterial() {
+            return this.materials.length > 0 ? this.materials[this.materials.length - 1] : void 0;
+          }, _finalize: function _finalize(e) {
+            var t = this.currentMaterial();if (t && -1 === t.groupEnd && (t.groupEnd = this.geometry.vertices.length / 3, t.groupCount = t.groupEnd - t.groupStart, t.inherited = !1), e && this.materials.length > 1) for (var r = this.materials.length - 1; r >= 0; r--) {
+              this.materials[r].groupCount <= 0 && this.materials.splice(r, 1);
+            }return e && 0 === this.materials.length && this.materials.push({ name: "", smooth: this.smooth }), t;
+          } }, r && r.name && "function" == typeof r.clone) {
+          var a = r.clone(0);a.inherited = !0, this.object.materials.push(a);
+        }this.objects.push(this.object);
+      }, finalize: function finalize() {
+        this.object && "function" == typeof this.object._finalize && this.object._finalize(!0);
+      }, parseVertexIndex: function parseVertexIndex(e, t) {
+        var r = parseInt(e, 10);return 3 * (r >= 0 ? r - 1 : r + t / 3);
+      }, parseNormalIndex: function parseNormalIndex(e, t) {
+        var r = parseInt(e, 10);return 3 * (r >= 0 ? r - 1 : r + t / 3);
+      }, parseUVIndex: function parseUVIndex(e, t) {
+        var r = parseInt(e, 10);return 2 * (r >= 0 ? r - 1 : r + t / 2);
+      }, addVertex: function addVertex(e, t, r) {
+        var a = this.vertices,
+            i = this.object.geometry.vertices;i.push(a[e + 0]), i.push(a[e + 1]), i.push(a[e + 2]), i.push(a[t + 0]), i.push(a[t + 1]), i.push(a[t + 2]), i.push(a[r + 0]), i.push(a[r + 1]), i.push(a[r + 2]);
+      }, addVertexLine: function addVertexLine(e) {
+        var t = this.vertices,
+            r = this.object.geometry.vertices;r.push(t[e + 0]), r.push(t[e + 1]), r.push(t[e + 2]);
+      }, addNormal: function addNormal(e, t, r) {
+        var a = this.normals,
+            i = this.object.geometry.normals;i.push(a[e + 0]), i.push(a[e + 1]), i.push(a[e + 2]), i.push(a[t + 0]), i.push(a[t + 1]), i.push(a[t + 2]), i.push(a[r + 0]), i.push(a[r + 1]), i.push(a[r + 2]);
+      }, addUV: function addUV(e, t, r) {
+        var a = this.uvs,
+            i = this.object.geometry.uvs;i.push(a[e + 0]), i.push(a[e + 1]), i.push(a[t + 0]), i.push(a[t + 1]), i.push(a[r + 0]), i.push(a[r + 1]);
+      }, addUVLine: function addUVLine(e) {
+        var t = this.uvs,
+            r = this.object.geometry.uvs;r.push(t[e + 0]), r.push(t[e + 1]);
+      }, addFace: function addFace(e, t, r, a, i, s, n, o, h, l, u, d) {
+        var v,
+            f = this.vertices.length,
+            c = this.parseVertexIndex(e, f),
+            p = this.parseVertexIndex(t, f),
+            m = this.parseVertexIndex(r, f);if (void 0 === a ? this.addVertex(c, p, m) : (v = this.parseVertexIndex(a, f), this.addVertex(c, p, v), this.addVertex(p, m, v)), void 0 !== i) {
+          var g = this.uvs.length;c = this.parseUVIndex(i, g), p = this.parseUVIndex(s, g), m = this.parseUVIndex(n, g), void 0 === a ? this.addUV(c, p, m) : (v = this.parseUVIndex(o, g), this.addUV(c, p, v), this.addUV(p, m, v));
+        }if (void 0 !== h) {
+          var x = this.normals.length;c = this.parseNormalIndex(h, x), p = h === l ? c : this.parseNormalIndex(l, x), m = h === u ? c : this.parseNormalIndex(u, x), void 0 === a ? this.addNormal(c, p, m) : (v = this.parseNormalIndex(d, x), this.addNormal(c, p, v), this.addNormal(p, m, v));
+        }
+      }, addLineGeometry: function addLineGeometry(e, t) {
+        this.object.geometry.type = "Line";for (var r = this.vertices.length, a = this.uvs.length, i = 0, s = e.length; s > i; i++) {
+          this.addVertexLine(this.parseVertexIndex(e[i], r));
+        }for (var n = 0, s = t.length; s > n; n++) {
+          this.addUVLine(this.parseUVIndex(t[n], a));
+        }
+      } };return e.startObject("", !1), e;
+  }, parse: function parse(e) {
+    console.time("OBJLoader");var t = this._createParserState();-1 !== e.indexOf("\r\n") && (e = e.replace(/\r\n/g, "\n")), -1 !== e.indexOf("\\\n") && (e = e.replace(/\\\n/g, ""));for (var r = e.split("\n"), a = "", i = "", s = "", n = 0, o = [], h = "function" == typeof "".trimLeft, l = 0, u = r.length; u > l; l++) {
+      if (a = r[l], a = h ? a.trimLeft() : a.trim(), n = a.length, 0 !== n && (i = a.charAt(0), "#" !== i)) if ("v" === i) {
+        if (s = a.charAt(1), " " === s && null !== (o = this.regexp.vertex_pattern.exec(a))) t.vertices.push(parseFloat(o[1]), parseFloat(o[2]), parseFloat(o[3]));else if ("n" === s && null !== (o = this.regexp.normal_pattern.exec(a))) t.normals.push(parseFloat(o[1]), parseFloat(o[2]), parseFloat(o[3]));else {
+          if ("t" !== s || null === (o = this.regexp.uv_pattern.exec(a))) throw new Error("Unexpected vertex/normal/uv line: '" + a + "'");t.uvs.push(parseFloat(o[1]), parseFloat(o[2]));
+        }
+      } else if ("f" === i) {
+        if (null !== (o = this.regexp.face_vertex_uv_normal.exec(a))) t.addFace(o[1], o[4], o[7], o[10], o[2], o[5], o[8], o[11], o[3], o[6], o[9], o[12]);else if (null !== (o = this.regexp.face_vertex_uv.exec(a))) t.addFace(o[1], o[3], o[5], o[7], o[2], o[4], o[6], o[8]);else if (null !== (o = this.regexp.face_vertex_normal.exec(a))) t.addFace(o[1], o[3], o[5], o[7], void 0, void 0, void 0, void 0, o[2], o[4], o[6], o[8]);else {
+          if (null === (o = this.regexp.face_vertex.exec(a))) throw new Error("Unexpected face line: '" + a + "'");t.addFace(o[1], o[2], o[3], o[4]);
+        }
+      } else if ("l" === i) {
+        var d = a.substring(1).trim().split(" "),
+            f = [],
+            c = [];if (-1 === a.indexOf("/")) f = d;else for (var p = 0, m = d.length; m > p; p++) {
+          var v = d[p].split("/");"" !== v[0] && f.push(v[0]), "" !== v[1] && c.push(v[1]);
+        }t.addLineGeometry(f, c);
+      } else if (null !== (o = this.regexp.object_pattern.exec(a))) {
+        var g = (" " + o[0].substr(1).trim()).substr(1);t.startObject(g);
+      } else if (this.regexp.material_use_pattern.test(a)) t.object.startMaterial(a.substring(7).trim(), t.materialLibraries);else if (this.regexp.material_library_pattern.test(a)) t.materialLibraries.push(a.substring(7).trim());else {
+        if (null === (o = this.regexp.smoothing_pattern.exec(a))) {
+          if ("\x00" === a) continue;throw new Error("Unexpected line: '" + a + "'");
+        }var x = o[1].trim().toLowerCase();t.object.smooth = "1" === x || "on" === x;var b = t.object.currentMaterial();b && (b.smooth = t.object.smooth);
+      }
+    }t.finalize();var E = new THREE.Group();E.materialLibraries = [].concat(t.materialLibraries);for (var l = 0, u = t.objects.length; u > l; l++) {
+      var _ = t.objects[l],
+          j = _.geometry,
+          y = _.materials,
+          L = "Line" === j.type;if (0 !== j.vertices.length) {
+        var V = new THREE.BufferGeometry();V.addAttribute("position", new THREE.BufferAttribute(new Float32Array(j.vertices), 3)), j.normals.length > 0 ? V.addAttribute("normal", new THREE.BufferAttribute(new Float32Array(j.normals), 3)) : V.computeVertexNormals(), j.uvs.length > 0 && V.addAttribute("uv", new THREE.BufferAttribute(new Float32Array(j.uvs), 2));for (var w = [], H = 0, R = y.length; R > H; H++) {
+          var T = y[H],
+              b = void 0;if (null !== this.materials && (b = this.materials.create(T.name), L && b && !(b instanceof THREE.LineBasicMaterial))) {
+            var I = new THREE.LineBasicMaterial();I.copy(b), b = I;
+          }b || (b = L ? new THREE.LineBasicMaterial() : new THREE.MeshPhongMaterial(), b.name = T.name), b.shading = T.smooth ? THREE.SmoothShading : THREE.FlatShading, w.push(b);
+        }var F;if (w.length > 1) {
+          for (var H = 0, R = y.length; R > H; H++) {
+            var T = y[H];V.addGroup(T.groupStart, T.groupCount, H);
+          }var M = new THREE.MultiMaterial(w);F = L ? new THREE.LineSegments(V, M) : new THREE.Mesh(V, M);
+        } else F = L ? new THREE.LineSegments(V, w[0]) : new THREE.Mesh(V, w[0]);F.name = _.name, E.add(F);
+      }
+    }return console.timeEnd("OBJLoader"), E;
+  } };
+
+/***/ }),
+/* 9 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -651,7 +876,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _Maths = __webpack_require__(8);
+var _Maths = __webpack_require__(2);
 
 var _Loader = __webpack_require__(0);
 
@@ -671,7 +896,7 @@ RayTracer.prototype = {
   trace: function trace(point, vector, objects) {
     // raytracing function
 
-    vector = (0, _Maths.Normalise)(vector);
+    vector = (0, _Maths.getNormalisedVec3)(vector);
     var steps = this.maxLength / this.precision;
     var dx = vector.x * this.precision;
     var dy = vector.y * this.precision;
@@ -726,45 +951,7 @@ RayTracer.prototype = {
 exports.default = RayTracer;
 
 /***/ }),
-/* 8 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-var Normalise = function Normalise(vec) {
-  var mag = Mag3(vec);
-
-  if (mag != 0) {
-    vec.x /= mag;
-    vec.y /= mag;
-    vec.z /= mag;
-  }
-
-  return vec;
-};
-
-var Mag3 = function Mag3(vec) {
-  var mag = Math.sqrt(vec.x * vec.x + vec.y * vec.y + vec.z * vec.z);
-
-  return mag;
-};
-
-var Dist2D = function Dist2D(a, b) {
-  var dist = Math.sqrt(Math.pow(b.x - a.x, 2) + Math.pow(b.z - a.z, 2));
-
-  return dist;
-};
-
-exports.Normalise = Normalise;
-exports.Mag3 = Mag3;
-exports.Dist2D = Dist2D;
-
-/***/ }),
-/* 9 */
+/* 10 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";

@@ -1,4 +1,4 @@
-import { Normalise } from './Maths';
+import { getNormalisedVec3 } from './Maths';
 import { Materials } from'./Loader';
 
 const RayTracer = function() {
@@ -20,7 +20,7 @@ RayTracer.prototype = {
   trace: function(point, vector, objects) {
     // raytracing function
 
-    vector = Normalise(vector);
+    vector = getNormalisedVec3(vector);
     const steps = this.maxLength / this.precision;
     const dx = vector.x * this.precision;
     const dy = vector.y * this.precision;

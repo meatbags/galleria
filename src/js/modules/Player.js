@@ -1,7 +1,8 @@
 import { TYPE_BOX, TYPE_RAMP } from './Physics';
-import { Dist2D } from './Maths';
+import { getDistanceVec2 } from './Maths';
 
 const Player = function(position) {
+	this.object = new THREE.Object3D();
 	this.position = position;
 	this.target = {
 		active: false,
@@ -21,6 +22,9 @@ const Player = function(position) {
 Player.prototype = {
 	init: function() {
 		this.bindControls();
+		const light = new THREE.PointLight(0xffffff, 0.25, 20, 2);
+		light.position.set(0, 2, 0);
+		this.object.add(light);
 	},
 
 	bindControls: function() {
@@ -156,12 +160,15 @@ Player.prototype = {
 
 		// auto walk and look
 		if (this.target.active) {
-			if (Dist2D(this.position, this.target.position) > this.target.radius) {
+			if (getDistanceVec2(this.position, this.target.position) > this.target.radius) {
 				this.position.x += (this.target.position.x - this.position.x) * 0.05;
 				this.position.z += (this.target.position.z - this.position.z) * 0.05;
 			}
 			this.yaw += (this.target.yaw - this.yaw) * 0.05;
 		}
+
+		// move THREE reference
+		this.object.position.set(this.position.x, this.position.y, this.position.z);
 	},
 };
 

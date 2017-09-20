@@ -1,4 +1,4 @@
-const Models = {};
+import './OBJLoader.js';
 
 const Materials = {
   concrete: new THREE.MeshPhysicalMaterial({
@@ -26,5 +26,26 @@ const Materials = {
     wireframe: true
   })
 };
+
+const Models = {
+  mainBuilding: new THREE.Mesh(),
+};
+
+// load textures and models
+
+const loader = new THREE.OBJLoader();
+loader.load(appRoot + './assets/3d/hangar.obj', function(obj) {
+  Models.mainBuilding.geometry = obj.children[0].geometry;
+  Models.mainBuilding.material = Materials.concrete;
+
+  for (let i=0; i<obj.children.length; i+=1) {
+    Models.mainBuilding.add(
+      new THREE.Mesh(
+        obj.children[i].geometry,
+        Materials.concrete
+      )
+    );
+  }
+});
 
 export { Models, Materials };

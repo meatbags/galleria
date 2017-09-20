@@ -1,6 +1,6 @@
 import Player from './Player';
 import RayTracer from './RayTracer';
-import { Materials } from './Loader';
+import { Materials, Models } from './Loader';
 import { Box, Ramp, PhysicsModel } from './Physics';
 import './SkyShader.js';
 
@@ -21,6 +21,22 @@ Scene.prototype = {
     this.renderer.domElement.addEventListener('mousedown', function(e){ self.onMouseDown(e) });
     document.body.append(this.renderer.domElement);
 
+    // hud elements
+    this.hud = {
+      turnThreshold: 0.225,
+      left: document.getElementsByClassName('hud__left')[0],
+      right: document.getElementsByClassName('hud__right')[0],
+      isBelowTurnThreshold: function(x) {
+        return (x < self.hud.turnThreshold * self.renderer.domElement.width);
+      },
+      isAboveTurnThreshold: function(x) {
+        return (x > (1 - self.hud.turnThreshold) * self.renderer.domElement.width);
+      },
+      isOutsideTurnThreshold: function(x) {
+        return (self.hud.isBelowTurnThreshold(x) || self.hud.isAboveTurnThreshold(x));
+      },
+    };
+
     // user
     this.player = new Player(new THREE.Vector3(0, 0, 0));
     this.camera = new THREE.PerspectiveCamera(55, 1, 0.1, 2000000);
@@ -40,6 +56,8 @@ Scene.prototype = {
       new Ramp(new THREE.Vector3(-3, 1, -7), new THREE.Vector3(3, 2, 2), 1),
       new Ramp(new THREE.Vector3(3, 1, -7), new THREE.Vector3(3, 2, 2), 3)
     );
+
+    this.scene.add( this.player.object, Models.mainBuilding );
 
     this.scene.add(
       new THREE.Mesh(
@@ -63,7 +81,7 @@ Scene.prototype = {
 
   resize: function() {
     const width = window.innerWidth;
-    const height = Math.min(480, window.innerHeight * 0.75);
+    const height = 540;//Math.min(520, window.innerHeight * 0.75);
     this.camera.aspect = width / height;
     this.camera.updateProjectionMatrix();
     this.renderer.setSize(width, height);
@@ -71,11 +89,33 @@ Scene.prototype = {
 
   onMouseDown: function(e) {
     const ray = this.raytracer.emitRayFromScreen(e, this.renderer.domElement, this.camera, this.model.contents);
-    this.player.setTarget({x: ray.end.x, y: ray.end.y, z: ray.end.z}, ray.yaw);
+
+    if (this.hud.isOutsideTurnThreshold(e.clientX)) {
+      this.player.setTarget(this.player.position, ray.yaw);
+    } else {
+      this.player.setTarget({x: ray.end.x, y: ray.end.y, z: ray.end.z}, ray.yaw);
+    }
   },
 
   onMouseMove: function(e) {
     const ray = this.raytracer.emitRayFromScreen(e, this.renderer.domElement, this.camera, this.model.contents);
+
+    if (this.hud.isBelowTurnThreshold(e.clientX)) {
+      if (!this.hud.left.classList.contains('active')) {
+        this.hud.left.classList.add('active');
+      }
+    } else if (this.hud.isAboveTurnThreshold(e.clientX)) {
+      if (!this.hud.right.classList.contains('active')) {
+        this.hud.right.classList.add('active');
+      }
+    } else {
+      if (this.hud.left.classList.contains('active')) {
+        this.hud.left.classList.remove('active');
+      }
+      if (this.hud.right.classList.contains('active')) {
+        this.hud.right.classList.remove('active');
+      }
+    }
   },
 
   update: function(delta) {

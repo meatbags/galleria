@@ -20,6 +20,10 @@
   "devDependencies": {
     "babel-core": "^6.26.0",
     "babel-loader": "^7.1.2",
-    "webpack": "^3.6.0"
+    "babel-preset-env": "^1.6.0",
+    "node-normalize-scss": "^3.0.0",
+    "webpack": "^3.6.0",
+    "webpack-preset": "^0.2.0",
+    "webpack-preset-babel": "^0.2.0"
   }
 }

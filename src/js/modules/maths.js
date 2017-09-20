@@ -1,5 +1,5 @@
-const Normalise = function(vec) {
-  const mag = Mag3(vec);
+const getNormalisedVec3 = function(vec) {
+  const mag = getMagnitudeVec3(vec);
 
   if (mag != 0) {
     vec.x /= mag;
@@ -10,16 +10,22 @@ const Normalise = function(vec) {
   return vec;
 };
 
-const Mag3 = function(vec) {
+const getMagnitudeVec3 = function(vec) {
   const mag = Math.sqrt(vec.x * vec.x + vec.y * vec.y + vec.z * vec.z);
 
   return mag;
 }
 
-const Dist2D = function(a, b) {
+const getDistanceVec3 = function(a, b) {
+  const dist = Math.sqrt(Math.pow(b.x - a.x, 2) + Math.pow(b.y - a.y, 2) + Math.pow(b.z - a.z, 2));
+
+  return dist;
+}
+
+const getDistanceVec2 = function(a, b) {
   const dist = Math.sqrt(Math.pow(b.x - a.x, 2) + Math.pow(b.z - a.z, 2));
 
   return dist;
 }
 
-export { Normalise, Mag3, Dist2D };
+export { getNormalisedVec3, getMagnitudeVec3, getDistanceVec2, getDistanceVec3 };
