@@ -14,12 +14,12 @@ const Player = function(position) {
 	};
 	this.pitch = 0;
 	this.pitchOffset = 0;
-	this.yaw = Math.PI;
+	this.yaw = 0;
 	this.yawOffset = 0;
-	this.speed = 5.5;
+	this.speed = 7;
 	this.height = 1.8;
 	this.climbThreshold = 1;
-	this.rotationSpeed = Math.PI * 0.75;
+	this.rotationSpeed = Math.PI * 1;
 	this.init();
 };
 
