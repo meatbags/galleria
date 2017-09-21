@@ -8,10 +8,14 @@ const Player = function(position) {
 		active: false,
 		position: position,
 		yaw: 0,
+		pitchOffset: 0,
+		yawOffset: 0,
 		radius: 0.5,
 	};
 	this.pitch = 0;
-	this.yaw = 0;
+	this.pitchOffset = 0;
+	this.yaw = Math.PI;
+	this.yawOffset = 0;
 	this.speed = 5.5;
 	this.height = 1.8;
 	this.climbThreshold = 1;
@@ -88,12 +92,28 @@ Player.prototype = {
 		this.target.yaw = yaw;
 	},
 
+	setTargetPitchOffset: function(pitch) {
+		this.target.pitchOffset = pitch;
+	},
+
+	setTargetYawOffset: function(yaw) {
+		this.target.yawOffset = yaw;
+	},
+
+	getPitch: function() {
+		return this.pitch + this.pitchOffset;
+	},
+
+	getYaw: function() {
+		return this.yaw + this.yawOffset;
+	},
+
 	update: function(delta, objects) {
 		if (this.keys.up || this.keys.down) {
 			// disable automatic walk
 			this.target.active = false;
 
-			const move = ((this.keys.up) ? -1: 0) + ((this.keys.down) ? 1 : 0);
+			const move = ((this.keys.up) ? 1: 0) + ((this.keys.down) ? -1 : 0);
 			const dx = Math.sin(this.yaw) * this.speed * delta * move;
 			const dz = Math.cos(this.yaw) * this.speed * delta * move;
 			const nextX = this.position.x + dx;
@@ -147,7 +167,7 @@ Player.prototype = {
 			}
 		}
 
-		this.position.y += (nextY - this.position.y) * 0.5;
+		this.position.y += (nextY - this.position.y) * 0.3;
 
 		// get next rotation
 		if (this.keys.left || this.keys.right) {
@@ -157,6 +177,10 @@ Player.prototype = {
 			const rotate = ((this.keys.left) ? 1 : 0) + ((this.keys.right) ? -1 : 0);
 			this.yaw += this.rotationSpeed * delta * rotate;
 		}
+
+		// pitch and yaw offset (look around)
+		this.pitchOffset += (this.target.pitchOffset - this.pitchOffset) * 0.05;
+		this.yawOffset += (this.target.yawOffset - this.yawOffset) * 0.05;
 
 		// auto walk and look
 		if (this.target.active) {

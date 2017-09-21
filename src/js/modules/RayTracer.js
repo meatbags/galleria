@@ -6,12 +6,12 @@ const RayTracer = function() {
   this.maxLength = 15;
   this.object = new THREE.Object3D();
 
-  const light = new THREE.PointLight(0xffffff, 0.25, 5, 2);
+  const light = new THREE.PointLight(0xffffff, 0.8, 5, 2);
   const ball = new THREE.Mesh(
     new THREE.SphereBufferGeometry(0.5, 16),
     Materials.concrete
   );
-  light.position.y = 1;
+  light.position.y = 1.1;
 
   this.object.add(ball, light);
 };
@@ -51,7 +51,7 @@ RayTracer.prototype = {
     return point;
   },
 
-  emitRayFromScreen(event, domElement, camera, objects) {
+  emitRayFromScreen(event, domElement, camera, player, objects) {
     // convert mouse position to 3D space
 
     const rect = domElement.getBoundingClientRect();
@@ -59,18 +59,18 @@ RayTracer.prototype = {
     const mouseY = ((event.clientY - rect.top) / domElement.height - 0.5) * 2;
     const fov = camera.fov * Math.PI / 180.;
     const fovY = fov - (fov * Math.abs(mouseX) * 0.5);
-    const yaw = -camera.rotation.y + mouseX * fov;
-    const pitch = camera.rotation.x - (mouseY * 0.5 + (mouseY / camera.aspect) * 0.5) * fovY;
+    const yaw = player.yaw - mouseX * fov;
+    const pitch = player.pitch - (mouseY * 0.5 + (mouseY / camera.aspect) * 0.5) * fovY;
     const vec = new THREE.Vector3(
       Math.sin(yaw),
       Math.sin(pitch),
-      -Math.cos(yaw)
+      Math.cos(yaw)
     );
     const endPoint = this.trace(camera.position, vec, objects);
     const ray = {
       start: camera.position,
       end: endPoint,
-      yaw: camera.rotation.y - mouseX * fov,
+      yaw: yaw,
       pitch: pitch,
     };
 

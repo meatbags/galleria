@@ -1,5 +1,3 @@
-import './OBJLoader.js';
-
 const Materials = {
   concrete: new THREE.MeshPhysicalMaterial({
     clearCoat: 0,
@@ -28,24 +26,36 @@ const Materials = {
 };
 
 const Models = {
-  mainBuilding: new THREE.Mesh(),
+  mainBuilding: new THREE.Group(),
 };
 
-// load textures and models
+// load OBJ models
 
-const loader = new THREE.OBJLoader();
-loader.load(appRoot + './assets/3d/hangar.obj', function(obj) {
-  Models.mainBuilding.geometry = obj.children[0].geometry;
-  Models.mainBuilding.material = Materials.concrete;
+const matLoader = new THREE.MTLLoader();
 
-  for (let i=0; i<obj.children.length; i+=1) {
-    Models.mainBuilding.add(
-      new THREE.Mesh(
-        obj.children[i].geometry,
-        Materials.concrete
-      )
-    );
-  }
+matLoader.setPath(appRoot + 'assets/3d/');
+matLoader.load('hangar.mtl', function(mats) {
+  mats.preload();
+  var objLoader = new THREE.OBJLoader();
+
+  objLoader.setPath(appRoot + 'assets/3d/');
+  objLoader.load('hangar.obj', function (obj) {
+    for (let i=0; i<obj.children.length; i+=1) {
+      const child = obj.children[i];
+
+      child.material = new THREE.MeshPhysicalMaterial({
+        clearCoat: 0,
+        clearCoatRoughness: 0.5,
+        reflectivity: 0.5,
+        color: 0xffffff,
+        emissive: 0x111111,
+        map: mats.materials[child.material.name].map,
+        bumpMap: mats.materials[child.material.name].bumpMap,
+        bumpScale: 0.01
+      });
+    }
+    Models.mainBuilding.add(obj);
+  });
 });
 
 export { Models, Materials };

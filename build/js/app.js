@@ -73,10 +73,6 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.Materials = exports.Models = undefined;
-
-__webpack_require__(8);
-
 var Materials = {
   concrete: new THREE.MeshPhysicalMaterial({
     clearCoat: 0,
@@ -105,19 +101,36 @@ var Materials = {
 };
 
 var Models = {
-  mainBuilding: new THREE.Mesh()
+  mainBuilding: new THREE.Group()
 };
 
-// load textures and models
+// load OBJ models
 
-var loader = new THREE.OBJLoader();
-loader.load(appRoot + './assets/3d/hangar.obj', function (obj) {
-  Models.mainBuilding.geometry = obj.children[0].geometry;
-  Models.mainBuilding.material = Materials.concrete;
+var matLoader = new THREE.MTLLoader();
 
-  for (var i = 0; i < obj.children.length; i += 1) {
-    Models.mainBuilding.add(new THREE.Mesh(obj.children[i].geometry, Materials.concrete));
-  }
+matLoader.setPath(appRoot + 'assets/3d/');
+matLoader.load('hangar.mtl', function (mats) {
+  mats.preload();
+  var objLoader = new THREE.OBJLoader();
+
+  objLoader.setPath(appRoot + 'assets/3d/');
+  objLoader.load('hangar.obj', function (obj) {
+    for (var i = 0; i < obj.children.length; i += 1) {
+      var child = obj.children[i];
+
+      child.material = new THREE.MeshPhysicalMaterial({
+        clearCoat: 0,
+        clearCoatRoughness: 0.5,
+        reflectivity: 0.5,
+        color: 0xffffff,
+        emissive: 0x111111,
+        map: mats.materials[child.material.name].map,
+        bumpMap: mats.materials[child.material.name].bumpMap,
+        bumpScale: 0.01
+      });
+    }
+    Models.mainBuilding.add(obj);
+  });
 });
 
 exports.Models = Models;
@@ -364,6 +377,10 @@ var _RayTracer = __webpack_require__(9);
 
 var _RayTracer2 = _interopRequireDefault(_RayTracer);
 
+var _HUD = __webpack_require__(11);
+
+var _HUD2 = _interopRequireDefault(_HUD);
+
 var _Loader = __webpack_require__(0);
 
 var _Physics = __webpack_require__(1);
@@ -393,25 +410,11 @@ Scene.prototype = {
     });
     document.body.append(this.renderer.domElement);
 
-    // hud elements
-    this.hud = {
-      turnThreshold: 0.225,
-      left: document.getElementsByClassName('hud__left')[0],
-      right: document.getElementsByClassName('hud__right')[0],
-      isBelowTurnThreshold: function isBelowTurnThreshold(x) {
-        return x < self.hud.turnThreshold * self.renderer.domElement.width;
-      },
-      isAboveTurnThreshold: function isAboveTurnThreshold(x) {
-        return x > (1 - self.hud.turnThreshold) * self.renderer.domElement.width;
-      },
-      isOutsideTurnThreshold: function isOutsideTurnThreshold(x) {
-        return self.hud.isBelowTurnThreshold(x) || self.hud.isAboveTurnThreshold(x);
-      }
-    };
-
     // user
-    this.player = new _Player2.default(new THREE.Vector3(0, 0, 0));
+    this.hud = new _HUD2.default(this.renderer.domElement);
+    this.player = new _Player2.default(new THREE.Vector3(0, 0, -15));
     this.camera = new THREE.PerspectiveCamera(55, 1, 0.1, 2000000);
+    this.camera.up = new THREE.Vector3(0, 1, 0);
     this.raytracer = new _RayTracer2.default();
     this.resize();
 
@@ -419,11 +422,20 @@ Scene.prototype = {
     this.scene = new THREE.Scene();
     this.model = new _Physics.PhysicsModel();
 
-    this.model.add(new _Physics.Box(new THREE.Vector3(0, 5, -25), new THREE.Vector3(6, 10, 2)), new _Physics.Box(new THREE.Vector3(0, 0, -25), new THREE.Vector3(4, 1, 4)), new _Physics.Box(new THREE.Vector3(0, 1.8, -7), new THREE.Vector3(3, .4, 2)), new _Physics.Ramp(new THREE.Vector3(0, 1, -10), new THREE.Vector3(3, 2, 4), 0), new _Physics.Ramp(new THREE.Vector3(0, 1, -4), new THREE.Vector3(3, 2, 4), 2), new _Physics.Ramp(new THREE.Vector3(-3, 1, -7), new THREE.Vector3(3, 2, 2), 1), new _Physics.Ramp(new THREE.Vector3(3, 1, -7), new THREE.Vector3(3, 2, 2), 3));
+    this.model.add(new _Physics.Box(new THREE.Vector3(0, 0, 0), new THREE.Vector3(20, 1.05, 40)), new _Physics.Box(new THREE.Vector3(0, 7.5, 10), new THREE.Vector3(20, 1.05, 20.5)), new _Physics.Ramp(new THREE.Vector3(8, 4, -6), new THREE.Vector3(4, 8, 12), 0));
 
     this.scene.add(this.player.object, _Loader.Models.mainBuilding);
 
-    this.scene.add(new THREE.Mesh(new THREE.BoxBufferGeometry(1000, 0.1, 1000), _Loader.Materials.concrete), new THREE.AmbientLight(0xffffff, 0.5));
+    // lighting
+
+    var p1 = new THREE.PointLight(0xffffff, 1, 40, 2);
+    var p2 = new THREE.PointLight(0xffffff, 1, 40, 2);
+    p1.position.set(0, 5, 10);
+    p2.position.set(0, 15, 10);
+
+    this.scene.add(new THREE.AmbientLight(0xffffff, 0.25), p1, p2);
+
+    this.scene.add(new THREE.Mesh(new THREE.BoxBufferGeometry(1000, 0.1, 1000), _Loader.Materials.concrete));
     var sky = new THREE.Sky();
     var sun = new THREE.PointLight(0xffffff, 0.9, 40500);
 
@@ -435,16 +447,16 @@ Scene.prototype = {
 
   resize: function resize() {
     var width = window.innerWidth;
-    var height = 540; //Math.min(520, window.innerHeight * 0.75);
+    var height = 640; //Math.min(520, window.innerHeight * 0.75);
     this.camera.aspect = width / height;
     this.camera.updateProjectionMatrix();
     this.renderer.setSize(width, height);
   },
 
   onMouseDown: function onMouseDown(e) {
-    var ray = this.raytracer.emitRayFromScreen(e, this.renderer.domElement, this.camera, this.model.contents);
+    var ray = this.raytracer.emitRayFromScreen(e, this.renderer.domElement, this.camera, this.player, this.model.contents);
 
-    if (this.hud.isOutsideTurnThreshold(e.clientX)) {
+    if (this.hud.isLeftOrRight(e.clientX)) {
       this.player.setTarget(this.player.position, ray.yaw);
     } else {
       this.player.setTarget({ x: ray.end.x, y: ray.end.y, z: ray.end.z }, ray.yaw);
@@ -452,17 +464,21 @@ Scene.prototype = {
   },
 
   onMouseMove: function onMouseMove(e) {
-    var ray = this.raytracer.emitRayFromScreen(e, this.renderer.domElement, this.camera, this.model.contents);
+    var ray = this.raytracer.emitRayFromScreen(e, this.renderer.domElement, this.camera, this.player, this.model.contents);
 
-    if (this.hud.isBelowTurnThreshold(e.clientX)) {
+    // adjust camera X
+    if (this.hud.isLeft(e.clientX)) {
       if (!this.hud.left.classList.contains('active')) {
         this.hud.left.classList.add('active');
       }
-    } else if (this.hud.isAboveTurnThreshold(e.clientX)) {
+      this.player.setTargetYawOffset(0.5 * this.hud.getLeftFactor(e.clientX));
+    } else if (this.hud.isRight(e.clientX)) {
       if (!this.hud.right.classList.contains('active')) {
         this.hud.right.classList.add('active');
       }
+      this.player.setTargetYawOffset(-0.5 * this.hud.getRightFactor(e.clientX));
     } else {
+      this.player.setTargetYawOffset(0);
       if (this.hud.left.classList.contains('active')) {
         this.hud.left.classList.remove('active');
       }
@@ -470,12 +486,24 @@ Scene.prototype = {
         this.hud.right.classList.remove('active');
       }
     }
+
+    // adjust camera Y
+    if (this.hud.isHigh(e.clientY)) {
+      this.player.setTargetPitchOffset(0.5 * this.hud.getHighFactor(e.clientY));
+    } else if (this.hud.isLow(e.clientY)) {
+      this.player.setTargetPitchOffset(-0.5 * this.hud.getLowFactor(e.clientY));
+    } else {
+      this.player.setTargetPitchOffset(0);
+    }
   },
 
   update: function update(delta) {
+    var yaw = this.player.getYaw();
+    var pitch = this.player.getPitch();
+
     this.player.update(delta, this.model.contents);
     this.camera.position.set(this.player.position.x, this.player.position.y + this.player.height, this.player.position.z);
-    this.camera.rotation.y = this.player.yaw;
+    this.camera.lookAt(new THREE.Vector3(this.player.position.x + Math.sin(yaw), this.player.position.y + this.player.height + Math.sin(pitch), this.player.position.z + Math.cos(yaw)));
   },
 
   render: function render() {
@@ -507,10 +535,14 @@ var Player = function Player(position) {
 		active: false,
 		position: position,
 		yaw: 0,
+		pitchOffset: 0,
+		yawOffset: 0,
 		radius: 0.5
 	};
 	this.pitch = 0;
-	this.yaw = 0;
+	this.pitchOffset = 0;
+	this.yaw = Math.PI;
+	this.yawOffset = 0;
 	this.speed = 5.5;
 	this.height = 1.8;
 	this.climbThreshold = 1;
@@ -587,12 +619,28 @@ Player.prototype = {
 		this.target.yaw = yaw;
 	},
 
+	setTargetPitchOffset: function setTargetPitchOffset(pitch) {
+		this.target.pitchOffset = pitch;
+	},
+
+	setTargetYawOffset: function setTargetYawOffset(yaw) {
+		this.target.yawOffset = yaw;
+	},
+
+	getPitch: function getPitch() {
+		return this.pitch + this.pitchOffset;
+	},
+
+	getYaw: function getYaw() {
+		return this.yaw + this.yawOffset;
+	},
+
 	update: function update(delta, objects) {
 		if (this.keys.up || this.keys.down) {
 			// disable automatic walk
 			this.target.active = false;
 
-			var move = (this.keys.up ? -1 : 0) + (this.keys.down ? 1 : 0);
+			var move = (this.keys.up ? 1 : 0) + (this.keys.down ? -1 : 0);
 			var dx = Math.sin(this.yaw) * this.speed * delta * move;
 			var dz = Math.cos(this.yaw) * this.speed * delta * move;
 			var nextX = this.position.x + dx;
@@ -645,7 +693,7 @@ Player.prototype = {
 			}
 		}
 
-		this.position.y += (nextY - this.position.y) * 0.5;
+		this.position.y += (nextY - this.position.y) * 0.3;
 
 		// get next rotation
 		if (this.keys.left || this.keys.right) {
@@ -655,6 +703,10 @@ Player.prototype = {
 			var rotate = (this.keys.left ? 1 : 0) + (this.keys.right ? -1 : 0);
 			this.yaw += this.rotationSpeed * delta * rotate;
 		}
+
+		// pitch and yaw offset (look around)
+		this.pitchOffset += (this.target.pitchOffset - this.pitchOffset) * 0.05;
+		this.yawOffset += (this.target.yawOffset - this.yawOffset) * 0.05;
 
 		// auto walk and look
 		if (this.target.active) {
@@ -751,121 +803,7 @@ exports.BoundingBox = BoundingBox;
 exports.BoundingRamp = BoundingRamp;
 
 /***/ }),
-/* 8 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-THREE.OBJLoader = function (e) {
-  this.manager = void 0 !== e ? e : THREE.DefaultLoadingManager, this.materials = null, this.regexp = { vertex_pattern: /^v\s+([\d|\.|\+|\-|e|E]+)\s+([\d|\.|\+|\-|e|E]+)\s+([\d|\.|\+|\-|e|E]+)/, normal_pattern: /^vn\s+([\d|\.|\+|\-|e|E]+)\s+([\d|\.|\+|\-|e|E]+)\s+([\d|\.|\+|\-|e|E]+)/, uv_pattern: /^vt\s+([\d|\.|\+|\-|e|E]+)\s+([\d|\.|\+|\-|e|E]+)/, face_vertex: /^f\s+(-?\d+)\s+(-?\d+)\s+(-?\d+)(?:\s+(-?\d+))?/, face_vertex_uv: /^f\s+(-?\d+)\/(-?\d+)\s+(-?\d+)\/(-?\d+)\s+(-?\d+)\/(-?\d+)(?:\s+(-?\d+)\/(-?\d+))?/, face_vertex_uv_normal: /^f\s+(-?\d+)\/(-?\d+)\/(-?\d+)\s+(-?\d+)\/(-?\d+)\/(-?\d+)\s+(-?\d+)\/(-?\d+)\/(-?\d+)(?:\s+(-?\d+)\/(-?\d+)\/(-?\d+))?/, face_vertex_normal: /^f\s+(-?\d+)\/\/(-?\d+)\s+(-?\d+)\/\/(-?\d+)\s+(-?\d+)\/\/(-?\d+)(?:\s+(-?\d+)\/\/(-?\d+))?/, object_pattern: /^[og]\s*(.+)?/, smoothing_pattern: /^s\s+(\d+|on|off)/, material_library_pattern: /^mtllib /, material_use_pattern: /^usemtl / };
-}, THREE.OBJLoader.prototype = { constructor: THREE.OBJLoader, load: function load(e, t, r, a) {
-    var i = this,
-        s = new THREE.FileLoader(i.manager);s.setPath(this.path), s.load(e, function (e) {
-      t(i.parse(e));
-    }, r, a);
-  }, setPath: function setPath(e) {
-    this.path = e;
-  }, setMaterials: function setMaterials(e) {
-    this.materials = e;
-  }, _createParserState: function _createParserState() {
-    var e = { objects: [], object: {}, vertices: [], normals: [], uvs: [], materialLibraries: [], startObject: function startObject(e, t) {
-        if (this.object && this.object.fromDeclaration === !1) return this.object.name = e, void (this.object.fromDeclaration = t !== !1);var r = this.object && "function" == typeof this.object.currentMaterial ? this.object.currentMaterial() : void 0;if (this.object && "function" == typeof this.object._finalize && this.object._finalize(!0), this.object = { name: e || "", fromDeclaration: t !== !1, geometry: { vertices: [], normals: [], uvs: [] }, materials: [], smooth: !0, startMaterial: function startMaterial(e, t) {
-            var r = this._finalize(!1);r && (r.inherited || r.groupCount <= 0) && this.materials.splice(r.index, 1);var a = { index: this.materials.length, name: e || "", mtllib: Array.isArray(t) && t.length > 0 ? t[t.length - 1] : "", smooth: void 0 !== r ? r.smooth : this.smooth, groupStart: void 0 !== r ? r.groupEnd : 0, groupEnd: -1, groupCount: -1, inherited: !1, clone: function clone(e) {
-                var t = { index: "number" == typeof e ? e : this.index, name: this.name, mtllib: this.mtllib, smooth: this.smooth, groupStart: 0, groupEnd: -1, groupCount: -1, inherited: !1 };return t.clone = this.clone.bind(t), t;
-              } };return this.materials.push(a), a;
-          }, currentMaterial: function currentMaterial() {
-            return this.materials.length > 0 ? this.materials[this.materials.length - 1] : void 0;
-          }, _finalize: function _finalize(e) {
-            var t = this.currentMaterial();if (t && -1 === t.groupEnd && (t.groupEnd = this.geometry.vertices.length / 3, t.groupCount = t.groupEnd - t.groupStart, t.inherited = !1), e && this.materials.length > 1) for (var r = this.materials.length - 1; r >= 0; r--) {
-              this.materials[r].groupCount <= 0 && this.materials.splice(r, 1);
-            }return e && 0 === this.materials.length && this.materials.push({ name: "", smooth: this.smooth }), t;
-          } }, r && r.name && "function" == typeof r.clone) {
-          var a = r.clone(0);a.inherited = !0, this.object.materials.push(a);
-        }this.objects.push(this.object);
-      }, finalize: function finalize() {
-        this.object && "function" == typeof this.object._finalize && this.object._finalize(!0);
-      }, parseVertexIndex: function parseVertexIndex(e, t) {
-        var r = parseInt(e, 10);return 3 * (r >= 0 ? r - 1 : r + t / 3);
-      }, parseNormalIndex: function parseNormalIndex(e, t) {
-        var r = parseInt(e, 10);return 3 * (r >= 0 ? r - 1 : r + t / 3);
-      }, parseUVIndex: function parseUVIndex(e, t) {
-        var r = parseInt(e, 10);return 2 * (r >= 0 ? r - 1 : r + t / 2);
-      }, addVertex: function addVertex(e, t, r) {
-        var a = this.vertices,
-            i = this.object.geometry.vertices;i.push(a[e + 0]), i.push(a[e + 1]), i.push(a[e + 2]), i.push(a[t + 0]), i.push(a[t + 1]), i.push(a[t + 2]), i.push(a[r + 0]), i.push(a[r + 1]), i.push(a[r + 2]);
-      }, addVertexLine: function addVertexLine(e) {
-        var t = this.vertices,
-            r = this.object.geometry.vertices;r.push(t[e + 0]), r.push(t[e + 1]), r.push(t[e + 2]);
-      }, addNormal: function addNormal(e, t, r) {
-        var a = this.normals,
-            i = this.object.geometry.normals;i.push(a[e + 0]), i.push(a[e + 1]), i.push(a[e + 2]), i.push(a[t + 0]), i.push(a[t + 1]), i.push(a[t + 2]), i.push(a[r + 0]), i.push(a[r + 1]), i.push(a[r + 2]);
-      }, addUV: function addUV(e, t, r) {
-        var a = this.uvs,
-            i = this.object.geometry.uvs;i.push(a[e + 0]), i.push(a[e + 1]), i.push(a[t + 0]), i.push(a[t + 1]), i.push(a[r + 0]), i.push(a[r + 1]);
-      }, addUVLine: function addUVLine(e) {
-        var t = this.uvs,
-            r = this.object.geometry.uvs;r.push(t[e + 0]), r.push(t[e + 1]);
-      }, addFace: function addFace(e, t, r, a, i, s, n, o, h, l, u, d) {
-        var v,
-            f = this.vertices.length,
-            c = this.parseVertexIndex(e, f),
-            p = this.parseVertexIndex(t, f),
-            m = this.parseVertexIndex(r, f);if (void 0 === a ? this.addVertex(c, p, m) : (v = this.parseVertexIndex(a, f), this.addVertex(c, p, v), this.addVertex(p, m, v)), void 0 !== i) {
-          var g = this.uvs.length;c = this.parseUVIndex(i, g), p = this.parseUVIndex(s, g), m = this.parseUVIndex(n, g), void 0 === a ? this.addUV(c, p, m) : (v = this.parseUVIndex(o, g), this.addUV(c, p, v), this.addUV(p, m, v));
-        }if (void 0 !== h) {
-          var x = this.normals.length;c = this.parseNormalIndex(h, x), p = h === l ? c : this.parseNormalIndex(l, x), m = h === u ? c : this.parseNormalIndex(u, x), void 0 === a ? this.addNormal(c, p, m) : (v = this.parseNormalIndex(d, x), this.addNormal(c, p, v), this.addNormal(p, m, v));
-        }
-      }, addLineGeometry: function addLineGeometry(e, t) {
-        this.object.geometry.type = "Line";for (var r = this.vertices.length, a = this.uvs.length, i = 0, s = e.length; s > i; i++) {
-          this.addVertexLine(this.parseVertexIndex(e[i], r));
-        }for (var n = 0, s = t.length; s > n; n++) {
-          this.addUVLine(this.parseUVIndex(t[n], a));
-        }
-      } };return e.startObject("", !1), e;
-  }, parse: function parse(e) {
-    console.time("OBJLoader");var t = this._createParserState();-1 !== e.indexOf("\r\n") && (e = e.replace(/\r\n/g, "\n")), -1 !== e.indexOf("\\\n") && (e = e.replace(/\\\n/g, ""));for (var r = e.split("\n"), a = "", i = "", s = "", n = 0, o = [], h = "function" == typeof "".trimLeft, l = 0, u = r.length; u > l; l++) {
-      if (a = r[l], a = h ? a.trimLeft() : a.trim(), n = a.length, 0 !== n && (i = a.charAt(0), "#" !== i)) if ("v" === i) {
-        if (s = a.charAt(1), " " === s && null !== (o = this.regexp.vertex_pattern.exec(a))) t.vertices.push(parseFloat(o[1]), parseFloat(o[2]), parseFloat(o[3]));else if ("n" === s && null !== (o = this.regexp.normal_pattern.exec(a))) t.normals.push(parseFloat(o[1]), parseFloat(o[2]), parseFloat(o[3]));else {
-          if ("t" !== s || null === (o = this.regexp.uv_pattern.exec(a))) throw new Error("Unexpected vertex/normal/uv line: '" + a + "'");t.uvs.push(parseFloat(o[1]), parseFloat(o[2]));
-        }
-      } else if ("f" === i) {
-        if (null !== (o = this.regexp.face_vertex_uv_normal.exec(a))) t.addFace(o[1], o[4], o[7], o[10], o[2], o[5], o[8], o[11], o[3], o[6], o[9], o[12]);else if (null !== (o = this.regexp.face_vertex_uv.exec(a))) t.addFace(o[1], o[3], o[5], o[7], o[2], o[4], o[6], o[8]);else if (null !== (o = this.regexp.face_vertex_normal.exec(a))) t.addFace(o[1], o[3], o[5], o[7], void 0, void 0, void 0, void 0, o[2], o[4], o[6], o[8]);else {
-          if (null === (o = this.regexp.face_vertex.exec(a))) throw new Error("Unexpected face line: '" + a + "'");t.addFace(o[1], o[2], o[3], o[4]);
-        }
-      } else if ("l" === i) {
-        var d = a.substring(1).trim().split(" "),
-            f = [],
-            c = [];if (-1 === a.indexOf("/")) f = d;else for (var p = 0, m = d.length; m > p; p++) {
-          var v = d[p].split("/");"" !== v[0] && f.push(v[0]), "" !== v[1] && c.push(v[1]);
-        }t.addLineGeometry(f, c);
-      } else if (null !== (o = this.regexp.object_pattern.exec(a))) {
-        var g = (" " + o[0].substr(1).trim()).substr(1);t.startObject(g);
-      } else if (this.regexp.material_use_pattern.test(a)) t.object.startMaterial(a.substring(7).trim(), t.materialLibraries);else if (this.regexp.material_library_pattern.test(a)) t.materialLibraries.push(a.substring(7).trim());else {
-        if (null === (o = this.regexp.smoothing_pattern.exec(a))) {
-          if ("\x00" === a) continue;throw new Error("Unexpected line: '" + a + "'");
-        }var x = o[1].trim().toLowerCase();t.object.smooth = "1" === x || "on" === x;var b = t.object.currentMaterial();b && (b.smooth = t.object.smooth);
-      }
-    }t.finalize();var E = new THREE.Group();E.materialLibraries = [].concat(t.materialLibraries);for (var l = 0, u = t.objects.length; u > l; l++) {
-      var _ = t.objects[l],
-          j = _.geometry,
-          y = _.materials,
-          L = "Line" === j.type;if (0 !== j.vertices.length) {
-        var V = new THREE.BufferGeometry();V.addAttribute("position", new THREE.BufferAttribute(new Float32Array(j.vertices), 3)), j.normals.length > 0 ? V.addAttribute("normal", new THREE.BufferAttribute(new Float32Array(j.normals), 3)) : V.computeVertexNormals(), j.uvs.length > 0 && V.addAttribute("uv", new THREE.BufferAttribute(new Float32Array(j.uvs), 2));for (var w = [], H = 0, R = y.length; R > H; H++) {
-          var T = y[H],
-              b = void 0;if (null !== this.materials && (b = this.materials.create(T.name), L && b && !(b instanceof THREE.LineBasicMaterial))) {
-            var I = new THREE.LineBasicMaterial();I.copy(b), b = I;
-          }b || (b = L ? new THREE.LineBasicMaterial() : new THREE.MeshPhongMaterial(), b.name = T.name), b.shading = T.smooth ? THREE.SmoothShading : THREE.FlatShading, w.push(b);
-        }var F;if (w.length > 1) {
-          for (var H = 0, R = y.length; R > H; H++) {
-            var T = y[H];V.addGroup(T.groupStart, T.groupCount, H);
-          }var M = new THREE.MultiMaterial(w);F = L ? new THREE.LineSegments(V, M) : new THREE.Mesh(V, M);
-        } else F = L ? new THREE.LineSegments(V, w[0]) : new THREE.Mesh(V, w[0]);F.name = _.name, E.add(F);
-      }
-    }return console.timeEnd("OBJLoader"), E;
-  } };
-
-/***/ }),
+/* 8 */,
 /* 9 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -885,9 +823,9 @@ var RayTracer = function RayTracer() {
   this.maxLength = 15;
   this.object = new THREE.Object3D();
 
-  var light = new THREE.PointLight(0xffffff, 0.25, 5, 2);
+  var light = new THREE.PointLight(0xffffff, 0.8, 5, 2);
   var ball = new THREE.Mesh(new THREE.SphereBufferGeometry(0.5, 16), _Loader.Materials.concrete);
-  light.position.y = 1;
+  light.position.y = 1.1;
 
   this.object.add(ball, light);
 };
@@ -925,7 +863,7 @@ RayTracer.prototype = {
     return point;
   },
 
-  emitRayFromScreen: function emitRayFromScreen(event, domElement, camera, objects) {
+  emitRayFromScreen: function emitRayFromScreen(event, domElement, camera, player, objects) {
     // convert mouse position to 3D space
 
     var rect = domElement.getBoundingClientRect();
@@ -933,14 +871,14 @@ RayTracer.prototype = {
     var mouseY = ((event.clientY - rect.top) / domElement.height - 0.5) * 2;
     var fov = camera.fov * Math.PI / 180.;
     var fovY = fov - fov * Math.abs(mouseX) * 0.5;
-    var yaw = -camera.rotation.y + mouseX * fov;
-    var pitch = camera.rotation.x - (mouseY * 0.5 + mouseY / camera.aspect * 0.5) * fovY;
-    var vec = new THREE.Vector3(Math.sin(yaw), Math.sin(pitch), -Math.cos(yaw));
+    var yaw = player.yaw - mouseX * fov;
+    var pitch = player.pitch - (mouseY * 0.5 + mouseY / camera.aspect * 0.5) * fovY;
+    var vec = new THREE.Vector3(Math.sin(yaw), Math.sin(pitch), Math.cos(yaw));
     var endPoint = this.trace(camera.position, vec, objects);
     var ray = {
       start: camera.position,
       end: endPoint,
-      yaw: camera.rotation.y - mouseX * fov,
+      yaw: yaw,
       pitch: pitch
     };
 
@@ -1083,6 +1021,78 @@ THREE.Sky.SkyShader = {
 		'	float sundisk = smoothstep( sunAngularDiameterCos, sunAngularDiameterCos + 0.00002, cosTheta );', '	L0 += ( vSunE * 19000.0 * Fex ) * sundisk;', '	vec3 texColor = ( Lin + L0 ) * 0.04 + vec3( 0.0, 0.0003, 0.00075 );', '	vec3 curr = Uncharted2Tonemap( ( log2( 2.0 / pow( luminance, 4.0 ) ) ) * texColor );', '	vec3 color = curr * whiteScale;', '	vec3 retColor = pow( color, vec3( 1.0 / ( 1.2 + ( 1.2 * vSunfade ) ) ) );', '	gl_FragColor = vec4( retColor, 1.0 );', '}'].join('\n')
 
 };
+
+/***/ }),
+/* 11 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+var HUD = function HUD(domElement) {
+  this.domElement = domElement;
+  this.threshold = {
+    x: 0.225,
+    y: 0.25
+  };
+  this.init();
+};
+
+HUD.prototype = {
+  init: function init() {
+    this.left = document.getElementsByClassName('hud__left')[0];
+    this.right = document.getElementsByClassName('hud__right')[0];
+  },
+
+  isLeft: function isLeft(x) {
+    return x < this.threshold.x * this.domElement.width;
+  },
+
+  isRight: function isRight(x) {
+    return x > (1 - this.threshold.x) * this.domElement.width;
+  },
+
+  isHigh: function isHigh(y) {
+    return y - this.domElement.getBoundingClientRect().top < this.domElement.height * this.threshold.y;
+  },
+
+  isLow: function isLow(y) {
+    return y - this.domElement.getBoundingClientRect().top > this.domElement.height * (1 - this.threshold.y);
+  },
+
+  isLeftOrRight: function isLeftOrRight(x) {
+    return this.isLeft(x) || this.isRight(x);
+  },
+
+  getHighFactor: function getHighFactor(y) {
+    var t = this.domElement.height * this.threshold.y;
+
+    return (t - (y - this.domElement.getBoundingClientRect().top)) / t;
+  },
+
+  getLowFactor: function getLowFactor(y) {
+    var t = this.domElement.height * this.threshold.y;
+
+    return 1 - (this.domElement.height - (y - this.domElement.getBoundingClientRect().top)) / t;
+  },
+
+  getLeftFactor: function getLeftFactor(x) {
+    var t = this.domElement.width * this.threshold.x;
+
+    return (t - x) / t;
+  },
+
+  getRightFactor: function getRightFactor(x) {
+    var t = this.domElement.width * this.threshold.x;
+
+    return 1 - (this.domElement.width - x) / t;
+  }
+};
+
+exports.default = HUD;
 
 /***/ })
 /******/ ]);
