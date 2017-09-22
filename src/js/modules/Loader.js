@@ -15,7 +15,7 @@ const Materials = {
   }),
   dev: new THREE.MeshLambertMaterial({
     color: 0xff0000,
-    opacity: 0.25,
+    opacity: 0,
     transparent: true,
     side: THREE.DoubleSide
   }),
@@ -34,25 +34,31 @@ const Models = {
 const matLoader = new THREE.MTLLoader();
 
 matLoader.setPath(appRoot + 'assets/3d/');
-matLoader.load('hangar.mtl', function(mats) {
-  mats.preload();
+matLoader.load('hangar.mtl', function(materials) {
+  materials.preload();
   var objLoader = new THREE.OBJLoader();
+
+  console.log(materials);
 
   objLoader.setPath(appRoot + 'assets/3d/');
   objLoader.load('hangar.obj', function (obj) {
     for (let i=0; i<obj.children.length; i+=1) {
       const child = obj.children[i];
+      const mat = materials.materials[child.material.name];
 
-      child.material = new THREE.MeshPhysicalMaterial({
-        clearCoat: 0,
-        clearCoatRoughness: 0.5,
-        reflectivity: 0.5,
-        color: 0xffffff,
-        emissive: 0x111111,
-        map: mats.materials[child.material.name].map,
-        bumpMap: mats.materials[child.material.name].bumpMap,
-        bumpScale: 0.01
-      });
+      child.material = mat;
+
+      // make visible, reduce bump map
+      child.material.color = new THREE.Color(0xffffff);
+      child.material.bumpScale = 0.01;
+
+      // make glass translucent
+      if (child.material.map) {
+        if (mat.map.image.src.indexOf('glass') != -1) {
+          child.material.transparent = true;
+          child.material.opacity = 0.3;
+        }
+      }
     }
     Models.mainBuilding.add(obj);
   });

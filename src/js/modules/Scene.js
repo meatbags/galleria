@@ -35,32 +35,58 @@ Scene.prototype = {
     this.model = new PhysicsModel();
 
     this.model.add(
-      new Box(new THREE.Vector3(0, 0, 0), new THREE.Vector3(20, 1.05, 40)),
+      // floors
+      new Box(new THREE.Vector3(0, 0, -10), new THREE.Vector3(20, 1.05, 20)),
       new Box(new THREE.Vector3(0, 7.5, 10), new THREE.Vector3(20, 1.05, 20.5)),
-      new Ramp(new THREE.Vector3(8, 4, -6), new THREE.Vector3(4, 8, 12), 0),
+      // stairway rear
+      new Box(new THREE.Vector3(-7, 7.5, 22.5), new THREE.Vector3(4, 1.05, 5)),
+      new Box(new THREE.Vector3(0, 0, 22.5), new THREE.Vector3(20, 1, 5)),
+      new Ramp(new THREE.Vector3(0, 4.25, 22.5), new THREE.Vector3(10, 7.55, 5), 3),
+      // stairway front
+      new Box(new THREE.Vector3(-6, 4, -7), new THREE.Vector3(6, 0.5, 4)),
+      new Ramp(new THREE.Vector3(-7.5, 6, -2.5), new THREE.Vector3(3, 4, 5), 0),
+      new Ramp(new THREE.Vector3(-4.5, 2, -2.5), new THREE.Vector3(3, 4, 5), 2),
+      // dev
+      new Ramp(new THREE.Vector3(8, 4, -6), new THREE.Vector3(4, 8, 12), 0)
     );
 
     this.scene.add( this.player.object, Models.mainBuilding );
 
     // lighting
 
-    const p1 = new THREE.PointLight(0xffffff, 1, 40, 2);
-    const p2 = new THREE.PointLight(0xffffff, 1, 40, 2);
-    p1.position.set(0, 5, 10);
-    p2.position.set(0, 15, 10);
+    const hemisphere = new THREE.HemisphereLight(0xffaabb, 0x080820, 0.1);
+    const point1 = new THREE.PointLight(0xffffff, 0.5, 20, 1);
+    const point2 = new THREE.PointLight(0xffffff, 0.5, 10, 1);
+    const spot1 = new THREE.SpotLight(0xffffff, 1, 30, Math.PI / 10, 1, 2);
+    const spot2 = new THREE.SpotLight(0xffffff, 1, 30, Math.PI / 10, 1, 2);
+
+    spot1.position.set(0, 15, -10);
+    spot1.target = new THREE.Object3D();
+    spot1.target.position.set(0, 0, -10);
+    point1.position.set(0, 5, -10);
+    spot2.position.set(0, 20, 10);
+    spot2.target = new THREE.Object3D();
+    spot2.target.position.set(0, 0, 10);
+    point2.position.set(0, 12, 10);
 
     this.scene.add(
-      new THREE.AmbientLight(0xffffff, 0.25),
-      p1,
-      p2
+      spot1,
+      spot1.target,
+      point1,
+      hemisphere,
+      spot2,
+      spot2.target,
+      point2
     );
 
-    this.scene.add(
-      new THREE.Mesh(
-        new THREE.BoxBufferGeometry(1000, 0.1, 1000),
-        Materials.concrete
-      )
+    this.scene.fog = new THREE.FogExp2( 0xCCCFFF, 0.008 );
+
+    const floor = new THREE.Mesh(
+      new THREE.BoxBufferGeometry(1000, 0.1, 1000),
+      Materials.concrete
     );
+    floor.position.set(0, -0.1, 0);
+
     let sky = new THREE.Sky();
     let sun = new THREE.PointLight(0xffffff, 0.9, 40500);
 
@@ -70,7 +96,7 @@ Scene.prototype = {
       sky.uniforms.sunPosition.value.z
     )
 
-    this.scene.add(sun, sky.mesh, this.raytracer.object);
+    this.scene.add(floor, sun, this.raytracer.object, sky.mesh);
     this.scene.add(this.model.object);
   },
 

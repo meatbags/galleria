@@ -3,7 +3,7 @@ import { Materials } from'./Loader';
 
 const RayTracer = function() {
   this.precision = 0.25;
-  this.maxLength = 15;
+  this.maxLength = 10;
   this.object = new THREE.Object3D();
 
   const light = new THREE.PointLight(0xffffff, 0.8, 5, 2);
@@ -13,7 +13,7 @@ const RayTracer = function() {
   );
   light.position.y = 1.1;
 
-  this.object.add(ball, light);
+  //this.object.add(ball);//, light);
 };
 
 RayTracer.prototype = {

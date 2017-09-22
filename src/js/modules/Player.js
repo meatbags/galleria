@@ -162,8 +162,9 @@ Player.prototype = {
 			if (obj.collision2D(this.position)) {
 				const y = obj.getTop(this.position);
 
-				if (Math.abs(this.position.y - y) <= this.climbThreshold)
+				if (Math.abs(this.position.y - y) <= this.climbThreshold && y > nextY) {
 					nextY = y;
+				}
 			}
 		}
 

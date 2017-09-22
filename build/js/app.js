@@ -90,7 +90,7 @@ var Materials = {
   }),
   dev: new THREE.MeshLambertMaterial({
     color: 0xff0000,
-    opacity: 0.25,
+    opacity: 0,
     transparent: true,
     side: THREE.DoubleSide
   }),
@@ -109,25 +109,31 @@ var Models = {
 var matLoader = new THREE.MTLLoader();
 
 matLoader.setPath(appRoot + 'assets/3d/');
-matLoader.load('hangar.mtl', function (mats) {
-  mats.preload();
+matLoader.load('hangar.mtl', function (materials) {
+  materials.preload();
   var objLoader = new THREE.OBJLoader();
+
+  console.log(materials);
 
   objLoader.setPath(appRoot + 'assets/3d/');
   objLoader.load('hangar.obj', function (obj) {
     for (var i = 0; i < obj.children.length; i += 1) {
       var child = obj.children[i];
+      var mat = materials.materials[child.material.name];
 
-      child.material = new THREE.MeshPhysicalMaterial({
-        clearCoat: 0,
-        clearCoatRoughness: 0.5,
-        reflectivity: 0.5,
-        color: 0xffffff,
-        emissive: 0x111111,
-        map: mats.materials[child.material.name].map,
-        bumpMap: mats.materials[child.material.name].bumpMap,
-        bumpScale: 0.01
-      });
+      child.material = mat;
+
+      // make visible, reduce bump map
+      child.material.color = new THREE.Color(0xffffff);
+      child.material.bumpScale = 0.01;
+
+      // make glass translucent
+      if (child.material.map) {
+        if (mat.map.image.src.indexOf('glass') != -1) {
+          child.material.transparent = true;
+          child.material.opacity = 0.3;
+        }
+      }
     }
     Models.mainBuilding.add(obj);
   });
@@ -373,11 +379,11 @@ var _Player = __webpack_require__(6);
 
 var _Player2 = _interopRequireDefault(_Player);
 
-var _RayTracer = __webpack_require__(9);
+var _RayTracer = __webpack_require__(8);
 
 var _RayTracer2 = _interopRequireDefault(_RayTracer);
 
-var _HUD = __webpack_require__(11);
+var _HUD = __webpack_require__(9);
 
 var _HUD2 = _interopRequireDefault(_HUD);
 
@@ -422,26 +428,48 @@ Scene.prototype = {
     this.scene = new THREE.Scene();
     this.model = new _Physics.PhysicsModel();
 
-    this.model.add(new _Physics.Box(new THREE.Vector3(0, 0, 0), new THREE.Vector3(20, 1.05, 40)), new _Physics.Box(new THREE.Vector3(0, 7.5, 10), new THREE.Vector3(20, 1.05, 20.5)), new _Physics.Ramp(new THREE.Vector3(8, 4, -6), new THREE.Vector3(4, 8, 12), 0));
+    this.model.add(
+    // floors
+    new _Physics.Box(new THREE.Vector3(0, 0, -10), new THREE.Vector3(20, 1.05, 20)), new _Physics.Box(new THREE.Vector3(0, 7.5, 10), new THREE.Vector3(20, 1.05, 20.5)),
+    // stairway rear
+    new _Physics.Box(new THREE.Vector3(-7, 7.5, 22.5), new THREE.Vector3(4, 1.05, 5)), new _Physics.Box(new THREE.Vector3(0, 0, 22.5), new THREE.Vector3(20, 1, 5)), new _Physics.Ramp(new THREE.Vector3(0, 4.25, 22.5), new THREE.Vector3(10, 7.55, 5), 3),
+    // stairway front
+    new _Physics.Box(new THREE.Vector3(-6, 4, -7), new THREE.Vector3(6, 0.5, 4)), new _Physics.Ramp(new THREE.Vector3(-7.5, 6, -2.5), new THREE.Vector3(3, 4, 5), 0), new _Physics.Ramp(new THREE.Vector3(-4.5, 2, -2.5), new THREE.Vector3(3, 4, 5), 2),
+    // dev
+    new _Physics.Ramp(new THREE.Vector3(8, 4, -6), new THREE.Vector3(4, 8, 12), 0));
 
     this.scene.add(this.player.object, _Loader.Models.mainBuilding);
 
     // lighting
 
-    var p1 = new THREE.PointLight(0xffffff, 1, 40, 2);
-    var p2 = new THREE.PointLight(0xffffff, 1, 40, 2);
-    p1.position.set(0, 5, 10);
-    p2.position.set(0, 15, 10);
+    var hemisphere = new THREE.HemisphereLight(0xffaabb, 0x080820, 0.1);
+    var point1 = new THREE.PointLight(0xffffff, 0.5, 20, 1);
+    var point2 = new THREE.PointLight(0xffffff, 0.5, 10, 1);
+    var spot1 = new THREE.SpotLight(0xffffff, 1, 30, Math.PI / 10, 1, 2);
+    var spot2 = new THREE.SpotLight(0xffffff, 1, 30, Math.PI / 10, 1, 2);
 
-    this.scene.add(new THREE.AmbientLight(0xffffff, 0.25), p1, p2);
+    spot1.position.set(0, 15, -10);
+    spot1.target = new THREE.Object3D();
+    spot1.target.position.set(0, 0, -10);
+    point1.position.set(0, 5, -10);
+    spot2.position.set(0, 20, 10);
+    spot2.target = new THREE.Object3D();
+    spot2.target.position.set(0, 0, 10);
+    point2.position.set(0, 12, 10);
 
-    this.scene.add(new THREE.Mesh(new THREE.BoxBufferGeometry(1000, 0.1, 1000), _Loader.Materials.concrete));
+    this.scene.add(spot1, spot1.target, point1, hemisphere, spot2, spot2.target, point2);
+
+    this.scene.fog = new THREE.FogExp2(0xCCCFFF, 0.008);
+
+    var floor = new THREE.Mesh(new THREE.BoxBufferGeometry(1000, 0.1, 1000), _Loader.Materials.concrete);
+    floor.position.set(0, -0.1, 0);
+
     var sky = new THREE.Sky();
     var sun = new THREE.PointLight(0xffffff, 0.9, 40500);
 
     sun.position.set(sky.uniforms.sunPosition.value.x, sky.uniforms.sunPosition.value.y, sky.uniforms.sunPosition.value.z);
 
-    this.scene.add(sun, sky.mesh, this.raytracer.object);
+    this.scene.add(floor, sun, this.raytracer.object, sky.mesh);
     this.scene.add(this.model.object);
   },
 
@@ -689,7 +717,9 @@ Player.prototype = {
 			if (_obj.collision2D(this.position)) {
 				var _y2 = _obj.getTop(this.position);
 
-				if (Math.abs(this.position.y - _y2) <= this.climbThreshold) nextY = _y2;
+				if (Math.abs(this.position.y - _y2) <= this.climbThreshold && _y2 > nextY) {
+					nextY = _y2;
+				}
 			}
 		}
 
@@ -803,8 +833,7 @@ exports.BoundingBox = BoundingBox;
 exports.BoundingRamp = BoundingRamp;
 
 /***/ }),
-/* 8 */,
-/* 9 */
+/* 8 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -820,14 +849,14 @@ var _Loader = __webpack_require__(0);
 
 var RayTracer = function RayTracer() {
   this.precision = 0.25;
-  this.maxLength = 15;
+  this.maxLength = 10;
   this.object = new THREE.Object3D();
 
   var light = new THREE.PointLight(0xffffff, 0.8, 5, 2);
   var ball = new THREE.Mesh(new THREE.SphereBufferGeometry(0.5, 16), _Loader.Materials.concrete);
   light.position.y = 1.1;
 
-  this.object.add(ball, light);
+  //this.object.add(ball);//, light);
 };
 
 RayTracer.prototype = {
@@ -887,6 +916,78 @@ RayTracer.prototype = {
 };
 
 exports.default = RayTracer;
+
+/***/ }),
+/* 9 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+var HUD = function HUD(domElement) {
+  this.domElement = domElement;
+  this.threshold = {
+    x: 0.225,
+    y: 0.25
+  };
+  this.init();
+};
+
+HUD.prototype = {
+  init: function init() {
+    this.left = document.getElementsByClassName('hud__left')[0];
+    this.right = document.getElementsByClassName('hud__right')[0];
+  },
+
+  isLeft: function isLeft(x) {
+    return x < this.threshold.x * this.domElement.width;
+  },
+
+  isRight: function isRight(x) {
+    return x > (1 - this.threshold.x) * this.domElement.width;
+  },
+
+  isHigh: function isHigh(y) {
+    return y - this.domElement.getBoundingClientRect().top < this.domElement.height * this.threshold.y;
+  },
+
+  isLow: function isLow(y) {
+    return y - this.domElement.getBoundingClientRect().top > this.domElement.height * (1 - this.threshold.y);
+  },
+
+  isLeftOrRight: function isLeftOrRight(x) {
+    return this.isLeft(x) || this.isRight(x);
+  },
+
+  getHighFactor: function getHighFactor(y) {
+    var t = this.domElement.height * this.threshold.y;
+
+    return (t - (y - this.domElement.getBoundingClientRect().top)) / t;
+  },
+
+  getLowFactor: function getLowFactor(y) {
+    var t = this.domElement.height * this.threshold.y;
+
+    return 1 - (this.domElement.height - (y - this.domElement.getBoundingClientRect().top)) / t;
+  },
+
+  getLeftFactor: function getLeftFactor(x) {
+    var t = this.domElement.width * this.threshold.x;
+
+    return (t - x) / t;
+  },
+
+  getRightFactor: function getRightFactor(x) {
+    var t = this.domElement.width * this.threshold.x;
+
+    return 1 - (this.domElement.width - x) / t;
+  }
+};
+
+exports.default = HUD;
 
 /***/ }),
 /* 10 */
@@ -1021,78 +1122,6 @@ THREE.Sky.SkyShader = {
 		'	float sundisk = smoothstep( sunAngularDiameterCos, sunAngularDiameterCos + 0.00002, cosTheta );', '	L0 += ( vSunE * 19000.0 * Fex ) * sundisk;', '	vec3 texColor = ( Lin + L0 ) * 0.04 + vec3( 0.0, 0.0003, 0.00075 );', '	vec3 curr = Uncharted2Tonemap( ( log2( 2.0 / pow( luminance, 4.0 ) ) ) * texColor );', '	vec3 color = curr * whiteScale;', '	vec3 retColor = pow( color, vec3( 1.0 / ( 1.2 + ( 1.2 * vSunfade ) ) ) );', '	gl_FragColor = vec4( retColor, 1.0 );', '}'].join('\n')
 
 };
-
-/***/ }),
-/* 11 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-var HUD = function HUD(domElement) {
-  this.domElement = domElement;
-  this.threshold = {
-    x: 0.225,
-    y: 0.25
-  };
-  this.init();
-};
-
-HUD.prototype = {
-  init: function init() {
-    this.left = document.getElementsByClassName('hud__left')[0];
-    this.right = document.getElementsByClassName('hud__right')[0];
-  },
-
-  isLeft: function isLeft(x) {
-    return x < this.threshold.x * this.domElement.width;
-  },
-
-  isRight: function isRight(x) {
-    return x > (1 - this.threshold.x) * this.domElement.width;
-  },
-
-  isHigh: function isHigh(y) {
-    return y - this.domElement.getBoundingClientRect().top < this.domElement.height * this.threshold.y;
-  },
-
-  isLow: function isLow(y) {
-    return y - this.domElement.getBoundingClientRect().top > this.domElement.height * (1 - this.threshold.y);
-  },
-
-  isLeftOrRight: function isLeftOrRight(x) {
-    return this.isLeft(x) || this.isRight(x);
-  },
-
-  getHighFactor: function getHighFactor(y) {
-    var t = this.domElement.height * this.threshold.y;
-
-    return (t - (y - this.domElement.getBoundingClientRect().top)) / t;
-  },
-
-  getLowFactor: function getLowFactor(y) {
-    var t = this.domElement.height * this.threshold.y;
-
-    return 1 - (this.domElement.height - (y - this.domElement.getBoundingClientRect().top)) / t;
-  },
-
-  getLeftFactor: function getLeftFactor(x) {
-    var t = this.domElement.width * this.threshold.x;
-
-    return (t - x) / t;
-  },
-
-  getRightFactor: function getRightFactor(x) {
-    var t = this.domElement.width * this.threshold.x;
-
-    return 1 - (this.domElement.width - x) / t;
-  }
-};
-
-exports.default = HUD;
 
 /***/ })
 /******/ ]);
