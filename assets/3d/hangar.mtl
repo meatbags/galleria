@@ -3,8 +3,6 @@ illum 4
 Kd 0.00 0.00 0.00
 Ka 0.00 0.00 0.00
 Tf 1.00 1.00 1.00
-map_Kd noise_1.jpg
-bump noise_normal_1.jpg -bm 1
 Ni 1.00
 newmtl lambert3SG
 illum 4
@@ -14,130 +12,22 @@ Tf 1.00 1.00 1.00
 map_Kd bricks.jpg
 bump bircks_bump.jpg -bm 1
 Ni 1.00
-newmtl lambert4SG
+newmtl lambert6SG
 illum 4
 Kd 0.00 0.00 0.00
 Ka 0.00 0.00 0.00
 Tf 1.00 1.00 1.00
-map_Kd roofing.jpg
+map_Kd dull_cord.jpg
 Ni 1.00
-newmtl pasted__pasted__pasted__pasted__pasted__pasted__phong10SG11
+Ks 1.00 1.00 1.00
+Ns 18.00
+newmtl pasted__pasted__pasted__phong10SG15
 illum 4
 Kd 0.00 0.00 0.00
 Ka 0.00 0.00 0.00
 Tf 1.00 1.00 1.00
 map_Kd wood_2.jpg
 bump wood2_bump.jpg -bm 1
-Ni 1.00
-Ks 0.50 0.50 0.50
-Ns 18.00
-newmtl pasted__pasted__pasted__pasted__pasted__phong10SG10
-illum 4
-Kd 0.00 0.00 0.00
-Ka 0.00 0.00 0.00
-Tf 1.00 1.00 1.00
-map_Kd wood_2.jpg
-bump wood2_bump.jpg -bm 1
-Ni 1.00
-Ks 0.50 0.50 0.50
-Ns 18.00
-newmtl pasted__pasted__pasted__pasted__pasted__phong10SG11
-illum 4
-Kd 0.00 0.00 0.00
-Ka 0.00 0.00 0.00
-Tf 1.00 1.00 1.00
-map_Kd wood_2.jpg
-bump wood2_bump.jpg -bm 1
-Ni 1.00
-Ks 0.50 0.50 0.50
-Ns 18.00
-newmtl pasted__pasted__pasted__pasted__phong10SG11
-illum 4
-Kd 0.00 0.00 0.00
-Ka 0.00 0.00 0.00
-Tf 1.00 1.00 1.00
-map_Kd wood_2.jpg
-bump wood2_bump.jpg -bm 1
-Ni 1.00
-Ks 0.50 0.50 0.50
-Ns 18.00
-newmtl pasted__pasted__pasted__phong10SG9
-illum 4
-Kd 0.00 0.00 0.00
-Ka 0.00 0.00 0.00
-Tf 1.00 1.00 1.00
-map_Kd wood_2.jpg
-bump wood2_bump.jpg -bm 1
-Ni 1.00
-Ks 0.50 0.50 0.50
-Ns 18.00
-newmtl pasted__pasted__pasted__phong10SG10
-illum 4
-Kd 0.00 0.00 0.00
-Ka 0.00 0.00 0.00
-Tf 1.00 1.00 1.00
-map_Kd wood_2.jpg
-bump wood2_bump.jpg -bm 1
-Ni 1.00
-Ks 0.50 0.50 0.50
-Ns 18.00
-newmtl pasted__pasted__pasted__phong10SG11
-illum 4
-Kd 0.00 0.00 0.00
-Ka 0.00 0.00 0.00
-Tf 1.00 1.00 1.00
-map_Kd wood_2.jpg
-bump wood2_bump.jpg -bm 1
-Ni 1.00
-Ks 0.50 0.50 0.50
-Ns 18.00
-newmtl pasted__pasted__pasted__phong10SG12
-illum 4
-Kd 0.00 0.00 0.00
-Ka 0.00 0.00 0.00
-Tf 1.00 1.00 1.00
-map_Kd wood_2.jpg
-bump wood2_bump.jpg -bm 1
-Ni 1.00
-Ks 0.50 0.50 0.50
-Ns 18.00
-newmtl pasted__pasted__pasted__phong10SG13
-illum 4
-Kd 0.00 0.00 0.00
-Ka 0.00 0.00 0.00
-Tf 1.00 1.00 1.00
-map_Kd wood_2.jpg
-bump wood2_bump.jpg -bm 1
-Ni 1.00
-Ks 0.50 0.50 0.50
-Ns 18.00
-newmtl pasted__pasted__pasted__phong10SG14
-illum 4
-Kd 0.00 0.00 0.00
-Ka 0.00 0.00 0.00
-Tf 1.00 1.00 1.00
-map_Kd wood_2.jpg
-bump wood2_bump.jpg -bm 1
-Ni 1.00
-Ks 0.50 0.50 0.50
-Ns 18.00
-newmtl pasted__pasted__phong6SG32
-illum 4
-Kd 0.00 0.00 0.00
-Ka 0.00 0.00 0.00
-Tf 1.00 1.00 1.00
-map_Kd rivets.jpg
-bump rivets_bump.jpg -bm 1
-Ni 1.00
-Ks 0.50 0.50 0.50
-Ns 18.00
-newmtl pasted__pasted__phong7SG1
-illum 4
-Kd 0.00 0.00 0.00
-Ka 0.00 0.00 0.00
-Tf 1.00 1.00 1.00
-map_Kd wood.jpg
-bump wood_bump.jpg -bm 1
 Ni 1.00
 Ks 0.50 0.50 0.50
 Ns 18.00
@@ -151,113 +41,6 @@ bump wood2_bump.jpg -bm 1
 Ni 1.00
 Ks 0.50 0.50 0.50
 Ns 18.00
-newmtl pasted__pasted__phong12SG
-illum 4
-Kd 0.00 0.00 0.00
-Ka 0.00 0.00 0.00
-Tf 1.00 1.00 1.00
-map_Kd concrete_2.jpg
-Ni 1.00
-Ks 0.50 0.50 0.50
-Ns 18.00
-newmtl pasted__pasted__phong12SG2
-illum 4
-Kd 0.00 0.00 0.00
-Ka 0.00 0.00 0.00
-Tf 1.00 1.00 1.00
-map_Kd concrete_2.jpg
-Ni 1.00
-Ks 0.50 0.50 0.50
-Ns 18.00
-newmtl pasted__pasted__phong12SG3
-illum 4
-Kd 0.00 0.00 0.00
-Ka 0.00 0.00 0.00
-Tf 1.00 1.00 1.00
-map_Kd concrete_2.jpg
-Ni 1.00
-Ks 0.50 0.50 0.50
-Ns 18.00
-newmtl pasted__pasted__phong14SG5
-illum 4
-Kd 0.00 0.00 0.00
-Ka 0.00 0.00 0.00
-Tf 0.15 0.15 0.15
-map_Kd glass.jpg
-bump glass_bumop.jpg -bm 1
-Ni 1.00
-Ks 0.50 0.50 0.50
-Ns 18.00
-newmtl pasted__phong5SG6
-illum 4
-Kd 0.00 0.00 0.00
-Ka 0.49 0.49 0.49
-Tf 1.00 1.00 1.00
-map_Kd concrete.jpg
-bump concrete_bump.jpg -bm 1
-Ni 1.00
-Ks 0.50 0.50 0.50
-Ns 18.00
-newmtl pasted__phong6SG16
-illum 4
-Kd 0.00 0.00 0.00
-Ka 0.00 0.00 0.00
-Tf 1.00 1.00 1.00
-map_Kd rivets.jpg
-bump rivets_bump.jpg -bm 1
-Ni 1.00
-Ks 0.50 0.50 0.50
-Ns 18.00
-newmtl pasted__phong6SG17
-illum 4
-Kd 0.00 0.00 0.00
-Ka 0.00 0.00 0.00
-Tf 1.00 1.00 1.00
-map_Kd rivets.jpg
-bump rivets_bump.jpg -bm 1
-Ni 1.00
-Ks 0.50 0.50 0.50
-Ns 18.00
-newmtl pasted__phong6SG18
-illum 4
-Kd 0.00 0.00 0.00
-Ka 0.00 0.00 0.00
-Tf 1.00 1.00 1.00
-map_Kd rivets.jpg
-bump rivets_bump.jpg -bm 1
-Ni 1.00
-Ks 0.50 0.50 0.50
-Ns 18.00
-newmtl pasted__phong6SG19
-illum 4
-Kd 0.00 0.00 0.00
-Ka 0.00 0.00 0.00
-Tf 1.00 1.00 1.00
-map_Kd rivets.jpg
-bump rivets_bump.jpg -bm 1
-Ni 1.00
-Ks 0.50 0.50 0.50
-Ns 18.00
-newmtl pasted__phong6SG20
-illum 4
-Kd 0.00 0.00 0.00
-Ka 0.00 0.00 0.00
-Tf 1.00 1.00 1.00
-map_Kd rivets.jpg
-bump rivets_bump.jpg -bm 1
-Ni 1.00
-Ks 0.50 0.50 0.50
-Ns 18.00
-newmtl pasted__phong6SG21
-illum 4
-Kd 0.00 0.00 0.00
-Ka 0.00 0.00 0.00
-Tf 1.00 1.00 1.00
-map_Kd rivets.jpg
-bump rivets_bump.jpg -bm 1
-Ni 1.00
-Ks 0.50 0.50 0.50
-Ns 18.00
 newmtl pasted__phong7SG
 illum 4
 Kd 0.00 0.00 0.00
@@ -265,69 +48,6 @@ Ka 0.00 0.00 0.00
 Tf 1.00 1.00 1.00
 map_Kd wood.jpg
 bump wood_bump.jpg -bm 1
-Ni 1.00
-Ks 0.50 0.50 0.50
-Ns 18.00
-newmtl pasted__phong12SG
-illum 4
-Kd 0.00 0.00 0.00
-Ka 0.00 0.00 0.00
-Tf 1.00 1.00 1.00
-map_Kd concrete_2.jpg
-Ni 1.00
-Ks 0.50 0.50 0.50
-Ns 18.00
-newmtl pasted__phong13SG7
-illum 4
-Kd 0.00 0.00 0.00
-Ka 0.00 0.00 0.00
-Tf 1.00 1.00 1.00
-map_Kd concrete_2.jpg
-Ni 1.00
-Ks 0.50 0.50 0.50
-Ns 18.00
-newmtl pasted__phong13SG8
-illum 4
-Kd 0.00 0.00 0.00
-Ka 0.00 0.00 0.00
-Tf 1.00 1.00 1.00
-map_Kd concrete_2.jpg
-Ni 1.00
-Ks 0.50 0.50 0.50
-Ns 18.00
-newmtl pasted__phong13SG9
-illum 4
-Kd 0.00 0.00 0.00
-Ka 0.00 0.00 0.00
-Tf 1.00 1.00 1.00
-map_Kd concrete_2.jpg
-Ni 1.00
-Ks 0.50 0.50 0.50
-Ns 18.00
-newmtl pasted__phong13SG10
-illum 4
-Kd 0.00 0.00 0.00
-Ka 0.00 0.00 0.00
-Tf 1.00 1.00 1.00
-map_Kd concrete_2.jpg
-Ni 1.00
-Ks 0.50 0.50 0.50
-Ns 18.00
-newmtl pasted__phong13SG11
-illum 4
-Kd 0.00 0.00 0.00
-Ka 0.00 0.00 0.00
-Tf 1.00 1.00 1.00
-map_Kd concrete_2.jpg
-Ni 1.00
-Ks 0.50 0.50 0.50
-Ns 18.00
-newmtl pasted__phong13SG12
-illum 4
-Kd 0.00 0.00 0.00
-Ka 0.00 0.00 0.00
-Tf 1.00 1.00 1.00
-map_Kd concrete_2.jpg
 Ni 1.00
 Ks 0.50 0.50 0.50
 Ns 18.00
@@ -370,3 +90,19 @@ map_Kd concrete_2.jpg
 Ni 1.00
 Ks 0.50 0.50 0.50
 Ns 18.00
+newmtl phong15SG
+illum 4
+Kd 1.00 1.00 1.00
+Ka 1.00 1.00 1.00
+Tf 1.00 1.00 1.00
+Ni 1.00
+Ks 1.00 1.00 1.00
+Ns 18.00
+newmtl phongE3SG
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+map_Kd roofing.jpg
+Ni 1.00
+Ks 0.50 0.50 0.50

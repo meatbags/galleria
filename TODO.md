@@ -1,5 +1,11 @@
 # To do
 
+- raytracing on stairs
+- focal points/ paintings
+- add garden outside
+- clutter interior with stuff
+
+# improvements
+
 - improve ray-tracing accuracy
-- collision check on automatic walk
-- pan with mouse
+- collision check on auto-walk?

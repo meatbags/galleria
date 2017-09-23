@@ -46,19 +46,46 @@ Scene.prototype = {
       new Box(new THREE.Vector3(-6, 4, -7), new THREE.Vector3(6, 0.5, 4)),
       new Ramp(new THREE.Vector3(-7.5, 6, -2.5), new THREE.Vector3(3, 4, 5), 0),
       new Ramp(new THREE.Vector3(-4.5, 2, -2.5), new THREE.Vector3(3, 4, 5), 2),
-      // dev
-      new Ramp(new THREE.Vector3(8, 4, -6), new THREE.Vector3(4, 8, 12), 0)
+      // walls and posts
+      new Box(new THREE.Vector3(-9.5, 8, 0), new THREE.Vector3(2.75, 16, 40)),
+      new Box(new THREE.Vector3(9.5, 8, 0), new THREE.Vector3(2.75, 16, 40)),
+      new Box(new THREE.Vector3(3, 8, 0), new THREE.Vector3(1, 16, 1)),
+      new Box(new THREE.Vector3(-3, 8, 0), new THREE.Vector3(1, 16, 1)),
+      new Box(new THREE.Vector3(3, 8, 10), new THREE.Vector3(1, 16, 1)),
+      new Box(new THREE.Vector3(-3, 8, 10), new THREE.Vector3(1, 16, 1)),
+      new Box(new THREE.Vector3(-6.5, 8, -19.5), new THREE.Vector3(8.75, 16, 2.5)),
+      new Box(new THREE.Vector3(6.5, 8, -19.5), new THREE.Vector3(8.75, 16, 2.5)),
+      // wooden staircase posts
+      new Box(new THREE.Vector3(2, 10, 0), new THREE.Vector3(16, 5, 0.75)),
+      new Box(new THREE.Vector3(-3, 3.25, -9), new THREE.Vector3(1, 16, 1)),
+      new Box(new THREE.Vector3(-3, 3.25, -5), new THREE.Vector3(1, 16, 1)),
+      new Box(new THREE.Vector3(-6, 3.25, -5), new THREE.Vector3(0.5, 16, 1)),
+      new Box(new THREE.Vector3(-6, 5.25, -9), new THREE.Vector3(6, 3, 1)),
+      new Box(new THREE.Vector3(-3, 5.25, -7), new THREE.Vector3(1, 3, 4)),
+      new Box(new THREE.Vector3(-3, 3.25, -2.5), new THREE.Vector3(1, 6, 4.5)),
+      new Box(new THREE.Vector3(-6, 7.5, -2.5), new THREE.Vector3(0.5, 7, 5)),
+      // glass staircase walls
+      new Box(new THREE.Vector3(0, 8, 25.375), new THREE.Vector3(18, 16, 1)),
+      new Box(new THREE.Vector3(9.5, 8, 22.75), new THREE.Vector3(2.75, 16, 6)),
+      new Box(new THREE.Vector3(-9.5, 8, 22.75), new THREE.Vector3(2.75, 16, 6)),
+      new Box(new THREE.Vector3(-2, 4, 20), new THREE.Vector3(13, 8, 1.5)),
+      new Box(new THREE.Vector3(2, 12, 20), new THREE.Vector3(14, 8, 1.5))
     );
 
     this.scene.add( this.player.object, Models.mainBuilding );
 
     // lighting
 
+    const ambient = new THREE.AmbientLight(0xffffff, 0.05);
     const hemisphere = new THREE.HemisphereLight(0xffaabb, 0x080820, 0.1);
-    const point1 = new THREE.PointLight(0xffffff, 0.5, 20, 1);
+    const point1 = new THREE.PointLight(0xffffff, 0.5, 13, 1);
     const point2 = new THREE.PointLight(0xffffff, 0.5, 10, 1);
     const spot1 = new THREE.SpotLight(0xffffff, 1, 30, Math.PI / 10, 1, 2);
-    const spot2 = new THREE.SpotLight(0xffffff, 1, 30, Math.PI / 10, 1, 2);
+    const spot2 = new THREE.SpotLight(0xffffff, 1, 10, Math.PI / 10, 1, 2);
+    const spot3 = new THREE.SpotLight(0xffffff, 1, 8, Math.PI / 2, 1);
+    const spot4 = new THREE.SpotLight(0xffffff, 1, 8, Math.PI / 2, 1);
+    const spot5 = new THREE.SpotLight(0xffffff, 1, 8, Math.PI / 2, 1);
+    const spot6 = new THREE.SpotLight(0xffffff, 1, 8, Math.PI / 2, 1);
 
     spot1.position.set(0, 15, -10);
     spot1.target = new THREE.Object3D();
@@ -67,16 +94,40 @@ Scene.prototype = {
     spot2.position.set(0, 20, 10);
     spot2.target = new THREE.Object3D();
     spot2.target.position.set(0, 0, 10);
-    point2.position.set(0, 12, 10);
+    point2.position.set(0, 14, 10);
+
+    // ground floor 4 spotlights
+    spot3.position.set(8, 6, 5);
+    spot3.target = new THREE.Object3D();
+    spot3.target.position.set(9.25, 0, 5);
+    spot4.position.set(8, 6, 14.75);
+    spot4.target = new THREE.Object3D();
+    spot4.target.position.set(9.25, 0, 14.75);
+    spot5.position.set(-8, 6, 14.75);
+    spot5.target = new THREE.Object3D();
+    spot5.target.position.set(-9.25, 0, 14.75);
+    spot6.position.set(-8, 6, 5);
+    spot6.target = new THREE.Object3D();
+    spot6.target.position.set(-9.25, 0, 5);
 
     this.scene.add(
+      ambient,
       spot1,
       spot1.target,
       point1,
+      point2,
       hemisphere,
       spot2,
       spot2.target,
-      point2
+      point2,
+      spot3,
+      spot3.target,
+      spot4,
+      spot4.target,
+      spot5,
+      spot5.target,
+      spot6,
+      spot6.target
     );
 
     this.scene.fog = new THREE.FogExp2( 0xCCCFFF, 0.008 );
@@ -101,8 +152,8 @@ Scene.prototype = {
   },
 
   resize: function() {
-    const width = window.innerWidth;
-    const height = 640;//Math.min(520, window.innerHeight * 0.75);
+    const width = 960;//window.innerWidth;
+    const height = 540;//Math.min(520, window.innerHeight * 0.75);
     this.camera.aspect = width / height;
     this.camera.updateProjectionMatrix();
     this.renderer.setSize(width, height);

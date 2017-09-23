@@ -90,7 +90,7 @@ var Materials = {
   }),
   dev: new THREE.MeshLambertMaterial({
     color: 0xff0000,
-    opacity: 0,
+    opacity: 0.25,
     transparent: true,
     side: THREE.DoubleSide
   }),
@@ -116,12 +116,12 @@ matLoader.load('hangar.mtl', function (materials) {
   console.log(materials);
 
   objLoader.setPath(appRoot + 'assets/3d/');
+  objLoader.setMaterials(materials);
   objLoader.load('hangar.obj', function (obj) {
     for (var i = 0; i < obj.children.length; i += 1) {
       var child = obj.children[i];
-      var mat = materials.materials[child.material.name];
-
-      child.material = mat;
+      //const mat = materials.materials[child.material.name];
+      //child.material = mat;
 
       // make visible, reduce bump map
       child.material.color = new THREE.Color(0xffffff);
@@ -129,10 +129,12 @@ matLoader.load('hangar.mtl', function (materials) {
 
       // make glass translucent
       if (child.material.map) {
-        if (mat.map.image.src.indexOf('glass') != -1) {
+        if (child.material.map.image.src.indexOf('glass') != -1) {
           child.material.transparent = true;
-          child.material.opacity = 0.3;
+          child.material.opacity = 0.4;
         }
+      } else {
+        child.material.emissive = child.material.color;
       }
     }
     Models.mainBuilding.add(obj);
@@ -237,7 +239,7 @@ PhysicsModel.prototype = {
 	add: function add() {
 		for (var i = 0; i < arguments.length; i += 1) {
 			this.contents.push(arguments[i]);
-			this.object.add(arguments[i].object);
+			//this.object.add(arguments[i].object);
 		}
 	}
 };
@@ -435,18 +437,27 @@ Scene.prototype = {
     new _Physics.Box(new THREE.Vector3(-7, 7.5, 22.5), new THREE.Vector3(4, 1.05, 5)), new _Physics.Box(new THREE.Vector3(0, 0, 22.5), new THREE.Vector3(20, 1, 5)), new _Physics.Ramp(new THREE.Vector3(0, 4.25, 22.5), new THREE.Vector3(10, 7.55, 5), 3),
     // stairway front
     new _Physics.Box(new THREE.Vector3(-6, 4, -7), new THREE.Vector3(6, 0.5, 4)), new _Physics.Ramp(new THREE.Vector3(-7.5, 6, -2.5), new THREE.Vector3(3, 4, 5), 0), new _Physics.Ramp(new THREE.Vector3(-4.5, 2, -2.5), new THREE.Vector3(3, 4, 5), 2),
-    // dev
-    new _Physics.Ramp(new THREE.Vector3(8, 4, -6), new THREE.Vector3(4, 8, 12), 0));
+    // walls and posts
+    new _Physics.Box(new THREE.Vector3(-9.5, 8, 0), new THREE.Vector3(2.75, 16, 40)), new _Physics.Box(new THREE.Vector3(9.5, 8, 0), new THREE.Vector3(2.75, 16, 40)), new _Physics.Box(new THREE.Vector3(3, 8, 0), new THREE.Vector3(1, 16, 1)), new _Physics.Box(new THREE.Vector3(-3, 8, 0), new THREE.Vector3(1, 16, 1)), new _Physics.Box(new THREE.Vector3(3, 8, 10), new THREE.Vector3(1, 16, 1)), new _Physics.Box(new THREE.Vector3(-3, 8, 10), new THREE.Vector3(1, 16, 1)), new _Physics.Box(new THREE.Vector3(-6.5, 8, -19.5), new THREE.Vector3(8.75, 16, 2.5)), new _Physics.Box(new THREE.Vector3(6.5, 8, -19.5), new THREE.Vector3(8.75, 16, 2.5)),
+    // wooden staircase posts
+    new _Physics.Box(new THREE.Vector3(2, 10, 0), new THREE.Vector3(16, 5, 0.75)), new _Physics.Box(new THREE.Vector3(-3, 3.25, -9), new THREE.Vector3(1, 16, 1)), new _Physics.Box(new THREE.Vector3(-3, 3.25, -5), new THREE.Vector3(1, 16, 1)), new _Physics.Box(new THREE.Vector3(-6, 3.25, -5), new THREE.Vector3(0.5, 16, 1)), new _Physics.Box(new THREE.Vector3(-6, 5.25, -9), new THREE.Vector3(6, 3, 1)), new _Physics.Box(new THREE.Vector3(-3, 5.25, -7), new THREE.Vector3(1, 3, 4)), new _Physics.Box(new THREE.Vector3(-3, 3.25, -2.5), new THREE.Vector3(1, 6, 4.5)), new _Physics.Box(new THREE.Vector3(-6, 7.5, -2.5), new THREE.Vector3(0.5, 7, 5)),
+    // glass staircase walls
+    new _Physics.Box(new THREE.Vector3(0, 8, 25.375), new THREE.Vector3(18, 16, 1)), new _Physics.Box(new THREE.Vector3(9.5, 8, 22.75), new THREE.Vector3(2.75, 16, 6)), new _Physics.Box(new THREE.Vector3(-9.5, 8, 22.75), new THREE.Vector3(2.75, 16, 6)), new _Physics.Box(new THREE.Vector3(-2, 4, 20), new THREE.Vector3(13, 8, 1.5)), new _Physics.Box(new THREE.Vector3(2, 12, 20), new THREE.Vector3(14, 8, 1.5)));
 
     this.scene.add(this.player.object, _Loader.Models.mainBuilding);
 
     // lighting
 
+    var ambient = new THREE.AmbientLight(0xffffff, 0.05);
     var hemisphere = new THREE.HemisphereLight(0xffaabb, 0x080820, 0.1);
-    var point1 = new THREE.PointLight(0xffffff, 0.5, 20, 1);
+    var point1 = new THREE.PointLight(0xffffff, 0.5, 13, 1);
     var point2 = new THREE.PointLight(0xffffff, 0.5, 10, 1);
     var spot1 = new THREE.SpotLight(0xffffff, 1, 30, Math.PI / 10, 1, 2);
-    var spot2 = new THREE.SpotLight(0xffffff, 1, 30, Math.PI / 10, 1, 2);
+    var spot2 = new THREE.SpotLight(0xffffff, 1, 10, Math.PI / 10, 1, 2);
+    var spot3 = new THREE.SpotLight(0xffffff, 1, 8, Math.PI / 2, 1);
+    var spot4 = new THREE.SpotLight(0xffffff, 1, 8, Math.PI / 2, 1);
+    var spot5 = new THREE.SpotLight(0xffffff, 1, 8, Math.PI / 2, 1);
+    var spot6 = new THREE.SpotLight(0xffffff, 1, 8, Math.PI / 2, 1);
 
     spot1.position.set(0, 15, -10);
     spot1.target = new THREE.Object3D();
@@ -455,9 +466,23 @@ Scene.prototype = {
     spot2.position.set(0, 20, 10);
     spot2.target = new THREE.Object3D();
     spot2.target.position.set(0, 0, 10);
-    point2.position.set(0, 12, 10);
+    point2.position.set(0, 14, 10);
 
-    this.scene.add(spot1, spot1.target, point1, hemisphere, spot2, spot2.target, point2);
+    // ground floor 4 spotlights
+    spot3.position.set(8, 6, 5);
+    spot3.target = new THREE.Object3D();
+    spot3.target.position.set(9.25, 0, 5);
+    spot4.position.set(8, 6, 14.75);
+    spot4.target = new THREE.Object3D();
+    spot4.target.position.set(9.25, 0, 14.75);
+    spot5.position.set(-8, 6, 14.75);
+    spot5.target = new THREE.Object3D();
+    spot5.target.position.set(-9.25, 0, 14.75);
+    spot6.position.set(-8, 6, 5);
+    spot6.target = new THREE.Object3D();
+    spot6.target.position.set(-9.25, 0, 5);
+
+    this.scene.add(ambient, spot1, spot1.target, point1, point2, hemisphere, spot2, spot2.target, point2, spot3, spot3.target, spot4, spot4.target, spot5, spot5.target, spot6, spot6.target);
 
     this.scene.fog = new THREE.FogExp2(0xCCCFFF, 0.008);
 
@@ -474,8 +499,8 @@ Scene.prototype = {
   },
 
   resize: function resize() {
-    var width = window.innerWidth;
-    var height = 640; //Math.min(520, window.innerHeight * 0.75);
+    var width = 960; //window.innerWidth;
+    var height = 540; //Math.min(520, window.innerHeight * 0.75);
     this.camera.aspect = width / height;
     this.camera.updateProjectionMatrix();
     this.renderer.setSize(width, height);
@@ -581,7 +606,7 @@ var Player = function Player(position) {
 Player.prototype = {
 	init: function init() {
 		this.bindControls();
-		var light = new THREE.PointLight(0xffffff, 0.25, 20, 2);
+		var light = new THREE.PointLight(0xffffff, 0.75, 10, 2);
 		light.position.set(0, 2, 0);
 		this.object.add(light);
 	},
@@ -943,11 +968,11 @@ HUD.prototype = {
   },
 
   isLeft: function isLeft(x) {
-    return x < this.threshold.x * this.domElement.width;
+    return x - this.domElement.getBoundingClientRect().left < this.threshold.x * this.domElement.width;
   },
 
   isRight: function isRight(x) {
-    return x > (1 - this.threshold.x) * this.domElement.width;
+    return x - this.domElement.getBoundingClientRect().left > (1 - this.threshold.x) * this.domElement.width;
   },
 
   isHigh: function isHigh(y) {
@@ -977,13 +1002,13 @@ HUD.prototype = {
   getLeftFactor: function getLeftFactor(x) {
     var t = this.domElement.width * this.threshold.x;
 
-    return (t - x) / t;
+    return (t - (x - this.domElement.getBoundingClientRect().left)) / t;
   },
 
   getRightFactor: function getRightFactor(x) {
     var t = this.domElement.width * this.threshold.x;
 
-    return 1 - (this.domElement.width - x) / t;
+    return 1 - (this.domElement.width - (x - this.domElement.getBoundingClientRect().left)) / t;
   }
 };
 

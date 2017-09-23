@@ -26,7 +26,7 @@ const Player = function(position) {
 Player.prototype = {
 	init: function() {
 		this.bindControls();
-		const light = new THREE.PointLight(0xffffff, 0.25, 20, 2);
+		const light = new THREE.PointLight(0xffffff, 0.75, 10, 2);
 		light.position.set(0, 2, 0);
 		this.object.add(light);
 	},

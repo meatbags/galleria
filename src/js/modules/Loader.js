@@ -15,7 +15,7 @@ const Materials = {
   }),
   dev: new THREE.MeshLambertMaterial({
     color: 0xff0000,
-    opacity: 0,
+    opacity: 0.25,
     transparent: true,
     side: THREE.DoubleSide
   }),
@@ -41,12 +41,12 @@ matLoader.load('hangar.mtl', function(materials) {
   console.log(materials);
 
   objLoader.setPath(appRoot + 'assets/3d/');
+  objLoader.setMaterials(materials)
   objLoader.load('hangar.obj', function (obj) {
     for (let i=0; i<obj.children.length; i+=1) {
       const child = obj.children[i];
-      const mat = materials.materials[child.material.name];
-
-      child.material = mat;
+      //const mat = materials.materials[child.material.name];
+      //child.material = mat;
 
       // make visible, reduce bump map
       child.material.color = new THREE.Color(0xffffff);
@@ -54,10 +54,12 @@ matLoader.load('hangar.mtl', function(materials) {
 
       // make glass translucent
       if (child.material.map) {
-        if (mat.map.image.src.indexOf('glass') != -1) {
+        if (child.material.map.image.src.indexOf('glass') != -1) {
           child.material.transparent = true;
-          child.material.opacity = 0.3;
+          child.material.opacity = 0.4;
         }
+      } else {
+        child.material.emissive = child.material.color;
       }
     }
     Models.mainBuilding.add(obj);

@@ -14,11 +14,11 @@ HUD.prototype = {
   },
 
   isLeft: function(x) {
-    return (x < this.threshold.x * this.domElement.width);
+    return ((x - this.domElement.getBoundingClientRect().left) < this.threshold.x * this.domElement.width);
   },
 
   isRight: function(x) {
-    return (x > (1 - this.threshold.x) * this.domElement.width);
+    return ((x - this.domElement.getBoundingClientRect().left) > (1 - this.threshold.x) * this.domElement.width);
   },
 
   isHigh: function(y) {
@@ -35,7 +35,7 @@ HUD.prototype = {
 
   getHighFactor: function(y) {
     const t = this.domElement.height * this.threshold.y;
-    
+
     return ((t - (y - this.domElement.getBoundingClientRect().top)) / t);
   },
 
@@ -48,13 +48,13 @@ HUD.prototype = {
   getLeftFactor: function(x) {
     const t = this.domElement.width * this.threshold.x;
 
-    return ((t - x) / t);
+    return ((t - (x - this.domElement.getBoundingClientRect().left)) / t);
   },
 
   getRightFactor: function(x) {
     const t = this.domElement.width * this.threshold.x;
 
-    return (1 - (this.domElement.width - x) / t);
+    return (1 - (this.domElement.width - (x - this.domElement.getBoundingClientRect().left)) / t);
   }
 };
 
