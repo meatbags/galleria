@@ -7,5 +7,5 @@
 
 # improvements
 
-- improve ray-tracing accuracy
+- improve ray-tracing accuracy & graphics
 - collision check on auto-walk?
