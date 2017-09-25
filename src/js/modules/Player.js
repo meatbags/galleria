@@ -1,9 +1,11 @@
 import { TYPE_BOX, TYPE_RAMP } from './Physics';
-import { getDistanceVec2 } from './Maths';
+import { TYPE_FOCAL } from './Focal';
+import { getDistanceVec2, minAngleDifference } from './Maths';
+import Globals from './Globals';
 
 const Player = function(position) {
 	this.object = new THREE.Object3D();
-	this.position = position;
+	this.position = new THREE.Vector3(Globals.player.position.x, Globals.player.position.y, Globals.player.position.z);
 	this.target = {
 		active: false,
 		position: position,
@@ -16,8 +18,8 @@ const Player = function(position) {
 	this.pitchOffset = 0;
 	this.yaw = 0;
 	this.yawOffset = 0;
-	this.speed = 7;
-	this.height = 1.8;
+	this.speed = Globals.player.speed;
+	this.height = Globals.player.height;
 	this.climbThreshold = 1;
 	this.rotationSpeed = Math.PI * 1;
 	this.init();
@@ -159,11 +161,13 @@ Player.prototype = {
 		for (let i=0; i<objects.length; i+=1) {
 			const obj = objects[i];
 
-			if (obj.collision2D(this.position)) {
-				const y = obj.getTop(this.position);
+			if (obj.type === TYPE_BOX || obj.type === TYPE_RAMP) {
+				if (obj.collision2D(this.position)) {
+					const y = obj.getTop(this.position);
 
-				if (Math.abs(this.position.y - y) <= this.climbThreshold && y > nextY) {
-					nextY = y;
+					if (Math.abs(this.position.y - y) <= this.climbThreshold && y > nextY) {
+						nextY = y;
+					}
 				}
 			}
 		}
@@ -189,7 +193,7 @@ Player.prototype = {
 				this.position.x += (this.target.position.x - this.position.x) * 0.05;
 				this.position.z += (this.target.position.z - this.position.z) * 0.05;
 			}
-			this.yaw += (this.target.yaw - this.yaw) * 0.05;
+			this.yaw += (minAngleDifference(this.yaw, this.target.yaw)) * 0.05;
 		}
 
 		// move THREE reference

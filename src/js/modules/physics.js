@@ -89,7 +89,7 @@ PhysicsModel.prototype = {
 	add: function() {
 		for (let i=0; i<arguments.length; i+=1) {
 			this.contents.push(arguments[i]);
-			//this.object.add(arguments[i].object);
+			this.object.add(arguments[i].object);
 		}
 	},
 };

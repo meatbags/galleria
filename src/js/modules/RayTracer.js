@@ -1,19 +1,21 @@
 import { getNormalisedVec3 } from './Maths';
 import { Materials } from'./Loader';
+import { TYPE_FOCAL } from './Focal';
+import { TYPE_BOX, TYPE_RAMP } from './Physics';
 
 const RayTracer = function() {
-  this.precision = 0.25;
-  this.maxLength = 10;
+  this.precision = 0.4;
+  this.maxLength = 15;
   this.object = new THREE.Object3D();
 
   const light = new THREE.PointLight(0xffffff, 0.8, 5, 2);
   const ball = new THREE.Mesh(
-    new THREE.SphereBufferGeometry(0.5, 16),
+    new THREE.SphereBufferGeometry(0.2, 16),
     Materials.concrete
   );
   light.position.y = 1.1;
 
-  //this.object.add(ball);//, light);
+  this.object.add(ball, light);
 };
 
 RayTracer.prototype = {
@@ -26,6 +28,7 @@ RayTracer.prototype = {
     const dy = vector.y * this.precision;
     const dz = vector.z * this.precision;
     let collision = false;
+    let object = null;
 
     for (let i=0; i<steps; i+=1) {
       point.x += dx;
@@ -37,8 +40,11 @@ RayTracer.prototype = {
 
       for (let j=0; j<objects.length; j+=1) {
         if (objects[j].collision(point)) {
-          collision = true;
-          break;
+          if (objects[j].type != TYPE_RAMP || objects[j].getTop(point) > point.y) {
+            collision = true;
+            object = objects[j];
+            break;
+          }
         }
       }
 
@@ -48,7 +54,10 @@ RayTracer.prototype = {
 
     this.object.position.set(point.x, point.y, point.z);
 
-    return point;
+    return {
+      point: point,
+      object: object,
+    };
   },
 
   emitRayFromScreen(event, domElement, camera, player, objects) {
@@ -66,13 +75,19 @@ RayTracer.prototype = {
       Math.sin(pitch),
       Math.cos(yaw)
     );
-    const endPoint = this.trace(camera.position, vec, objects);
+    const end = this.trace(camera.position, vec, objects);
     const ray = {
       start: camera.position,
-      end: endPoint,
+      end: end.point,
       yaw: yaw,
       pitch: pitch,
     };
+
+    if (end.object && end.object.type === TYPE_FOCAL) {
+      ray.end = end.object.eye;
+      ray.yaw = end.object.yaw;
+      ray.pitch = end.object.pitch;
+    }
 
     return ray;
   }

@@ -1,3 +1,7 @@
+$hudSideWidth: 12%;
+$gradientStart: rgba(255, 255, 255, 0);
+$gradientStop: rgba(255, 255, 255, 0.3);
+
 .hud {
 	z-index: $zHUD;
 	position: fixed;
@@ -10,11 +14,11 @@
 
 	.hud__left {
 		position: absolute;
-		width: 22.5%;
+		width: $hudSideWidth;
 		height: 100%;
 		top: 0;
 		left: 0;
-		background: linear-gradient(to left, rgba(255, 255, 255, 0), rgba(255, 255, 255, 1));
+		background: linear-gradient(to left, $gradientStart, $gradientStop);
 		opacity: 0;
 		transition: $speed;
 
@@ -25,11 +29,11 @@
 
 	.hud__right {
 		position: absolute;
-		width: 22.5%;
+		width: $hudSideWidth;
 		height: 100%;
 		top: 0;
 		right: 0;
-		background: linear-gradient(to right, rgba(255, 255, 255, 0), rgba(255, 255, 255, 1));
+		background: linear-gradient(to right, $gradientStart, $gradientStop);
 		opacity: 0;
 		transition: $speed;
 

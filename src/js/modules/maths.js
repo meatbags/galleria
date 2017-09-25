@@ -10,6 +10,26 @@ const getNormalisedVec3 = function(vec) {
   return vec;
 };
 
+const v3 = function(x, y, z) {
+  return new THREE.Vector3(x, y, z);
+}
+
+const getPitch = function(a, b) {
+  const dist = getDistanceVec2(a, b);
+
+  return Math.atan2(b.y - a.y, dist);
+}
+
+const minAngleDifference = function(a1, a2) {
+  const angle = Math.atan2(Math.sin(a2 - a1), Math.cos(a2 - a1))
+
+  return angle;
+}
+
+const getYaw = function(a, b) {
+  return Math.atan2(b.x - a.x, b.z - a.z);
+}
+
 const getMagnitudeVec3 = function(vec) {
   const mag = Math.sqrt(vec.x * vec.x + vec.y * vec.y + vec.z * vec.z);
 
@@ -28,4 +48,4 @@ const getDistanceVec2 = function(a, b) {
   return dist;
 }
 
-export { getNormalisedVec3, getMagnitudeVec3, getDistanceVec2, getDistanceVec3 };
+export { v3, minAngleDifference, getNormalisedVec3, getPitch, getYaw, getMagnitudeVec3, getDistanceVec2, getDistanceVec3 };

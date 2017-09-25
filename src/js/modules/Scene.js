@@ -1,8 +1,12 @@
 import Player from './Player';
 import RayTracer from './RayTracer';
-import HUD from './HUD.js';
+import HUD from './HUD';
+import Artworks from './Artworks';
 import { Materials, Models } from './Loader';
 import { Box, Ramp, PhysicsModel } from './Physics';
+import { Focal } from './Focal';
+import { v3 } from './Maths';
+import Globals from './Globals';
 import './SkyShader.js';
 
 const Scene = function() {
@@ -24,58 +28,113 @@ Scene.prototype = {
 
     // user
     this.hud = new HUD(this.renderer.domElement);
-    this.player = new Player(new THREE.Vector3(0, 0, -15));
-    this.camera = new THREE.PerspectiveCamera(55, 1, 0.1, 2000000);
+    this.player = new Player();
+    this.camera = new THREE.PerspectiveCamera(Globals.camera.fov, 1, Globals.camera.near, Globals.camera.far);
     this.camera.up = new THREE.Vector3(0, 1, 0);
     this.raytracer = new RayTracer();
     this.resize();
+    window.addEventListener('resize', function() {
+      self.resize();
+    });
 
-    // world
+    // scene
     this.scene = new THREE.Scene();
-    this.model = new PhysicsModel();
+    this.scene.fog = new THREE.FogExp2(0xCCCFFF, 0.008);
 
-    this.model.add(
-      // floors
-      new Box(new THREE.Vector3(0, 0, -10), new THREE.Vector3(20, 1.05, 20)),
-      new Box(new THREE.Vector3(0, 7.5, 10), new THREE.Vector3(20, 1.05, 20.5)),
-      // stairway rear
-      new Box(new THREE.Vector3(-7, 7.5, 22.5), new THREE.Vector3(4, 1.05, 5)),
-      new Box(new THREE.Vector3(0, 0, 22.5), new THREE.Vector3(20, 1, 5)),
-      new Ramp(new THREE.Vector3(0, 4.25, 22.5), new THREE.Vector3(10, 7.55, 5), 3),
-      // stairway front
-      new Box(new THREE.Vector3(-6, 4, -7), new THREE.Vector3(6, 0.5, 4)),
-      new Ramp(new THREE.Vector3(-7.5, 6, -2.5), new THREE.Vector3(3, 4, 5), 0),
-      new Ramp(new THREE.Vector3(-4.5, 2, -2.5), new THREE.Vector3(3, 4, 5), 2),
-      // walls and posts
-      new Box(new THREE.Vector3(-9.5, 8, 0), new THREE.Vector3(2.75, 16, 40)),
-      new Box(new THREE.Vector3(9.5, 8, 0), new THREE.Vector3(2.75, 16, 40)),
-      new Box(new THREE.Vector3(3, 8, 0), new THREE.Vector3(1, 16, 1)),
-      new Box(new THREE.Vector3(-3, 8, 0), new THREE.Vector3(1, 16, 1)),
-      new Box(new THREE.Vector3(3, 8, 10), new THREE.Vector3(1, 16, 1)),
-      new Box(new THREE.Vector3(-3, 8, 10), new THREE.Vector3(1, 16, 1)),
-      new Box(new THREE.Vector3(-6.5, 8, -19.5), new THREE.Vector3(8.75, 16, 2.5)),
-      new Box(new THREE.Vector3(6.5, 8, -19.5), new THREE.Vector3(8.75, 16, 2.5)),
-      // wooden staircase posts
-      new Box(new THREE.Vector3(2, 10, 0), new THREE.Vector3(16, 5, 0.75)),
-      new Box(new THREE.Vector3(-3, 3.25, -9), new THREE.Vector3(1, 16, 1)),
-      new Box(new THREE.Vector3(-3, 3.25, -5), new THREE.Vector3(1, 16, 1)),
-      new Box(new THREE.Vector3(-6, 3.25, -5), new THREE.Vector3(0.5, 16, 1)),
-      new Box(new THREE.Vector3(-6, 5.25, -9), new THREE.Vector3(6, 3, 1)),
-      new Box(new THREE.Vector3(-3, 5.25, -7), new THREE.Vector3(1, 3, 4)),
-      new Box(new THREE.Vector3(-3, 3.25, -2.5), new THREE.Vector3(1, 6, 4.5)),
-      new Box(new THREE.Vector3(-6, 7.5, -2.5), new THREE.Vector3(0.5, 7, 5)),
-      // glass staircase walls
-      new Box(new THREE.Vector3(0, 8, 25.375), new THREE.Vector3(18, 16, 1)),
-      new Box(new THREE.Vector3(9.5, 8, 22.75), new THREE.Vector3(2.75, 16, 6)),
-      new Box(new THREE.Vector3(-9.5, 8, 22.75), new THREE.Vector3(2.75, 16, 6)),
-      new Box(new THREE.Vector3(-2, 4, 20), new THREE.Vector3(13, 8, 1.5)),
-      new Box(new THREE.Vector3(2, 12, 20), new THREE.Vector3(14, 8, 1.5))
+    // add 3d models
+    const floor = new THREE.Mesh(
+      new THREE.BoxBufferGeometry(1000, 0.1, 1000),
+      Materials.concrete
     );
 
-    this.scene.add( this.player.object, Models.mainBuilding );
+    floor.position.set(0, -0.1, 0);
+    this.scene.add(this.player.object, Models.mainBuilding, this.raytracer.object);
+    this.scene.add(floor);
+
+    // walls & floors
+    this.model = new PhysicsModel();
+    this.model.add(
+      // floors
+      new Box(v3(0, 0, -10), v3(20, 1.05, 20)),
+      new Box(v3(0, 7.5, 10), v3(20, 1.05, 20.5)),
+      // stairway rear
+      new Box(v3(-7, 7.5, 22.5), v3(4, 1.05, 5)),
+      new Box(v3(0, 0, 22.5), v3(20, 1, 5)),
+      new Ramp(v3(0, 4.25, 22.5), v3(10, 7.55, 5), 3),
+      // stairway front
+      new Box(v3(-6, 4, -7), v3(6, 0.5, 4)),
+      new Ramp(v3(-7.5, 6, -2.5), v3(3, 4, 5), 0),
+      new Ramp(v3(-4.5, 2, -2.5), v3(3, 4, 5), 2),
+      // walls and posts
+      new Box(v3(-9.5, 8, 0), v3(2.75, 16, 40)),
+      new Box(v3(9.5, 8, 0), v3(2.75, 16, 40)),
+      new Box(v3(3, 8, 0), v3(1, 16, 1)),
+      new Box(v3(-3, 8, 0), v3(1, 16, 1)),
+      new Box(v3(3, 8, 10), v3(1, 16, 1)),
+      new Box(v3(-3, 8, 10), v3(1, 16, 1)),
+      new Box(v3(-6.5, 8, -19.5), v3(8.75, 16, 2.5)),
+      new Box(v3(6.5, 8, -19.5), v3(8.75, 16, 2.5)),
+      // wooden staircase posts
+      new Box(v3(2, 10, 0), v3(16, 5, 0.75)),
+      new Box(v3(-3, 3.25, -9), v3(1, 16, 1)),
+      new Box(v3(-3, 3.25, -5), v3(1, 16, 1)),
+      new Box(v3(-6, 3.25, -5), v3(0.5, 16, 1)),
+      new Box(v3(-6, 5.25, -9), v3(6, 3, 1)),
+      new Box(v3(-3, 5.25, -7), v3(1, 3, 4)),
+      new Box(v3(-3, 3.25, -2.5), v3(1, 6, 4.5)),
+      new Box(v3(-6, 7.5, -2.5), v3(0.5, 7, 5)),
+      // glass staircase walls
+      new Box(v3(0, 8, 25.375), v3(18, 16, 1)),
+      new Box(v3(9.5, 8, 22.75), v3(2.75, 16, 6)),
+      new Box(v3(-9.5, 8, 22.75), v3(2.75, 16, 6)),
+      new Box(v3(-2, 4, 20), v3(13, 8, 1.5)),
+      new Box(v3(2, 12, 20), v3(14, 8, 1.5))
+    );
+    this.scene.add(this.model.object);
+
+    // load gallery
+    const tags = document.getElementsByClassName('im');
+    this.artworks = new Artworks();
+
+    for (let i=0; i<tags.length; i+=1) {
+      const im = tags[i];
+      let title = '';
+      let caption = '';
+      let url = '';
+      let src = '';
+
+      for (let j=0; j<im.childNodes.length; j+=1) {
+        const node = im.childNodes[j];
+
+        switch (node.className) {
+          case 'im__title':
+            title = node.textContent;
+            break;
+          case 'im__caption':
+            caption = node.textContent;
+            break;
+          case 'im__url':
+            url = node.textContent;
+            break;
+          case 'im__src':
+            src = node.textContent;
+            break;
+          default:
+            break;
+        }
+      }
+
+      this.artworks.add(title, caption, url, src);
+    }
+
+    this.artworks.placeImages();
+    this.scene.add(this.artworks.object);
+
+    for (let i=0; i<this.artworks.focalPoints.length; i+=1) {
+      this.model.add(this.artworks.focalPoints[i]);
+    }
 
     // lighting
-
     const ambient = new THREE.AmbientLight(0xffffff, 0.05);
     const hemisphere = new THREE.HemisphereLight(0xffaabb, 0x080820, 0.1);
     const point1 = new THREE.PointLight(0xffffff, 0.5, 13, 1);
@@ -95,8 +154,6 @@ Scene.prototype = {
     spot2.target = new THREE.Object3D();
     spot2.target.position.set(0, 0, 10);
     point2.position.set(0, 14, 10);
-
-    // ground floor 4 spotlights
     spot3.position.set(8, 6, 5);
     spot3.target = new THREE.Object3D();
     spot3.target.position.set(9.25, 0, 5);
@@ -109,7 +166,6 @@ Scene.prototype = {
     spot6.position.set(-8, 6, 5);
     spot6.target = new THREE.Object3D();
     spot6.target.position.set(-9.25, 0, 5);
-
     this.scene.add(
       ambient,
       spot1,
@@ -130,29 +186,16 @@ Scene.prototype = {
       spot6.target
     );
 
-    this.scene.fog = new THREE.FogExp2( 0xCCCFFF, 0.008 );
+    // skybox
+    const sky = new THREE.Sky();
+    const sun = new THREE.PointLight(0xffffff, 0.9, 40500);
 
-    const floor = new THREE.Mesh(
-      new THREE.BoxBufferGeometry(1000, 0.1, 1000),
-      Materials.concrete
-    );
-    floor.position.set(0, -0.1, 0);
-
-    let sky = new THREE.Sky();
-    let sun = new THREE.PointLight(0xffffff, 0.9, 40500);
-
-    sun.position.set(
-      sky.uniforms.sunPosition.value.x,
-      sky.uniforms.sunPosition.value.y,
-      sky.uniforms.sunPosition.value.z
-    )
-
-    this.scene.add(floor, sun, this.raytracer.object, sky.mesh);
-    this.scene.add(this.model.object);
+    sun.position.set(sky.uniforms.sunPosition.value.x, sky.uniforms.sunPosition.value.y, sky.uniforms.sunPosition.value.z);
+    this.scene.add(sun, sky.mesh);
   },
 
   resize: function() {
-    const width = 960;//window.innerWidth;
+    const width = window.innerWidth;
     const height = 540;//Math.min(520, window.innerHeight * 0.75);
     this.camera.aspect = width / height;
     this.camera.updateProjectionMatrix();
