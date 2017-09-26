@@ -41,27 +41,42 @@ matLoader.load('hangar.mtl', function(materials) {
   materials.preload();
   var objLoader = new THREE.OBJLoader();
 
-  console.log(materials);
+  for (var key in materials.materials) {
+    const mat = materials.materials[key];
+
+    if (mat.map) {
+      console.log(mat.map.image.src, mat);
+    } else {
+      console.log('no map', mat);
+    }
+  }
 
   objLoader.setPath(appRoot + 'assets/3d/');
   objLoader.setMaterials(materials)
   objLoader.load('hangar.obj', function (obj) {
     for (let i=0; i<obj.children.length; i+=1) {
       const child = obj.children[i];
-      //const mat = materials.materials[child.material.name];
-      //child.material = mat;
 
-      // make visible, reduce bump map
-      child.material.color = new THREE.Color(0xffffff);
+      // reduce bump map
       child.material.bumpScale = 0.01;
 
       // make glass translucent
       if (child.material.map) {
+        // if textured, set full colour
+        child.material.color = new THREE.Color(0xffffff);
+
+        // set transparent for .png
+        if (child.material.map.image.src.indexOf('.png') !== -1) {
+          child.material.transparent = true;
+        }
+
+        // for glass
         if (child.material.map.image.src.indexOf('glass') != -1) {
           child.material.transparent = true;
           child.material.opacity = 0.4;
         }
       } else {
+        // no texture, set pure colour
         child.material.emissive = child.material.color;
       }
     }
