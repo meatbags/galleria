@@ -7,7 +7,7 @@ const Globals = {
     position: {
       x: 0,
       y: 0,
-      z: -15,
+      z: -40,
     },
     height: 1.8,
     speed: 6,

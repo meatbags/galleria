@@ -42,14 +42,16 @@ Scene.prototype = {
     this.scene.fog = new THREE.FogExp2(0xCCCFFF, 0.008);
 
     // add 3d models
+    /*
     const floor = new THREE.Mesh(
       new THREE.BoxBufferGeometry(1000, 0.1, 1000),
       Materials.concrete
     );
+    */
 
-    floor.position.set(0, -0.1, 0);
+    //floor.position.set(0, -0.1, 0);
     this.scene.add(this.player.object, Models.mainBuilding, this.raytracer.object);
-    this.scene.add(floor);
+    //this.scene.add(floor);
 
     // walls & floors
     this.model = new PhysicsModel();
@@ -90,7 +92,7 @@ Scene.prototype = {
       new Box(v3(-2, 4, 20), v3(13, 8, 1.5)),
       new Box(v3(2, 12, 20), v3(14, 8, 1.5))
     );
-    this.scene.add(this.model.object);
+    //this.scene.add(this.model.object);
 
     // load gallery
     const tags = document.getElementsByClassName('im');
@@ -135,7 +137,7 @@ Scene.prototype = {
     }
 
     // lighting
-    const ambient = new THREE.AmbientLight(0xffffff, 0.05);
+    const ambient = new THREE.AmbientLight(0xffffff, .08);
     const hemisphere = new THREE.HemisphereLight(0xffaabb, 0x080820, 0.1);
     const point1 = new THREE.PointLight(0xffffff, 0.5, 13, 1);
     const point2 = new THREE.PointLight(0xffffff, 0.5, 10, 1);
@@ -145,6 +147,7 @@ Scene.prototype = {
     const spot4 = new THREE.SpotLight(0xffffff, 1, 8, Math.PI / 2, 1);
     const spot5 = new THREE.SpotLight(0xffffff, 1, 8, Math.PI / 2, 1);
     const spot6 = new THREE.SpotLight(0xffffff, 1, 8, Math.PI / 2, 1);
+    this.neonSign = new THREE.PointLight(0xff0000, 0.8, 15, 1);
 
     spot1.position.set(0, 15, -10);
     spot1.target = new THREE.Object3D();
@@ -166,6 +169,8 @@ Scene.prototype = {
     spot6.position.set(-8, 6, 5);
     spot6.target = new THREE.Object3D();
     spot6.target.position.set(-9.25, 0, 5);
+    this.neonSign.position.set(0, 14, -32);
+
     this.scene.add(
       ambient,
       spot1,
@@ -183,15 +188,15 @@ Scene.prototype = {
       spot5,
       spot5.target,
       spot6,
-      spot6.target
+      spot6.target,
+      this.neonSign
     );
 
     // skybox
     const sky = new THREE.Sky();
-    const sun = new THREE.PointLight(0xffffff, 0.9, 40500);
-
-    sun.position.set(sky.uniforms.sunPosition.value.x, sky.uniforms.sunPosition.value.y, sky.uniforms.sunPosition.value.z);
-    this.scene.add(sun, sky.mesh);
+    //const sun = new THREE.PointLight(0xffffff, 0.9, 40500);
+    //sun.position.set(sky.uniforms.sunPosition.value.x, sky.uniforms.sunPosition.value.y, sky.uniforms.sunPosition.value.z);
+    this.scene.add(sky.mesh);//,sun);
   },
 
   resize: function() {

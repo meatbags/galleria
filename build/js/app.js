@@ -293,7 +293,7 @@ var Globals = {
     position: {
       x: 0,
       y: 0,
-      z: -15
+      z: -40
     },
     height: 1.8,
     speed: 6
@@ -658,11 +658,16 @@ Scene.prototype = {
     this.scene.fog = new THREE.FogExp2(0xCCCFFF, 0.008);
 
     // add 3d models
-    var floor = new THREE.Mesh(new THREE.BoxBufferGeometry(1000, 0.1, 1000), _Loader.Materials.concrete);
+    /*
+    const floor = new THREE.Mesh(
+      new THREE.BoxBufferGeometry(1000, 0.1, 1000),
+      Materials.concrete
+    );
+    */
 
-    floor.position.set(0, -0.1, 0);
+    //floor.position.set(0, -0.1, 0);
     this.scene.add(this.player.object, _Loader.Models.mainBuilding, this.raytracer.object);
-    this.scene.add(floor);
+    //this.scene.add(floor);
 
     // walls & floors
     this.model = new _Physics.PhysicsModel();
@@ -679,7 +684,7 @@ Scene.prototype = {
     new _Physics.Box((0, _Maths.v3)(2, 10, 0), (0, _Maths.v3)(16, 5, 0.75)), new _Physics.Box((0, _Maths.v3)(-3, 3.25, -9), (0, _Maths.v3)(1, 16, 1)), new _Physics.Box((0, _Maths.v3)(-3, 3.25, -5), (0, _Maths.v3)(1, 16, 1)), new _Physics.Box((0, _Maths.v3)(-6, 3.25, -5), (0, _Maths.v3)(0.5, 16, 1)), new _Physics.Box((0, _Maths.v3)(-6, 5.25, -9), (0, _Maths.v3)(6, 3, 1)), new _Physics.Box((0, _Maths.v3)(-3, 5.25, -7), (0, _Maths.v3)(1, 3, 4)), new _Physics.Box((0, _Maths.v3)(-3, 3.25, -2.5), (0, _Maths.v3)(1, 6, 4.5)), new _Physics.Box((0, _Maths.v3)(-6, 7.5, -2.5), (0, _Maths.v3)(0.5, 7, 5)),
     // glass staircase walls
     new _Physics.Box((0, _Maths.v3)(0, 8, 25.375), (0, _Maths.v3)(18, 16, 1)), new _Physics.Box((0, _Maths.v3)(9.5, 8, 22.75), (0, _Maths.v3)(2.75, 16, 6)), new _Physics.Box((0, _Maths.v3)(-9.5, 8, 22.75), (0, _Maths.v3)(2.75, 16, 6)), new _Physics.Box((0, _Maths.v3)(-2, 4, 20), (0, _Maths.v3)(13, 8, 1.5)), new _Physics.Box((0, _Maths.v3)(2, 12, 20), (0, _Maths.v3)(14, 8, 1.5)));
-    this.scene.add(this.model.object);
+    //this.scene.add(this.model.object);
 
     // load gallery
     var tags = document.getElementsByClassName('im');
@@ -724,7 +729,7 @@ Scene.prototype = {
     }
 
     // lighting
-    var ambient = new THREE.AmbientLight(0xffffff, 0.05);
+    var ambient = new THREE.AmbientLight(0xffffff, .08);
     var hemisphere = new THREE.HemisphereLight(0xffaabb, 0x080820, 0.1);
     var point1 = new THREE.PointLight(0xffffff, 0.5, 13, 1);
     var point2 = new THREE.PointLight(0xffffff, 0.5, 10, 1);
@@ -734,6 +739,7 @@ Scene.prototype = {
     var spot4 = new THREE.SpotLight(0xffffff, 1, 8, Math.PI / 2, 1);
     var spot5 = new THREE.SpotLight(0xffffff, 1, 8, Math.PI / 2, 1);
     var spot6 = new THREE.SpotLight(0xffffff, 1, 8, Math.PI / 2, 1);
+    this.neonSign = new THREE.PointLight(0xff0000, 0.8, 15, 1);
 
     spot1.position.set(0, 15, -10);
     spot1.target = new THREE.Object3D();
@@ -755,14 +761,15 @@ Scene.prototype = {
     spot6.position.set(-8, 6, 5);
     spot6.target = new THREE.Object3D();
     spot6.target.position.set(-9.25, 0, 5);
-    this.scene.add(ambient, spot1, spot1.target, point1, point2, hemisphere, spot2, spot2.target, point2, spot3, spot3.target, spot4, spot4.target, spot5, spot5.target, spot6, spot6.target);
+    this.neonSign.position.set(0, 14, -32);
+
+    this.scene.add(ambient, spot1, spot1.target, point1, point2, hemisphere, spot2, spot2.target, point2, spot3, spot3.target, spot4, spot4.target, spot5, spot5.target, spot6, spot6.target, this.neonSign);
 
     // skybox
     var sky = new THREE.Sky();
-    var sun = new THREE.PointLight(0xffffff, 0.9, 40500);
-
-    sun.position.set(sky.uniforms.sunPosition.value.x, sky.uniforms.sunPosition.value.y, sky.uniforms.sunPosition.value.z);
-    this.scene.add(sun, sky.mesh);
+    //const sun = new THREE.PointLight(0xffffff, 0.9, 40500);
+    //sun.position.set(sky.uniforms.sunPosition.value.x, sky.uniforms.sunPosition.value.y, sky.uniforms.sunPosition.value.z);
+    this.scene.add(sky.mesh); //,sun);
   },
 
   resize: function resize() {
