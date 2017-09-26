@@ -1,4 +1,4 @@
-![](screenshots/screenshot_1.jpg?raw=true)
+![](screenshots/screenshot_2.jpg?raw=true)
 
 # galleria
 
