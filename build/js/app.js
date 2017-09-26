@@ -186,13 +186,14 @@ matLoader.load('hangar.mtl', function (materials) {
   var objLoader = new THREE.OBJLoader();
 
   for (var key in materials.materials) {
-    var mat = materials.materials[key];
-
+    /*
+    const mat = materials.materials[key];
     if (mat.map) {
       console.log(mat.map.image.src, mat);
     } else {
       console.log('no map', mat);
     }
+    */
   }
 
   objLoader.setPath(appRoot + 'assets/3d/');
@@ -212,6 +213,7 @@ matLoader.load('hangar.mtl', function (materials) {
         // set transparent for .png
         if (child.material.map.image.src.indexOf('.png') !== -1) {
           child.material.transparent = true;
+          child.material.side = THREE.DoubleSide;
         }
 
         // for glass
@@ -671,33 +673,31 @@ Scene.prototype = {
     // scene
     this.scene = new THREE.Scene();
     this.scene.fog = new THREE.FogExp2(0xCCCFFF, 0.008);
-
-    // add 3d models
-    /*
-    const floor = new THREE.Mesh(
-      new THREE.BoxBufferGeometry(1000, 0.1, 1000),
-      Materials.concrete
-    );
-    */
-
-    //floor.position.set(0, -0.1, 0);
     this.scene.add(this.player.object, _Loader.Models.mainBuilding, this.raytracer.object);
-    //this.scene.add(floor);
 
     // walls & floors
     this.model = new _Physics.PhysicsModel();
     this.model.add(
     // floors
-    new _Physics.Box((0, _Maths.v3)(0, 0, -10), (0, _Maths.v3)(20, 1.05, 20)), new _Physics.Box((0, _Maths.v3)(0, 7.5, 10), (0, _Maths.v3)(20, 1.05, 20.5)),
-    // stairway rear
-    new _Physics.Box((0, _Maths.v3)(-7, 7.5, 22.5), (0, _Maths.v3)(4, 1.05, 5)), new _Physics.Box((0, _Maths.v3)(0, 0, 22.5), (0, _Maths.v3)(20, 1, 5)), new _Physics.Ramp((0, _Maths.v3)(0, 4.25, 22.5), (0, _Maths.v3)(10, 7.55, 5), 3),
-    // stairway front
+    new _Physics.Box((0, _Maths.v3)(0, 0, -10.75), (0, _Maths.v3)(23, 1.05, 21.5)), new _Physics.Box((0, _Maths.v3)(0, 7.5, 10), (0, _Maths.v3)(20, 1.05, 20.5)),
+    // main gallery walls
+    new _Physics.Box((0, _Maths.v3)(-9.5, 8, 0), (0, _Maths.v3)(2.75, 16, 40)), new _Physics.Box((0, _Maths.v3)(9.5, 8, 0), (0, _Maths.v3)(2.75, 16, 40)),
+    // outer walls
+    new _Physics.Box((0, _Maths.v3)(15, 8, -5), (0, _Maths.v3)(2, 20, 79)), new _Physics.Box((0, _Maths.v3)(-26, 8, -5), (0, _Maths.v3)(2, 20, 79)), new _Physics.Box((0, _Maths.v3)(-5.5, 8, 34.5), (0, _Maths.v3)(41, 20, 2)), new _Physics.Box((0, _Maths.v3)(-5.5, 8, -44.5), (0, _Maths.v3)(41, 20, 2)),
+    // side platforms
+    new _Physics.Box((0, _Maths.v3)(-11, 0.25, 10.5), (0, _Maths.v3)(1, 0.5, 21)), new _Physics.Box((0, _Maths.v3)(11, 0.25, 10.5), (0, _Maths.v3)(1, 0.5, 21)),
+    // central posts
+    new _Physics.Box((0, _Maths.v3)(3, 8, 0), (0, _Maths.v3)(1, 16, 1)), new _Physics.Box((0, _Maths.v3)(-3, 8, 0), (0, _Maths.v3)(1, 16, 1)), new _Physics.Box((0, _Maths.v3)(0, 8, 10), (0, _Maths.v3)(7, 16, 1.5)),
+    //new Box(v3(-3, 8, 10), v3(1, 16, 1)),
+    // front entrance
+    new _Physics.Ramp((0, _Maths.v3)(0, 0.25, -23), (0, _Maths.v3)(10, 0.5, 3), 0), new _Physics.Box((0, _Maths.v3)(7.875, 8, -19.5), (0, _Maths.v3)(6, 16, 2.5)), new _Physics.Box((0, _Maths.v3)(-7.875, 8, -19.5), (0, _Maths.v3)(6, 16, 2.5)),
+    // stairs front
     new _Physics.Box((0, _Maths.v3)(-6, 4, -7), (0, _Maths.v3)(6, 0.5, 4)), new _Physics.Ramp((0, _Maths.v3)(-7.5, 6, -2.5), (0, _Maths.v3)(3, 4, 5), 0), new _Physics.Ramp((0, _Maths.v3)(-4.5, 2, -2.5), (0, _Maths.v3)(3, 4, 5), 2),
-    // walls and posts
-    new _Physics.Box((0, _Maths.v3)(-9.5, 8, 0), (0, _Maths.v3)(2.75, 16, 40)), new _Physics.Box((0, _Maths.v3)(9.5, 8, 0), (0, _Maths.v3)(2.75, 16, 40)), new _Physics.Box((0, _Maths.v3)(3, 8, 0), (0, _Maths.v3)(1, 16, 1)), new _Physics.Box((0, _Maths.v3)(-3, 8, 0), (0, _Maths.v3)(1, 16, 1)), new _Physics.Box((0, _Maths.v3)(3, 8, 10), (0, _Maths.v3)(1, 16, 1)), new _Physics.Box((0, _Maths.v3)(-3, 8, 10), (0, _Maths.v3)(1, 16, 1)), new _Physics.Box((0, _Maths.v3)(-6.5, 8, -19.5), (0, _Maths.v3)(8.75, 16, 2.5)), new _Physics.Box((0, _Maths.v3)(6.5, 8, -19.5), (0, _Maths.v3)(8.75, 16, 2.5)),
-    // wooden staircase posts
+    // stairs front -- posts & walls
     new _Physics.Box((0, _Maths.v3)(2, 10, 0), (0, _Maths.v3)(16, 5, 0.75)), new _Physics.Box((0, _Maths.v3)(-3, 3.25, -9), (0, _Maths.v3)(1, 16, 1)), new _Physics.Box((0, _Maths.v3)(-3, 3.25, -5), (0, _Maths.v3)(1, 16, 1)), new _Physics.Box((0, _Maths.v3)(-6, 3.25, -5), (0, _Maths.v3)(0.5, 16, 1)), new _Physics.Box((0, _Maths.v3)(-6, 5.25, -9), (0, _Maths.v3)(6, 3, 1)), new _Physics.Box((0, _Maths.v3)(-3, 5.25, -7), (0, _Maths.v3)(1, 3, 4)), new _Physics.Box((0, _Maths.v3)(-3, 3.25, -2.5), (0, _Maths.v3)(1, 6, 4.5)), new _Physics.Box((0, _Maths.v3)(-6, 7.5, -2.5), (0, _Maths.v3)(0.5, 7, 5)),
-    // glass staircase walls
+    // stairs back
+    new _Physics.Box((0, _Maths.v3)(-7, 7.5, 22.5), (0, _Maths.v3)(4, 1.05, 5)), new _Physics.Box((0, _Maths.v3)(0, 0, 22.5), (0, _Maths.v3)(20, 1, 5)), new _Physics.Ramp((0, _Maths.v3)(0, 4.25, 22.5), (0, _Maths.v3)(10, 7.55, 5), 3),
+    // stairs back -- walls
     new _Physics.Box((0, _Maths.v3)(0, 8, 25.375), (0, _Maths.v3)(18, 16, 1)), new _Physics.Box((0, _Maths.v3)(9.5, 8, 22.75), (0, _Maths.v3)(2.75, 16, 6)), new _Physics.Box((0, _Maths.v3)(-9.5, 8, 22.75), (0, _Maths.v3)(2.75, 16, 6)), new _Physics.Box((0, _Maths.v3)(-2, 4, 20), (0, _Maths.v3)(13, 8, 1.5)), new _Physics.Box((0, _Maths.v3)(2, 12, 20), (0, _Maths.v3)(14, 8, 1.5)));
     //this.scene.add(this.model.object);
 
@@ -903,7 +903,7 @@ var Player = function Player(position) {
 Player.prototype = {
 	init: function init() {
 		this.bindControls();
-		var light = new THREE.PointLight(0xffffff, 0.75, 10, 2);
+		var light = new THREE.PointLight(0xffffff, 0.8, 10, 2);
 		light.position.set(0, 2, 0);
 		this.object.add(light);
 	},
@@ -1103,10 +1103,10 @@ var RayTracer = function RayTracer() {
   this.object = new THREE.Object3D();
 
   var light = new THREE.PointLight(0xffffff, 0.8, 5, 2);
-  var ball = new THREE.Mesh(new THREE.SphereBufferGeometry(0.2, 16), _Loader.Materials.concrete);
+  var ball = new THREE.Mesh(new THREE.SphereBufferGeometry(0.05, 16), _Loader.Materials.concrete);
   light.position.y = 1.1;
 
-  this.object.add(ball, light);
+  this.object.add(ball); //, light);
 };
 
 RayTracer.prototype = {

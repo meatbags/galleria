@@ -42,13 +42,14 @@ matLoader.load('hangar.mtl', function(materials) {
   var objLoader = new THREE.OBJLoader();
 
   for (var key in materials.materials) {
+    /*
     const mat = materials.materials[key];
-
     if (mat.map) {
       console.log(mat.map.image.src, mat);
     } else {
       console.log('no map', mat);
     }
+    */
   }
 
   objLoader.setPath(appRoot + 'assets/3d/');
@@ -68,6 +69,7 @@ matLoader.load('hangar.mtl', function(materials) {
         // set transparent for .png
         if (child.material.map.image.src.indexOf('.png') !== -1) {
           child.material.transparent = true;
+          child.material.side = THREE.DoubleSide;
         }
 
         // for glass

@@ -40,43 +40,39 @@ Scene.prototype = {
     // scene
     this.scene = new THREE.Scene();
     this.scene.fog = new THREE.FogExp2(0xCCCFFF, 0.008);
-
-    // add 3d models
-    /*
-    const floor = new THREE.Mesh(
-      new THREE.BoxBufferGeometry(1000, 0.1, 1000),
-      Materials.concrete
-    );
-    */
-
-    //floor.position.set(0, -0.1, 0);
     this.scene.add(this.player.object, Models.mainBuilding, this.raytracer.object);
-    //this.scene.add(floor);
 
     // walls & floors
     this.model = new PhysicsModel();
     this.model.add(
       // floors
-      new Box(v3(0, 0, -10), v3(20, 1.05, 20)),
+      new Box(v3(0, 0, -10.75), v3(23, 1.05, 21.5)),
       new Box(v3(0, 7.5, 10), v3(20, 1.05, 20.5)),
-      // stairway rear
-      new Box(v3(-7, 7.5, 22.5), v3(4, 1.05, 5)),
-      new Box(v3(0, 0, 22.5), v3(20, 1, 5)),
-      new Ramp(v3(0, 4.25, 22.5), v3(10, 7.55, 5), 3),
-      // stairway front
+      // main gallery walls
+      new Box(v3(-9.5, 8, 0), v3(2.75, 16, 40)),
+      new Box(v3(9.5, 8, 0), v3(2.75, 16, 40)),
+      // outer walls
+      new Box(v3(15, 8, -5), v3(2, 20, 79)),
+      new Box(v3(-26, 8, -5), v3(2, 20, 79)),
+      new Box(v3(-5.5, 8, 34.5), v3(41, 20, 2)),
+      new Box(v3(-5.5, 8, -44.5), v3(41, 20, 2)),
+      // side platforms
+      new Box(v3(-11, 0.25, 10.5), v3(1, 0.5, 21)),
+      new Box(v3( 11, 0.25, 10.5), v3(1, 0.5, 21)),
+      // central posts
+      new Box(v3(3, 8, 0), v3(1, 16, 1)),
+      new Box(v3(-3, 8, 0), v3(1, 16, 1)),
+      new Box(v3(0, 8, 10), v3(7, 16, 1.5)),
+      //new Box(v3(-3, 8, 10), v3(1, 16, 1)),
+      // front entrance
+      new Ramp(v3(0, 0.25, -23), v3(10, 0.5, 3), 0),
+      new Box(v3(7.875, 8, -19.5), v3(6, 16, 2.5)),
+      new Box(v3(-7.875, 8, -19.5), v3(6, 16, 2.5)),
+      // stairs front
       new Box(v3(-6, 4, -7), v3(6, 0.5, 4)),
       new Ramp(v3(-7.5, 6, -2.5), v3(3, 4, 5), 0),
       new Ramp(v3(-4.5, 2, -2.5), v3(3, 4, 5), 2),
-      // walls and posts
-      new Box(v3(-9.5, 8, 0), v3(2.75, 16, 40)),
-      new Box(v3(9.5, 8, 0), v3(2.75, 16, 40)),
-      new Box(v3(3, 8, 0), v3(1, 16, 1)),
-      new Box(v3(-3, 8, 0), v3(1, 16, 1)),
-      new Box(v3(3, 8, 10), v3(1, 16, 1)),
-      new Box(v3(-3, 8, 10), v3(1, 16, 1)),
-      new Box(v3(-6.5, 8, -19.5), v3(8.75, 16, 2.5)),
-      new Box(v3(6.5, 8, -19.5), v3(8.75, 16, 2.5)),
-      // wooden staircase posts
+      // stairs front -- posts & walls
       new Box(v3(2, 10, 0), v3(16, 5, 0.75)),
       new Box(v3(-3, 3.25, -9), v3(1, 16, 1)),
       new Box(v3(-3, 3.25, -5), v3(1, 16, 1)),
@@ -85,7 +81,11 @@ Scene.prototype = {
       new Box(v3(-3, 5.25, -7), v3(1, 3, 4)),
       new Box(v3(-3, 3.25, -2.5), v3(1, 6, 4.5)),
       new Box(v3(-6, 7.5, -2.5), v3(0.5, 7, 5)),
-      // glass staircase walls
+      // stairs back
+      new Box(v3(-7, 7.5, 22.5), v3(4, 1.05, 5)),
+      new Box(v3(0, 0, 22.5), v3(20, 1, 5)),
+      new Ramp(v3(0, 4.25, 22.5), v3(10, 7.55, 5), 3),
+      // stairs back -- walls
       new Box(v3(0, 8, 25.375), v3(18, 16, 1)),
       new Box(v3(9.5, 8, 22.75), v3(2.75, 16, 6)),
       new Box(v3(-9.5, 8, 22.75), v3(2.75, 16, 6)),

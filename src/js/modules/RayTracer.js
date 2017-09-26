@@ -10,12 +10,12 @@ const RayTracer = function() {
 
   const light = new THREE.PointLight(0xffffff, 0.8, 5, 2);
   const ball = new THREE.Mesh(
-    new THREE.SphereBufferGeometry(0.2, 16),
+    new THREE.SphereBufferGeometry(0.05, 16),
     Materials.concrete
   );
   light.position.y = 1.1;
 
-  this.object.add(ball, light);
+  this.object.add(ball);//, light);
 };
 
 RayTracer.prototype = {
