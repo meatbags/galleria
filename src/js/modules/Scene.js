@@ -56,6 +56,10 @@ Scene.prototype = {
       new Box(v3(-26, 8, -5), v3(2, 20, 79)),
       new Box(v3(-5.5, 8, 34.5), v3(41, 20, 2)),
       new Box(v3(-5.5, 8, -44.5), v3(41, 20, 2)),
+      // outer fences + blockades
+      new Box(v3(12.25, 8, 5.125), v3(5, 20, 22)),
+      new Box(v3(-20.75, 8, -9.5), v3(11.5, 20, 2.5)),
+      new Box(v3(-10.75, 8, -10), v3(2.5, 20, 1.75)),
       // side platforms
       new Box(v3(-11, 0.25, 10.5), v3(1, 0.5, 21)),
       new Box(v3( 11, 0.25, 10.5), v3(1, 0.5, 21)),
@@ -147,6 +151,7 @@ Scene.prototype = {
     const spot4 = new THREE.SpotLight(0xffffff, 1, 8, Math.PI / 2, 1);
     const spot5 = new THREE.SpotLight(0xffffff, 1, 8, Math.PI / 2, 1);
     const spot6 = new THREE.SpotLight(0xffffff, 1, 8, Math.PI / 2, 1);
+    const spot7 = new THREE.SpotLight(0xfeff87, 1, 12, Math.PI / 2, 1);
     this.neonSign = new THREE.PointLight(0xff0000, 0.8, 15, 1);
 
     spot1.position.set(0, 15, -10);
@@ -169,6 +174,9 @@ Scene.prototype = {
     spot6.position.set(-8, 6, 5);
     spot6.target = new THREE.Object3D();
     spot6.target.position.set(-9.25, 0, 5);
+    spot7.position.set(-22, 12, 15);
+    spot7.target = new THREE.Object3D();
+    spot7.target.position.set(-22, 0, 15);
     this.neonSign.position.set(0, 14, -32);
 
     this.scene.add(
@@ -189,6 +197,8 @@ Scene.prototype = {
       spot5.target,
       spot6,
       spot6.target,
+      spot7,
+      spot7.target,
       this.neonSign
     );
 

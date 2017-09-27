@@ -684,6 +684,8 @@ Scene.prototype = {
     new _Physics.Box((0, _Maths.v3)(-9.5, 8, 0), (0, _Maths.v3)(2.75, 16, 40)), new _Physics.Box((0, _Maths.v3)(9.5, 8, 0), (0, _Maths.v3)(2.75, 16, 40)),
     // outer walls
     new _Physics.Box((0, _Maths.v3)(15, 8, -5), (0, _Maths.v3)(2, 20, 79)), new _Physics.Box((0, _Maths.v3)(-26, 8, -5), (0, _Maths.v3)(2, 20, 79)), new _Physics.Box((0, _Maths.v3)(-5.5, 8, 34.5), (0, _Maths.v3)(41, 20, 2)), new _Physics.Box((0, _Maths.v3)(-5.5, 8, -44.5), (0, _Maths.v3)(41, 20, 2)),
+    // outer fences + blockades
+    new _Physics.Box((0, _Maths.v3)(12.25, 8, 5.125), (0, _Maths.v3)(5, 20, 22)), new _Physics.Box((0, _Maths.v3)(-20.75, 8, -9.5), (0, _Maths.v3)(11.5, 20, 2.5)), new _Physics.Box((0, _Maths.v3)(-10.75, 8, -10), (0, _Maths.v3)(2.5, 20, 1.75)),
     // side platforms
     new _Physics.Box((0, _Maths.v3)(-11, 0.25, 10.5), (0, _Maths.v3)(1, 0.5, 21)), new _Physics.Box((0, _Maths.v3)(11, 0.25, 10.5), (0, _Maths.v3)(1, 0.5, 21)),
     // central posts
@@ -754,6 +756,7 @@ Scene.prototype = {
     var spot4 = new THREE.SpotLight(0xffffff, 1, 8, Math.PI / 2, 1);
     var spot5 = new THREE.SpotLight(0xffffff, 1, 8, Math.PI / 2, 1);
     var spot6 = new THREE.SpotLight(0xffffff, 1, 8, Math.PI / 2, 1);
+    var spot7 = new THREE.SpotLight(0xfeff87, 1, 12, Math.PI / 2, 1);
     this.neonSign = new THREE.PointLight(0xff0000, 0.8, 15, 1);
 
     spot1.position.set(0, 15, -10);
@@ -776,9 +779,12 @@ Scene.prototype = {
     spot6.position.set(-8, 6, 5);
     spot6.target = new THREE.Object3D();
     spot6.target.position.set(-9.25, 0, 5);
+    spot7.position.set(-22, 12, 15);
+    spot7.target = new THREE.Object3D();
+    spot7.target.position.set(-22, 0, 15);
     this.neonSign.position.set(0, 14, -32);
 
-    this.scene.add(ambient, spot1, spot1.target, point1, point2, hemisphere, spot2, spot2.target, point2, spot3, spot3.target, spot4, spot4.target, spot5, spot5.target, spot6, spot6.target, this.neonSign);
+    this.scene.add(ambient, spot1, spot1.target, point1, point2, hemisphere, spot2, spot2.target, point2, spot3, spot3.target, spot4, spot4.target, spot5, spot5.target, spot6, spot6.target, spot7, spot7.target, this.neonSign);
 
     // skybox
     var sky = new THREE.Sky();
