@@ -60,6 +60,8 @@ Scene.prototype = {
       new Box(v3(12.25, 8, 5.125), v3(5, 20, 22)),
       new Box(v3(-20.75, 8, -9.5), v3(11.5, 20, 2.5)),
       new Box(v3(-10.75, 8, -10), v3(2.5, 20, 1.75)),
+      new Box(v3(-21, 8, 20.25), v3(12, 20, 32)),
+      new Box(v3(-13.5, 8, 10), v3(5, 20, 1)),
       // side platforms
       new Box(v3(-11, 0.25, 10.5), v3(1, 0.5, 21)),
       new Box(v3( 11, 0.25, 10.5), v3(1, 0.5, 21)),
@@ -145,13 +147,14 @@ Scene.prototype = {
     const hemisphere = new THREE.HemisphereLight(0xffaabb, 0x080820, 0.1);
     const point1 = new THREE.PointLight(0xffffff, 0.5, 13, 1);
     const point2 = new THREE.PointLight(0xffffff, 0.5, 10, 1);
+    const point3 = new THREE.PointLight(0xfeff87, 0.5, 12, 1);
     const spot1 = new THREE.SpotLight(0xffffff, 1, 30, Math.PI / 10, 1, 2);
     const spot2 = new THREE.SpotLight(0xffffff, 1, 10, Math.PI / 10, 1, 2);
     const spot3 = new THREE.SpotLight(0xffffff, 1, 8, Math.PI / 2, 1);
     const spot4 = new THREE.SpotLight(0xffffff, 1, 8, Math.PI / 2, 1);
     const spot5 = new THREE.SpotLight(0xffffff, 1, 8, Math.PI / 2, 1);
     const spot6 = new THREE.SpotLight(0xffffff, 1, 8, Math.PI / 2, 1);
-    const spot7 = new THREE.SpotLight(0xfeff87, 1, 12, Math.PI / 2, 1);
+    const spot7 = new THREE.SpotLight(0xfeff87, 1, 15, Math.PI / 3, 0.5);
     this.neonSign = new THREE.PointLight(0xff0000, 0.8, 15, 1);
 
     spot1.position.set(0, 15, -10);
@@ -174,9 +177,10 @@ Scene.prototype = {
     spot6.position.set(-8, 6, 5);
     spot6.target = new THREE.Object3D();
     spot6.target.position.set(-9.25, 0, 5);
-    spot7.position.set(-22, 12, 15);
+    point3.position.set(-19, 8, 1);
+    spot7.position.set(-19, 8, 1);
     spot7.target = new THREE.Object3D();
-    spot7.target.position.set(-22, 0, 15);
+    spot7.target.position.set(-15, 0, 0);
     this.neonSign.position.set(0, 14, -32);
 
     this.scene.add(
@@ -185,6 +189,7 @@ Scene.prototype = {
       spot1.target,
       point1,
       point2,
+      point3,
       hemisphere,
       spot2,
       spot2.target,
