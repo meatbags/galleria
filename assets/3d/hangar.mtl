@@ -21,12 +21,12 @@ map_Kd dull_cord.jpg
 Ni 1.00
 Ks 1.00 1.00 1.00
 Ns 18.00
-newmtl lambert7SG
+newmtl lambert8SG
 illum 4
 Kd 0.00 0.00 0.00
 Ka 0.00 0.00 0.00
 Tf 1.00 1.00 1.00
-map_Kd cloud.png
+map_Kd line.png
 Ni 1.00
 newmtl pasted__lambert6SG2
 illum 4
@@ -137,6 +137,34 @@ Kd 0.00 0.00 0.00
 Ka 0.00 0.00 0.00
 Tf 1.00 1.00 1.00
 map_Kd cone.jpg
+Ni 1.00
+Ks 0.50 0.50 0.50
+Ns 18.00
+newmtl phong22SG
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+map_Kd marking2.png
+Ni 1.00
+Ks 0.50 0.50 0.50
+Ns 18.00
+newmtl phong23SG
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+map_Kd marking_load.png
+Ni 1.00
+Ks 0.50 0.50 0.50
+Ns 18.00
+newmtl phong24SG
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+map_Kd fence_tall.png
+bump fence_tall_normal.png -bm 1
 Ni 1.00
 Ks 0.50 0.50 0.50
 Ns 18.00
