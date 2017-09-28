@@ -185,9 +185,9 @@ Scene.prototype = {
 
     this.scene.add(
       ambient,
-      spot1,
-      spot1.target,
-      point1,
+      //spot1,
+      //spot1.target,
+      //point1,
       point2,
       point3,
       hemisphere,

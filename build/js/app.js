@@ -179,31 +179,43 @@ var Models = {
 // load OBJ models
 
 var matLoader = new THREE.MTLLoader();
+var pathAssets = appRoot + 'assets/3d/';
 
-matLoader.setPath(appRoot + 'assets/3d/');
+matLoader.setPath(pathAssets);
 matLoader.load('hangar.mtl', function (materials) {
+  console.log(materials);
+
   materials.preload();
   var objLoader = new THREE.OBJLoader();
 
   for (var key in materials.materials) {
-    /*
-    const mat = materials.materials[key];
+    var mat = materials.materials[key];
     if (mat.map) {
       console.log(mat.map.image.src, mat);
     } else {
       console.log('no map', mat);
     }
-    */
   }
 
-  objLoader.setPath(appRoot + 'assets/3d/');
+  objLoader.setPath(pathAssets);
   objLoader.setMaterials(materials);
   objLoader.load('hangar.obj', function (obj) {
     for (var i = 0; i < obj.children.length; i += 1) {
       var child = obj.children[i];
+      var matInfo = materials.materialsInfo[child.material.name];
 
       // reduce bump map
       child.material.bumpScale = 0.01;
+
+      // load lightmaps
+      if (matInfo.map_ka) {
+        var uvs = child.geometry.attributes.uv.array;
+        var src = matInfo.map_ka;
+        var tex = new THREE.TextureLoader().load(pathAssets + src);
+
+        child.material.lightMap = tex;
+        child.geometry.addAttribute('uv2', new THREE.BufferAttribute(uvs, 2));
+      }
 
       // make glass translucent
       if (child.material.map) {
@@ -786,7 +798,11 @@ Scene.prototype = {
     spot7.target.position.set(-15, 0, 0);
     this.neonSign.position.set(0, 14, -32);
 
-    this.scene.add(ambient, spot1, spot1.target, point1, point2, point3, hemisphere, spot2, spot2.target, point2, spot3, spot3.target, spot4, spot4.target, spot5, spot5.target, spot6, spot6.target, spot7, spot7.target, this.neonSign);
+    this.scene.add(ambient,
+    //spot1,
+    //spot1.target,
+    //point1,
+    point2, point3, hemisphere, spot2, spot2.target, point2, spot3, spot3.target, spot4, spot4.target, spot5, spot5.target, spot6, spot6.target, spot7, spot7.target, this.neonSign);
 
     // skybox
     var sky = new THREE.Sky();
@@ -1110,11 +1126,11 @@ var RayTracer = function RayTracer() {
   this.maxLength = 15;
   this.object = new THREE.Object3D();
 
-  var light = new THREE.PointLight(0xffffff, 0.8, 5, 2);
+  var light = new THREE.PointLight(0xffffff, 0.5, 5, 2);
   var ball = new THREE.Mesh(new THREE.SphereBufferGeometry(0.05, 16), _Loader.Materials.concrete);
   light.position.y = 1.1;
 
-  this.object.add(ball); //, light);
+  this.object.add(ball, light);
 };
 
 RayTracer.prototype = {

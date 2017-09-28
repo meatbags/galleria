@@ -8,14 +8,14 @@ const RayTracer = function() {
   this.maxLength = 15;
   this.object = new THREE.Object3D();
 
-  const light = new THREE.PointLight(0xffffff, 0.8, 5, 2);
+  const light = new THREE.PointLight(0xffffff, 0.5, 5, 2);
   const ball = new THREE.Mesh(
     new THREE.SphereBufferGeometry(0.05, 16),
     Materials.concrete
   );
   light.position.y = 1.1;
 
-  this.object.add(ball);//, light);
+  this.object.add(ball, light);
 };
 
 RayTracer.prototype = {

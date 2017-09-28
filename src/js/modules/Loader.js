@@ -35,31 +35,43 @@ const Models = {
 // load OBJ models
 
 const matLoader = new THREE.MTLLoader();
+const pathAssets = appRoot + 'assets/3d/';
 
-matLoader.setPath(appRoot + 'assets/3d/');
+matLoader.setPath(pathAssets);
 matLoader.load('hangar.mtl', function(materials) {
+  console.log(materials);
+
   materials.preload();
   var objLoader = new THREE.OBJLoader();
 
   for (var key in materials.materials) {
-    /*
     const mat = materials.materials[key];
     if (mat.map) {
       console.log(mat.map.image.src, mat);
     } else {
       console.log('no map', mat);
     }
-    */
   }
 
-  objLoader.setPath(appRoot + 'assets/3d/');
+  objLoader.setPath(pathAssets);
   objLoader.setMaterials(materials)
   objLoader.load('hangar.obj', function (obj) {
     for (let i=0; i<obj.children.length; i+=1) {
       const child = obj.children[i];
+      const matInfo = materials.materialsInfo[child.material.name];
 
       // reduce bump map
       child.material.bumpScale = 0.01;
+
+      // load lightmaps
+      if (matInfo.map_ka) {
+        const uvs = child.geometry.attributes.uv.array;
+        const src = matInfo.map_ka;
+        const tex = new THREE.TextureLoader().load(pathAssets + src);
+
+        child.material.lightMap = tex;
+        child.geometry.addAttribute('uv2', new THREE.BufferAttribute(uvs, 2));
+      }
 
       // make glass translucent
       if (child.material.map) {
