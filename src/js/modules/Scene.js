@@ -148,62 +148,19 @@ Scene.prototype = {
     const point1 = new THREE.PointLight(0xffffff, 0.5, 13, 1);
     const point2 = new THREE.PointLight(0xffffff, 0.5, 10, 1);
     const point3 = new THREE.PointLight(0xfeff87, 0.5, 12, 1);
-    const spot1 = new THREE.SpotLight(0xffffff, 1, 30, Math.PI / 10, 1, 2);
-    const spot2 = new THREE.SpotLight(0xffffff, 1, 10, Math.PI / 10, 1, 2);
-    const spot3 = new THREE.SpotLight(0xffffff, 1, 8, Math.PI / 2, 1);
-    const spot4 = new THREE.SpotLight(0xffffff, 1, 8, Math.PI / 2, 1);
-    const spot5 = new THREE.SpotLight(0xffffff, 1, 8, Math.PI / 2, 1);
-    const spot6 = new THREE.SpotLight(0xffffff, 1, 8, Math.PI / 2, 1);
-    const spot7 = new THREE.SpotLight(0xfeff87, 1, 15, Math.PI / 3, 0.5);
     this.neonSign = new THREE.PointLight(0xff0000, 0.8, 15, 1);
 
-    spot1.position.set(0, 15, -10);
-    spot1.target = new THREE.Object3D();
-    spot1.target.position.set(0, 0, -10);
     point1.position.set(0, 5, -10);
-    spot2.position.set(0, 20, 10);
-    spot2.target = new THREE.Object3D();
-    spot2.target.position.set(0, 0, 10);
     point2.position.set(0, 14, 10);
-    spot3.position.set(8, 6, 5);
-    spot3.target = new THREE.Object3D();
-    spot3.target.position.set(9.25, 0, 5);
-    spot4.position.set(8, 6, 14.75);
-    spot4.target = new THREE.Object3D();
-    spot4.target.position.set(9.25, 0, 14.75);
-    spot5.position.set(-8, 6, 14.75);
-    spot5.target = new THREE.Object3D();
-    spot5.target.position.set(-9.25, 0, 14.75);
-    spot6.position.set(-8, 6, 5);
-    spot6.target = new THREE.Object3D();
-    spot6.target.position.set(-9.25, 0, 5);
-    point3.position.set(-19, 8, 1);
-    spot7.position.set(-19, 8, 1);
-    spot7.target = new THREE.Object3D();
-    spot7.target.position.set(-15, 0, 0);
+    point3.position.set(-19, 8, 5);
     this.neonSign.position.set(0, 14, -32);
 
     this.scene.add(
       ambient,
-      //spot1,
-      //spot1.target,
-      //point1,
-      point2,
+      point1,
+      //point2,
       point3,
       hemisphere,
-      spot2,
-      spot2.target,
-      point2,
-      spot3,
-      spot3.target,
-      spot4,
-      spot4.target,
-      spot5,
-      spot5.target,
-      spot6,
-      spot6.target,
-      spot7,
-      spot7.target,
       this.neonSign
     );
 

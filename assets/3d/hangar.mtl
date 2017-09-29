@@ -10,6 +10,7 @@ Kd 0.00 0.00 0.00
 Ka 0.00 0.00 0.00
 Tf 1.00 1.00 1.00
 map_Kd bricks.jpg
+map_Ka wall_baked_light-lambert3SG-group33_pasted__pCube8.jpg
 bump bricks_bump.jpg -bm 0.1
 Ni 1.00
 newmtl lambert6SG
@@ -27,6 +28,15 @@ Kd 0.00 0.00 0.00
 Ka 0.00 0.00 0.00
 Tf 1.00 1.00 1.00
 map_Kd line2.png
+Ni 1.00
+newmtl pasted__lambert3SG1
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+map_Kd bricks.jpg
+map_Ka get_baked-lambert3SG-group31_pasted__pCube8.jpg
+bump bricks_bump.jpg -bm 0.1
 Ni 1.00
 newmtl pasted__lambert6SG2
 illum 4
@@ -53,6 +63,7 @@ Kd 0.00 0.00 0.00
 Ka 0.00 0.00 0.00
 Tf 1.00 1.00 1.00
 map_Kd wood.jpg
+map_Ka LM_Wood-pasted__phong7SG-pasted__pasted__pasted__pCube4.jpg
 bump wood_bump.jpg -bm 0.05
 Ni 1.00
 Ks 0.50 0.50 0.50
@@ -63,6 +74,28 @@ Kd 0.00 0.00 0.00
 Ka 0.00 0.00 0.00
 Tf 0.15 0.15 0.15
 map_Kd glass.jpg
+Ni 1.00
+Ks 0.50 0.50 0.50
+Ns 18.00
+newmtl pasted__phong17SG
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+map_Kd concrete2.jpg
+map_Ka get_baked-phong17SG-pPlane6.jpg
+bump concrete2_bump.jpg -bm 0.05
+Ni 1.00
+Ks 0.50 0.50 0.50
+Ns 18.00
+newmtl pasted__phong34SG
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+map_Kd bricks.jpg
+map_Ka get_baked-phong34SG-group32_pasted__pCube8.jpg
+bump bricks_bump.jpg -bm 0.05
 Ni 1.00
 Ks 0.50 0.50 0.50
 Ns 18.00
@@ -227,6 +260,57 @@ Kd 0.00 0.00 0.00
 Ka 0.00 0.00 0.00
 Tf 1.00 1.00 1.00
 map_Kd Red_rough2.jpg
+Ni 1.00
+Ks 0.50 0.50 0.50
+Ns 18.00
+newmtl phong34SG
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+map_Kd bricks.jpg
+bump bricks_bump.jpg -bm 0.05
+Ni 1.00
+Ks 0.50 0.50 0.50
+Ns 18.00
+newmtl phong35SG
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+map_Kd wood.jpg
+Ni 1.00
+Ks 0.50 0.50 0.50
+Ns 18.00
+newmtl phong36SG
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+map_Kd concrete_2.jpg
+map_Ka CONCRETE_baked-phong13SG-pasted__group51_pasted__pasted__pCube11.jpg
+bump concrete2_bump.jpg -bm 0.05
+Ni 1.00
+Ks 0.50 0.50 0.50
+Ns 18.00
+newmtl phong37SG
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+map_Kd concrete_2.jpg
+map_Ka baked-phong13SG-model_standingFBXASC045female_muscle_13442.jpg
+Ni 1.00
+Ks 0.50 0.50 0.50
+Ns 18.00
+newmtl phong38SG
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+map_Kd concrete.jpg
+map_Ka get_baked-phong17SG-pPlane4.jpg
+bump concrete_bump.jpg -bm 0.05
 Ni 1.00
 Ks 0.50 0.50 0.50
 Ns 18.00

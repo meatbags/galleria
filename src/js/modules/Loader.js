@@ -70,6 +70,7 @@ matLoader.load('hangar.mtl', function(materials) {
         const tex = new THREE.TextureLoader().load(pathAssets + src);
 
         child.material.lightMap = tex;
+        child.material.lightMapIntensity = 0.3;
         child.geometry.addAttribute('uv2', new THREE.BufferAttribute(uvs, 2));
       }
 
