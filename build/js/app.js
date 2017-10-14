@@ -142,79 +142,70 @@ exports.getDistanceVec3 = getDistanceVec3;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-var Materials = {
-  concrete: new THREE.MeshPhysicalMaterial({
-    clearCoat: 0,
-    clearCoatRoughness: 1,
-    reflectivity: 0,
-    color: 0xffffff,
-    emissive: 0x888888
-  }),
-  canvas: new THREE.MeshBasicMaterial({
-    color: 0xffffff,
-    side: THREE.DoubleSide
-  }),
-  dev: new THREE.MeshLambertMaterial({
-    color: 0xff0000,
-    opacity: 0.25,
-    transparent: true,
-    side: THREE.DoubleSide
-  }),
-  dev2: new THREE.MeshLambertMaterial({
-    color: 0xffaa88,
-    opacity: 0.25,
-    transparent: true,
-    side: THREE.DoubleSide
-  }),
-  wireframe: new THREE.MeshLambertMaterial({
-    color: 0xff0000,
-    wireframe: true
-  })
+var Loader = function Loader(basePath) {
+  this.basePath = basePath;
+  this.init();
 };
 
-var Models = {
-  mainBuilding: new THREE.Group()
-};
+Loader.prototype = {
+  init: function init() {
+    this.materialLoader = new THREE.MTLLoader();
+    this.objectLoader = new THREE.OBJLoader();
+    this.materialLoader.setPath(this.basePath);
+    this.objectLoader.setPath(this.basePath);
+  },
 
-// load OBJ models
+  createMaterials: function createMaterials() {
+    this.materials = {
+      concrete: new THREE.MeshPhysicalMaterial({
+        clearCoat: 0,
+        clearCoatRoughness: 1,
+        reflectivity: 0,
+        color: 0xffffff,
+        emissive: 0x888888
+      }),
+      canvas: new THREE.MeshBasicMaterial({
+        color: 0xffffff,
+        side: THREE.DoubleSide
+      }),
+      dev: new THREE.MeshLambertMaterial({
+        color: 0xff0000,
+        opacity: 0.25,
+        transparent: true,
+        side: THREE.DoubleSide
+      }),
+      dev2: new THREE.MeshLambertMaterial({
+        color: 0xffaa88,
+        opacity: 0.25,
+        transparent: true,
+        side: THREE.DoubleSide
+      }),
+      wireframe: new THREE.MeshLambertMaterial({
+        color: 0xff0000,
+        wireframe: true
+      })
+    };
 
-var matLoader = new THREE.MTLLoader();
-var pathAssets = appRoot + 'assets/3d/';
+    this.models = {
+      mainBuilding: new THREE.Group()
+    };
+  },
 
-matLoader.setPath(pathAssets);
-matLoader.load('hangar.mtl', function (materials) {
-  console.log(materials);
+  process: function process(obj, materials) {
+    // fix materials
 
-  materials.preload();
-  var objLoader = new THREE.OBJLoader();
-
-  for (var key in materials.materials) {
-    var mat = materials.materials[key];
-    if (mat.map) {
-      console.log(mat.map.image.src, mat);
-    } else {
-      console.log('no map', mat);
-    }
-  }
-
-  objLoader.setPath(pathAssets);
-  objLoader.setMaterials(materials);
-  objLoader.load('hangar.obj', function (obj) {
     for (var i = 0; i < obj.children.length; i += 1) {
       var child = obj.children[i];
-      var matInfo = materials.materialsInfo[child.material.name];
-
-      // reduce bump map
-      child.material.bumpScale = 0.01;
+      var meta = materials.materialsInfo[child.material.name];
 
       // load lightmaps
-      if (matInfo.map_ka) {
+      if (meta.map_ka) {
         var uvs = child.geometry.attributes.uv.array;
-        var src = matInfo.map_ka;
-        var tex = new THREE.TextureLoader().load(pathAssets + src);
+        var src = meta.map_ka;
+        var tex = new THREE.TextureLoader().load(self.basePath + src);
 
         child.material.lightMap = tex;
-        child.material.lightMapIntensity = 0.3;
+        child.material.lightMapIntensity = 1;
         child.geometry.addAttribute('uv2', new THREE.BufferAttribute(uvs, 2));
       }
 
@@ -235,16 +226,33 @@ matLoader.load('hangar.mtl', function (materials) {
           child.material.opacity = 0.4;
         }
       } else {
-        // no texture, set pure colour
+        // no texture, set colour
         child.material.emissive = child.material.color;
       }
     }
-    Models.mainBuilding.add(obj);
-  });
-});
+  },
 
-exports.Models = Models;
-exports.Materials = Materials;
+  loadOBJ: function loadOBJ(filename) {
+    var self = this;
+
+    return new Promise(function (resolve, reject) {
+      try {
+        self.materialLoader.load(filename + '.mtl', function (materials) {
+          materials.preload();
+          self.objectLoader.setMaterials(materials);
+          self.objectLoader.load(filename + '.obj', function (obj) {
+            self.process(obj, materials);
+            resolve(obj);
+          });
+        });
+      } catch (error) {
+        reject(error);
+      }
+    });
+  }
+};
+
+exports.default = Loader;
 
 /***/ }),
 /* 2 */
@@ -562,7 +570,17 @@ var App = {
 	init: function init() {
 		App.timer = new _Timer2.default();
 		App.scene = new _Scene2.default();
-		App.loop();
+		App.loading();
+	},
+
+	loading: function loading() {
+		App.timer.update();
+
+		if (!App.scene.isLoaded()) {
+			requestAnimationFrame(App.loading);
+		} else {
+			App.loop();
+		}
 	},
 
 	loop: function loop() {
@@ -659,7 +677,7 @@ Scene.prototype = {
   init: function init() {
     var self = this;
 
-    // threejs set up
+    // threejs
     this.renderer = new THREE.WebGLRenderer({ antialias: false });
     this.renderer.setSize(640, 480);
     this.renderer.setClearColor(0xf9e5a2, 1);
@@ -672,13 +690,17 @@ Scene.prototype = {
     });
     document.body.append(this.renderer.domElement);
 
-    // user
-    this.hud = new _HUD2.default(this.renderer.domElement);
-    this.player = new _Player2.default();
-    this.camera = new THREE.PerspectiveCamera(_Globals2.default.camera.fov, 1, _Globals2.default.camera.near, _Globals2.default.camera.far);
-    this.camera.up = new THREE.Vector3(0, 1, 0);
-    this.raytracer = new _RayTracer2.default();
-    this.resize();
+    // player & models
+    this.player = new _Player2.default(this.renderer.domElement);
+    this.camera = this.player.camera;
+
+    //this.hud = new HUD(this.renderer.domElement);
+    //this.player = new Player();
+    //  this.camera = new THREE.PerspectiveCamera(Globals.camera.fov, 1, Globals.camera.near, Globals.camera.far);
+    //this.camera.up = new THREE.Vector3(0, 1, 0);
+    //  this.raytracer = new RayTracer();
+    //  this.resize();
+
     window.addEventListener('resize', function () {
       self.resize();
     });
@@ -688,33 +710,68 @@ Scene.prototype = {
     this.scene.fog = new THREE.FogExp2(0xCCCFFF, 0.008);
     this.scene.add(this.player.object, _Loader.Models.mainBuilding, this.raytracer.object);
 
+    // load stuff
+    this.loader = new Loader();
+
     // walls & floors
-    this.model = new _Physics.PhysicsModel();
+    /*
+    this.model = new PhysicsModel();
     this.model.add(
-    // floors
-    new _Physics.Box((0, _Maths.v3)(0, 0, -10.75), (0, _Maths.v3)(23, 1.05, 21.5)), new _Physics.Box((0, _Maths.v3)(0, 7.5, 10), (0, _Maths.v3)(20, 1.05, 20.5)),
-    // main gallery walls
-    new _Physics.Box((0, _Maths.v3)(-9.5, 8, 0), (0, _Maths.v3)(2.75, 16, 40)), new _Physics.Box((0, _Maths.v3)(9.5, 8, 0), (0, _Maths.v3)(2.75, 16, 40)),
-    // outer walls
-    new _Physics.Box((0, _Maths.v3)(15, 8, -5), (0, _Maths.v3)(2, 20, 79)), new _Physics.Box((0, _Maths.v3)(-26, 8, -5), (0, _Maths.v3)(2, 20, 79)), new _Physics.Box((0, _Maths.v3)(-5.5, 8, 34.5), (0, _Maths.v3)(41, 20, 2)), new _Physics.Box((0, _Maths.v3)(-5.5, 8, -44.5), (0, _Maths.v3)(41, 20, 2)),
-    // outer fences + blockades
-    new _Physics.Box((0, _Maths.v3)(12.25, 8, 5.125), (0, _Maths.v3)(5, 20, 22)), new _Physics.Box((0, _Maths.v3)(-20.75, 8, -9.5), (0, _Maths.v3)(11.5, 20, 2.5)), new _Physics.Box((0, _Maths.v3)(-10.75, 8, -10), (0, _Maths.v3)(2.5, 20, 1.75)), new _Physics.Box((0, _Maths.v3)(-21, 8, 20.25), (0, _Maths.v3)(12, 20, 32)), new _Physics.Box((0, _Maths.v3)(-13.5, 8, 10), (0, _Maths.v3)(5, 20, 1)),
-    // side platforms
-    new _Physics.Box((0, _Maths.v3)(-11, 0.25, 10.5), (0, _Maths.v3)(1, 0.5, 21)), new _Physics.Box((0, _Maths.v3)(11, 0.25, 10.5), (0, _Maths.v3)(1, 0.5, 21)),
-    // central posts
-    new _Physics.Box((0, _Maths.v3)(3, 8, 0), (0, _Maths.v3)(1, 16, 1)), new _Physics.Box((0, _Maths.v3)(-3, 8, 0), (0, _Maths.v3)(1, 16, 1)), new _Physics.Box((0, _Maths.v3)(0, 8, 10), (0, _Maths.v3)(7, 16, 1.5)),
-    //new Box(v3(-3, 8, 10), v3(1, 16, 1)),
-    // front entrance
-    new _Physics.Ramp((0, _Maths.v3)(0, 0.25, -23), (0, _Maths.v3)(10, 0.5, 3), 0), new _Physics.Box((0, _Maths.v3)(7.875, 8, -19.5), (0, _Maths.v3)(6, 16, 2.5)), new _Physics.Box((0, _Maths.v3)(-7.875, 8, -19.5), (0, _Maths.v3)(6, 16, 2.5)),
-    // stairs front
-    new _Physics.Box((0, _Maths.v3)(-6, 4, -7), (0, _Maths.v3)(6, 0.5, 4)), new _Physics.Ramp((0, _Maths.v3)(-7.5, 6, -2.5), (0, _Maths.v3)(3, 4, 5), 0), new _Physics.Ramp((0, _Maths.v3)(-4.5, 2, -2.5), (0, _Maths.v3)(3, 4, 5), 2),
-    // stairs front -- posts & walls
-    new _Physics.Box((0, _Maths.v3)(2, 10, 0), (0, _Maths.v3)(16, 5, 0.75)), new _Physics.Box((0, _Maths.v3)(-3, 3.25, -9), (0, _Maths.v3)(1, 16, 1)), new _Physics.Box((0, _Maths.v3)(-3, 3.25, -5), (0, _Maths.v3)(1, 16, 1)), new _Physics.Box((0, _Maths.v3)(-6, 3.25, -5), (0, _Maths.v3)(0.5, 16, 1)), new _Physics.Box((0, _Maths.v3)(-6, 5.25, -9), (0, _Maths.v3)(6, 3, 1)), new _Physics.Box((0, _Maths.v3)(-3, 5.25, -7), (0, _Maths.v3)(1, 3, 4)), new _Physics.Box((0, _Maths.v3)(-3, 3.25, -2.5), (0, _Maths.v3)(1, 6, 4.5)), new _Physics.Box((0, _Maths.v3)(-6, 7.5, -2.5), (0, _Maths.v3)(0.5, 7, 5)),
-    // stairs back
-    new _Physics.Box((0, _Maths.v3)(-7, 7.5, 22.5), (0, _Maths.v3)(4, 1.05, 5)), new _Physics.Box((0, _Maths.v3)(0, 0, 22.5), (0, _Maths.v3)(20, 1, 5)), new _Physics.Ramp((0, _Maths.v3)(0, 4.25, 22.5), (0, _Maths.v3)(10, 7.55, 5), 3),
-    // stairs back -- walls
-    new _Physics.Box((0, _Maths.v3)(0, 8, 25.375), (0, _Maths.v3)(18, 16, 1)), new _Physics.Box((0, _Maths.v3)(9.5, 8, 22.75), (0, _Maths.v3)(2.75, 16, 6)), new _Physics.Box((0, _Maths.v3)(-9.5, 8, 22.75), (0, _Maths.v3)(2.75, 16, 6)), new _Physics.Box((0, _Maths.v3)(-2, 4, 20), (0, _Maths.v3)(13, 8, 1.5)), new _Physics.Box((0, _Maths.v3)(2, 12, 20), (0, _Maths.v3)(14, 8, 1.5)));
+      // floors
+      new Box(v3(0, 0, -10.75), v3(23, 1.05, 21.5)),
+      new Box(v3(0, 7.5, 10), v3(20, 1.05, 20.5)),
+      // main gallery walls
+      new Box(v3(-9.5, 8, 0), v3(2.75, 16, 40)),
+      new Box(v3(9.5, 8, 0), v3(2.75, 16, 40)),
+      // outer walls
+      new Box(v3(15, 8, -5), v3(2, 20, 79)),
+      new Box(v3(-26, 8, -5), v3(2, 20, 79)),
+      new Box(v3(-5.5, 8, 34.5), v3(41, 20, 2)),
+      new Box(v3(-5.5, 8, -44.5), v3(41, 20, 2)),
+      // outer fences + blockades
+      new Box(v3(12.25, 8, 5.125), v3(5, 20, 22)),
+      new Box(v3(-20.75, 8, -9.5), v3(11.5, 20, 2.5)),
+      new Box(v3(-10.75, 8, -10), v3(2.5, 20, 1.75)),
+      new Box(v3(-21, 8, 20.25), v3(12, 20, 32)),
+      new Box(v3(-13.5, 8, 10), v3(5, 20, 1)),
+      // side platforms
+      new Box(v3(-11, 0.25, 10.5), v3(1, 0.5, 21)),
+      new Box(v3( 11, 0.25, 10.5), v3(1, 0.5, 21)),
+      // central posts
+      new Box(v3(3, 8, 0), v3(1, 16, 1)),
+      new Box(v3(-3, 8, 0), v3(1, 16, 1)),
+      new Box(v3(0, 8, 10), v3(7, 16, 1.5)),
+      //new Box(v3(-3, 8, 10), v3(1, 16, 1)),
+      // front entrance
+      new Ramp(v3(0, 0.25, -23), v3(10, 0.5, 3), 0),
+      new Box(v3(7.875, 8, -19.5), v3(6, 16, 2.5)),
+      new Box(v3(-7.875, 8, -19.5), v3(6, 16, 2.5)),
+      // stairs front
+      new Box(v3(-6, 4, -7), v3(6, 0.5, 4)),
+      new Ramp(v3(-7.5, 6, -2.5), v3(3, 4, 5), 0),
+      new Ramp(v3(-4.5, 2, -2.5), v3(3, 4, 5), 2),
+      // stairs front -- posts & walls
+      new Box(v3(2, 10, 0), v3(16, 5, 0.75)),
+      new Box(v3(-3, 3.25, -9), v3(1, 16, 1)),
+      new Box(v3(-3, 3.25, -5), v3(1, 16, 1)),
+      new Box(v3(-6, 3.25, -5), v3(0.5, 16, 1)),
+      new Box(v3(-6, 5.25, -9), v3(6, 3, 1)),
+      new Box(v3(-3, 5.25, -7), v3(1, 3, 4)),
+      new Box(v3(-3, 3.25, -2.5), v3(1, 6, 4.5)),
+      new Box(v3(-6, 7.5, -2.5), v3(0.5, 7, 5)),
+      // stairs back
+      new Box(v3(-7, 7.5, 22.5), v3(4, 1.05, 5)),
+      new Box(v3(0, 0, 22.5), v3(20, 1, 5)),
+      new Ramp(v3(0, 4.25, 22.5), v3(10, 7.55, 5), 3),
+      // stairs back -- walls
+      new Box(v3(0, 8, 25.375), v3(18, 16, 1)),
+      new Box(v3(9.5, 8, 22.75), v3(2.75, 16, 6)),
+      new Box(v3(-9.5, 8, 22.75), v3(2.75, 16, 6)),
+      new Box(v3(-2, 4, 20), v3(13, 8, 1.5)),
+      new Box(v3(2, 12, 20), v3(14, 8, 1.5))
+    );
     //this.scene.add(this.model.object);
+    */
 
     // load gallery
     var tags = document.getElementsByClassName('im');
@@ -780,6 +837,10 @@ Scene.prototype = {
     //const sun = new THREE.PointLight(0xffffff, 0.9, 40500);
     //sun.position.set(sky.uniforms.sunPosition.value.x, sky.uniforms.sunPosition.value.y, sky.uniforms.sunPosition.value.z);
     this.scene.add(sky.mesh); //,sun);
+  },
+
+  isLoaded: function isLoaded() {
+    return false;
   },
 
   resize: function resize() {
@@ -858,217 +919,360 @@ exports.default = Scene;
 
 
 Object.defineProperty(exports, "__esModule", {
-	value: true
+  value: true
 });
-
-var _Physics = __webpack_require__(4);
-
-var _Focal = __webpack_require__(2);
 
 var _Maths = __webpack_require__(0);
 
-var _Globals = __webpack_require__(3);
+var Maths = _interopRequireWildcard(_Maths);
 
-var _Globals2 = _interopRequireDefault(_Globals);
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-var Player = function Player(position) {
-	this.object = new THREE.Object3D();
-	this.position = new THREE.Vector3(_Globals2.default.player.position.x, _Globals2.default.player.position.y, _Globals2.default.player.position.z);
-	this.target = {
-		active: false,
-		position: position,
-		yaw: 0,
-		pitchOffset: 0,
-		yawOffset: 0,
-		radius: 0.5
-	};
-	this.pitch = 0;
-	this.pitchOffset = 0;
-	this.yaw = 0;
-	this.yawOffset = 0;
-	this.speed = _Globals2.default.player.speed;
-	this.height = _Globals2.default.player.height;
-	this.climbThreshold = 1;
-	this.rotationSpeed = Math.PI * 1;
-	this.init();
+var Player = function Player(domElement) {
+  this.domElement = domElement;
+  this.position = new THREE.Vector3(0, 0, 0);
+  this.movement = new THREE.Vector3(0, 0, 0);
+  this.rotation = new THREE.Vector3(0, Math.PI, 0);
+  this.offset = {
+    rotation: new THREE.Vector3(0, 0, 0)
+  };
+  this.target = {
+    position: new THREE.Vector3(0, 0, 0),
+    movement: new THREE.Vector3(0, 0, 0),
+    rotation: new THREE.Vector3(0, Math.PI, 0),
+    offset: {
+      rotation: new THREE.Vector3(0, 0, 0)
+    }
+  };
+  this.attributes = {
+    speed: 8,
+    speedWhileJumping: 4,
+    height: 1.8,
+    rotation: Math.PI * 0.75,
+    fov: 58,
+    cameraThreshold: 0.4,
+    maxRotationOffset: Math.PI * 0.3,
+    falling: false,
+    adjust: {
+      slow: 0.02,
+      normal: 0.05,
+      fast: 0.09,
+      veryFast: 0.2
+    },
+    climb: {
+      up: 1,
+      down: 0.5,
+      minYNormal: 0.5
+    },
+    gravity: {
+      accel: 10,
+      maxVelocity: 50,
+      jumpVelocity: 5
+    }
+  };
+  this.outputLog = [];
+  this.camera = new THREE.PerspectiveCamera(this.attributes.fov, 1, 0.1, 10000);
+  this.camera.up = new THREE.Vector3(0, 1, 0);
+  this.init();
 };
 
 Player.prototype = {
-	init: function init() {
-		this.bindControls();
-		var light = new THREE.PointLight(0xffffff, 0.8, 10, 2);
-		light.position.set(0, 2, 0);
-		this.object.add(light);
-	},
+  init: function init() {
+    this.object = new THREE.Mesh(new THREE.SphereBufferGeometry(0.05), new THREE.MeshPhongMaterial());
+    this.bindControls();
+    this.resizeCamera();
+  },
 
-	bindControls: function bindControls() {
-		var self = this;
+  resizeCamera: function resizeCamera() {
+    var w = this.domElement.width;
+    var h = this.domElement.height;
+    this.camera.aspect = w / h;
+    this.camera.updateProjectionMatrix();
+  },
 
-		self.keys = {
-			up: false,
-			down: false,
-			left: false,
-			right: false
-		};
+  bindControls: function bindControls() {
+    var self = this;
 
-		document.addEventListener("keydown", function (e) {
-			switch (e.keyCode) {
-				case 38:
-				case 87:
-					self.keys.up = true;
-					break;
-				case 37:
-				case 65:
-					self.keys.left = true;
-					break;
-				case 40:
-				case 83:
-					self.keys.down = true;
-					break;
-				case 39:
-				case 68:
-					self.keys.right = true;
-					break;
-				default:
-					break;
-			}
-		}, false);
+    // mouse
+    self.domElement.addEventListener('mousemove', function (e) {
+      self.handleMouseMove(e);
+    }, false);
+    self.domElement.addEventListener('mousedown', function (e) {
+      self.handleMouseDown(e);
+    }, false);
 
-		document.addEventListener("keyup", function (e) {
-			switch (e.keyCode) {
-				case 38:
-				case 87:
-					self.keys.up = false;
-					break;
-				case 37:
-				case 65:
-					self.keys.left = false;
-					break;
-				case 40:
-				case 83:
-					self.keys.down = false;
-					break;
-				case 39:
-				case 68:
-					self.keys.right = false;
-					break;
-			}
-		}, false);
-	},
+    // keyboard
+    self.keys = {
+      up: false,
+      down: false,
+      left: false,
+      right: false,
+      jump: false
+    };
+    document.addEventListener("keydown", function (e) {
+      self.handleKeyDown(e);
+    }, false);
+    document.addEventListener("keyup", function (e) {
+      self.handleKeyUp(e);
+    }, false);
+  },
 
-	setTarget: function setTarget(pos, yaw) {
-		this.target.active = true;
-		this.target.position = pos;
-		this.target.yaw = yaw;
-	},
+  log: function log() {
+    var text = '';
+    for (var i = 0; i < arguments.length; i += 1) {
+      text += arguments[i] + ' ';
+    }
+    this.outputLog.push(text);
+  },
 
-	setTargetPitchOffset: function setTargetPitchOffset(pitch) {
-		this.target.pitchOffset = pitch;
-	},
+  update: function update(delta, collider) {
+    // handle key presses and move player
 
-	setTargetYawOffset: function setTargetYawOffset(yaw) {
-		this.target.yawOffset = yaw;
-	},
+    this.outputLog = [];
 
-	getPitch: function getPitch() {
-		return this.pitch + this.pitchOffset;
-	},
+    // get movement vector from controls
+    if (this.keys.up || this.keys.down) {
+      var dir = (this.keys.up ? 1 : 0) + (this.keys.down ? -1 : 0);
+      var _yaw = this.rotation.y + this.offset.rotation.y;
+      var dx = Math.sin(_yaw) * this.attributes.speed * dir;
+      var dz = Math.cos(_yaw) * this.attributes.speed * dir;
+      this.target.movement.x = dx;
+      this.target.movement.z = dz;
+    } else {
+      this.target.movement.x = 0;
+      this.target.movement.z = 0;
+    }
 
-	getYaw: function getYaw() {
-		return this.yaw + this.yawOffset;
-	},
+    // jump key
+    if (this.keys.jump) {
+      this.keys.jump = false;
 
-	update: function update(delta, objects) {
-		if (this.keys.up || this.keys.down) {
-			// disable automatic walk
-			this.target.active = false;
+      // jump if not falling
+      if (this.movement.y == 0) {
+        this.movement.y = this.attributes.gravity.jumpVelocity;
+      }
+    }
 
-			var move = (this.keys.up ? 1 : 0) + (this.keys.down ? -1 : 0);
-			var dx = Math.sin(this.yaw) * this.speed * delta * move;
-			var dz = Math.cos(this.yaw) * this.speed * delta * move;
-			var nextX = this.position.x + dx;
-			var nextZ = this.position.z + dz;
-			var testX = { x: nextX, y: this.position.y, z: this.position.z };
-			var testZ = { x: this.position.x, y: this.position.y, z: nextZ };
-			var collisionX = false;
-			var collisionZ = false;
+    // set falling
+    this.falling = this.movement.y != 0;
 
-			// XZ collisions
-			for (var i = 0; i < objects.length; i += 1) {
-				var obj = objects[i];
+    // reduce movement if falling
+    if (!this.falling) {
+      this.movement.x = this.target.movement.x;
+      this.movement.z = this.target.movement.z;
+    } else {
+      this.movement.x += (this.target.movement.x - this.movement.x) * this.attributes.adjust.slow;
+      this.movement.z += (this.target.movement.z - this.movement.z) * this.attributes.adjust.slow;
+    }
 
-				if (obj.type === _Physics.TYPE_BOX || obj.type === _Physics.TYPE_RAMP) {
-					// test next X position
-					if (obj.collision(testX)) {
-						var y = obj.getTop(testX);
+    // check next position for collision
+    var next = Maths.addVector(Maths.scaleVector(this.movement, delta), this.target.position);
+    var collisions = collider.collisions(next);
 
-						if (Math.abs(this.position.y - y) > this.climbThreshold) {
-							collisionX = true;
-						}
-					}
+    // apply gravity
+    this.movement.y = Math.max(this.movement.y - this.attributes.gravity.accel * delta, -this.attributes.gravity.maxVelocity);
 
-					// test next Z position
-					if (obj.collision(testZ)) {
-						var _y = obj.getTop(testZ);
+    if (collisions.length > 0) {
+      this.log('Collisions', collisions.length);
 
-						if (Math.abs(this.position.y - _y) > this.climbThreshold) {
-							collisionZ = true;
-						}
-					}
-				}
-			}
+      // check for floor
 
-			// update XZ position
-			this.position.x = collisionX ? this.position.x : nextX;
-			this.position.z = collisionZ ? this.position.z : nextZ;
-		}
+      for (var i = 0; i < collisions.length; i += 1) {
+        var ceiling = collisions[i].ceilingPlane(next);
 
-		// get next Y position
-		var nextY = 0;
+        if (ceiling.y != null && ceiling.plane.normal.y >= this.attributes.climb.minYNormal && ceiling.y - this.target.position.y <= this.attributes.climb.up) {
+          // ground
+          this.movement.y = 0;
 
-		for (var _i = 0; _i < objects.length; _i += 1) {
-			var _obj = objects[_i];
+          // ascend
+          if (ceiling.y >= next.y) {
+            next.y = ceiling.y;
+            this.log('CLIMBED');
+          }
+        }
+      }
 
-			if (_obj.type === _Physics.TYPE_BOX || _obj.type === _Physics.TYPE_RAMP) {
-				if (_obj.collision2D(this.position)) {
-					var _y2 = _obj.getTop(this.position);
+      // check for walls
 
-					if (Math.abs(this.position.y - _y2) <= this.climbThreshold && _y2 > nextY) {
-						nextY = _y2;
-					}
-				}
-			}
-		}
+      collisions = collider.collisions(next);
+      var walls = [];
 
-		this.position.y += (nextY - this.position.y) * 0.3;
+      for (var _i = 0; _i < collisions.length; _i += 1) {
+        var _ceiling = collisions[_i].ceilingPlane(next);
 
-		// get next rotation
-		if (this.keys.left || this.keys.right) {
-			// disable automatic walk
-			this.target.active = false;
+        if (_ceiling.y != null && (_ceiling.plane.normal.y < this.attributes.climb.minYNormal || _ceiling.y - this.target.position.y > this.attributes.climb.up)) {
+          walls.push(collisions[_i]);
+        }
+      }
 
-			var rotate = (this.keys.left ? 1 : 0) + (this.keys.right ? -1 : 0);
-			this.yaw += this.rotationSpeed * delta * rotate;
-		}
+      // if inside a wall, extrude out
 
-		// pitch and yaw offset (look around)
-		this.pitchOffset += (this.target.pitchOffset - this.pitchOffset) * 0.05;
-		this.yawOffset += (this.target.yawOffset - this.yawOffset) * 0.05;
+      if (walls.length > 0) {
+        var extrude = Maths.copyVector(next);
 
-		// auto walk and look
-		if (this.target.active) {
-			if ((0, _Maths.getDistanceVec2)(this.position, this.target.position) > this.target.radius) {
-				this.position.x += (this.target.position.x - this.position.x) * 0.05;
-				this.position.z += (this.target.position.z - this.position.z) * 0.05;
-			}
-			this.yaw += (0, _Maths.minAngleDifference)(this.yaw, this.target.yaw) * 0.05;
-		}
+        for (var _i2 = 0; _i2 < walls.length; _i2 += 1) {
+          var mesh = walls[_i2];
+          extrude = mesh.nearest2DIntersect(this.target.position, next);
+        }
 
-		// move THREE reference
-		this.object.position.set(this.position.x, this.position.y, this.position.z);
-	}
+        next.x = extrude.x;
+        next.z = extrude.z;
+
+        // helper
+
+        this.object.position.set(next.x, next.y, next.z);
+
+        // check extruded point for collisions
+
+        var hits = 0;
+        collisions = collider.collisions(next);
+
+        for (var _i3 = 0; _i3 < collisions.length; _i3 += 1) {
+          var _ceiling2 = collisions[_i3].ceilingPlane(next);
+
+          if (_ceiling2.y != null && (_ceiling2.plane.normal.y < this.attributes.climb.minYNormal || _ceiling2.y - this.target.position.y > this.attributes.climb.up)) {
+            hits += 1;
+          }
+        }
+
+        // if contact with > 1 walls, stop motion
+
+        if (hits > 1) {
+          next.x = this.target.position.x;
+          next.z = this.target.position.z;
+        }
+      }
+    } else {
+      // check if on downward slope
+      var testUnder = Maths.copyVector(next);
+      testUnder.y -= this.attributes.climb.down;
+
+      if (!this.falling && collider.collision(testUnder)) {
+        var _ceiling3 = collider.ceilingPlane(testUnder);
+
+        // snap to slope if not too steep
+        if (_ceiling3.plane.normal.y >= this.attributes.climb.minYNormal) {
+          next.y = _ceiling3.y;
+          this.movement.y = 0;
+        }
+      }
+    }
+
+    // set new position target
+    this.target.position.x = next.x;
+    this.target.position.y = next.y;
+    this.target.position.z = next.z;
+
+    // smooth motion a little
+    this.position.x += (this.target.position.x - this.position.x) * this.attributes.adjust.veryFast;
+    this.position.y += (this.target.position.y - this.position.y) * this.attributes.adjust.veryFast;
+    this.position.z += (this.target.position.z - this.position.z) * this.attributes.adjust.veryFast;
+
+    // update rotation vector
+    if (this.keys.left || this.keys.right) {
+      var _dir = (this.keys.left ? 1 : 0) + (this.keys.right ? -1 : 0);
+      this.target.rotation.y += this.attributes.rotation * delta * _dir;
+    }
+
+    this.rotation.y += Maths.minAngleDifference(this.rotation.y, this.target.rotation.y) * this.attributes.adjust.fast;
+    this.offset.rotation.x += (this.target.offset.rotation.x - this.offset.rotation.x) * this.attributes.adjust.normal;
+    this.offset.rotation.y += (this.target.offset.rotation.y - this.offset.rotation.y) * this.attributes.adjust.normal;
+    this.rotation.y += this.rotation.y < 0 ? Maths.twoPi : this.rotation.y > Maths.twoPi ? -Maths.twoPi : 0;
+
+    // set new camera position
+    var yaw = this.rotation.y + this.offset.rotation.y;
+    var pitch = this.rotation.x + this.offset.rotation.x;
+    var height = this.position.y + this.attributes.height;
+
+    this.camera.position.set(this.position.x, height, this.position.z);
+    this.camera.lookAt(new THREE.Vector3(this.position.x + Math.sin(yaw), height + Math.sin(pitch), this.position.z + Math.cos(yaw)));
+  },
+
+  handleKeyDown: function handleKeyDown(e) {
+    switch (e.keyCode) {
+      case 38:
+      case 87:
+        this.keys.up = true;
+        break;
+      case 37:
+      case 65:
+        this.keys.left = true;
+        break;
+      case 40:
+      case 83:
+        this.keys.down = true;
+        break;
+      case 39:
+      case 68:
+        this.keys.right = true;
+        break;
+      case 32:
+        this.keys.jump = true;
+        break;
+      default:
+        break;
+    }
+  },
+  handleKeyUp: function handleKeyUp(e) {
+    switch (e.keyCode) {
+      case 38:
+      case 87:
+        this.keys.up = false;
+        break;
+      case 37:
+      case 65:
+        this.keys.left = false;
+        break;
+      case 40:
+      case 83:
+        this.keys.down = false;
+        break;
+      case 39:
+      case 68:
+        this.keys.right = false;
+        break;
+    }
+  },
+  handleMouseDown: function handleMouseDown(e) {
+    var bound = this.domElement.getBoundingClientRect();
+    var w = this.domElement.width;
+    var x = (e.clientX - bound.left) / w;
+    var t = this.attributes.cameraThreshold;
+
+    // adjust camera
+    if (x < t) {
+      this.target.rotation.y = this.rotation.y + (t - x) / t * this.attributes.maxRotationOffset;
+    } else if (x > 1 - t) {
+      this.target.rotation.y = this.rotation.y + (x - (1 - t)) / t * -this.attributes.maxRotationOffset;
+    } else {
+      this.target.rotation.y = this.rotation.y;
+    }
+  },
+  handleMouseMove: function handleMouseMove(e) {
+    var bound = this.domElement.getBoundingClientRect();
+    var w = this.domElement.width;
+    var h = this.domElement.height;
+    var x = (e.clientX - bound.left) / w;
+    var y = (e.clientY - bound.top) / h;
+    var t = this.attributes.cameraThreshold;
+
+    // adjust camera
+    if (x < t) {
+      this.target.offset.rotation.y = (t - x) / t * this.attributes.maxRotationOffset;
+    } else if (x > 1 - t) {
+      this.target.offset.rotation.y = (x - (1 - t)) / t * -this.attributes.maxRotationOffset;
+    } else {
+      this.target.offset.rotation.y = 0;
+    }
+
+    if (y < t) {
+      this.target.offset.rotation.x = (t - y) / t * this.attributes.maxRotationOffset;
+    } else if (y > 1 - t) {
+      this.target.offset.rotation.x = (y - (1 - t)) / t * -this.attributes.maxRotationOffset;
+    } else {
+      this.target.offset.rotation.x = 0;
+    }
+  }
 };
 
 exports.default = Player;

@@ -17,7 +17,7 @@ Scene.prototype = {
   init: function() {
     const self = this;
 
-    // threejs set up
+    // threejs
     this.renderer = new THREE.WebGLRenderer({antialias: false});
     this.renderer.setSize(640, 480);
     this.renderer.setClearColor(0xf9e5a2, 1);
@@ -26,13 +26,17 @@ Scene.prototype = {
     this.renderer.domElement.addEventListener('mousedown', function(e){ self.onMouseDown(e) });
     document.body.append(this.renderer.domElement);
 
-    // user
-    this.hud = new HUD(this.renderer.domElement);
-    this.player = new Player();
-    this.camera = new THREE.PerspectiveCamera(Globals.camera.fov, 1, Globals.camera.near, Globals.camera.far);
-    this.camera.up = new THREE.Vector3(0, 1, 0);
-    this.raytracer = new RayTracer();
-    this.resize();
+    // player & models
+    this.player = new Player(this.renderer.domElement);
+    this.camera = this.player.camera;
+
+    //this.hud = new HUD(this.renderer.domElement);
+    //this.player = new Player();
+  //  this.camera = new THREE.PerspectiveCamera(Globals.camera.fov, 1, Globals.camera.near, Globals.camera.far);
+    //this.camera.up = new THREE.Vector3(0, 1, 0);
+  //  this.raytracer = new RayTracer();
+  //  this.resize();
+
     window.addEventListener('resize', function() {
       self.resize();
     });
@@ -42,7 +46,11 @@ Scene.prototype = {
     this.scene.fog = new THREE.FogExp2(0xCCCFFF, 0.008);
     this.scene.add(this.player.object, Models.mainBuilding, this.raytracer.object);
 
+    // load stuff
+    this.loader = new Loader();
+
     // walls & floors
+    /*
     this.model = new PhysicsModel();
     this.model.add(
       // floors
@@ -99,6 +107,7 @@ Scene.prototype = {
       new Box(v3(2, 12, 20), v3(14, 8, 1.5))
     );
     //this.scene.add(this.model.object);
+    */
 
     // load gallery
     const tags = document.getElementsByClassName('im');
@@ -169,6 +178,10 @@ Scene.prototype = {
     //const sun = new THREE.PointLight(0xffffff, 0.9, 40500);
     //sun.position.set(sky.uniforms.sunPosition.value.x, sky.uniforms.sunPosition.value.y, sky.uniforms.sunPosition.value.z);
     this.scene.add(sky.mesh);//,sun);
+  },
+
+  isLoaded: function() {
+    return false;
   },
 
   resize: function() {

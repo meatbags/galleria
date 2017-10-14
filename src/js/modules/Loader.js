@@ -1,76 +1,67 @@
-const Materials = {
-  concrete: new THREE.MeshPhysicalMaterial({
-    clearCoat: 0,
-    clearCoatRoughness: 1,
-    reflectivity: 0,
-    color: 0xffffff,
-    emissive: 0x888888
-  }),
-  canvas: new THREE.MeshBasicMaterial({
-    color: 0xffffff,
-    side: THREE.DoubleSide
-  }),
-  dev: new THREE.MeshLambertMaterial({
-    color: 0xff0000,
-    opacity: 0.25,
-    transparent: true,
-    side: THREE.DoubleSide
-  }),
-  dev2: new THREE.MeshLambertMaterial({
-    color: 0xffaa88,
-    opacity: 0.25,
-    transparent: true,
-    side: THREE.DoubleSide
-  }),
-  wireframe: new THREE.MeshLambertMaterial({
-    color: 0xff0000,
-    wireframe: true
-  })
+const Loader = function(basePath) {
+  this.basePath = basePath;
+  this.init();
 };
 
-const Models = {
-  mainBuilding: new THREE.Group(),
-};
+Loader.prototype = {
+  init: function() {
+    this.materialLoader = new THREE.MTLLoader();
+    this.objectLoader = new THREE.OBJLoader();
+    this.materialLoader.setPath(this.basePath);
+    this.objectLoader.setPath(this.basePath);
+  },
 
-// load OBJ models
+  createMaterials: function() {
+    this.materials = {
+      concrete: new THREE.MeshPhysicalMaterial({
+        clearCoat: 0,
+        clearCoatRoughness: 1,
+        reflectivity: 0,
+        color: 0xffffff,
+        emissive: 0x888888
+      }),
+      canvas: new THREE.MeshBasicMaterial({
+        color: 0xffffff,
+        side: THREE.DoubleSide
+      }),
+      dev: new THREE.MeshLambertMaterial({
+        color: 0xff0000,
+        opacity: 0.25,
+        transparent: true,
+        side: THREE.DoubleSide
+      }),
+      dev2: new THREE.MeshLambertMaterial({
+        color: 0xffaa88,
+        opacity: 0.25,
+        transparent: true,
+        side: THREE.DoubleSide
+      }),
+      wireframe: new THREE.MeshLambertMaterial({
+        color: 0xff0000,
+        wireframe: true
+      })
+   };
 
-const matLoader = new THREE.MTLLoader();
-const pathAssets = appRoot + 'assets/3d/';
+   this.models = {
+     mainBuilding: new THREE.Group(),
+   };
+  },
 
-matLoader.setPath(pathAssets);
-matLoader.load('hangar.mtl', function(materials) {
-  console.log(materials);
+  process: function(obj, materials) {
+    // fix materials
 
-  materials.preload();
-  var objLoader = new THREE.OBJLoader();
-
-  for (var key in materials.materials) {
-    const mat = materials.materials[key];
-    if (mat.map) {
-      console.log(mat.map.image.src, mat);
-    } else {
-      console.log('no map', mat);
-    }
-  }
-
-  objLoader.setPath(pathAssets);
-  objLoader.setMaterials(materials)
-  objLoader.load('hangar.obj', function (obj) {
     for (let i=0; i<obj.children.length; i+=1) {
       const child = obj.children[i];
-      const matInfo = materials.materialsInfo[child.material.name];
-
-      // reduce bump map
-      child.material.bumpScale = 0.01;
+      const meta = materials.materialsInfo[child.material.name];
 
       // load lightmaps
-      if (matInfo.map_ka) {
+      if (meta.map_ka) {
         const uvs = child.geometry.attributes.uv.array;
-        const src = matInfo.map_ka;
-        const tex = new THREE.TextureLoader().load(pathAssets + src);
+        const src = meta.map_ka;
+        const tex = new THREE.TextureLoader().load(self.basePath + src);
 
         child.material.lightMap = tex;
-        child.material.lightMapIntensity = 0.3;
+        child.material.lightMapIntensity = 1;
         child.geometry.addAttribute('uv2', new THREE.BufferAttribute(uvs, 2));
       }
 
@@ -91,12 +82,32 @@ matLoader.load('hangar.mtl', function(materials) {
           child.material.opacity = 0.4;
         }
       } else {
-        // no texture, set pure colour
+        // no texture, set colour
         child.material.emissive = child.material.color;
       }
     }
-    Models.mainBuilding.add(obj);
-  });
-});
+  },
 
-export { Models, Materials };
+  loadOBJ: function(filename) {
+    const self = this;
+
+    return new Promise(
+      function(resolve, reject) {
+        try {
+          self.materialLoader.load(filename + '.mtl', function(materials) {
+            materials.preload();
+            self.objectLoader.setMaterials(materials);
+            self.objectLoader.load(filename + '.obj', function(obj){
+              self.process(obj, materials);
+              resolve(obj);
+            });
+          });
+        } catch(error) {
+          reject(error);
+        }
+      }
+    );
+  }
+};
+
+export default Loader;

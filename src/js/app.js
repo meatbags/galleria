@@ -9,7 +9,17 @@ const App = {
 	init: function() {
 		App.timer = new Timer();
 		App.scene = new Scene();
-		App.loop();
+		App.loading();
+	},
+
+	loading: function() {
+		App.timer.update();
+
+		if (!App.scene.isLoaded()) {
+			requestAnimationFrame(App.loading);
+		} else {
+			App.loop();
+		}
 	},
 
 	loop: function() {

@@ -47,7 +47,7 @@ HUD.prototype = {
 
   getLeftFactor: function(x) {
     const t = this.domElement.width * this.threshold.x;
-
+    
     return ((t - (x - this.domElement.getBoundingClientRect().left)) / t);
   },
 
