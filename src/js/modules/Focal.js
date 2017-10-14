@@ -1,6 +1,6 @@
 import { BoundingBox } from './BoundingBox';
 import { getPitch, getYaw } from './Maths';
-import { Materials } from './Loader';
+import { Materials } from './Materials';
 import Globals from './Globals';
 
 const TYPE_FOCAL = 'TYPE_FOCAL';

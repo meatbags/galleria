@@ -1,17 +1,19 @@
-import * as Maths from './Maths';
+import * as Maths from './VectorMaths';
+import Globals from './Globals';
 
 const Player = function(domElement) {
   this.domElement = domElement;
-  this.position = new THREE.Vector3(0, 0, 0);
+  this.object = new THREE.Object3D();
+  this.position = new THREE.Vector3(Globals.player.position.x, Globals.player.position.y, Globals.player.position.z);
   this.movement = new THREE.Vector3(0, 0, 0);
-  this.rotation = new THREE.Vector3(0, Math.PI, 0);
+  this.rotation = new THREE.Vector3(0, 0, 0);
   this.offset = {
     rotation: new THREE.Vector3(0, 0, 0)
   };
   this.target = {
-    position: new THREE.Vector3(0, 0, 0),
+    position: new THREE.Vector3(this.position.x, this.position.y, this.position.z),
     movement: new THREE.Vector3(0, 0, 0),
-    rotation: new THREE.Vector3(0, Math.PI, 0),
+    rotation: new THREE.Vector3(0, 0, 0),
     offset: {
       rotation: new THREE.Vector3(0, 0, 0)
     }
@@ -21,6 +23,11 @@ const Player = function(domElement) {
     speedWhileJumping: 4,
     height: 1.8,
     rotation: Math.PI * 0.75,
+    camera: {
+      fov: Globals.camera.fov,
+      near: Globals.camera.near,
+      far: Globals.camera.far
+    },
     fov: 58,
     cameraThreshold: 0.4,
     maxRotationOffset: Math.PI * 0.3,
@@ -43,7 +50,7 @@ const Player = function(domElement) {
     }
   };
   this.outputLog = [];
-  this.camera = new THREE.PerspectiveCamera(this.attributes.fov, 1, 0.1, 10000);
+  this.camera = new THREE.PerspectiveCamera(this.attributes.camera.fov, 1, this.attributes.camera.near, this.attributes.camera.far);
   this.camera.up = new THREE.Vector3(0, 1, 0);
 	this.init();
 };
@@ -56,6 +63,9 @@ Player.prototype = {
     );
 		this.bindControls();
     this.resizeCamera();
+    const light = new THREE.PointLight(0xffffff, 0.8, 10, 2);
+		light.position.set(0, 2, 0);
+		this.object.add(light);
 	},
 
   resizeCamera: function() {
@@ -245,6 +255,11 @@ Player.prototype = {
       }
     }
 
+    if (next.y < 0) {
+      next.y = 0;
+      this.movement.y = 0;
+    }
+
     // set new position target
     this.target.position.x = next.x;
     this.target.position.y = next.y;
@@ -271,12 +286,13 @@ Player.prototype = {
     const pitch = this.rotation.x + this.offset.rotation.x;
     const height = this.position.y + this.attributes.height;
 
+    this.object.position.set(this.position.x, height, this.position.z);
     this.camera.position.set(this.position.x, height, this.position.z);
     this.camera.lookAt(new THREE.Vector3(
       this.position.x + Math.sin(yaw),
       height + Math.sin(pitch),
       this.position.z + Math.cos(yaw)
-    ))
+    ));
 	},
 
   handleKeyDown(e) {

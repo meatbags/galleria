@@ -155,44 +155,9 @@ Loader.prototype = {
     this.objectLoader.setPath(this.basePath);
   },
 
-  createMaterials: function createMaterials() {
-    this.materials = {
-      concrete: new THREE.MeshPhysicalMaterial({
-        clearCoat: 0,
-        clearCoatRoughness: 1,
-        reflectivity: 0,
-        color: 0xffffff,
-        emissive: 0x888888
-      }),
-      canvas: new THREE.MeshBasicMaterial({
-        color: 0xffffff,
-        side: THREE.DoubleSide
-      }),
-      dev: new THREE.MeshLambertMaterial({
-        color: 0xff0000,
-        opacity: 0.25,
-        transparent: true,
-        side: THREE.DoubleSide
-      }),
-      dev2: new THREE.MeshLambertMaterial({
-        color: 0xffaa88,
-        opacity: 0.25,
-        transparent: true,
-        side: THREE.DoubleSide
-      }),
-      wireframe: new THREE.MeshLambertMaterial({
-        color: 0xff0000,
-        wireframe: true
-      })
-    };
-
-    this.models = {
-      mainBuilding: new THREE.Group()
-    };
-  },
-
   process: function process(obj, materials) {
     // fix materials
+    var self = this;
 
     for (var i = 0; i < obj.children.length; i += 1) {
       var child = obj.children[i];
@@ -205,9 +170,11 @@ Loader.prototype = {
         var tex = new THREE.TextureLoader().load(self.basePath + src);
 
         child.material.lightMap = tex;
-        child.material.lightMapIntensity = 1;
+        child.material.lightMapIntensity = 0.1;
         child.geometry.addAttribute('uv2', new THREE.BufferAttribute(uvs, 2));
       }
+
+      child.material.bumpScale = 0.05;
 
       // make glass translucent
       if (child.material.map) {
@@ -266,11 +233,11 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.TYPE_FOCAL = exports.Focal = undefined;
 
-var _BoundingBox = __webpack_require__(5);
+var _BoundingBox = __webpack_require__(4);
 
 var _Maths = __webpack_require__(0);
 
-var _Loader = __webpack_require__(1);
+var _Materials = __webpack_require__(14);
 
 var _Globals = __webpack_require__(3);
 
@@ -288,7 +255,7 @@ var Focal = function Focal(pos, dim, eye) {
   this.bbox = new _BoundingBox.BoundingBox(pos, dim);
   this.pitch = (0, _Maths.getPitch)(eye, new THREE.Vector3(pos.x, pos.y - _Globals2.default.player.height, pos.z));
   this.yaw = (0, _Maths.getYaw)(eye, pos);
-  this.object = new THREE.Mesh(new THREE.BoxBufferGeometry(dim.x, dim.y, dim.z), _Loader.Materials.dev2);
+  this.object = new THREE.Mesh(new THREE.BoxBufferGeometry(dim.x, dim.y, dim.z), _Materials.Materials.dev2);
   this.object.position.set(pos.x, pos.y, pos.z);
 };
 
@@ -369,11 +336,89 @@ exports.default = Globals;
 
 
 Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+var BoundingBox = function BoundingBox(pos, dim) {
+  this.box = {
+    x: {
+      min: pos.x - dim.x / 2,
+      max: pos.x + dim.x / 2,
+      size: dim.x
+    },
+    y: {
+      min: pos.y - dim.y / 2,
+      max: pos.y + dim.y / 2,
+      size: dim.y
+    },
+    z: {
+      min: pos.z - dim.z / 2,
+      max: pos.z + dim.z / 2,
+      size: dim.z
+    }
+  };
+};
+
+BoundingBox.prototype = {
+  collision: function collision(pos) {
+    return pos.x >= this.box.x.min && pos.x <= this.box.x.max && pos.y >= this.box.y.min && pos.y <= this.box.y.max && pos.z >= this.box.z.min && pos.z <= this.box.z.max;
+  },
+
+  collision2D: function collision2D(pos) {
+    return pos.x >= this.box.x.min && pos.x <= this.box.x.max && pos.z >= this.box.z.min && pos.z <= this.box.z.max;
+  },
+
+  getTop: function getTop(pos) {
+    return this.box.y.max;
+  }
+};
+
+var BoundingRamp = function BoundingRamp(pos, dim, dir) {
+  this.box = new BoundingBox(pos, dim);
+  this.direction = dir;
+};
+
+BoundingRamp.prototype = {
+  collision: function collision(pos) {
+    return this.box.collision(pos);
+  },
+
+  collision2D: function collision2D(pos) {
+    return this.box.collision2D(pos);
+  },
+
+  getTop: function getTop(pos) {
+    var top = this.box.box.y.min;
+
+    if (this.direction === 0) {
+      top += (pos.z - this.box.box.z.min) / this.box.box.z.size * this.box.box.y.size;
+    } else if (this.direction === 1) {
+      top += (pos.x - this.box.box.x.min) / this.box.box.x.size * this.box.box.y.size;
+    } else if (this.direction === 2) {
+      top += (this.box.box.z.max - pos.z) / this.box.box.z.size * this.box.box.y.size;
+    } else {
+      top += (this.box.box.x.max - pos.x) / this.box.box.x.size * this.box.box.y.size;
+    }
+
+    return top;
+  }
+};
+
+exports.BoundingBox = BoundingBox;
+exports.BoundingRamp = BoundingRamp;
+
+/***/ }),
+/* 5 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
 	value: true
 });
 exports.TYPE_RAMP = exports.TYPE_BOX = exports.Box = exports.Ramp = exports.PhysicsModel = undefined;
 
-var _BoundingBox = __webpack_require__(5);
+var _BoundingBox = __webpack_require__(4);
 
 var _Loader = __webpack_require__(1);
 
@@ -466,84 +511,6 @@ exports.Ramp = Ramp;
 exports.Box = Box;
 exports.TYPE_BOX = TYPE_BOX;
 exports.TYPE_RAMP = TYPE_RAMP;
-
-/***/ }),
-/* 5 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-var BoundingBox = function BoundingBox(pos, dim) {
-  this.box = {
-    x: {
-      min: pos.x - dim.x / 2,
-      max: pos.x + dim.x / 2,
-      size: dim.x
-    },
-    y: {
-      min: pos.y - dim.y / 2,
-      max: pos.y + dim.y / 2,
-      size: dim.y
-    },
-    z: {
-      min: pos.z - dim.z / 2,
-      max: pos.z + dim.z / 2,
-      size: dim.z
-    }
-  };
-};
-
-BoundingBox.prototype = {
-  collision: function collision(pos) {
-    return pos.x >= this.box.x.min && pos.x <= this.box.x.max && pos.y >= this.box.y.min && pos.y <= this.box.y.max && pos.z >= this.box.z.min && pos.z <= this.box.z.max;
-  },
-
-  collision2D: function collision2D(pos) {
-    return pos.x >= this.box.x.min && pos.x <= this.box.x.max && pos.z >= this.box.z.min && pos.z <= this.box.z.max;
-  },
-
-  getTop: function getTop(pos) {
-    return this.box.y.max;
-  }
-};
-
-var BoundingRamp = function BoundingRamp(pos, dim, dir) {
-  this.box = new BoundingBox(pos, dim);
-  this.direction = dir;
-};
-
-BoundingRamp.prototype = {
-  collision: function collision(pos) {
-    return this.box.collision(pos);
-  },
-
-  collision2D: function collision2D(pos) {
-    return this.box.collision2D(pos);
-  },
-
-  getTop: function getTop(pos) {
-    var top = this.box.box.y.min;
-
-    if (this.direction === 0) {
-      top += (pos.z - this.box.box.z.min) / this.box.box.z.size * this.box.box.y.size;
-    } else if (this.direction === 1) {
-      top += (pos.x - this.box.box.x.min) / this.box.box.x.size * this.box.box.y.size;
-    } else if (this.direction === 2) {
-      top += (this.box.box.z.max - pos.z) / this.box.box.z.size * this.box.box.y.size;
-    } else {
-      top += (this.box.box.x.max - pos.x) / this.box.box.x.size * this.box.box.y.size;
-    }
-
-    return top;
-  }
-};
-
-exports.BoundingBox = BoundingBox;
-exports.BoundingRamp = BoundingRamp;
 
 /***/ }),
 /* 6 */
@@ -655,7 +622,9 @@ var _Artworks2 = _interopRequireDefault(_Artworks);
 
 var _Loader = __webpack_require__(1);
 
-var _Physics = __webpack_require__(4);
+var _Loader2 = _interopRequireDefault(_Loader);
+
+var _Physics = __webpack_require__(5);
 
 var _Focal = __webpack_require__(2);
 
@@ -682,98 +651,56 @@ Scene.prototype = {
     this.renderer.setSize(640, 480);
     this.renderer.setClearColor(0xf9e5a2, 1);
     this.renderer.setPixelRatio(window.devicePixelRatio);
-    this.renderer.domElement.addEventListener('mousemove', function (e) {
-      self.onMouseMove(e);
-    });
-    this.renderer.domElement.addEventListener('mousedown', function (e) {
-      self.onMouseDown(e);
-    });
+    //this.renderer.domElement.addEventListener('mousemove', function(e){ self.onMouseMove(e) });
+    //this.renderer.domElement.addEventListener('mousedown', function(e){ self.onMouseDown(e) });
     document.body.append(this.renderer.domElement);
 
-    // player & models
+    // player & scene
     this.player = new _Player2.default(this.renderer.domElement);
     this.camera = this.player.camera;
-
-    //this.hud = new HUD(this.renderer.domElement);
-    //this.player = new Player();
-    //  this.camera = new THREE.PerspectiveCamera(Globals.camera.fov, 1, Globals.camera.near, Globals.camera.far);
-    //this.camera.up = new THREE.Vector3(0, 1, 0);
-    //  this.raytracer = new RayTracer();
-    //  this.resize();
-
-    window.addEventListener('resize', function () {
-      self.resize();
-    });
+    this.raytracer = new _RayTracer2.default(this.renderer.domElement);
 
     // scene
     this.scene = new THREE.Scene();
     this.scene.fog = new THREE.FogExp2(0xCCCFFF, 0.008);
-    this.scene.add(this.player.object, _Loader.Models.mainBuilding, this.raytracer.object);
+    this.scene.add(this.raytracer.object, this.player.object);
 
-    // load stuff
-    this.loader = new Loader();
+    // collision map
+    this.collider = new Collider.System();
+    this.loader = new _Loader2.default(appRoot + 'assets/3d/');
+    this.toLoad = 2;
+    this.loader.loadOBJ('hangar_collision_map').then(function (map) {
+      for (var i = 0; i < map.children.length; i += 1) {
+        self.collider.add(new Collider.Mesh(map.children[i].geometry));
+      }
+      self.toLoad -= 1;
+    }, function (err) {
+      console.log(err);
+    });
 
+    // models
+    this.loader.loadOBJ('hangar').then(function (map) {
+      self.scene.add(map);
+      self.toLoad -= 1;
+    }, function (err) {
+      console.log(err);
+    });
+
+    // resize
+    this.resize();
+    window.addEventListener('resize', function () {
+      self.resize();
+    });
+
+    //this.hud = new HUD(this.renderer.domElement);
+    //this.player = new Player();
+    //this.camera = new THREE.PerspectiveCamera(Globals.camera.fov, 1, Globals.camera.near, Globals.camera.far);
+    //this.camera.up = new THREE.Vector3(0, 1, 0);
     // walls & floors
-    /*
-    this.model = new PhysicsModel();
-    this.model.add(
-      // floors
-      new Box(v3(0, 0, -10.75), v3(23, 1.05, 21.5)),
-      new Box(v3(0, 7.5, 10), v3(20, 1.05, 20.5)),
-      // main gallery walls
-      new Box(v3(-9.5, 8, 0), v3(2.75, 16, 40)),
-      new Box(v3(9.5, 8, 0), v3(2.75, 16, 40)),
-      // outer walls
-      new Box(v3(15, 8, -5), v3(2, 20, 79)),
-      new Box(v3(-26, 8, -5), v3(2, 20, 79)),
-      new Box(v3(-5.5, 8, 34.5), v3(41, 20, 2)),
-      new Box(v3(-5.5, 8, -44.5), v3(41, 20, 2)),
-      // outer fences + blockades
-      new Box(v3(12.25, 8, 5.125), v3(5, 20, 22)),
-      new Box(v3(-20.75, 8, -9.5), v3(11.5, 20, 2.5)),
-      new Box(v3(-10.75, 8, -10), v3(2.5, 20, 1.75)),
-      new Box(v3(-21, 8, 20.25), v3(12, 20, 32)),
-      new Box(v3(-13.5, 8, 10), v3(5, 20, 1)),
-      // side platforms
-      new Box(v3(-11, 0.25, 10.5), v3(1, 0.5, 21)),
-      new Box(v3( 11, 0.25, 10.5), v3(1, 0.5, 21)),
-      // central posts
-      new Box(v3(3, 8, 0), v3(1, 16, 1)),
-      new Box(v3(-3, 8, 0), v3(1, 16, 1)),
-      new Box(v3(0, 8, 10), v3(7, 16, 1.5)),
-      //new Box(v3(-3, 8, 10), v3(1, 16, 1)),
-      // front entrance
-      new Ramp(v3(0, 0.25, -23), v3(10, 0.5, 3), 0),
-      new Box(v3(7.875, 8, -19.5), v3(6, 16, 2.5)),
-      new Box(v3(-7.875, 8, -19.5), v3(6, 16, 2.5)),
-      // stairs front
-      new Box(v3(-6, 4, -7), v3(6, 0.5, 4)),
-      new Ramp(v3(-7.5, 6, -2.5), v3(3, 4, 5), 0),
-      new Ramp(v3(-4.5, 2, -2.5), v3(3, 4, 5), 2),
-      // stairs front -- posts & walls
-      new Box(v3(2, 10, 0), v3(16, 5, 0.75)),
-      new Box(v3(-3, 3.25, -9), v3(1, 16, 1)),
-      new Box(v3(-3, 3.25, -5), v3(1, 16, 1)),
-      new Box(v3(-6, 3.25, -5), v3(0.5, 16, 1)),
-      new Box(v3(-6, 5.25, -9), v3(6, 3, 1)),
-      new Box(v3(-3, 5.25, -7), v3(1, 3, 4)),
-      new Box(v3(-3, 3.25, -2.5), v3(1, 6, 4.5)),
-      new Box(v3(-6, 7.5, -2.5), v3(0.5, 7, 5)),
-      // stairs back
-      new Box(v3(-7, 7.5, 22.5), v3(4, 1.05, 5)),
-      new Box(v3(0, 0, 22.5), v3(20, 1, 5)),
-      new Ramp(v3(0, 4.25, 22.5), v3(10, 7.55, 5), 3),
-      // stairs back -- walls
-      new Box(v3(0, 8, 25.375), v3(18, 16, 1)),
-      new Box(v3(9.5, 8, 22.75), v3(2.75, 16, 6)),
-      new Box(v3(-9.5, 8, 22.75), v3(2.75, 16, 6)),
-      new Box(v3(-2, 4, 20), v3(13, 8, 1.5)),
-      new Box(v3(2, 12, 20), v3(14, 8, 1.5))
-    );
     //this.scene.add(this.model.object);
-    */
 
     // load gallery
+    this.model = new _Physics.PhysicsModel();
     var tags = document.getElementsByClassName('im');
     this.artworks = new _Artworks2.default();
 
@@ -804,7 +731,6 @@ Scene.prototype = {
             break;
         }
       }
-
       this.artworks.add(title, caption, url, src);
     }
 
@@ -836,11 +762,11 @@ Scene.prototype = {
     var sky = new THREE.Sky();
     //const sun = new THREE.PointLight(0xffffff, 0.9, 40500);
     //sun.position.set(sky.uniforms.sunPosition.value.x, sky.uniforms.sunPosition.value.y, sky.uniforms.sunPosition.value.z);
-    this.scene.add(sky.mesh); //,sun);
+    this.scene.add(sky.mesh);
   },
 
   isLoaded: function isLoaded() {
-    return false;
+    return this.toLoad === 0;
   },
 
   resize: function resize() {
@@ -896,12 +822,18 @@ Scene.prototype = {
   },
 
   update: function update(delta) {
-    var yaw = this.player.getYaw();
-    var pitch = this.player.getPitch();
-
-    this.player.update(delta, this.model.contents);
+    this.player.update(delta, this.collider);
+    /*
+    const yaw = this.player.getYaw();
+    const pitch = this.player.getPitch();
+      this.player.update(delta, this.model.contents);
     this.camera.position.set(this.player.position.x, this.player.position.y + this.player.height, this.player.position.z);
-    this.camera.lookAt(new THREE.Vector3(this.player.position.x + Math.sin(yaw), this.player.position.y + this.player.height + Math.sin(pitch), this.player.position.z + Math.cos(yaw)));
+    this.camera.lookAt(new THREE.Vector3(
+      this.player.position.x + Math.sin(yaw),
+      this.player.position.y + this.player.height + Math.sin(pitch),
+      this.player.position.z + Math.cos(yaw)
+    ));
+    */
   },
 
   render: function render() {
@@ -922,24 +854,31 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _Maths = __webpack_require__(0);
+var _VectorMaths = __webpack_require__(15);
 
-var Maths = _interopRequireWildcard(_Maths);
+var Maths = _interopRequireWildcard(_VectorMaths);
+
+var _Globals = __webpack_require__(3);
+
+var _Globals2 = _interopRequireDefault(_Globals);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
 var Player = function Player(domElement) {
   this.domElement = domElement;
-  this.position = new THREE.Vector3(0, 0, 0);
+  this.object = new THREE.Object3D();
+  this.position = new THREE.Vector3(_Globals2.default.player.position.x, _Globals2.default.player.position.y, _Globals2.default.player.position.z);
   this.movement = new THREE.Vector3(0, 0, 0);
-  this.rotation = new THREE.Vector3(0, Math.PI, 0);
+  this.rotation = new THREE.Vector3(0, 0, 0);
   this.offset = {
     rotation: new THREE.Vector3(0, 0, 0)
   };
   this.target = {
-    position: new THREE.Vector3(0, 0, 0),
+    position: new THREE.Vector3(this.position.x, this.position.y, this.position.z),
     movement: new THREE.Vector3(0, 0, 0),
-    rotation: new THREE.Vector3(0, Math.PI, 0),
+    rotation: new THREE.Vector3(0, 0, 0),
     offset: {
       rotation: new THREE.Vector3(0, 0, 0)
     }
@@ -949,6 +888,11 @@ var Player = function Player(domElement) {
     speedWhileJumping: 4,
     height: 1.8,
     rotation: Math.PI * 0.75,
+    camera: {
+      fov: _Globals2.default.camera.fov,
+      near: _Globals2.default.camera.near,
+      far: _Globals2.default.camera.far
+    },
     fov: 58,
     cameraThreshold: 0.4,
     maxRotationOffset: Math.PI * 0.3,
@@ -971,7 +915,7 @@ var Player = function Player(domElement) {
     }
   };
   this.outputLog = [];
-  this.camera = new THREE.PerspectiveCamera(this.attributes.fov, 1, 0.1, 10000);
+  this.camera = new THREE.PerspectiveCamera(this.attributes.camera.fov, 1, this.attributes.camera.near, this.attributes.camera.far);
   this.camera.up = new THREE.Vector3(0, 1, 0);
   this.init();
 };
@@ -981,6 +925,9 @@ Player.prototype = {
     this.object = new THREE.Mesh(new THREE.SphereBufferGeometry(0.05), new THREE.MeshPhongMaterial());
     this.bindControls();
     this.resizeCamera();
+    var light = new THREE.PointLight(0xffffff, 0.8, 10, 2);
+    light.position.set(0, 2, 0);
+    this.object.add(light);
   },
 
   resizeCamera: function resizeCamera() {
@@ -1158,6 +1105,11 @@ Player.prototype = {
       }
     }
 
+    if (next.y < 0) {
+      next.y = 0;
+      this.movement.y = 0;
+    }
+
     // set new position target
     this.target.position.x = next.x;
     this.target.position.y = next.y;
@@ -1184,6 +1136,7 @@ Player.prototype = {
     var pitch = this.rotation.x + this.offset.rotation.x;
     var height = this.position.y + this.attributes.height;
 
+    this.object.position.set(this.position.x, height, this.position.z);
     this.camera.position.set(this.position.x, height, this.position.z);
     this.camera.lookAt(new THREE.Vector3(this.position.x + Math.sin(yaw), height + Math.sin(pitch), this.position.z + Math.cos(yaw)));
   },
@@ -1290,19 +1243,18 @@ Object.defineProperty(exports, "__esModule", {
 
 var _Maths = __webpack_require__(0);
 
-var _Loader = __webpack_require__(1);
-
 var _Focal = __webpack_require__(2);
 
-var _Physics = __webpack_require__(4);
+var _Physics = __webpack_require__(5);
 
-var RayTracer = function RayTracer() {
+var RayTracer = function RayTracer(domElement) {
+  this.domElement = domElement;
   this.precision = 0.4;
   this.maxLength = 15;
   this.object = new THREE.Object3D();
 
   var light = new THREE.PointLight(0xffffff, 0.5, 5, 2);
-  var ball = new THREE.Mesh(new THREE.SphereBufferGeometry(0.05, 16), _Loader.Materials.concrete);
+  var ball = new THREE.Mesh(new THREE.SphereBufferGeometry(0.05, 16), new THREE.MeshPhongMaterial({ color: 0xffffff, emissive: 0xffffff }));
   light.position.y = 1.1;
 
   this.object.add(ball, light);
@@ -1462,7 +1414,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _Loader = __webpack_require__(1);
+var _Materials = __webpack_require__(14);
 
 var _Maths = __webpack_require__(0);
 
@@ -1506,7 +1458,7 @@ Artworks.prototype = {
       self.focalPoints.push(new _Focal.Focal(place.position, (0, _Maths.v3)(1, 1, 1), place.eye));
 
       // create artwork mesh
-      var mesh = new THREE.Mesh(new THREE.PlaneBufferGeometry(1, 1, 2, 2), _Loader.Materials.canvas.clone());
+      var mesh = new THREE.Mesh(new THREE.PlaneBufferGeometry(1, 1, 2, 2), _Materials.Materials.canvas.clone());
       var texture = textureLoader.load(_this.sources[i].src, function () {
         mesh.scale.x = texture.image.naturalWidth / 1000. * place.scale;
         mesh.scale.y = texture.image.naturalHeight / 1000. * place.scale;
@@ -1663,6 +1615,159 @@ THREE.Sky.SkyShader = {
 		'	float sundisk = smoothstep( sunAngularDiameterCos, sunAngularDiameterCos + 0.00002, cosTheta );', '	L0 += ( vSunE * 19000.0 * Fex ) * sundisk;', '	vec3 texColor = ( Lin + L0 ) * 0.04 + vec3( 0.0, 0.0003, 0.00075 );', '	vec3 curr = Uncharted2Tonemap( ( log2( 2.0 / pow( luminance, 4.0 ) ) ) * texColor );', '	vec3 color = curr * whiteScale;', '	vec3 retColor = pow( color, vec3( 1.0 / ( 1.2 + ( 1.2 * vSunfade ) ) ) );', '	gl_FragColor = vec4( retColor, 1.0 );', '}'].join('\n')
 
 };
+
+/***/ }),
+/* 14 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+var Materials = {
+  concrete: new THREE.MeshPhysicalMaterial({
+    clearCoat: 0,
+    clearCoatRoughness: 1,
+    reflectivity: 0,
+    color: 0xffffff,
+    emissive: 0x888888
+  }),
+  canvas: new THREE.MeshBasicMaterial({
+    color: 0xffffff,
+    side: THREE.DoubleSide
+  }),
+  dev: new THREE.MeshLambertMaterial({
+    color: 0xff0000,
+    opacity: 0.25,
+    transparent: true,
+    side: THREE.DoubleSide
+  }),
+  dev2: new THREE.MeshLambertMaterial({
+    color: 0xffaa88,
+    opacity: 0.25,
+    transparent: true,
+    side: THREE.DoubleSide
+  }),
+  wireframe: new THREE.MeshLambertMaterial({
+    color: 0xff0000,
+    wireframe: true
+  })
+};
+
+exports.Materials = Materials;
+
+/***/ }),
+/* 15 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+var twoPi = Math.PI * 2;
+
+var copyVector = function copyVector(vec) {
+  var copied = new THREE.Vector3(vec.x, vec.y, vec.z);
+
+  return copied;
+};
+
+var addVector = function addVector(a, b) {
+  var c = new THREE.Vector3(a.x + b.x, a.y + b.y, a.z + b.z);
+
+  return c;
+};
+
+var subtractVector = function subtractVector(a, b) {
+  var c = new THREE.Vector3(a.x - b.x, a.y - b.y, a.z - b.z);
+
+  return c;
+};
+
+var normalise = function normalise(a) {
+  var mag = Math.sqrt(a.x * a.x + a.y * a.y + a.z * a.z);
+
+  if (mag == 0) {
+    return a;
+  }
+
+  var normal = new THREE.Vector3(a.x / mag, a.y / mag, a.z / mag);
+
+  return normal;
+};
+
+var reverseVector = function reverseVector(a) {
+  a.x *= -1;
+  a.y *= -1;
+  a.z *= -1;
+
+  return a;
+};
+
+var distanceBetween = function distanceBetween(a, b) {
+  var d = Math.sqrt(Math.pow(b.x - a.x, 2) + Math.pow(b.y - a.y, 2) + Math.pow(b.z - a.z, 2));
+
+  return d;
+};
+
+var distanceBetween2D = function distanceBetween2D(a, b) {
+  var dist = Math.sqrt(Math.pow(b.x - a.x, 2) + Math.pow(b.z - a.z, 2));
+
+  return dist;
+};
+
+var pitchBetween = function pitchBetween(a, b) {
+  var xz = distanceBetween2D(a, b);
+  var y = b.y - a.y;
+  var pitch = Math.atan2(y, xz);
+
+  return pitch;
+};
+
+var scaleVector = function scaleVector(v, scale) {
+  var vec = new THREE.Vector3(v.x * scale, v.y * scale, v.z * scale);
+
+  return vec;
+};
+
+var isVectorEqual = function isVectorEqual(a, b) {
+  return a.x === b.x && a.y === b.y & a.z === b.z;
+};
+
+var crossProduct = function crossProduct(a, b) {
+  var c = new THREE.Vector3(a.y * b.z - a.z * b.y, a.z * b.x - a.x * b.z, a.x * b.y - a.y * b.x);
+
+  return c;
+};
+
+var minAngleDifference = function minAngleDifference(a1, a2) {
+  var angle = Math.atan2(Math.sin(a2 - a1), Math.cos(a2 - a1));
+
+  return angle;
+};
+
+var dotProduct = function dotProduct(a, b) {
+  return a.x * b.x + a.y * b.y + a.z * b.z;
+};
+
+exports.copyVector = copyVector;
+exports.isVectorEqual = isVectorEqual;
+exports.pitchBetween = pitchBetween;
+exports.twoPi = twoPi;
+exports.distanceBetween = distanceBetween;
+exports.distanceBetween2D = distanceBetween2D;
+exports.minAngleDifference = minAngleDifference;
+exports.dotProduct = dotProduct;
+exports.addVector = addVector;
+exports.subtractVector = subtractVector;
+exports.scaleVector = scaleVector;
+exports.crossProduct = crossProduct;
+exports.reverseVector = reverseVector;
+exports.normalise = normalise;
 
 /***/ })
 /******/ ]);

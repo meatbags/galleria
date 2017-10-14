@@ -1,4 +1,4 @@
-import { Materials } from './Loader';
+import { Materials } from './Materials';
 import { v3 } from './Maths';
 import { Focal } from './Focal';
 import Globals from './Globals';

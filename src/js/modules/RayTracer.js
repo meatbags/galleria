@@ -1,9 +1,9 @@
 import { getNormalisedVec3 } from './Maths';
-import { Materials } from'./Loader';
 import { TYPE_FOCAL } from './Focal';
 import { TYPE_BOX, TYPE_RAMP } from './Physics';
 
-const RayTracer = function() {
+const RayTracer = function(domElement) {
+  this.domElement = domElement;
   this.precision = 0.4;
   this.maxLength = 15;
   this.object = new THREE.Object3D();
@@ -11,7 +11,7 @@ const RayTracer = function() {
   const light = new THREE.PointLight(0xffffff, 0.5, 5, 2);
   const ball = new THREE.Mesh(
     new THREE.SphereBufferGeometry(0.05, 16),
-    Materials.concrete
+    new THREE.MeshPhongMaterial({color:0xffffff, emissive:0xffffff})
   );
   light.position.y = 1.1;
 

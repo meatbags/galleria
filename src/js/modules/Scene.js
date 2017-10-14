@@ -2,7 +2,7 @@ import Player from './Player';
 import RayTracer from './RayTracer';
 import HUD from './HUD';
 import Artworks from './Artworks';
-import { Materials, Models } from './Loader';
+import Loader from './Loader';
 import { Box, Ramp, PhysicsModel } from './Physics';
 import { Focal } from './Focal';
 import { v3 } from './Maths';
@@ -22,94 +22,52 @@ Scene.prototype = {
     this.renderer.setSize(640, 480);
     this.renderer.setClearColor(0xf9e5a2, 1);
     this.renderer.setPixelRatio(window.devicePixelRatio);
-    this.renderer.domElement.addEventListener('mousemove', function(e){ self.onMouseMove(e) });
-    this.renderer.domElement.addEventListener('mousedown', function(e){ self.onMouseDown(e) });
+    //this.renderer.domElement.addEventListener('mousemove', function(e){ self.onMouseMove(e) });
+    //this.renderer.domElement.addEventListener('mousedown', function(e){ self.onMouseDown(e) });
     document.body.append(this.renderer.domElement);
 
-    // player & models
+    // player & scene
     this.player = new Player(this.renderer.domElement);
     this.camera = this.player.camera;
-
-    //this.hud = new HUD(this.renderer.domElement);
-    //this.player = new Player();
-  //  this.camera = new THREE.PerspectiveCamera(Globals.camera.fov, 1, Globals.camera.near, Globals.camera.far);
-    //this.camera.up = new THREE.Vector3(0, 1, 0);
-  //  this.raytracer = new RayTracer();
-  //  this.resize();
-
-    window.addEventListener('resize', function() {
-      self.resize();
-    });
+    this.raytracer = new RayTracer(this.renderer.domElement);
 
     // scene
     this.scene = new THREE.Scene();
     this.scene.fog = new THREE.FogExp2(0xCCCFFF, 0.008);
-    this.scene.add(this.player.object, Models.mainBuilding, this.raytracer.object);
+    this.scene.add(this.raytracer.object, this.player.object);
 
-    // load stuff
-    this.loader = new Loader();
+    // collision map
+    this.collider = new Collider.System();
+    this.loader = new Loader(appRoot + 'assets/3d/');
+    this.toLoad = 2;
+    this.loader.loadOBJ('hangar_collision_map').then(function(map){
+      for (let i=0; i<map.children.length; i+=1) {
+        self.collider.add(new Collider.Mesh(map.children[i].geometry));
+      }
+      self.toLoad -= 1;
+    }, function(err){ console.log(err); });
 
+    // models
+    this.loader.loadOBJ('hangar').then(function(map) {
+      self.scene.add(map);
+      self.toLoad -= 1;
+    }, function(err){ console.log(err); });
+
+    // resize
+    this.resize();
+    window.addEventListener('resize', function() {
+      self.resize();
+    });
+
+    //this.hud = new HUD(this.renderer.domElement);
+    //this.player = new Player();
+    //this.camera = new THREE.PerspectiveCamera(Globals.camera.fov, 1, Globals.camera.near, Globals.camera.far);
+    //this.camera.up = new THREE.Vector3(0, 1, 0);
     // walls & floors
-    /*
-    this.model = new PhysicsModel();
-    this.model.add(
-      // floors
-      new Box(v3(0, 0, -10.75), v3(23, 1.05, 21.5)),
-      new Box(v3(0, 7.5, 10), v3(20, 1.05, 20.5)),
-      // main gallery walls
-      new Box(v3(-9.5, 8, 0), v3(2.75, 16, 40)),
-      new Box(v3(9.5, 8, 0), v3(2.75, 16, 40)),
-      // outer walls
-      new Box(v3(15, 8, -5), v3(2, 20, 79)),
-      new Box(v3(-26, 8, -5), v3(2, 20, 79)),
-      new Box(v3(-5.5, 8, 34.5), v3(41, 20, 2)),
-      new Box(v3(-5.5, 8, -44.5), v3(41, 20, 2)),
-      // outer fences + blockades
-      new Box(v3(12.25, 8, 5.125), v3(5, 20, 22)),
-      new Box(v3(-20.75, 8, -9.5), v3(11.5, 20, 2.5)),
-      new Box(v3(-10.75, 8, -10), v3(2.5, 20, 1.75)),
-      new Box(v3(-21, 8, 20.25), v3(12, 20, 32)),
-      new Box(v3(-13.5, 8, 10), v3(5, 20, 1)),
-      // side platforms
-      new Box(v3(-11, 0.25, 10.5), v3(1, 0.5, 21)),
-      new Box(v3( 11, 0.25, 10.5), v3(1, 0.5, 21)),
-      // central posts
-      new Box(v3(3, 8, 0), v3(1, 16, 1)),
-      new Box(v3(-3, 8, 0), v3(1, 16, 1)),
-      new Box(v3(0, 8, 10), v3(7, 16, 1.5)),
-      //new Box(v3(-3, 8, 10), v3(1, 16, 1)),
-      // front entrance
-      new Ramp(v3(0, 0.25, -23), v3(10, 0.5, 3), 0),
-      new Box(v3(7.875, 8, -19.5), v3(6, 16, 2.5)),
-      new Box(v3(-7.875, 8, -19.5), v3(6, 16, 2.5)),
-      // stairs front
-      new Box(v3(-6, 4, -7), v3(6, 0.5, 4)),
-      new Ramp(v3(-7.5, 6, -2.5), v3(3, 4, 5), 0),
-      new Ramp(v3(-4.5, 2, -2.5), v3(3, 4, 5), 2),
-      // stairs front -- posts & walls
-      new Box(v3(2, 10, 0), v3(16, 5, 0.75)),
-      new Box(v3(-3, 3.25, -9), v3(1, 16, 1)),
-      new Box(v3(-3, 3.25, -5), v3(1, 16, 1)),
-      new Box(v3(-6, 3.25, -5), v3(0.5, 16, 1)),
-      new Box(v3(-6, 5.25, -9), v3(6, 3, 1)),
-      new Box(v3(-3, 5.25, -7), v3(1, 3, 4)),
-      new Box(v3(-3, 3.25, -2.5), v3(1, 6, 4.5)),
-      new Box(v3(-6, 7.5, -2.5), v3(0.5, 7, 5)),
-      // stairs back
-      new Box(v3(-7, 7.5, 22.5), v3(4, 1.05, 5)),
-      new Box(v3(0, 0, 22.5), v3(20, 1, 5)),
-      new Ramp(v3(0, 4.25, 22.5), v3(10, 7.55, 5), 3),
-      // stairs back -- walls
-      new Box(v3(0, 8, 25.375), v3(18, 16, 1)),
-      new Box(v3(9.5, 8, 22.75), v3(2.75, 16, 6)),
-      new Box(v3(-9.5, 8, 22.75), v3(2.75, 16, 6)),
-      new Box(v3(-2, 4, 20), v3(13, 8, 1.5)),
-      new Box(v3(2, 12, 20), v3(14, 8, 1.5))
-    );
     //this.scene.add(this.model.object);
-    */
 
     // load gallery
+    this.model = new PhysicsModel();
     const tags = document.getElementsByClassName('im');
     this.artworks = new Artworks();
 
@@ -140,7 +98,6 @@ Scene.prototype = {
             break;
         }
       }
-
       this.artworks.add(title, caption, url, src);
     }
 
@@ -177,11 +134,11 @@ Scene.prototype = {
     const sky = new THREE.Sky();
     //const sun = new THREE.PointLight(0xffffff, 0.9, 40500);
     //sun.position.set(sky.uniforms.sunPosition.value.x, sky.uniforms.sunPosition.value.y, sky.uniforms.sunPosition.value.z);
-    this.scene.add(sky.mesh);//,sun);
+    this.scene.add(sky.mesh);
   },
 
   isLoaded: function() {
-    return false;
+    return (this.toLoad === 0);
   },
 
   resize: function() {
@@ -237,6 +194,8 @@ Scene.prototype = {
   },
 
   update: function(delta) {
+    this.player.update(delta, this.collider);
+    /*
     const yaw = this.player.getYaw();
     const pitch = this.player.getPitch();
 
@@ -247,6 +206,7 @@ Scene.prototype = {
       this.player.position.y + this.player.height + Math.sin(pitch),
       this.player.position.z + Math.cos(yaw)
     ));
+    */
   },
 
   render: function() {

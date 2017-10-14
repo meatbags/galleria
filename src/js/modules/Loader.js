@@ -11,44 +11,9 @@ Loader.prototype = {
     this.objectLoader.setPath(this.basePath);
   },
 
-  createMaterials: function() {
-    this.materials = {
-      concrete: new THREE.MeshPhysicalMaterial({
-        clearCoat: 0,
-        clearCoatRoughness: 1,
-        reflectivity: 0,
-        color: 0xffffff,
-        emissive: 0x888888
-      }),
-      canvas: new THREE.MeshBasicMaterial({
-        color: 0xffffff,
-        side: THREE.DoubleSide
-      }),
-      dev: new THREE.MeshLambertMaterial({
-        color: 0xff0000,
-        opacity: 0.25,
-        transparent: true,
-        side: THREE.DoubleSide
-      }),
-      dev2: new THREE.MeshLambertMaterial({
-        color: 0xffaa88,
-        opacity: 0.25,
-        transparent: true,
-        side: THREE.DoubleSide
-      }),
-      wireframe: new THREE.MeshLambertMaterial({
-        color: 0xff0000,
-        wireframe: true
-      })
-   };
-
-   this.models = {
-     mainBuilding: new THREE.Group(),
-   };
-  },
-
   process: function(obj, materials) {
     // fix materials
+    const self = this;
 
     for (let i=0; i<obj.children.length; i+=1) {
       const child = obj.children[i];
@@ -61,9 +26,11 @@ Loader.prototype = {
         const tex = new THREE.TextureLoader().load(self.basePath + src);
 
         child.material.lightMap = tex;
-        child.material.lightMapIntensity = 1;
+        child.material.lightMapIntensity = 0.1;
         child.geometry.addAttribute('uv2', new THREE.BufferAttribute(uvs, 2));
       }
+
+      child.material.bumpScale = 0.05;
 
       // make glass translucent
       if (child.material.map) {
