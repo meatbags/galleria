@@ -19,16 +19,15 @@ const Player = function(domElement) {
     }
   }
   this.attributes = {
-    speed: 8,
-    speedWhileJumping: 4,
-    height: 1.8,
-    rotation: Math.PI * 0.75,
+    speed: Globals.player.speed,
+    speedWhileJumping: Globals.player.speed / 2,
+    height: Globals.player.height,
+    rotation: Globals.player.rotationSpeed,
     camera: {
       fov: Globals.camera.fov,
       near: Globals.camera.near,
       far: Globals.camera.far
     },
-    fov: 58,
     cameraThreshold: 0.4,
     maxRotationOffset: Math.PI * 0.3,
     falling: false,

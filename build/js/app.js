@@ -142,6 +142,13 @@ exports.getDistanceVec3 = getDistanceVec3;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
+
+var _Globals = __webpack_require__(3);
+
+var _Globals2 = _interopRequireDefault(_Globals);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
 var Loader = function Loader(basePath) {
   this.basePath = basePath;
   this.init();
@@ -170,11 +177,11 @@ Loader.prototype = {
         var tex = new THREE.TextureLoader().load(self.basePath + src);
 
         child.material.lightMap = tex;
-        child.material.lightMapIntensity = 0.1;
+        child.material.lightMapIntensity = _Globals2.default.loader.lightMapIntensity;
         child.geometry.addAttribute('uv2', new THREE.BufferAttribute(uvs, 2));
       }
 
-      child.material.bumpScale = 0.05;
+      child.material.bumpScale = _Globals2.default.loader.bumpScale;
 
       // make glass translucent
       if (child.material.map) {
@@ -301,12 +308,17 @@ var Globals = {
       z: -40
     },
     height: 1.8,
-    speed: 6
+    speed: 8,
+    rotationSpeed: Math.PI * 0.75
   },
   camera: {
     fov: 58,
     near: 0.1,
     far: 2000000
+  },
+  loader: {
+    bumpScale: 0.02,
+    lightMapIntensity: 0.6
   },
   artworkPlacement: {
     '0': { scale: 6, pitch: 0, yaw: halfPI, position: (0, _Maths.v3)(8.5, 6, -10), eye: (0, _Maths.v3)(0, 0, -10) },
@@ -884,16 +896,15 @@ var Player = function Player(domElement) {
     }
   };
   this.attributes = {
-    speed: 8,
-    speedWhileJumping: 4,
-    height: 1.8,
-    rotation: Math.PI * 0.75,
+    speed: _Globals2.default.player.speed,
+    speedWhileJumping: _Globals2.default.player.speed / 2,
+    height: _Globals2.default.player.height,
+    rotation: _Globals2.default.player.rotationSpeed,
     camera: {
       fov: _Globals2.default.camera.fov,
       near: _Globals2.default.camera.near,
       far: _Globals2.default.camera.far
     },
-    fov: 58,
     cameraThreshold: 0.4,
     maxRotationOffset: Math.PI * 0.3,
     falling: false,

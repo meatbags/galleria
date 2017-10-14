@@ -1,3 +1,5 @@
+import Globals from './Globals';
+
 const Loader = function(basePath) {
   this.basePath = basePath;
   this.init();
@@ -26,11 +28,11 @@ Loader.prototype = {
         const tex = new THREE.TextureLoader().load(self.basePath + src);
 
         child.material.lightMap = tex;
-        child.material.lightMapIntensity = 0.1;
+        child.material.lightMapIntensity = Globals.loader.lightMapIntensity;
         child.geometry.addAttribute('uv2', new THREE.BufferAttribute(uvs, 2));
       }
 
-      child.material.bumpScale = 0.05;
+      child.material.bumpScale = Globals.loader.bumpScale;
 
       // make glass translucent
       if (child.material.map) {

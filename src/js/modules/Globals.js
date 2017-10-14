@@ -10,12 +10,17 @@ const Globals = {
       z: -40,
     },
     height: 1.8,
-    speed: 6,
+    speed: 8,
+    rotationSpeed: Math.PI * 0.75,
   },
   camera: {
     fov: 58,
     near: 0.1,
     far: 2000000,
+  },
+  loader: {
+    bumpScale: 0.02,
+    lightMapIntensity: 0.6,
   },
   artworkPlacement: {
     '0': {scale: 6, pitch: 0, yaw: halfPI, position: v3(8.5, 6, -10), eye: v3(0, 0, -10)},
