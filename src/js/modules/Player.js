@@ -121,7 +121,7 @@ Player.prototype = {
     this.outputLog.push(text);
   },
 
-	update: function(delta, collider) {
+	update: function(delta, collider, artworks) {
     // handle key presses and move player
 
     this.outputLog = [];
@@ -148,7 +148,7 @@ Player.prototype = {
 
     // raytracer
     const ray = this.raytracer.getRayVector(this.camera, this.mouse.x, this.mouse.y);
-    this.raytracer.trace(this.camera.position, ray, Globals.raytracer.length, collider);
+    this.raytracer.trace(this.camera.position, ray, Globals.raytracer.length, collider, artworks);
 	},
 
   processCollisions(next, collider) {

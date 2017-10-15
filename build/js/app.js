@@ -201,9 +201,11 @@ exports.getDistanceVec3 = getDistanceVec3;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.TYPE_FOCAL = exports.FocalSystem = exports.Focal = undefined;
+exports.TYPE_FOCAL = exports.Focal = undefined;
 
 var _Maths = __webpack_require__(1);
+
+var _VectorMaths = __webpack_require__(11);
 
 var _Materials = __webpack_require__(4);
 
@@ -215,48 +217,47 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 var TYPE_FOCAL = 'TYPE_FOCAL';
 
-var FocalSystem = function FocalSystem() {
-  this.focalPoints = [];
-};
-
-FocalSystem.prototype = {
-  add: function add(item) {
-    if (item.type === TYPE_FOCAL) {
-      this.focalPoints.push(item);
-    }
-  }
-};
-
 var Focal = function Focal(pos, dim, eye) {
   this.type = TYPE_FOCAL;
   this.position = pos;
   this.dimensions = dim;
   this.eye = eye;
-  this.box = new THREE.Box3();
-  this.pitch = (0, _Maths.getPitch)(eye, new THREE.Vector3(pos.x, pos.y - _Globals2.default.player.height, pos.z));
-  this.yaw = (0, _Maths.getYaw)(eye, pos);
-  this.object = new THREE.Mesh(new THREE.BoxBufferGeometry(dim.x, dim.y, dim.z), _Materials.Materials.dev2);
-  this.object.position.set(pos.x, pos.y, pos.z);
+  this.init();
 };
 
 Focal.prototype = {
-  collision: function collision(pos) {
-    //    return this.bbox.collision(pos);
+  init: function init() {
+    this.pitch = (0, _Maths.getPitch)(this.eye, new THREE.Vector3(this.position.x, this.position.y - _Globals2.default.player.height, this.position.z));
+    this.yaw = (0, _Maths.getYaw)(this.eye, this.position);
+    this.object = new THREE.Mesh(new THREE.BoxBufferGeometry(this.dimensions.x, this.dimensions.y, this.dimensions.z), _Materials.Materials.dev2);
+    this.object.position.set(this.position.x, this.position.y, this.position.z);
+    this.box = new THREE.Box3();
+    this.setBox();
+  },
+
+  setBox: function setBox() {
+    // set collision box size
+    var min = (0, _VectorMaths.subtractVector)(this.position, (0, _VectorMaths.scaleVector)(this.dimensions, 0.5));
+    var max = (0, _VectorMaths.addVector)(this.position, (0, _VectorMaths.scaleVector)(this.dimensions, 0.5));
+    this.box.set(min, max);
+  },
+
+  collision: function collision(point) {
+    return this.box.containsPoint(point);
   },
 
   scale: function scale(x, y, z) {
     this.dimensions.x *= x;
     this.dimensions.y *= y;
     this.dimensions.z *= z;
-    //this.bbox = new BoundingBox(this.position, this.dimensions);
     this.object.scale.x = x;
     this.object.scale.y = y;
     this.object.scale.z = z;
+    this.setBox();
   }
 };
 
 exports.Focal = Focal;
-exports.FocalSystem = FocalSystem;
 exports.TYPE_FOCAL = TYPE_FOCAL;
 
 /***/ }),
@@ -503,8 +504,6 @@ var _Loader = __webpack_require__(6);
 
 var _Loader2 = _interopRequireDefault(_Loader);
 
-var _Focal = __webpack_require__(2);
-
 var _Maths = __webpack_require__(1);
 
 var _Globals = __webpack_require__(0);
@@ -566,7 +565,6 @@ Scene.prototype = {
     });
 
     // load gallery
-    this.focalPoints = new _Focal.FocalSystem();
     var tags = document.getElementsByClassName('im');
     this.artworks = new _Artworks2.default();
 
@@ -603,10 +601,6 @@ Scene.prototype = {
     this.artworks.placeImages();
     this.scene.add(this.artworks.object);
 
-    for (var _i = 0; _i < this.artworks.focalPoints.length; _i += 1) {
-      this.focalPoints.add(this.artworks.focalPoints[_i]);
-    }
-
     // lighting
     var ambient = new THREE.AmbientLight(0xffffff, .08);
     var hemisphere = new THREE.HemisphereLight(0xffaabb, 0x080820, 0.1);
@@ -638,7 +632,7 @@ Scene.prototype = {
   },
 
   update: function update(delta) {
-    this.player.update(delta, this.collider);
+    this.player.update(delta, this.collider, this.artworks);
   },
 
   render: function render() {
@@ -791,7 +785,7 @@ Player.prototype = {
     this.outputLog.push(text);
   },
 
-  update: function update(delta, collider) {
+  update: function update(delta, collider, artworks) {
     // handle key presses and move player
 
     this.outputLog = [];
@@ -818,7 +812,7 @@ Player.prototype = {
 
     // raytracer
     var ray = this.raytracer.getRayVector(this.camera, this.mouse.x, this.mouse.y);
-    this.raytracer.trace(this.camera.position, ray, _Globals2.default.raytracer.length, collider);
+    this.raytracer.trace(this.camera.position, ray, _Globals2.default.raytracer.length, collider, artworks);
   },
 
   processCollisions: function processCollisions(next, collider) {
@@ -1275,7 +1269,9 @@ RayTracer.prototype = {
     return vec;
   },
 
-  trace: function trace(point, vector, length, collider) {
+  trace: function trace(point, vector, length, collider, artworks) {
+    // check ray against artworks and geometry
+
     var travelled = 0;
     var collision = false;
     var last = new THREE.Vector3();
@@ -1374,8 +1370,9 @@ Artworks.prototype = {
       var index = i;
       var place = _Globals2.default.artworkPlacement[index];
 
-      // add snap focal point
-      self.focalPoints.push(new _Focal.Focal(place.position, (0, _Maths.v3)(1, 1, 1), place.eye));
+      // create collision object
+      var focal = new _Focal.Focal(place.position, (0, _Maths.v3)(1, 1, 1), place.eye);
+      self.focalPoints.push(focal);
 
       // create artwork mesh
       var mesh = new THREE.Mesh(new THREE.PlaneBufferGeometry(1, 1, 2, 2), _Materials.Materials.canvas.clone());
@@ -1392,6 +1389,7 @@ Artworks.prototype = {
 
       // add to gallery
       self.object.add(mesh);
+      self.object.add(focal.object);
     };
 
     for (var i = 0; i < this.sources.length; i += 1) {

@@ -29,8 +29,9 @@ Artworks.prototype = {
       const index = i;
       const place = Globals.artworkPlacement[index];
 
-      // add snap focal point
-      self.focalPoints.push(new Focal(place.position, v3(1, 1, 1), place.eye));
+      // create collision object
+      const focal = new Focal(place.position, v3(1, 1, 1), place.eye);
+      self.focalPoints.push(focal);
 
       // create artwork mesh
       const mesh = new THREE.Mesh(
@@ -50,6 +51,7 @@ Artworks.prototype = {
 
       // add to gallery
       self.object.add(mesh);
+      self.object.add(focal.object);
     }
   },
 }

@@ -41,7 +41,9 @@ RayTracer.prototype = {
     return vec;
   },
 
-  trace: function(point, vector, length, collider) {
+  trace: function(point, vector, length, collider, artworks) {
+    // check ray against artworks and geometry
+
     let travelled = 0;
     let collision = false;
     let last = new THREE.Vector3();

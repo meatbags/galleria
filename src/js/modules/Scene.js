@@ -1,7 +1,6 @@
 import Player from './Player';
 import Artworks from './Artworks';
 import Loader from './Loader';
-import { Focal, FocalSystem } from './Focal';
 import { v3 } from './Maths';
 import Globals from './Globals';
 import './SkyShader.js';
@@ -20,7 +19,7 @@ Scene.prototype = {
     this.renderer.setClearColor(0xf9e5a2, 1);
     this.renderer.setPixelRatio(window.devicePixelRatio);
     document.body.append(this.renderer.domElement);
-    
+
     // player & scene
     this.player = new Player(this.renderer.domElement);
     this.camera = this.player.camera;
@@ -53,7 +52,6 @@ Scene.prototype = {
     });
 
     // load gallery
-    this.focalPoints = new FocalSystem();
     const tags = document.getElementsByClassName('im');
     this.artworks = new Artworks();
 
@@ -89,10 +87,6 @@ Scene.prototype = {
 
     this.artworks.placeImages();
     this.scene.add(this.artworks.object);
-
-    for (let i=0; i<this.artworks.focalPoints.length; i+=1) {
-      this.focalPoints.add(this.artworks.focalPoints[i]);
-    }
 
     // lighting
     const ambient = new THREE.AmbientLight(0xffffff, .08);
@@ -133,7 +127,7 @@ Scene.prototype = {
   },
 
   update: function(delta) {
-    this.player.update(delta, this.collider);
+    this.player.update(delta, this.collider, this.artworks);
   },
 
   render: function() {
