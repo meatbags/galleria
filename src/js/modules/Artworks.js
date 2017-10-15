@@ -21,16 +21,27 @@ Artworks.prototype = {
     });
   },
 
-  placeImages() {
+  activate: function(id) {
+    for (let i=0; i<this.focalPoints.length; i+=1) {
+      if (this.focalPoints[i].id === id) {
+        this.focalPoints[i].activate();
+      } else {
+        this.focalPoints[i].deactivate();
+      }
+    }
+  },
+
+  placeImages: function() {
     const self = this;
     const textureLoader = new THREE.TextureLoader();
 
     for (let i=0; i<this.sources.length; i+=1) {
       const index = i;
       const place = Globals.artworkPlacement[index];
+      const id = 'UID' + i;
 
       // create collision object
-      const focal = new Focal(place.position, v3(1, 1, 1), place.eye);
+      const focal = new Focal(id, place.position, v3(1, 1, 1), place.eye, this.sources[i]);
       self.focalPoints.push(focal);
 
       // create artwork mesh

@@ -9,6 +9,7 @@ const RayTracer = function() {
     position: new THREE.Vector3(0, 0, 0),
     rotation: new THREE.Vector3(0, 0, 0)
   };
+  this.lastCollision = null;
   this.precision = Globals.raytracer.precision;
   this.init();
 };
@@ -46,45 +47,60 @@ RayTracer.prototype = {
 
     let travelled = 0;
     let collision = false;
+    let artwork = false;
     let last = new THREE.Vector3();
 
     vector = scaleVector(normalise(vector), this.precision);
 
-    while (collision === false && travelled < length) {
+    while (collision === false && artwork === false && travelled < length) {
+      travelled += this.precision;
       last = copyVector(point);
       point = addVector(point, vector);
-      collision = collider.collision(point);
-      travelled += this.precision;
 
-      if (collision) {
-        const intersect = collider.intersect(last, point);
-        if (intersect != null) {
-          point = intersect.intersect;
-          this.target.rotation = intersect.plane.normal;
+      for (let i=0; i<artworks.focalPoints.length; i+=1) {
+        if (artworks.focalPoints[i].collision(point)) {
+          artwork = artworks.focalPoints[i];
+        }
+      }
+
+      if (!artwork) {
+        collision = collider.collision(point);
+
+        if (collision) {
+          const intersect = collider.intersect(last, point);
+
+          if (intersect != null) {
+            point = intersect.intersect;
+            this.target.rotation = intersect.plane.normal;
+          }
         }
       }
     }
 
-    // smooth
+    // smooth motion
     this.target.position.x = point.x;
     this.target.position.y = point.y;
     this.target.position.z = point.z;
     this.position.x += (this.target.position.x - this.position.x) * this.smoothing;
     this.position.y += (this.target.position.y - this.position.y) * this.smoothing;
     this.position.z += (this.target.position.z - this.position.z) * this.smoothing;
-
-    // rotate
-    this.rotation.x += (this.target.rotation.x - this.rotation.x) * this.smoothing;
-    this.rotation.y += (this.target.rotation.y - this.rotation.y) * this.smoothing;
-    this.rotation.z += (this.target.rotation.z - this.rotation.z) * this.smoothing;
-
-    //this.object.rotation.set(-this.rotation.x, -this.rotation.y, -this.rotation.z);
     this.object.position.set(this.position.x, this.position.y, this.position.z);
 
-    return {
-      position: point,
-      collision: collision
-    };
+    if (artwork) {
+      this.lastCollision = {
+        type: Globals.type.TYPE_ARTWORK,
+        position: point,
+        artwork: artwork,
+        vector: vector
+      };
+    } else {
+      this.lastCollision = {
+        type: Globals.type.TYPE_COLLISION,
+        position: point,
+        collision: collision,
+        vector: vector
+      };
+    }
   }
 };
 

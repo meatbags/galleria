@@ -3,6 +3,10 @@ import { v3 } from './Maths';
 const halfPI = Math.PI / 2;
 
 const Globals = {
+  type: {
+    TYPE_ARTWORK: 'TYPE_ARTWORK',
+    TYPE_COLLISION: 'TYPE_COLLISION'
+  },
   player: {
     position: {
       x: 0,

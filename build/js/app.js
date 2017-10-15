@@ -60,7 +60,7 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 7);
+/******/ 	return __webpack_require__(__webpack_require__.s = 4);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -79,6 +79,10 @@ var _Maths = __webpack_require__(1);
 var halfPI = Math.PI / 2;
 
 var Globals = {
+  type: {
+    TYPE_ARTWORK: 'TYPE_ARTWORK',
+    TYPE_COLLISION: 'TYPE_COLLISION'
+  },
   player: {
     position: {
       x: 0,
@@ -201,68 +205,109 @@ exports.getDistanceVec3 = getDistanceVec3;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.TYPE_FOCAL = exports.Focal = undefined;
+var twoPi = Math.PI * 2;
 
-var _Maths = __webpack_require__(1);
+var copyVector = function copyVector(vec) {
+  var copied = new THREE.Vector3(vec.x, vec.y, vec.z);
 
-var _VectorMaths = __webpack_require__(11);
-
-var _Materials = __webpack_require__(4);
-
-var _Globals = __webpack_require__(0);
-
-var _Globals2 = _interopRequireDefault(_Globals);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-var TYPE_FOCAL = 'TYPE_FOCAL';
-
-var Focal = function Focal(pos, dim, eye) {
-  this.type = TYPE_FOCAL;
-  this.position = pos;
-  this.dimensions = dim;
-  this.eye = eye;
-  this.init();
+  return copied;
 };
 
-Focal.prototype = {
-  init: function init() {
-    this.pitch = (0, _Maths.getPitch)(this.eye, new THREE.Vector3(this.position.x, this.position.y - _Globals2.default.player.height, this.position.z));
-    this.yaw = (0, _Maths.getYaw)(this.eye, this.position);
-    this.object = new THREE.Mesh(new THREE.BoxBufferGeometry(this.dimensions.x, this.dimensions.y, this.dimensions.z), _Materials.Materials.dev2);
-    this.object.position.set(this.position.x, this.position.y, this.position.z);
-    this.box = new THREE.Box3();
-    this.setBox();
-  },
+var addVector = function addVector(a, b) {
+  var c = new THREE.Vector3(a.x + b.x, a.y + b.y, a.z + b.z);
 
-  setBox: function setBox() {
-    // set collision box size
-    var min = (0, _VectorMaths.subtractVector)(this.position, (0, _VectorMaths.scaleVector)(this.dimensions, 0.5));
-    var max = (0, _VectorMaths.addVector)(this.position, (0, _VectorMaths.scaleVector)(this.dimensions, 0.5));
-    this.box.set(min, max);
-  },
+  return c;
+};
 
-  collision: function collision(point) {
-    return this.box.containsPoint(point);
-  },
+var subtractVector = function subtractVector(a, b) {
+  var c = new THREE.Vector3(a.x - b.x, a.y - b.y, a.z - b.z);
 
-  scale: function scale(x, y, z) {
-    this.dimensions.x *= x;
-    this.dimensions.y *= y;
-    this.dimensions.z *= z;
-    this.object.scale.x = x;
-    this.object.scale.y = y;
-    this.object.scale.z = z;
-    this.setBox();
+  return c;
+};
+
+var normalise = function normalise(a) {
+  var mag = Math.sqrt(a.x * a.x + a.y * a.y + a.z * a.z);
+
+  if (mag == 0) {
+    return a;
   }
+
+  var normal = new THREE.Vector3(a.x / mag, a.y / mag, a.z / mag);
+
+  return normal;
 };
 
-exports.Focal = Focal;
-exports.TYPE_FOCAL = TYPE_FOCAL;
+var reverseVector = function reverseVector(a) {
+  a.x *= -1;
+  a.y *= -1;
+  a.z *= -1;
+
+  return a;
+};
+
+var distanceBetween = function distanceBetween(a, b) {
+  var d = Math.sqrt(Math.pow(b.x - a.x, 2) + Math.pow(b.y - a.y, 2) + Math.pow(b.z - a.z, 2));
+
+  return d;
+};
+
+var distanceBetween2D = function distanceBetween2D(a, b) {
+  var dist = Math.sqrt(Math.pow(b.x - a.x, 2) + Math.pow(b.z - a.z, 2));
+
+  return dist;
+};
+
+var pitchBetween = function pitchBetween(a, b) {
+  var xz = distanceBetween2D(a, b);
+  var y = b.y - a.y;
+  var pitch = Math.atan2(y, xz);
+
+  return pitch;
+};
+
+var scaleVector = function scaleVector(v, scale) {
+  var vec = new THREE.Vector3(v.x * scale, v.y * scale, v.z * scale);
+
+  return vec;
+};
+
+var isVectorEqual = function isVectorEqual(a, b) {
+  return a.x === b.x && a.y === b.y & a.z === b.z;
+};
+
+var crossProduct = function crossProduct(a, b) {
+  var c = new THREE.Vector3(a.y * b.z - a.z * b.y, a.z * b.x - a.x * b.z, a.x * b.y - a.y * b.x);
+
+  return c;
+};
+
+var minAngleDifference = function minAngleDifference(a1, a2) {
+  var angle = Math.atan2(Math.sin(a2 - a1), Math.cos(a2 - a1));
+
+  return angle;
+};
+
+var dotProduct = function dotProduct(a, b) {
+  return a.x * b.x + a.y * b.y + a.z * b.z;
+};
+
+exports.copyVector = copyVector;
+exports.isVectorEqual = isVectorEqual;
+exports.pitchBetween = pitchBetween;
+exports.twoPi = twoPi;
+exports.distanceBetween = distanceBetween;
+exports.distanceBetween2D = distanceBetween2D;
+exports.minAngleDifference = minAngleDifference;
+exports.dotProduct = dotProduct;
+exports.addVector = addVector;
+exports.subtractVector = subtractVector;
+exports.scaleVector = scaleVector;
+exports.crossProduct = crossProduct;
+exports.reverseVector = reverseVector;
+exports.normalise = normalise;
 
 /***/ }),
-/* 3 */,
-/* 4 */
+/* 3 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -304,114 +349,17 @@ var Materials = {
 exports.Materials = Materials;
 
 /***/ }),
-/* 5 */,
-/* 6 */
+/* 4 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _Globals = __webpack_require__(0);
-
-var _Globals2 = _interopRequireDefault(_Globals);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-var Loader = function Loader(basePath) {
-  this.basePath = basePath;
-  this.init();
-};
-
-Loader.prototype = {
-  init: function init() {
-    this.materialLoader = new THREE.MTLLoader();
-    this.objectLoader = new THREE.OBJLoader();
-    this.materialLoader.setPath(this.basePath);
-    this.objectLoader.setPath(this.basePath);
-  },
-
-  process: function process(obj, materials) {
-    // fix materials
-    var self = this;
-
-    for (var i = 0; i < obj.children.length; i += 1) {
-      var child = obj.children[i];
-      var meta = materials.materialsInfo[child.material.name];
-
-      // load lightmaps
-      if (meta.map_ka) {
-        var uvs = child.geometry.attributes.uv.array;
-        var src = meta.map_ka;
-        var tex = new THREE.TextureLoader().load(self.basePath + src);
-
-        child.material.lightMap = tex;
-        child.material.lightMapIntensity = _Globals2.default.loader.lightMapIntensity;
-        child.geometry.addAttribute('uv2', new THREE.BufferAttribute(uvs, 2));
-      }
-
-      child.material.bumpScale = _Globals2.default.loader.bumpScale;
-
-      // make glass translucent
-      if (child.material.map) {
-        // if textured, set full colour
-        child.material.color = new THREE.Color(0xffffff);
-
-        // set transparent for .png
-        if (child.material.map.image.src.indexOf('.png') !== -1) {
-          child.material.transparent = true;
-          child.material.side = THREE.DoubleSide;
-        }
-
-        // for glass
-        if (child.material.map.image.src.indexOf('glass') != -1) {
-          child.material.transparent = true;
-          child.material.opacity = 0.4;
-        }
-      } else {
-        // no texture, set colour
-        child.material.emissive = child.material.color;
-      }
-    }
-  },
-
-  loadOBJ: function loadOBJ(filename) {
-    var self = this;
-
-    return new Promise(function (resolve, reject) {
-      try {
-        self.materialLoader.load(filename + '.mtl', function (materials) {
-          materials.preload();
-          self.objectLoader.setMaterials(materials);
-          self.objectLoader.load(filename + '.obj', function (obj) {
-            self.process(obj, materials);
-            resolve(obj);
-          });
-        });
-      } catch (error) {
-        reject(error);
-      }
-    });
-  }
-};
-
-exports.default = Loader;
-
-/***/ }),
-/* 7 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var _Timer = __webpack_require__(8);
+var _Timer = __webpack_require__(5);
 
 var _Timer2 = _interopRequireDefault(_Timer);
 
-var _Scene = __webpack_require__(9);
+var _Scene = __webpack_require__(6);
 
 var _Scene2 = _interopRequireDefault(_Scene);
 
@@ -449,7 +397,7 @@ var App = {
 window.onload = App.init;
 
 /***/ }),
-/* 8 */
+/* 5 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -482,7 +430,7 @@ Timer.prototype = {
 exports.default = Timer;
 
 /***/ }),
-/* 9 */
+/* 6 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -492,15 +440,15 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _Player = __webpack_require__(10);
+var _Player = __webpack_require__(7);
 
 var _Player2 = _interopRequireDefault(_Player);
 
-var _Artworks = __webpack_require__(14);
+var _Artworks = __webpack_require__(9);
 
 var _Artworks2 = _interopRequireDefault(_Artworks);
 
-var _Loader = __webpack_require__(6);
+var _Loader = __webpack_require__(11);
 
 var _Loader2 = _interopRequireDefault(_Loader);
 
@@ -510,7 +458,7 @@ var _Globals = __webpack_require__(0);
 
 var _Globals2 = _interopRequireDefault(_Globals);
 
-__webpack_require__(15);
+__webpack_require__(12);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -643,7 +591,7 @@ Scene.prototype = {
 exports.default = Scene;
 
 /***/ }),
-/* 10 */
+/* 7 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -653,7 +601,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _VectorMaths = __webpack_require__(11);
+var _VectorMaths = __webpack_require__(2);
 
 var Maths = _interopRequireWildcard(_VectorMaths);
 
@@ -661,7 +609,7 @@ var _Globals = __webpack_require__(0);
 
 var _Globals2 = _interopRequireDefault(_Globals);
 
-var _RayTracer = __webpack_require__(12);
+var _RayTracer = __webpack_require__(8);
 
 var _RayTracer2 = _interopRequireDefault(_RayTracer);
 
@@ -693,6 +641,7 @@ var Player = function Player(domElement) {
   this.autoMove = {
     active: false,
     position: new THREE.Vector3(),
+    rotation: new THREE.Vector3(),
     threshold: 0.2
   };
   this.attributes = {
@@ -791,7 +740,7 @@ Player.prototype = {
     this.outputLog = [];
 
     // controls
-    this.handleInput(delta);
+    this.handleInput(delta, artworks);
 
     // check next position for collision
     var next = Maths.addVector(Maths.scaleVector(this.movement, delta), this.target.position);
@@ -812,7 +761,7 @@ Player.prototype = {
 
     // raytracer
     var ray = this.raytracer.getRayVector(this.camera, this.mouse.x, this.mouse.y);
-    this.raytracer.trace(this.camera.position, ray, _Globals2.default.raytracer.length, collider, artworks);
+    var collision = this.raytracer.trace(this.camera.position, ray, _Globals2.default.raytracer.length, collider, artworks);
   },
 
   processCollisions: function processCollisions(next, collider) {
@@ -913,15 +862,44 @@ Player.prototype = {
   },
 
 
-  handleInput: function handleInput(delta) {
+  handleInput: function handleInput(delta, artworks) {
     // handle controls
 
     // click
     if (this.keys.click) {
-      this.autoMove.active = true;
-      this.autoMove.position.x = this.raytracer.target.position.x;
-      this.autoMove.position.z = this.raytracer.target.position.z;
       this.keys.click = false;
+      this.autoMove.active = true;
+
+      if (this.raytracer.lastCollision.type === _Globals2.default.type.TYPE_COLLISION) {
+        var ray = this.raytracer.lastCollision;
+        var yaw = Math.atan2(ray.vector.x, ray.vector.z);
+        //const pitch = ray.vector.y;
+
+        this.autoMove.position.x = ray.position.x;
+        this.autoMove.position.z = ray.position.z;
+        this.autoMove.rotation.x = 0; //pitch;
+        this.autoMove.rotation.y = yaw;
+      } else {
+        var artwork = this.raytracer.lastCollision.artwork;
+        // move to artwork
+        artworks.activate(artwork.id);
+        this.autoMove.position.x = artwork.eye.x;
+        this.autoMove.position.z = artwork.eye.z;
+        this.autoMove.rotation.x = artwork.pitch;
+        this.autoMove.rotation.y = artwork.yaw;
+      }
+    }
+
+    // update rotation vector
+    if (this.keys.left || this.keys.right) {
+      // disable automove
+      this.autoMove.active = false;
+
+      var dir = (this.keys.left ? 1 : 0) + (this.keys.right ? -1 : 0);
+      this.target.rotation.y += this.attributes.rotation * delta * dir;
+
+      // reset pitch
+      this.target.rotation.x = 0;
     }
 
     // up/ down keys
@@ -930,10 +908,10 @@ Player.prototype = {
       this.autoMove.active = false;
 
       // get next move vector
-      var dir = (this.keys.up ? 1 : 0) + (this.keys.down ? -1 : 0);
-      var yaw = this.rotation.y + this.offset.rotation.y;
-      var dx = Math.sin(yaw) * this.attributes.speed * dir;
-      var dz = Math.cos(yaw) * this.attributes.speed * dir;
+      var _dir = (this.keys.up ? 1 : 0) + (this.keys.down ? -1 : 0);
+      var _yaw = this.rotation.y + this.offset.rotation.y;
+      var dx = Math.sin(_yaw) * this.attributes.speed * _dir;
+      var dz = Math.cos(_yaw) * this.attributes.speed * _dir;
       this.target.movement.x = dx;
       this.target.movement.z = dz;
     } else {
@@ -941,7 +919,11 @@ Player.prototype = {
       this.target.movement.z = 0;
     }
 
+    // move and look automatically
     if (this.autoMove.active) {
+      this.target.rotation.x = this.autoMove.rotation.x;
+      this.target.rotation.y = this.autoMove.rotation.y;
+
       if (Maths.distanceBetween2D(this.position, this.autoMove.position) < this.autoMove.threshold) {
         this.autoMove.active = false;
         this.target.movement.x = 0;
@@ -974,12 +956,6 @@ Player.prototype = {
       this.movement.x += (this.target.movement.x - this.movement.x) * this.attributes.adjust.slow;
       this.movement.z += (this.target.movement.z - this.movement.z) * this.attributes.adjust.slow;
     }
-
-    // update rotation vector
-    if (this.keys.left || this.keys.right) {
-      var _dir = (this.keys.left ? 1 : 0) + (this.keys.right ? -1 : 0);
-      this.target.rotation.y += this.attributes.rotation * delta * _dir;
-    }
   },
 
   setPosition: function setPosition() {
@@ -992,8 +968,11 @@ Player.prototype = {
 
     // rotate
     this.rotation.y += Maths.minAngleDifference(this.rotation.y, this.target.rotation.y) * this.attributes.adjust.fast;
+    this.rotation.x += Maths.minAngleDifference(this.rotation.x, this.target.rotation.x) * this.attributes.adjust.fast;
     this.offset.rotation.x += (this.target.offset.rotation.x - this.offset.rotation.x) * this.attributes.adjust.normal;
     this.offset.rotation.y += (this.target.offset.rotation.y - this.offset.rotation.y) * this.attributes.adjust.normal;
+
+    // limit rotation
     this.rotation.y += this.rotation.y < 0 ? Maths.twoPi : this.rotation.y > Maths.twoPi ? -Maths.twoPi : 0;
 
     // set new camera position
@@ -1103,118 +1082,7 @@ Player.prototype = {
 exports.default = Player;
 
 /***/ }),
-/* 11 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-var twoPi = Math.PI * 2;
-
-var copyVector = function copyVector(vec) {
-  var copied = new THREE.Vector3(vec.x, vec.y, vec.z);
-
-  return copied;
-};
-
-var addVector = function addVector(a, b) {
-  var c = new THREE.Vector3(a.x + b.x, a.y + b.y, a.z + b.z);
-
-  return c;
-};
-
-var subtractVector = function subtractVector(a, b) {
-  var c = new THREE.Vector3(a.x - b.x, a.y - b.y, a.z - b.z);
-
-  return c;
-};
-
-var normalise = function normalise(a) {
-  var mag = Math.sqrt(a.x * a.x + a.y * a.y + a.z * a.z);
-
-  if (mag == 0) {
-    return a;
-  }
-
-  var normal = new THREE.Vector3(a.x / mag, a.y / mag, a.z / mag);
-
-  return normal;
-};
-
-var reverseVector = function reverseVector(a) {
-  a.x *= -1;
-  a.y *= -1;
-  a.z *= -1;
-
-  return a;
-};
-
-var distanceBetween = function distanceBetween(a, b) {
-  var d = Math.sqrt(Math.pow(b.x - a.x, 2) + Math.pow(b.y - a.y, 2) + Math.pow(b.z - a.z, 2));
-
-  return d;
-};
-
-var distanceBetween2D = function distanceBetween2D(a, b) {
-  var dist = Math.sqrt(Math.pow(b.x - a.x, 2) + Math.pow(b.z - a.z, 2));
-
-  return dist;
-};
-
-var pitchBetween = function pitchBetween(a, b) {
-  var xz = distanceBetween2D(a, b);
-  var y = b.y - a.y;
-  var pitch = Math.atan2(y, xz);
-
-  return pitch;
-};
-
-var scaleVector = function scaleVector(v, scale) {
-  var vec = new THREE.Vector3(v.x * scale, v.y * scale, v.z * scale);
-
-  return vec;
-};
-
-var isVectorEqual = function isVectorEqual(a, b) {
-  return a.x === b.x && a.y === b.y & a.z === b.z;
-};
-
-var crossProduct = function crossProduct(a, b) {
-  var c = new THREE.Vector3(a.y * b.z - a.z * b.y, a.z * b.x - a.x * b.z, a.x * b.y - a.y * b.x);
-
-  return c;
-};
-
-var minAngleDifference = function minAngleDifference(a1, a2) {
-  var angle = Math.atan2(Math.sin(a2 - a1), Math.cos(a2 - a1));
-
-  return angle;
-};
-
-var dotProduct = function dotProduct(a, b) {
-  return a.x * b.x + a.y * b.y + a.z * b.z;
-};
-
-exports.copyVector = copyVector;
-exports.isVectorEqual = isVectorEqual;
-exports.pitchBetween = pitchBetween;
-exports.twoPi = twoPi;
-exports.distanceBetween = distanceBetween;
-exports.distanceBetween2D = distanceBetween2D;
-exports.minAngleDifference = minAngleDifference;
-exports.dotProduct = dotProduct;
-exports.addVector = addVector;
-exports.subtractVector = subtractVector;
-exports.scaleVector = scaleVector;
-exports.crossProduct = crossProduct;
-exports.reverseVector = reverseVector;
-exports.normalise = normalise;
-
-/***/ }),
-/* 12 */
+/* 8 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1228,7 +1096,7 @@ var _Globals = __webpack_require__(0);
 
 var _Globals2 = _interopRequireDefault(_Globals);
 
-var _VectorMaths = __webpack_require__(11);
+var _VectorMaths = __webpack_require__(2);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -1240,6 +1108,7 @@ var RayTracer = function RayTracer() {
     position: new THREE.Vector3(0, 0, 0),
     rotation: new THREE.Vector3(0, 0, 0)
   };
+  this.lastCollision = null;
   this.precision = _Globals2.default.raytracer.precision;
   this.init();
 };
@@ -1274,53 +1143,67 @@ RayTracer.prototype = {
 
     var travelled = 0;
     var collision = false;
+    var artwork = false;
     var last = new THREE.Vector3();
 
     vector = (0, _VectorMaths.scaleVector)((0, _VectorMaths.normalise)(vector), this.precision);
 
-    while (collision === false && travelled < length) {
+    while (collision === false && artwork === false && travelled < length) {
+      travelled += this.precision;
       last = (0, _VectorMaths.copyVector)(point);
       point = (0, _VectorMaths.addVector)(point, vector);
-      collision = collider.collision(point);
-      travelled += this.precision;
 
-      if (collision) {
-        var intersect = collider.intersect(last, point);
-        if (intersect != null) {
-          point = intersect.intersect;
-          this.target.rotation = intersect.plane.normal;
+      for (var i = 0; i < artworks.focalPoints.length; i += 1) {
+        if (artworks.focalPoints[i].collision(point)) {
+          artwork = artworks.focalPoints[i];
+        }
+      }
+
+      if (!artwork) {
+        collision = collider.collision(point);
+
+        if (collision) {
+          var intersect = collider.intersect(last, point);
+
+          if (intersect != null) {
+            point = intersect.intersect;
+            this.target.rotation = intersect.plane.normal;
+          }
         }
       }
     }
 
-    // smooth
+    // smooth motion
     this.target.position.x = point.x;
     this.target.position.y = point.y;
     this.target.position.z = point.z;
     this.position.x += (this.target.position.x - this.position.x) * this.smoothing;
     this.position.y += (this.target.position.y - this.position.y) * this.smoothing;
     this.position.z += (this.target.position.z - this.position.z) * this.smoothing;
-
-    // rotate
-    this.rotation.x += (this.target.rotation.x - this.rotation.x) * this.smoothing;
-    this.rotation.y += (this.target.rotation.y - this.rotation.y) * this.smoothing;
-    this.rotation.z += (this.target.rotation.z - this.rotation.z) * this.smoothing;
-
-    //this.object.rotation.set(-this.rotation.x, -this.rotation.y, -this.rotation.z);
     this.object.position.set(this.position.x, this.position.y, this.position.z);
 
-    return {
-      position: point,
-      collision: collision
-    };
+    if (artwork) {
+      this.lastCollision = {
+        type: _Globals2.default.type.TYPE_ARTWORK,
+        position: point,
+        artwork: artwork,
+        vector: vector
+      };
+    } else {
+      this.lastCollision = {
+        type: _Globals2.default.type.TYPE_COLLISION,
+        position: point,
+        collision: collision,
+        vector: vector
+      };
+    }
   }
 };
 
 exports.default = RayTracer;
 
 /***/ }),
-/* 13 */,
-/* 14 */
+/* 9 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1330,11 +1213,11 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _Materials = __webpack_require__(4);
+var _Materials = __webpack_require__(3);
 
 var _Maths = __webpack_require__(1);
 
-var _Focal = __webpack_require__(2);
+var _Focal = __webpack_require__(10);
 
 var _Globals = __webpack_require__(0);
 
@@ -1360,6 +1243,16 @@ Artworks.prototype = {
     });
   },
 
+  activate: function activate(id) {
+    for (var i = 0; i < this.focalPoints.length; i += 1) {
+      if (this.focalPoints[i].id === id) {
+        this.focalPoints[i].activate();
+      } else {
+        this.focalPoints[i].deactivate();
+      }
+    }
+  },
+
   placeImages: function placeImages() {
     var _this = this;
 
@@ -1369,9 +1262,10 @@ Artworks.prototype = {
     var _loop = function _loop(i) {
       var index = i;
       var place = _Globals2.default.artworkPlacement[index];
+      var id = 'UID' + i;
 
       // create collision object
-      var focal = new _Focal.Focal(place.position, (0, _Maths.v3)(1, 1, 1), place.eye);
+      var focal = new _Focal.Focal(id, place.position, (0, _Maths.v3)(1, 1, 1), place.eye, _this.sources[i]);
       self.focalPoints.push(focal);
 
       // create artwork mesh
@@ -1401,7 +1295,184 @@ Artworks.prototype = {
 exports.default = Artworks;
 
 /***/ }),
-/* 15 */
+/* 10 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.TYPE_FOCAL = exports.Focal = undefined;
+
+var _Maths = __webpack_require__(1);
+
+var _VectorMaths = __webpack_require__(2);
+
+var _Materials = __webpack_require__(3);
+
+var _Globals = __webpack_require__(0);
+
+var _Globals2 = _interopRequireDefault(_Globals);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var TYPE_FOCAL = 'TYPE_FOCAL';
+
+var Focal = function Focal(id, pos, dim, eye, source) {
+  this.id = id;
+  this.type = TYPE_FOCAL;
+  this.position = pos;
+  this.dimensions = dim;
+  this.eye = eye;
+  this.source = source;
+  this.active = false;
+  this.init();
+};
+
+Focal.prototype = {
+  init: function init() {
+    this.pitch = (0, _Maths.getPitch)(this.eye, new THREE.Vector3(this.position.x, this.position.y - _Globals2.default.player.height, this.position.z));
+    this.yaw = (0, _Maths.getYaw)(this.eye, this.position);
+    this.object = new THREE.Mesh(new THREE.BoxBufferGeometry(this.dimensions.x, this.dimensions.y, this.dimensions.z), _Materials.Materials.dev2);
+    this.object.position.set(this.position.x, this.position.y, this.position.z);
+    this.box = new THREE.Box3();
+    this.setBox();
+  },
+
+  activate: function activate() {
+    this.active = true;
+    console.log(this.source);
+  },
+
+  deactivate: function deactivate() {
+    this.active = false;
+  },
+
+  setBox: function setBox() {
+    // set collision box size
+    var min = (0, _VectorMaths.subtractVector)(this.position, (0, _VectorMaths.scaleVector)(this.dimensions, 0.5));
+    var max = (0, _VectorMaths.addVector)(this.position, (0, _VectorMaths.scaleVector)(this.dimensions, 0.5));
+    this.box.set(min, max);
+  },
+
+  collision: function collision(point) {
+    return this.box.containsPoint(point);
+  },
+
+  scale: function scale(x, y, z) {
+    this.dimensions.x *= x;
+    this.dimensions.y *= y;
+    this.dimensions.z *= z;
+    this.object.scale.x = x;
+    this.object.scale.y = y;
+    this.object.scale.z = z;
+    this.setBox();
+  }
+};
+
+exports.Focal = Focal;
+exports.TYPE_FOCAL = TYPE_FOCAL;
+
+/***/ }),
+/* 11 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _Globals = __webpack_require__(0);
+
+var _Globals2 = _interopRequireDefault(_Globals);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var Loader = function Loader(basePath) {
+  this.basePath = basePath;
+  this.init();
+};
+
+Loader.prototype = {
+  init: function init() {
+    this.materialLoader = new THREE.MTLLoader();
+    this.objectLoader = new THREE.OBJLoader();
+    this.materialLoader.setPath(this.basePath);
+    this.objectLoader.setPath(this.basePath);
+  },
+
+  process: function process(obj, materials) {
+    // fix materials
+    var self = this;
+
+    for (var i = 0; i < obj.children.length; i += 1) {
+      var child = obj.children[i];
+      var meta = materials.materialsInfo[child.material.name];
+
+      // load lightmaps
+      if (meta.map_ka) {
+        var uvs = child.geometry.attributes.uv.array;
+        var src = meta.map_ka;
+        var tex = new THREE.TextureLoader().load(self.basePath + src);
+
+        child.material.lightMap = tex;
+        child.material.lightMapIntensity = _Globals2.default.loader.lightMapIntensity;
+        child.geometry.addAttribute('uv2', new THREE.BufferAttribute(uvs, 2));
+      }
+
+      child.material.bumpScale = _Globals2.default.loader.bumpScale;
+
+      // make glass translucent
+      if (child.material.map) {
+        // if textured, set full colour
+        child.material.color = new THREE.Color(0xffffff);
+
+        // set transparent for .png
+        if (child.material.map.image.src.indexOf('.png') !== -1) {
+          child.material.transparent = true;
+          child.material.side = THREE.DoubleSide;
+        }
+
+        // for glass
+        if (child.material.map.image.src.indexOf('glass') != -1) {
+          child.material.transparent = true;
+          child.material.opacity = 0.4;
+        }
+      } else {
+        // no texture, set colour
+        child.material.emissive = child.material.color;
+      }
+    }
+  },
+
+  loadOBJ: function loadOBJ(filename) {
+    var self = this;
+
+    return new Promise(function (resolve, reject) {
+      try {
+        self.materialLoader.load(filename + '.mtl', function (materials) {
+          materials.preload();
+          self.objectLoader.setMaterials(materials);
+          self.objectLoader.load(filename + '.obj', function (obj) {
+            self.process(obj, materials);
+            resolve(obj);
+          });
+        });
+      } catch (error) {
+        reject(error);
+      }
+    });
+  }
+};
+
+exports.default = Loader;
+
+/***/ }),
+/* 12 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";

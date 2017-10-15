@@ -26,6 +26,7 @@ const Player = function(domElement) {
   this.autoMove = {
     active: false,
     position: new THREE.Vector3(),
+    rotation: new THREE.Vector3(),
     threshold: 0.2,
   };
   this.attributes = {
@@ -127,7 +128,7 @@ Player.prototype = {
     this.outputLog = [];
 
     // controls
-    this.handleInput(delta);
+    this.handleInput(delta, artworks);
 
     // check next position for collision
     let next = Maths.addVector(Maths.scaleVector(this.movement, delta), this.target.position);
@@ -148,7 +149,7 @@ Player.prototype = {
 
     // raytracer
     const ray = this.raytracer.getRayVector(this.camera, this.mouse.x, this.mouse.y);
-    this.raytracer.trace(this.camera.position, ray, Globals.raytracer.length, collider, artworks);
+    const collision = this.raytracer.trace(this.camera.position, ray, Globals.raytracer.length, collider, artworks);
 	},
 
   processCollisions(next, collider) {
@@ -260,15 +261,44 @@ Player.prototype = {
     }
   },
 
-  handleInput: function(delta) {
+  handleInput: function(delta, artworks) {
     // handle controls
 
     // click
     if (this.keys.click) {
-      this.autoMove.active = true;
-      this.autoMove.position.x = this.raytracer.target.position.x;
-      this.autoMove.position.z = this.raytracer.target.position.z;
       this.keys.click = false;
+      this.autoMove.active = true;
+
+      if (this.raytracer.lastCollision.type === Globals.type.TYPE_COLLISION) {
+        const ray = this.raytracer.lastCollision;
+        const yaw = Math.atan2(ray.vector.x, ray.vector.z);
+        //const pitch = ray.vector.y;
+
+        this.autoMove.position.x = ray.position.x;
+        this.autoMove.position.z = ray.position.z;
+        this.autoMove.rotation.x = 0;//pitch;
+        this.autoMove.rotation.y = yaw;
+      } else {
+        const artwork = this.raytracer.lastCollision.artwork;
+        // move to artwork
+        artworks.activate(artwork.id);
+        this.autoMove.position.x = artwork.eye.x;
+        this.autoMove.position.z = artwork.eye.z;
+        this.autoMove.rotation.x = artwork.pitch;
+        this.autoMove.rotation.y = artwork.yaw;
+      }
+    }
+
+    // update rotation vector
+    if (this.keys.left || this.keys.right) {
+      // disable automove
+      this.autoMove.active = false;
+
+      const dir = ((this.keys.left) ? 1 : 0) + ((this.keys.right) ? -1 : 0);
+      this.target.rotation.y += this.attributes.rotation * delta * dir;
+
+      // reset pitch
+      this.target.rotation.x = 0;
     }
 
     // up/ down keys
@@ -288,7 +318,11 @@ Player.prototype = {
       this.target.movement.z = 0;
     }
 
+    // move and look automatically
     if (this.autoMove.active) {
+      this.target.rotation.x = this.autoMove.rotation.x;
+      this.target.rotation.y = this.autoMove.rotation.y;
+
       if (Maths.distanceBetween2D(this.position, this.autoMove.position) < this.autoMove.threshold) {
         this.autoMove.active = false;
         this.target.movement.x = 0;
@@ -321,12 +355,6 @@ Player.prototype = {
       this.movement.x += (this.target.movement.x - this.movement.x) * this.attributes.adjust.slow;
       this.movement.z += (this.target.movement.z - this.movement.z) * this.attributes.adjust.slow;
     }
-
-    // update rotation vector
-    if (this.keys.left || this.keys.right) {
-      const dir = ((this.keys.left) ? 1 : 0) + ((this.keys.right) ? -1 : 0);
-      this.target.rotation.y += this.attributes.rotation * delta * dir;
-    }
   },
 
   setPosition() {
@@ -339,8 +367,11 @@ Player.prototype = {
 
     // rotate
     this.rotation.y += Maths.minAngleDifference(this.rotation.y, this.target.rotation.y) * this.attributes.adjust.fast;
+    this.rotation.x += Maths.minAngleDifference(this.rotation.x, this.target.rotation.x) * this.attributes.adjust.fast;
     this.offset.rotation.x += (this.target.offset.rotation.x - this.offset.rotation.x) * this.attributes.adjust.normal;
     this.offset.rotation.y += (this.target.offset.rotation.y - this.offset.rotation.y) * this.attributes.adjust.normal;
+
+    // limit rotation
     this.rotation.y += (this.rotation.y < 0) ? Maths.twoPi : ((this.rotation.y > Maths.twoPi) ? -Maths.twoPi : 0);
 
     // set new camera position

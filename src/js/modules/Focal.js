@@ -5,11 +5,14 @@ import Globals from './Globals';
 
 const TYPE_FOCAL = 'TYPE_FOCAL';
 
-const Focal = function(pos, dim, eye) {
+const Focal = function(id, pos, dim, eye, source) {
+  this.id = id;
   this.type = TYPE_FOCAL;
   this.position = pos;
   this.dimensions = dim;
   this.eye = eye;
+  this.source = source;
+  this.active = false;
   this.init();
 };
 
@@ -24,6 +27,15 @@ Focal.prototype = {
     this.object.position.set(this.position.x, this.position.y, this.position.z);
     this.box = new THREE.Box3();
     this.setBox();
+  },
+
+  activate: function() {
+    this.active = true;
+    console.log(this.source);
+  },
+
+  deactivate: function() {
+    this.active = false;
   },
 
   setBox: function() {
