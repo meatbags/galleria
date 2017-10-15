@@ -1,5 +1,6 @@
 import * as Maths from './VectorMaths';
 import Globals from './Globals';
+import RayTracer from './RayTracer';
 
 const Player = function(domElement) {
   this.domElement = domElement;
@@ -7,6 +8,10 @@ const Player = function(domElement) {
   this.position = new THREE.Vector3(Globals.player.position.x, Globals.player.position.y, Globals.player.position.z);
   this.movement = new THREE.Vector3(0, 0, 0);
   this.rotation = new THREE.Vector3(0, 0, 0);
+  this.mouse = {
+    x: 0,
+    y: 0
+  };
   this.offset = {
     rotation: new THREE.Vector3(0, 0, 0)
   };
@@ -51,6 +56,7 @@ const Player = function(domElement) {
   this.outputLog = [];
   this.camera = new THREE.PerspectiveCamera(this.attributes.camera.fov, 1, this.attributes.camera.near, this.attributes.camera.far);
   this.camera.up = new THREE.Vector3(0, 1, 0);
+  this.raytracer = new RayTracer();
 	this.init();
 };
 
@@ -62,9 +68,9 @@ Player.prototype = {
     );
 		this.bindControls();
     this.resizeCamera();
-    const light = new THREE.PointLight(0xffffff, 0.8, 10, 2);
-		light.position.set(0, 2, 0);
-		this.object.add(light);
+    this.light = new THREE.PointLight(0xffffff, 0.8, 10, 2);
+		this.light.position.set(0, 2, 0);
+		this.object.add(this.light);
 	},
 
   resizeCamera: function() {
@@ -114,47 +120,35 @@ Player.prototype = {
 
     this.outputLog = [];
 
-    // get movement vector from controls
-    if (this.keys.up || this.keys.down) {
-      const dir = ((this.keys.up) ? 1 : 0) + ((this.keys.down) ? -1 : 0);
-      const yaw = this.rotation.y + this.offset.rotation.y;
-      const dx = Math.sin(yaw) * this.attributes.speed * dir;
-      const dz = Math.cos(yaw) * this.attributes.speed * dir;
-      this.target.movement.x = dx;
-      this.target.movement.z = dz;
-    } else {
-      this.target.movement.x = 0;
-      this.target.movement.z = 0;
-    }
-
-    // jump key
-    if (this.keys.jump) {
-      this.keys.jump = false;
-
-      // jump if not falling
-      if (this.movement.y == 0) {
-        this.movement.y = this.attributes.gravity.jumpVelocity;
-      }
-    }
-
-    // set falling
-    this.falling = (this.movement.y != 0);
-
-    // reduce movement if falling
-    if (!this.falling) {
-      this.movement.x = this.target.movement.x;
-      this.movement.z = this.target.movement.z;
-    } else {
-      this.movement.x += (this.target.movement.x - this.movement.x) * this.attributes.adjust.slow;
-      this.movement.z += (this.target.movement.z - this.movement.z) * this.attributes.adjust.slow;
-    }
+    // controls
+    this.handleInput(delta);
 
     // check next position for collision
     let next = Maths.addVector(Maths.scaleVector(this.movement, delta), this.target.position);
-    let collisions = collider.collisions(next);
 
     // apply gravity
     this.movement.y = Math.max(this.movement.y - this.attributes.gravity.accel * delta, -this.attributes.gravity.maxVelocity);
+
+    // collisions
+    this.processCollisions(next, collider);
+
+    // set new position target
+    this.target.position.x = next.x;
+    this.target.position.y = next.y;
+    this.target.position.z = next.z;
+
+    // move & rotate camera
+    this.setPosition();
+
+    // raytracer
+    const ray = this.raytracer.getRayVector(this.camera, this.mouse.x, this.mouse.y);
+    this.raytracer.trace(this.camera.position, ray, Globals.raytracer.length, collider);
+	},
+
+  processCollisions(next, collider) {
+    // handle collision cases
+
+    let collisions = collider.collisions(next);
 
     if (collisions.length > 0) {
       this.log('Collisions', collisions.length);
@@ -258,23 +252,62 @@ Player.prototype = {
       next.y = 0;
       this.movement.y = 0;
     }
+  },
 
-    // set new position target
-    this.target.position.x = next.x;
-    this.target.position.y = next.y;
-    this.target.position.z = next.z;
+  handleInput: function(delta) {
+    // handle controls
 
-    // smooth motion a little
-    this.position.x += (this.target.position.x - this.position.x) * this.attributes.adjust.veryFast;
-    this.position.y += (this.target.position.y - this.position.y) * this.attributes.adjust.veryFast;
-    this.position.z += (this.target.position.z - this.position.z) * this.attributes.adjust.veryFast;
+    // up/ down keys
+    if (this.keys.up || this.keys.down) {
+      const dir = ((this.keys.up) ? 1 : 0) + ((this.keys.down) ? -1 : 0);
+      const yaw = this.rotation.y + this.offset.rotation.y;
+      const dx = Math.sin(yaw) * this.attributes.speed * dir;
+      const dz = Math.cos(yaw) * this.attributes.speed * dir;
+      this.target.movement.x = dx;
+      this.target.movement.z = dz;
+    } else {
+      this.target.movement.x = 0;
+      this.target.movement.z = 0;
+    }
+
+    // jump key
+    if (this.keys.jump) {
+      this.keys.jump = false;
+
+      // jump if not falling
+      if (this.movement.y == 0) {
+        this.movement.y = this.attributes.gravity.jumpVelocity;
+      }
+    }
+
+    // set falling
+    this.falling = (this.movement.y != 0);
+
+    // adjust movement if falling
+    if (!this.falling) {
+      this.movement.x = this.target.movement.x;
+      this.movement.z = this.target.movement.z;
+    } else {
+      this.movement.x += (this.target.movement.x - this.movement.x) * this.attributes.adjust.slow;
+      this.movement.z += (this.target.movement.z - this.movement.z) * this.attributes.adjust.slow;
+    }
 
     // update rotation vector
     if (this.keys.left || this.keys.right) {
       const dir = ((this.keys.left) ? 1 : 0) + ((this.keys.right) ? -1 : 0);
       this.target.rotation.y += this.attributes.rotation * delta * dir;
     }
+  },
 
+  setPosition() {
+    // move and rotate player
+
+    // smooth motion
+    this.position.x += (this.target.position.x - this.position.x) * this.attributes.adjust.veryFast;
+    this.position.y += (this.target.position.y - this.position.y) * this.attributes.adjust.veryFast;
+    this.position.z += (this.target.position.z - this.position.z) * this.attributes.adjust.veryFast;
+
+    // rotate
     this.rotation.y += Maths.minAngleDifference(this.rotation.y, this.target.rotation.y) * this.attributes.adjust.fast;
     this.offset.rotation.x += (this.target.offset.rotation.x - this.offset.rotation.x) * this.attributes.adjust.normal;
     this.offset.rotation.y += (this.target.offset.rotation.y - this.offset.rotation.y) * this.attributes.adjust.normal;
@@ -284,15 +317,17 @@ Player.prototype = {
     const yaw = this.rotation.y + this.offset.rotation.y;
     const pitch = this.rotation.x + this.offset.rotation.x;
     const height = this.position.y + this.attributes.height;
+    const halfHeight = this.position.y + (this.attributes.height * 0.5);
 
-    this.object.position.set(this.position.x, height, this.position.z);
+    // move camera and world object
+    this.object.position.set(this.position.x, halfHeight, this.position.z);
     this.camera.position.set(this.position.x, height, this.position.z);
     this.camera.lookAt(new THREE.Vector3(
       this.position.x + Math.sin(yaw),
       height + Math.sin(pitch),
       this.position.z + Math.cos(yaw)
     ));
-	},
+  },
 
   handleKeyDown(e) {
     switch (e.keyCode) {
@@ -381,6 +416,10 @@ Player.prototype = {
     } else {
       this.target.offset.rotation.x = 0;
     }
+
+    // record mouse
+    this.mouse.x = x * 2 - 1;
+    this.mouse.y = y * 2 - 1;
   }
 };
 

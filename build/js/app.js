@@ -60,11 +60,70 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 6);
+/******/ 	return __webpack_require__(__webpack_require__.s = 7);
 /******/ })
 /************************************************************************/
 /******/ ([
 /* 0 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _Maths = __webpack_require__(1);
+
+var halfPI = Math.PI / 2;
+
+var Globals = {
+  player: {
+    position: {
+      x: 0,
+      y: 0,
+      z: -40
+    },
+    height: 1.8,
+    speed: 8,
+    rotationSpeed: Math.PI * 0.75
+  },
+  raytracer: {
+    precision: 1,
+    length: 10
+  },
+  camera: {
+    fov: 58,
+    near: 0.1,
+    far: 2000000
+  },
+  loader: {
+    bumpScale: 0.02,
+    lightMapIntensity: 0.6
+  },
+  artworkPlacement: {
+    '0': { scale: 6, pitch: 0, yaw: halfPI, position: (0, _Maths.v3)(8.5, 6, -10), eye: (0, _Maths.v3)(0, 0, -10) },
+    '1': { scale: 4, pitch: 0, yaw: halfPI, position: (0, _Maths.v3)(-8.5, 4, -15), eye: (0, _Maths.v3)(0, 0, -15) },
+    '2': { scale: 2, pitch: 0, yaw: halfPI, position: (0, _Maths.v3)(8.5, 3, 5), eye: (0, _Maths.v3)(4, 0, 5) },
+    '3': { scale: 2, pitch: 0, yaw: halfPI, position: (0, _Maths.v3)(8.5, 3, 15), eye: (0, _Maths.v3)(4, 0, 15) },
+    '4': { scale: 2, pitch: 0, yaw: halfPI, position: (0, _Maths.v3)(-8.5, 3, 5), eye: (0, _Maths.v3)(-4, 0, 5) },
+    '5': { scale: 2, pitch: 0, yaw: halfPI, position: (0, _Maths.v3)(-8.5, 3, 15), eye: (0, _Maths.v3)(-4, 0, 15) },
+    '6': { scale: 2, pitch: 0, yaw: 0, position: (0, _Maths.v3)(0, 3, 10), eye: (0, _Maths.v3)(0, 0, 5) },
+    '7': { scale: 2, pitch: 0, yaw: 0, position: (0, _Maths.v3)(0, 3, 11), eye: (0, _Maths.v3)(0, 0, 15) },
+    '8': { scale: 2, pitch: 0, yaw: halfPI, position: (0, _Maths.v3)(8.5, 11, 5), eye: (0, _Maths.v3)(4, 8, 5) },
+    '9': { scale: 2, pitch: 0, yaw: halfPI, position: (0, _Maths.v3)(8.5, 11, 15), eye: (0, _Maths.v3)(4, 8, 15) },
+    '10': { scale: 2, pitch: 0, yaw: halfPI, position: (0, _Maths.v3)(-8.5, 11, 5), eye: (0, _Maths.v3)(-4, 8, 5) },
+    '11': { scale: 2, pitch: 0, yaw: halfPI, position: (0, _Maths.v3)(-8.5, 11, 15), eye: (0, _Maths.v3)(-4, 8, 15) },
+    '12': { scale: 2, pitch: 0, yaw: 0, position: (0, _Maths.v3)(0, 11, 10), eye: (0, _Maths.v3)(0, 8, 5) },
+    '13': { scale: 2, pitch: 0, yaw: 0, position: (0, _Maths.v3)(0, 11, 11), eye: (0, _Maths.v3)(0, 8, 15) }
+  }
+};
+
+exports.default = Globals;
+
+/***/ }),
+/* 1 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -133,7 +192,119 @@ exports.getDistanceVec2 = getDistanceVec2;
 exports.getDistanceVec3 = getDistanceVec3;
 
 /***/ }),
-/* 1 */
+/* 2 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.TYPE_FOCAL = exports.FocalSystem = exports.Focal = undefined;
+
+var _Maths = __webpack_require__(1);
+
+var _Materials = __webpack_require__(4);
+
+var _Globals = __webpack_require__(0);
+
+var _Globals2 = _interopRequireDefault(_Globals);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var TYPE_FOCAL = 'TYPE_FOCAL';
+
+var FocalSystem = function FocalSystem() {
+  this.focalPoints = [];
+};
+
+FocalSystem.prototype = {
+  add: function add(item) {
+    if (item.type === TYPE_FOCAL) {
+      this.focalPoints.push(item);
+    }
+  }
+};
+
+var Focal = function Focal(pos, dim, eye) {
+  this.type = TYPE_FOCAL;
+  this.position = pos;
+  this.dimensions = dim;
+  this.eye = eye;
+  this.box = new THREE.Box3();
+  this.pitch = (0, _Maths.getPitch)(eye, new THREE.Vector3(pos.x, pos.y - _Globals2.default.player.height, pos.z));
+  this.yaw = (0, _Maths.getYaw)(eye, pos);
+  this.object = new THREE.Mesh(new THREE.BoxBufferGeometry(dim.x, dim.y, dim.z), _Materials.Materials.dev2);
+  this.object.position.set(pos.x, pos.y, pos.z);
+};
+
+Focal.prototype = {
+  collision: function collision(pos) {
+    //    return this.bbox.collision(pos);
+  },
+
+  scale: function scale(x, y, z) {
+    this.dimensions.x *= x;
+    this.dimensions.y *= y;
+    this.dimensions.z *= z;
+    //this.bbox = new BoundingBox(this.position, this.dimensions);
+    this.object.scale.x = x;
+    this.object.scale.y = y;
+    this.object.scale.z = z;
+  }
+};
+
+exports.Focal = Focal;
+exports.FocalSystem = FocalSystem;
+exports.TYPE_FOCAL = TYPE_FOCAL;
+
+/***/ }),
+/* 3 */,
+/* 4 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+var Materials = {
+  concrete: new THREE.MeshPhysicalMaterial({
+    clearCoat: 0,
+    clearCoatRoughness: 1,
+    reflectivity: 0,
+    color: 0xffffff,
+    emissive: 0x888888
+  }),
+  canvas: new THREE.MeshBasicMaterial({
+    color: 0xffffff,
+    side: THREE.DoubleSide
+  }),
+  dev: new THREE.MeshLambertMaterial({
+    color: 0xff0000,
+    opacity: 0.25,
+    transparent: true,
+    side: THREE.DoubleSide
+  }),
+  dev2: new THREE.MeshLambertMaterial({
+    color: 0xffaa88,
+    opacity: 0.25,
+    transparent: true,
+    side: THREE.DoubleSide
+  }),
+  wireframe: new THREE.MeshLambertMaterial({
+    color: 0xff0000,
+    wireframe: true
+  })
+};
+
+exports.Materials = Materials;
+
+/***/ }),
+/* 5 */,
+/* 6 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -143,7 +314,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _Globals = __webpack_require__(3);
+var _Globals = __webpack_require__(0);
 
 var _Globals2 = _interopRequireDefault(_Globals);
 
@@ -229,313 +400,17 @@ Loader.prototype = {
 exports.default = Loader;
 
 /***/ }),
-/* 2 */
+/* 7 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.TYPE_FOCAL = exports.Focal = undefined;
-
-var _BoundingBox = __webpack_require__(4);
-
-var _Maths = __webpack_require__(0);
-
-var _Materials = __webpack_require__(14);
-
-var _Globals = __webpack_require__(3);
-
-var _Globals2 = _interopRequireDefault(_Globals);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-var TYPE_FOCAL = 'TYPE_FOCAL';
-
-var Focal = function Focal(pos, dim, eye) {
-  this.type = TYPE_FOCAL;
-  this.position = pos;
-  this.dimensions = dim;
-  this.eye = eye;
-  this.bbox = new _BoundingBox.BoundingBox(pos, dim);
-  this.pitch = (0, _Maths.getPitch)(eye, new THREE.Vector3(pos.x, pos.y - _Globals2.default.player.height, pos.z));
-  this.yaw = (0, _Maths.getYaw)(eye, pos);
-  this.object = new THREE.Mesh(new THREE.BoxBufferGeometry(dim.x, dim.y, dim.z), _Materials.Materials.dev2);
-  this.object.position.set(pos.x, pos.y, pos.z);
-};
-
-Focal.prototype = {
-  collision: function collision(pos) {
-    return this.bbox.collision(pos);
-  },
-
-  scale: function scale(x, y, z) {
-    this.dimensions.x *= x;
-    this.dimensions.y *= y;
-    this.dimensions.z *= z;
-    this.bbox = new _BoundingBox.BoundingBox(this.position, this.dimensions);
-    this.object.scale.x = x;
-    this.object.scale.y = y;
-    this.object.scale.z = z;
-  }
-};
-
-exports.Focal = Focal;
-exports.TYPE_FOCAL = TYPE_FOCAL;
-
-/***/ }),
-/* 3 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _Maths = __webpack_require__(0);
-
-var halfPI = Math.PI / 2;
-
-var Globals = {
-  player: {
-    position: {
-      x: 0,
-      y: 0,
-      z: -40
-    },
-    height: 1.8,
-    speed: 8,
-    rotationSpeed: Math.PI * 0.75
-  },
-  camera: {
-    fov: 58,
-    near: 0.1,
-    far: 2000000
-  },
-  loader: {
-    bumpScale: 0.02,
-    lightMapIntensity: 0.6
-  },
-  artworkPlacement: {
-    '0': { scale: 6, pitch: 0, yaw: halfPI, position: (0, _Maths.v3)(8.5, 6, -10), eye: (0, _Maths.v3)(0, 0, -10) },
-    '1': { scale: 4, pitch: 0, yaw: halfPI, position: (0, _Maths.v3)(-8.5, 4, -15), eye: (0, _Maths.v3)(0, 0, -15) },
-    '2': { scale: 2, pitch: 0, yaw: halfPI, position: (0, _Maths.v3)(8.5, 3, 5), eye: (0, _Maths.v3)(4, 0, 5) },
-    '3': { scale: 2, pitch: 0, yaw: halfPI, position: (0, _Maths.v3)(8.5, 3, 15), eye: (0, _Maths.v3)(4, 0, 15) },
-    '4': { scale: 2, pitch: 0, yaw: halfPI, position: (0, _Maths.v3)(-8.5, 3, 5), eye: (0, _Maths.v3)(-4, 0, 5) },
-    '5': { scale: 2, pitch: 0, yaw: halfPI, position: (0, _Maths.v3)(-8.5, 3, 15), eye: (0, _Maths.v3)(-4, 0, 15) },
-    '6': { scale: 2, pitch: 0, yaw: 0, position: (0, _Maths.v3)(0, 3, 10), eye: (0, _Maths.v3)(0, 0, 5) },
-    '7': { scale: 2, pitch: 0, yaw: 0, position: (0, _Maths.v3)(0, 3, 11), eye: (0, _Maths.v3)(0, 0, 15) },
-    '8': { scale: 2, pitch: 0, yaw: halfPI, position: (0, _Maths.v3)(8.5, 11, 5), eye: (0, _Maths.v3)(4, 8, 5) },
-    '9': { scale: 2, pitch: 0, yaw: halfPI, position: (0, _Maths.v3)(8.5, 11, 15), eye: (0, _Maths.v3)(4, 8, 15) },
-    '10': { scale: 2, pitch: 0, yaw: halfPI, position: (0, _Maths.v3)(-8.5, 11, 5), eye: (0, _Maths.v3)(-4, 8, 5) },
-    '11': { scale: 2, pitch: 0, yaw: halfPI, position: (0, _Maths.v3)(-8.5, 11, 15), eye: (0, _Maths.v3)(-4, 8, 15) },
-    '12': { scale: 2, pitch: 0, yaw: 0, position: (0, _Maths.v3)(0, 11, 10), eye: (0, _Maths.v3)(0, 8, 5) },
-    '13': { scale: 2, pitch: 0, yaw: 0, position: (0, _Maths.v3)(0, 11, 11), eye: (0, _Maths.v3)(0, 8, 15) }
-  }
-};
-
-exports.default = Globals;
-
-/***/ }),
-/* 4 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-var BoundingBox = function BoundingBox(pos, dim) {
-  this.box = {
-    x: {
-      min: pos.x - dim.x / 2,
-      max: pos.x + dim.x / 2,
-      size: dim.x
-    },
-    y: {
-      min: pos.y - dim.y / 2,
-      max: pos.y + dim.y / 2,
-      size: dim.y
-    },
-    z: {
-      min: pos.z - dim.z / 2,
-      max: pos.z + dim.z / 2,
-      size: dim.z
-    }
-  };
-};
-
-BoundingBox.prototype = {
-  collision: function collision(pos) {
-    return pos.x >= this.box.x.min && pos.x <= this.box.x.max && pos.y >= this.box.y.min && pos.y <= this.box.y.max && pos.z >= this.box.z.min && pos.z <= this.box.z.max;
-  },
-
-  collision2D: function collision2D(pos) {
-    return pos.x >= this.box.x.min && pos.x <= this.box.x.max && pos.z >= this.box.z.min && pos.z <= this.box.z.max;
-  },
-
-  getTop: function getTop(pos) {
-    return this.box.y.max;
-  }
-};
-
-var BoundingRamp = function BoundingRamp(pos, dim, dir) {
-  this.box = new BoundingBox(pos, dim);
-  this.direction = dir;
-};
-
-BoundingRamp.prototype = {
-  collision: function collision(pos) {
-    return this.box.collision(pos);
-  },
-
-  collision2D: function collision2D(pos) {
-    return this.box.collision2D(pos);
-  },
-
-  getTop: function getTop(pos) {
-    var top = this.box.box.y.min;
-
-    if (this.direction === 0) {
-      top += (pos.z - this.box.box.z.min) / this.box.box.z.size * this.box.box.y.size;
-    } else if (this.direction === 1) {
-      top += (pos.x - this.box.box.x.min) / this.box.box.x.size * this.box.box.y.size;
-    } else if (this.direction === 2) {
-      top += (this.box.box.z.max - pos.z) / this.box.box.z.size * this.box.box.y.size;
-    } else {
-      top += (this.box.box.x.max - pos.x) / this.box.box.x.size * this.box.box.y.size;
-    }
-
-    return top;
-  }
-};
-
-exports.BoundingBox = BoundingBox;
-exports.BoundingRamp = BoundingRamp;
-
-/***/ }),
-/* 5 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-	value: true
-});
-exports.TYPE_RAMP = exports.TYPE_BOX = exports.Box = exports.Ramp = exports.PhysicsModel = undefined;
-
-var _BoundingBox = __webpack_require__(4);
-
-var _Loader = __webpack_require__(1);
-
-var TYPE_BOX = 'TYPE_BOX';
-var TYPE_RAMP = 'TYPE_RAMP';
-
-var Box = function Box(pos, dim) {
-	this.type = TYPE_BOX;
-	this.box = new _BoundingBox.BoundingBox(pos, dim);
-	this.object = new THREE.Mesh(new THREE.BoxBufferGeometry(dim.x, dim.y, dim.z), _Loader.Materials.dev);
-	var cloned = this.object.clone();
-	cloned.material = _Loader.Materials.wireframe;
-	this.object.add(cloned);
-	this.object.position.set(pos.x, pos.y, pos.z);
-};
-
-Box.prototype = {
-	collision: function collision(pos) {
-		return this.box.collision(pos);
-	},
-
-	collision2D: function collision2D(pos) {
-		return this.box.collision2D(pos);
-	},
-
-	getTop: function getTop(pos) {
-		return this.box.getTop(pos);
-	}
-};
-
-var Ramp = function Ramp(pos, dim, dir) {
-	this.type = TYPE_RAMP;
-	this.dir = dir;
-	this.ramp = new _BoundingBox.BoundingRamp(pos, dim, dir);
-	this.object = new THREE.Mesh(new THREE.BoxBufferGeometry(dim.x, dim.y, dim.z), _Loader.Materials.dev);
-	var plane = new THREE.Mesh(new THREE.BoxBufferGeometry(1, 0.05, 1), _Loader.Materials.wireframe);
-
-	if (dir == 0) {
-		plane.scale.x = dim.x;
-		plane.scale.z = Math.sqrt(dim.z * dim.z + dim.y * dim.y);
-		plane.rotation.x = -Math.atan2(dim.y, dim.z);
-	} else if (dir == 1) {
-		plane.scale.z = dim.z;
-		plane.scale.x = Math.sqrt(dim.x * dim.x + dim.y * dim.y);
-		plane.rotation.z = Math.atan2(dim.y, dim.x);
-	} else if (dir == 2) {
-		plane.scale.x = dim.x;
-		plane.scale.z = Math.sqrt(dim.z * dim.z + dim.y * dim.y);
-		plane.rotation.x = Math.atan2(dim.y, dim.z);
-	} else {
-		plane.scale.z = dim.z;
-		plane.scale.x = Math.sqrt(dim.x * dim.x + dim.y * dim.y);
-		plane.rotation.z = -Math.atan2(dim.y, dim.x);
-	}
-
-	this.object.add(plane);
-	this.object.position.set(pos.x, pos.y, pos.z);
-};
-
-Ramp.prototype = {
-	collision: function collision(pos) {
-		return this.ramp.collision(pos);
-	},
-
-	collision2D: function collision2D(pos) {
-		return this.ramp.collision2D(pos);
-	},
-
-	getTop: function getTop(pos) {
-		return this.ramp.getTop(pos);
-	}
-};
-
-var PhysicsModel = function PhysicsModel() {
-	this.contents = [];
-	this.object = new THREE.Object3D();
-};
-
-PhysicsModel.prototype = {
-	add: function add() {
-		for (var i = 0; i < arguments.length; i += 1) {
-			this.contents.push(arguments[i]);
-			this.object.add(arguments[i].object);
-		}
-	}
-};
-
-exports.PhysicsModel = PhysicsModel;
-exports.Ramp = Ramp;
-exports.Box = Box;
-exports.TYPE_BOX = TYPE_BOX;
-exports.TYPE_RAMP = TYPE_RAMP;
-
-/***/ }),
-/* 6 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var _Timer = __webpack_require__(7);
+var _Timer = __webpack_require__(8);
 
 var _Timer2 = _interopRequireDefault(_Timer);
 
-var _Scene = __webpack_require__(8);
+var _Scene = __webpack_require__(9);
 
 var _Scene2 = _interopRequireDefault(_Scene);
 
@@ -573,7 +448,7 @@ var App = {
 window.onload = App.init;
 
 /***/ }),
-/* 7 */
+/* 8 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -606,7 +481,7 @@ Timer.prototype = {
 exports.default = Timer;
 
 /***/ }),
-/* 8 */
+/* 9 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -616,37 +491,27 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _Player = __webpack_require__(9);
+var _Player = __webpack_require__(10);
 
 var _Player2 = _interopRequireDefault(_Player);
 
-var _RayTracer = __webpack_require__(10);
-
-var _RayTracer2 = _interopRequireDefault(_RayTracer);
-
-var _HUD = __webpack_require__(11);
-
-var _HUD2 = _interopRequireDefault(_HUD);
-
-var _Artworks = __webpack_require__(12);
+var _Artworks = __webpack_require__(14);
 
 var _Artworks2 = _interopRequireDefault(_Artworks);
 
-var _Loader = __webpack_require__(1);
+var _Loader = __webpack_require__(6);
 
 var _Loader2 = _interopRequireDefault(_Loader);
 
-var _Physics = __webpack_require__(5);
-
 var _Focal = __webpack_require__(2);
 
-var _Maths = __webpack_require__(0);
+var _Maths = __webpack_require__(1);
 
-var _Globals = __webpack_require__(3);
+var _Globals = __webpack_require__(0);
 
 var _Globals2 = _interopRequireDefault(_Globals);
 
-__webpack_require__(13);
+__webpack_require__(15);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -663,19 +528,15 @@ Scene.prototype = {
     this.renderer.setSize(640, 480);
     this.renderer.setClearColor(0xf9e5a2, 1);
     this.renderer.setPixelRatio(window.devicePixelRatio);
-    //this.renderer.domElement.addEventListener('mousemove', function(e){ self.onMouseMove(e) });
-    //this.renderer.domElement.addEventListener('mousedown', function(e){ self.onMouseDown(e) });
     document.body.append(this.renderer.domElement);
 
     // player & scene
     this.player = new _Player2.default(this.renderer.domElement);
     this.camera = this.player.camera;
-    this.raytracer = new _RayTracer2.default(this.renderer.domElement);
 
     // scene
     this.scene = new THREE.Scene();
     this.scene.fog = new THREE.FogExp2(0xCCCFFF, 0.008);
-    this.scene.add(this.raytracer.object, this.player.object);
 
     // collision map
     this.collider = new Collider.System();
@@ -704,15 +565,8 @@ Scene.prototype = {
       self.resize();
     });
 
-    //this.hud = new HUD(this.renderer.domElement);
-    //this.player = new Player();
-    //this.camera = new THREE.PerspectiveCamera(Globals.camera.fov, 1, Globals.camera.near, Globals.camera.far);
-    //this.camera.up = new THREE.Vector3(0, 1, 0);
-    // walls & floors
-    //this.scene.add(this.model.object);
-
     // load gallery
-    this.model = new _Physics.PhysicsModel();
+    this.focalPoints = new _Focal.FocalSystem();
     var tags = document.getElementsByClassName('im');
     this.artworks = new _Artworks2.default();
 
@@ -750,30 +604,24 @@ Scene.prototype = {
     this.scene.add(this.artworks.object);
 
     for (var _i = 0; _i < this.artworks.focalPoints.length; _i += 1) {
-      this.model.add(this.artworks.focalPoints[_i]);
+      this.focalPoints.add(this.artworks.focalPoints[_i]);
     }
 
     // lighting
     var ambient = new THREE.AmbientLight(0xffffff, .08);
     var hemisphere = new THREE.HemisphereLight(0xffaabb, 0x080820, 0.1);
     var point1 = new THREE.PointLight(0xffffff, 0.5, 13, 1);
-    var point2 = new THREE.PointLight(0xffffff, 0.5, 10, 1);
-    var point3 = new THREE.PointLight(0xfeff87, 0.5, 12, 1);
+    var point2 = new THREE.PointLight(0xfeff87, 0.5, 12, 1);
     this.neonSign = new THREE.PointLight(0xff0000, 0.8, 15, 1);
 
     point1.position.set(0, 5, -10);
-    point2.position.set(0, 14, 10);
-    point3.position.set(-19, 8, 5);
+    point2.position.set(-19, 8, 5);
     this.neonSign.position.set(0, 14, -32);
 
-    this.scene.add(ambient, point1,
-    //point2,
-    point3, hemisphere, this.neonSign);
+    this.scene.add(ambient, point1, point2, hemisphere, this.neonSign, this.player.object, this.player.raytracer.object);
 
     // skybox
     var sky = new THREE.Sky();
-    //const sun = new THREE.PointLight(0xffffff, 0.9, 40500);
-    //sun.position.set(sky.uniforms.sunPosition.value.x, sky.uniforms.sunPosition.value.y, sky.uniforms.sunPosition.value.z);
     this.scene.add(sky.mesh);
   },
 
@@ -789,63 +637,8 @@ Scene.prototype = {
     this.renderer.setSize(width, height);
   },
 
-  onMouseDown: function onMouseDown(e) {
-    var ray = this.raytracer.emitRayFromScreen(e, this.renderer.domElement, this.camera, this.player, this.model.contents);
-
-    if (this.hud.isLeftOrRight(e.clientX)) {
-      this.player.setTarget(this.player.position, ray.yaw);
-    } else {
-      this.player.setTarget({ x: ray.end.x, y: ray.end.y, z: ray.end.z }, ray.yaw);
-    }
-  },
-
-  onMouseMove: function onMouseMove(e) {
-    var ray = this.raytracer.emitRayFromScreen(e, this.renderer.domElement, this.camera, this.player, this.model.contents);
-
-    // adjust camera X
-    if (this.hud.isLeft(e.clientX)) {
-      if (!this.hud.left.classList.contains('active')) {
-        this.hud.left.classList.add('active');
-      }
-      this.player.setTargetYawOffset(0.5 * this.hud.getLeftFactor(e.clientX));
-    } else if (this.hud.isRight(e.clientX)) {
-      if (!this.hud.right.classList.contains('active')) {
-        this.hud.right.classList.add('active');
-      }
-      this.player.setTargetYawOffset(-0.5 * this.hud.getRightFactor(e.clientX));
-    } else {
-      this.player.setTargetYawOffset(0);
-      if (this.hud.left.classList.contains('active')) {
-        this.hud.left.classList.remove('active');
-      }
-      if (this.hud.right.classList.contains('active')) {
-        this.hud.right.classList.remove('active');
-      }
-    }
-
-    // adjust camera Y
-    if (this.hud.isHigh(e.clientY)) {
-      this.player.setTargetPitchOffset(0.5 * this.hud.getHighFactor(e.clientY));
-    } else if (this.hud.isLow(e.clientY)) {
-      this.player.setTargetPitchOffset(-0.5 * this.hud.getLowFactor(e.clientY));
-    } else {
-      this.player.setTargetPitchOffset(0);
-    }
-  },
-
   update: function update(delta) {
     this.player.update(delta, this.collider);
-    /*
-    const yaw = this.player.getYaw();
-    const pitch = this.player.getPitch();
-      this.player.update(delta, this.model.contents);
-    this.camera.position.set(this.player.position.x, this.player.position.y + this.player.height, this.player.position.z);
-    this.camera.lookAt(new THREE.Vector3(
-      this.player.position.x + Math.sin(yaw),
-      this.player.position.y + this.player.height + Math.sin(pitch),
-      this.player.position.z + Math.cos(yaw)
-    ));
-    */
   },
 
   render: function render() {
@@ -856,7 +649,7 @@ Scene.prototype = {
 exports.default = Scene;
 
 /***/ }),
-/* 9 */
+/* 10 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -866,13 +659,17 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _VectorMaths = __webpack_require__(15);
+var _VectorMaths = __webpack_require__(11);
 
 var Maths = _interopRequireWildcard(_VectorMaths);
 
-var _Globals = __webpack_require__(3);
+var _Globals = __webpack_require__(0);
 
 var _Globals2 = _interopRequireDefault(_Globals);
+
+var _RayTracer = __webpack_require__(12);
+
+var _RayTracer2 = _interopRequireDefault(_RayTracer);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -884,6 +681,10 @@ var Player = function Player(domElement) {
   this.position = new THREE.Vector3(_Globals2.default.player.position.x, _Globals2.default.player.position.y, _Globals2.default.player.position.z);
   this.movement = new THREE.Vector3(0, 0, 0);
   this.rotation = new THREE.Vector3(0, 0, 0);
+  this.mouse = {
+    x: 0,
+    y: 0
+  };
   this.offset = {
     rotation: new THREE.Vector3(0, 0, 0)
   };
@@ -928,6 +729,7 @@ var Player = function Player(domElement) {
   this.outputLog = [];
   this.camera = new THREE.PerspectiveCamera(this.attributes.camera.fov, 1, this.attributes.camera.near, this.attributes.camera.far);
   this.camera.up = new THREE.Vector3(0, 1, 0);
+  this.raytracer = new _RayTracer2.default();
   this.init();
 };
 
@@ -936,9 +738,9 @@ Player.prototype = {
     this.object = new THREE.Mesh(new THREE.SphereBufferGeometry(0.05), new THREE.MeshPhongMaterial());
     this.bindControls();
     this.resizeCamera();
-    var light = new THREE.PointLight(0xffffff, 0.8, 10, 2);
-    light.position.set(0, 2, 0);
-    this.object.add(light);
+    this.light = new THREE.PointLight(0xffffff, 0.8, 10, 2);
+    this.light.position.set(0, 2, 0);
+    this.object.add(this.light);
   },
 
   resizeCamera: function resizeCamera() {
@@ -988,47 +790,35 @@ Player.prototype = {
 
     this.outputLog = [];
 
-    // get movement vector from controls
-    if (this.keys.up || this.keys.down) {
-      var dir = (this.keys.up ? 1 : 0) + (this.keys.down ? -1 : 0);
-      var _yaw = this.rotation.y + this.offset.rotation.y;
-      var dx = Math.sin(_yaw) * this.attributes.speed * dir;
-      var dz = Math.cos(_yaw) * this.attributes.speed * dir;
-      this.target.movement.x = dx;
-      this.target.movement.z = dz;
-    } else {
-      this.target.movement.x = 0;
-      this.target.movement.z = 0;
-    }
-
-    // jump key
-    if (this.keys.jump) {
-      this.keys.jump = false;
-
-      // jump if not falling
-      if (this.movement.y == 0) {
-        this.movement.y = this.attributes.gravity.jumpVelocity;
-      }
-    }
-
-    // set falling
-    this.falling = this.movement.y != 0;
-
-    // reduce movement if falling
-    if (!this.falling) {
-      this.movement.x = this.target.movement.x;
-      this.movement.z = this.target.movement.z;
-    } else {
-      this.movement.x += (this.target.movement.x - this.movement.x) * this.attributes.adjust.slow;
-      this.movement.z += (this.target.movement.z - this.movement.z) * this.attributes.adjust.slow;
-    }
+    // controls
+    this.handleInput(delta);
 
     // check next position for collision
     var next = Maths.addVector(Maths.scaleVector(this.movement, delta), this.target.position);
-    var collisions = collider.collisions(next);
 
     // apply gravity
     this.movement.y = Math.max(this.movement.y - this.attributes.gravity.accel * delta, -this.attributes.gravity.maxVelocity);
+
+    // collisions
+    this.processCollisions(next, collider);
+
+    // set new position target
+    this.target.position.x = next.x;
+    this.target.position.y = next.y;
+    this.target.position.z = next.z;
+
+    // move & rotate camera
+    this.setPosition();
+
+    // raytracer
+    var ray = this.raytracer.getRayVector(this.camera, this.mouse.x, this.mouse.y);
+    this.raytracer.trace(this.camera.position, ray, _Globals2.default.raytracer.length, collider);
+  },
+
+  processCollisions: function processCollisions(next, collider) {
+    // handle collision cases
+
+    var collisions = collider.collisions(next);
 
     if (collisions.length > 0) {
       this.log('Collisions', collisions.length);
@@ -1120,23 +910,63 @@ Player.prototype = {
       next.y = 0;
       this.movement.y = 0;
     }
+  },
 
-    // set new position target
-    this.target.position.x = next.x;
-    this.target.position.y = next.y;
-    this.target.position.z = next.z;
 
-    // smooth motion a little
-    this.position.x += (this.target.position.x - this.position.x) * this.attributes.adjust.veryFast;
-    this.position.y += (this.target.position.y - this.position.y) * this.attributes.adjust.veryFast;
-    this.position.z += (this.target.position.z - this.position.z) * this.attributes.adjust.veryFast;
+  handleInput: function handleInput(delta) {
+    // handle controls
+
+    // up/ down keys
+    if (this.keys.up || this.keys.down) {
+      var dir = (this.keys.up ? 1 : 0) + (this.keys.down ? -1 : 0);
+      var yaw = this.rotation.y + this.offset.rotation.y;
+      var dx = Math.sin(yaw) * this.attributes.speed * dir;
+      var dz = Math.cos(yaw) * this.attributes.speed * dir;
+      this.target.movement.x = dx;
+      this.target.movement.z = dz;
+    } else {
+      this.target.movement.x = 0;
+      this.target.movement.z = 0;
+    }
+
+    // jump key
+    if (this.keys.jump) {
+      this.keys.jump = false;
+
+      // jump if not falling
+      if (this.movement.y == 0) {
+        this.movement.y = this.attributes.gravity.jumpVelocity;
+      }
+    }
+
+    // set falling
+    this.falling = this.movement.y != 0;
+
+    // adjust movement if falling
+    if (!this.falling) {
+      this.movement.x = this.target.movement.x;
+      this.movement.z = this.target.movement.z;
+    } else {
+      this.movement.x += (this.target.movement.x - this.movement.x) * this.attributes.adjust.slow;
+      this.movement.z += (this.target.movement.z - this.movement.z) * this.attributes.adjust.slow;
+    }
 
     // update rotation vector
     if (this.keys.left || this.keys.right) {
       var _dir = (this.keys.left ? 1 : 0) + (this.keys.right ? -1 : 0);
       this.target.rotation.y += this.attributes.rotation * delta * _dir;
     }
+  },
 
+  setPosition: function setPosition() {
+    // move and rotate player
+
+    // smooth motion
+    this.position.x += (this.target.position.x - this.position.x) * this.attributes.adjust.veryFast;
+    this.position.y += (this.target.position.y - this.position.y) * this.attributes.adjust.veryFast;
+    this.position.z += (this.target.position.z - this.position.z) * this.attributes.adjust.veryFast;
+
+    // rotate
     this.rotation.y += Maths.minAngleDifference(this.rotation.y, this.target.rotation.y) * this.attributes.adjust.fast;
     this.offset.rotation.x += (this.target.offset.rotation.x - this.offset.rotation.x) * this.attributes.adjust.normal;
     this.offset.rotation.y += (this.target.offset.rotation.y - this.offset.rotation.y) * this.attributes.adjust.normal;
@@ -1146,12 +976,13 @@ Player.prototype = {
     var yaw = this.rotation.y + this.offset.rotation.y;
     var pitch = this.rotation.x + this.offset.rotation.x;
     var height = this.position.y + this.attributes.height;
+    var halfHeight = this.position.y + this.attributes.height * 0.5;
 
-    this.object.position.set(this.position.x, height, this.position.z);
+    // move camera and world object
+    this.object.position.set(this.position.x, halfHeight, this.position.z);
     this.camera.position.set(this.position.x, height, this.position.z);
     this.camera.lookAt(new THREE.Vector3(this.position.x + Math.sin(yaw), height + Math.sin(pitch), this.position.z + Math.cos(yaw)));
   },
-
   handleKeyDown: function handleKeyDown(e) {
     switch (e.keyCode) {
       case 38:
@@ -1236,111 +1067,14 @@ Player.prototype = {
     } else {
       this.target.offset.rotation.x = 0;
     }
+
+    // record mouse
+    this.mouse.x = x * 2 - 1;
+    this.mouse.y = y * 2 - 1;
   }
 };
 
 exports.default = Player;
-
-/***/ }),
-/* 10 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _Maths = __webpack_require__(0);
-
-var _Focal = __webpack_require__(2);
-
-var _Physics = __webpack_require__(5);
-
-var RayTracer = function RayTracer(domElement) {
-  this.domElement = domElement;
-  this.precision = 0.4;
-  this.maxLength = 15;
-  this.object = new THREE.Object3D();
-
-  var light = new THREE.PointLight(0xffffff, 0.5, 5, 2);
-  var ball = new THREE.Mesh(new THREE.SphereBufferGeometry(0.05, 16), new THREE.MeshPhongMaterial({ color: 0xffffff, emissive: 0xffffff }));
-  light.position.y = 1.1;
-
-  this.object.add(ball, light);
-};
-
-RayTracer.prototype = {
-  trace: function trace(point, vector, objects) {
-    // raytracing function
-
-    vector = (0, _Maths.getNormalisedVec3)(vector);
-    var steps = this.maxLength / this.precision;
-    var dx = vector.x * this.precision;
-    var dy = vector.y * this.precision;
-    var dz = vector.z * this.precision;
-    var collision = false;
-    var object = null;
-
-    for (var i = 0; i < steps; i += 1) {
-      point.x += dx;
-      point.y += dy;
-      point.z += dz;
-
-      if (point.y < 0) break;
-
-      for (var j = 0; j < objects.length; j += 1) {
-        if (objects[j].collision(point)) {
-          if (objects[j].type != _Physics.TYPE_RAMP || objects[j].getTop(point) > point.y) {
-            collision = true;
-            object = objects[j];
-            break;
-          }
-        }
-      }
-
-      if (collision) break;
-    }
-
-    this.object.position.set(point.x, point.y, point.z);
-
-    return {
-      point: point,
-      object: object
-    };
-  },
-
-  emitRayFromScreen: function emitRayFromScreen(event, domElement, camera, player, objects) {
-    // convert mouse position to 3D space
-
-    var rect = domElement.getBoundingClientRect();
-    var mouseX = ((event.clientX - rect.left) / domElement.width - 0.5) * 2;
-    var mouseY = ((event.clientY - rect.top) / domElement.height - 0.5) * 2;
-    var fov = camera.fov * Math.PI / 180.;
-    var fovY = fov - fov * Math.abs(mouseX) * 0.5;
-    var yaw = player.yaw - mouseX * fov;
-    var pitch = player.pitch - (mouseY * 0.5 + mouseY / camera.aspect * 0.5) * fovY;
-    var vec = new THREE.Vector3(Math.sin(yaw), Math.sin(pitch), Math.cos(yaw));
-    var end = this.trace(camera.position, vec, objects);
-    var ray = {
-      start: camera.position,
-      end: end.point,
-      yaw: yaw,
-      pitch: pitch
-    };
-
-    if (end.object && end.object.type === _Focal.TYPE_FOCAL) {
-      ray.end = end.object.eye;
-      ray.yaw = end.object.yaw;
-      ray.pitch = end.object.pitch;
-    }
-
-    return ray;
-  }
-};
-
-exports.default = RayTracer;
 
 /***/ }),
 /* 11 */
@@ -1352,67 +1086,106 @@ exports.default = RayTracer;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-var HUD = function HUD(domElement) {
-  this.domElement = domElement;
-  this.threshold = {
-    x: 0.225,
-    y: 0.25
-  };
-  this.init();
+var twoPi = Math.PI * 2;
+
+var copyVector = function copyVector(vec) {
+  var copied = new THREE.Vector3(vec.x, vec.y, vec.z);
+
+  return copied;
 };
 
-HUD.prototype = {
-  init: function init() {
-    this.left = document.getElementsByClassName('hud__left')[0];
-    this.right = document.getElementsByClassName('hud__right')[0];
-  },
+var addVector = function addVector(a, b) {
+  var c = new THREE.Vector3(a.x + b.x, a.y + b.y, a.z + b.z);
 
-  isLeft: function isLeft(x) {
-    return x - this.domElement.getBoundingClientRect().left < this.threshold.x * this.domElement.width;
-  },
+  return c;
+};
 
-  isRight: function isRight(x) {
-    return x - this.domElement.getBoundingClientRect().left > (1 - this.threshold.x) * this.domElement.width;
-  },
+var subtractVector = function subtractVector(a, b) {
+  var c = new THREE.Vector3(a.x - b.x, a.y - b.y, a.z - b.z);
 
-  isHigh: function isHigh(y) {
-    return y - this.domElement.getBoundingClientRect().top < this.domElement.height * this.threshold.y;
-  },
+  return c;
+};
 
-  isLow: function isLow(y) {
-    return y - this.domElement.getBoundingClientRect().top > this.domElement.height * (1 - this.threshold.y);
-  },
+var normalise = function normalise(a) {
+  var mag = Math.sqrt(a.x * a.x + a.y * a.y + a.z * a.z);
 
-  isLeftOrRight: function isLeftOrRight(x) {
-    return this.isLeft(x) || this.isRight(x);
-  },
-
-  getHighFactor: function getHighFactor(y) {
-    var t = this.domElement.height * this.threshold.y;
-
-    return (t - (y - this.domElement.getBoundingClientRect().top)) / t;
-  },
-
-  getLowFactor: function getLowFactor(y) {
-    var t = this.domElement.height * this.threshold.y;
-
-    return 1 - (this.domElement.height - (y - this.domElement.getBoundingClientRect().top)) / t;
-  },
-
-  getLeftFactor: function getLeftFactor(x) {
-    var t = this.domElement.width * this.threshold.x;
-
-    return (t - (x - this.domElement.getBoundingClientRect().left)) / t;
-  },
-
-  getRightFactor: function getRightFactor(x) {
-    var t = this.domElement.width * this.threshold.x;
-
-    return 1 - (this.domElement.width - (x - this.domElement.getBoundingClientRect().left)) / t;
+  if (mag == 0) {
+    return a;
   }
+
+  var normal = new THREE.Vector3(a.x / mag, a.y / mag, a.z / mag);
+
+  return normal;
 };
 
-exports.default = HUD;
+var reverseVector = function reverseVector(a) {
+  a.x *= -1;
+  a.y *= -1;
+  a.z *= -1;
+
+  return a;
+};
+
+var distanceBetween = function distanceBetween(a, b) {
+  var d = Math.sqrt(Math.pow(b.x - a.x, 2) + Math.pow(b.y - a.y, 2) + Math.pow(b.z - a.z, 2));
+
+  return d;
+};
+
+var distanceBetween2D = function distanceBetween2D(a, b) {
+  var dist = Math.sqrt(Math.pow(b.x - a.x, 2) + Math.pow(b.z - a.z, 2));
+
+  return dist;
+};
+
+var pitchBetween = function pitchBetween(a, b) {
+  var xz = distanceBetween2D(a, b);
+  var y = b.y - a.y;
+  var pitch = Math.atan2(y, xz);
+
+  return pitch;
+};
+
+var scaleVector = function scaleVector(v, scale) {
+  var vec = new THREE.Vector3(v.x * scale, v.y * scale, v.z * scale);
+
+  return vec;
+};
+
+var isVectorEqual = function isVectorEqual(a, b) {
+  return a.x === b.x && a.y === b.y & a.z === b.z;
+};
+
+var crossProduct = function crossProduct(a, b) {
+  var c = new THREE.Vector3(a.y * b.z - a.z * b.y, a.z * b.x - a.x * b.z, a.x * b.y - a.y * b.x);
+
+  return c;
+};
+
+var minAngleDifference = function minAngleDifference(a1, a2) {
+  var angle = Math.atan2(Math.sin(a2 - a1), Math.cos(a2 - a1));
+
+  return angle;
+};
+
+var dotProduct = function dotProduct(a, b) {
+  return a.x * b.x + a.y * b.y + a.z * b.z;
+};
+
+exports.copyVector = copyVector;
+exports.isVectorEqual = isVectorEqual;
+exports.pitchBetween = pitchBetween;
+exports.twoPi = twoPi;
+exports.distanceBetween = distanceBetween;
+exports.distanceBetween2D = distanceBetween2D;
+exports.minAngleDifference = minAngleDifference;
+exports.dotProduct = dotProduct;
+exports.addVector = addVector;
+exports.subtractVector = subtractVector;
+exports.scaleVector = scaleVector;
+exports.crossProduct = crossProduct;
+exports.reverseVector = reverseVector;
+exports.normalise = normalise;
 
 /***/ }),
 /* 12 */
@@ -1425,13 +1198,83 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _Materials = __webpack_require__(14);
+var _Globals = __webpack_require__(0);
 
-var _Maths = __webpack_require__(0);
+var _Globals2 = _interopRequireDefault(_Globals);
+
+var _VectorMaths = __webpack_require__(11);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var RayTracer = function RayTracer() {
+  this.precision = _Globals2.default.raytracer.precision;
+  this.init();
+};
+
+RayTracer.prototype = {
+  init: function init() {
+    this.object = new THREE.Object3D();
+    this.object.add(new THREE.Mesh(new THREE.SphereBufferGeometry(.5), new THREE.MeshPhongMaterial({ emissive: 0xffffff })));
+  },
+
+  getRayVector: function getRayVector(camera, h, v) {
+    // h, v should be in the range [-1, 1]
+
+    var vec = camera.getWorldDirection();
+    var fovVertical = camera.fov * 0.5 * (Math.PI / 180.);
+    var fovHorizontal = camera.fov * camera.aspect * 0.5 * (Math.PI / 180.);
+    var yaw = Math.atan2(vec.x, vec.z) - h * fovHorizontal;
+    var pitch = vec.y - v * fovVertical;
+
+    vec.x = Math.sin(yaw);
+    vec.y = Math.sin(pitch);
+    vec.z = Math.cos(yaw);
+
+    return vec;
+  },
+
+  trace: function trace(point, vector, length, collider) {
+    var travelled = 0;
+    var collision = false;
+
+    vector = (0, _VectorMaths.scaleVector)((0, _VectorMaths.normalise)(vector), this.precision);
+
+    while (collision === false && travelled < length) {
+      point = (0, _VectorMaths.addVector)(point, vector);
+      collision = collider.collision(point);
+      travelled += this.precision;
+    }
+
+    this.object.position.set(point.x, point.y, point.z);
+
+    return {
+      position: point,
+      collision: collision
+    };
+  }
+};
+
+exports.default = RayTracer;
+
+/***/ }),
+/* 13 */,
+/* 14 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _Materials = __webpack_require__(4);
+
+var _Maths = __webpack_require__(1);
 
 var _Focal = __webpack_require__(2);
 
-var _Globals = __webpack_require__(3);
+var _Globals = __webpack_require__(0);
 
 var _Globals2 = _interopRequireDefault(_Globals);
 
@@ -1494,7 +1337,7 @@ Artworks.prototype = {
 exports.default = Artworks;
 
 /***/ }),
-/* 13 */
+/* 15 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1626,159 +1469,6 @@ THREE.Sky.SkyShader = {
 		'	float sundisk = smoothstep( sunAngularDiameterCos, sunAngularDiameterCos + 0.00002, cosTheta );', '	L0 += ( vSunE * 19000.0 * Fex ) * sundisk;', '	vec3 texColor = ( Lin + L0 ) * 0.04 + vec3( 0.0, 0.0003, 0.00075 );', '	vec3 curr = Uncharted2Tonemap( ( log2( 2.0 / pow( luminance, 4.0 ) ) ) * texColor );', '	vec3 color = curr * whiteScale;', '	vec3 retColor = pow( color, vec3( 1.0 / ( 1.2 + ( 1.2 * vSunfade ) ) ) );', '	gl_FragColor = vec4( retColor, 1.0 );', '}'].join('\n')
 
 };
-
-/***/ }),
-/* 14 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-var Materials = {
-  concrete: new THREE.MeshPhysicalMaterial({
-    clearCoat: 0,
-    clearCoatRoughness: 1,
-    reflectivity: 0,
-    color: 0xffffff,
-    emissive: 0x888888
-  }),
-  canvas: new THREE.MeshBasicMaterial({
-    color: 0xffffff,
-    side: THREE.DoubleSide
-  }),
-  dev: new THREE.MeshLambertMaterial({
-    color: 0xff0000,
-    opacity: 0.25,
-    transparent: true,
-    side: THREE.DoubleSide
-  }),
-  dev2: new THREE.MeshLambertMaterial({
-    color: 0xffaa88,
-    opacity: 0.25,
-    transparent: true,
-    side: THREE.DoubleSide
-  }),
-  wireframe: new THREE.MeshLambertMaterial({
-    color: 0xff0000,
-    wireframe: true
-  })
-};
-
-exports.Materials = Materials;
-
-/***/ }),
-/* 15 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-var twoPi = Math.PI * 2;
-
-var copyVector = function copyVector(vec) {
-  var copied = new THREE.Vector3(vec.x, vec.y, vec.z);
-
-  return copied;
-};
-
-var addVector = function addVector(a, b) {
-  var c = new THREE.Vector3(a.x + b.x, a.y + b.y, a.z + b.z);
-
-  return c;
-};
-
-var subtractVector = function subtractVector(a, b) {
-  var c = new THREE.Vector3(a.x - b.x, a.y - b.y, a.z - b.z);
-
-  return c;
-};
-
-var normalise = function normalise(a) {
-  var mag = Math.sqrt(a.x * a.x + a.y * a.y + a.z * a.z);
-
-  if (mag == 0) {
-    return a;
-  }
-
-  var normal = new THREE.Vector3(a.x / mag, a.y / mag, a.z / mag);
-
-  return normal;
-};
-
-var reverseVector = function reverseVector(a) {
-  a.x *= -1;
-  a.y *= -1;
-  a.z *= -1;
-
-  return a;
-};
-
-var distanceBetween = function distanceBetween(a, b) {
-  var d = Math.sqrt(Math.pow(b.x - a.x, 2) + Math.pow(b.y - a.y, 2) + Math.pow(b.z - a.z, 2));
-
-  return d;
-};
-
-var distanceBetween2D = function distanceBetween2D(a, b) {
-  var dist = Math.sqrt(Math.pow(b.x - a.x, 2) + Math.pow(b.z - a.z, 2));
-
-  return dist;
-};
-
-var pitchBetween = function pitchBetween(a, b) {
-  var xz = distanceBetween2D(a, b);
-  var y = b.y - a.y;
-  var pitch = Math.atan2(y, xz);
-
-  return pitch;
-};
-
-var scaleVector = function scaleVector(v, scale) {
-  var vec = new THREE.Vector3(v.x * scale, v.y * scale, v.z * scale);
-
-  return vec;
-};
-
-var isVectorEqual = function isVectorEqual(a, b) {
-  return a.x === b.x && a.y === b.y & a.z === b.z;
-};
-
-var crossProduct = function crossProduct(a, b) {
-  var c = new THREE.Vector3(a.y * b.z - a.z * b.y, a.z * b.x - a.x * b.z, a.x * b.y - a.y * b.x);
-
-  return c;
-};
-
-var minAngleDifference = function minAngleDifference(a1, a2) {
-  var angle = Math.atan2(Math.sin(a2 - a1), Math.cos(a2 - a1));
-
-  return angle;
-};
-
-var dotProduct = function dotProduct(a, b) {
-  return a.x * b.x + a.y * b.y + a.z * b.z;
-};
-
-exports.copyVector = copyVector;
-exports.isVectorEqual = isVectorEqual;
-exports.pitchBetween = pitchBetween;
-exports.twoPi = twoPi;
-exports.distanceBetween = distanceBetween;
-exports.distanceBetween2D = distanceBetween2D;
-exports.minAngleDifference = minAngleDifference;
-exports.dotProduct = dotProduct;
-exports.addVector = addVector;
-exports.subtractVector = subtractVector;
-exports.scaleVector = scaleVector;
-exports.crossProduct = crossProduct;
-exports.reverseVector = reverseVector;
-exports.normalise = normalise;
 
 /***/ })
 /******/ ]);

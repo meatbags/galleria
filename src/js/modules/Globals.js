@@ -13,6 +13,10 @@ const Globals = {
     speed: 8,
     rotationSpeed: Math.PI * 0.75,
   },
+  raytracer: {
+    precision: 1,
+    length: 10
+  },
   camera: {
     fov: 58,
     near: 0.1,
