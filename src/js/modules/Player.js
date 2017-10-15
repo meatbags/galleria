@@ -23,6 +23,11 @@ const Player = function(domElement) {
       rotation: new THREE.Vector3(0, 0, 0)
     }
   }
+  this.autoMove = {
+    active: false,
+    position: new THREE.Vector3(),
+    threshold: 0.2,
+  };
   this.attributes = {
     speed: Globals.player.speed,
     speedWhileJumping: Globals.player.speed / 2,
@@ -97,7 +102,8 @@ Player.prototype = {
 			down: false,
 			left: false,
 			right: false,
-      jump: false
+      jump: false,
+      click: false,
 		};
 		document.addEventListener("keydown", function(e) {
       self.handleKeyDown(e);
@@ -257,8 +263,20 @@ Player.prototype = {
   handleInput: function(delta) {
     // handle controls
 
+    // click
+    if (this.keys.click) {
+      this.autoMove.active = true;
+      this.autoMove.position.x = this.raytracer.target.position.x;
+      this.autoMove.position.z = this.raytracer.target.position.z;
+      this.keys.click = false;
+    }
+
     // up/ down keys
     if (this.keys.up || this.keys.down) {
+      // disable automove
+      this.autoMove.active = false;
+
+      // get next move vector
       const dir = ((this.keys.up) ? 1 : 0) + ((this.keys.down) ? -1 : 0);
       const yaw = this.rotation.y + this.offset.rotation.y;
       const dx = Math.sin(yaw) * this.attributes.speed * dir;
@@ -268,6 +286,18 @@ Player.prototype = {
     } else {
       this.target.movement.x = 0;
       this.target.movement.z = 0;
+    }
+
+    if (this.autoMove.active) {
+      if (Maths.distanceBetween2D(this.position, this.autoMove.position) < this.autoMove.threshold) {
+        this.autoMove.active = false;
+        this.target.movement.x = 0;
+        this.target.movement.z = 0;
+      } else {
+        const vec = Maths.scaleVector(Maths.normalise(Maths.subtractVector(this.autoMove.position, this.position)), this.attributes.speed);
+        this.target.movement.x = vec.x;
+        this.target.movement.z = vec.z;
+      }
     }
 
     // jump key
@@ -377,6 +407,8 @@ Player.prototype = {
   },
 
   handleMouseDown(e) {
+    this.keys.click = true;
+
     const bound = this.domElement.getBoundingClientRect();
     const w = this.domElement.width;
     const x = (e.clientX - bound.left) / w;

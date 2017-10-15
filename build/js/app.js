@@ -696,6 +696,11 @@ var Player = function Player(domElement) {
       rotation: new THREE.Vector3(0, 0, 0)
     }
   };
+  this.autoMove = {
+    active: false,
+    position: new THREE.Vector3(),
+    threshold: 0.2
+  };
   this.attributes = {
     speed: _Globals2.default.player.speed,
     speedWhileJumping: _Globals2.default.player.speed / 2,
@@ -767,7 +772,8 @@ Player.prototype = {
       down: false,
       left: false,
       right: false,
-      jump: false
+      jump: false,
+      click: false
     };
     document.addEventListener("keydown", function (e) {
       self.handleKeyDown(e);
@@ -916,8 +922,20 @@ Player.prototype = {
   handleInput: function handleInput(delta) {
     // handle controls
 
+    // click
+    if (this.keys.click) {
+      this.autoMove.active = true;
+      this.autoMove.position.x = this.raytracer.target.position.x;
+      this.autoMove.position.z = this.raytracer.target.position.z;
+      this.keys.click = false;
+    }
+
     // up/ down keys
     if (this.keys.up || this.keys.down) {
+      // disable automove
+      this.autoMove.active = false;
+
+      // get next move vector
       var dir = (this.keys.up ? 1 : 0) + (this.keys.down ? -1 : 0);
       var yaw = this.rotation.y + this.offset.rotation.y;
       var dx = Math.sin(yaw) * this.attributes.speed * dir;
@@ -927,6 +945,18 @@ Player.prototype = {
     } else {
       this.target.movement.x = 0;
       this.target.movement.z = 0;
+    }
+
+    if (this.autoMove.active) {
+      if (Maths.distanceBetween2D(this.position, this.autoMove.position) < this.autoMove.threshold) {
+        this.autoMove.active = false;
+        this.target.movement.x = 0;
+        this.target.movement.z = 0;
+      } else {
+        var vec = Maths.scaleVector(Maths.normalise(Maths.subtractVector(this.autoMove.position, this.position)), this.attributes.speed);
+        this.target.movement.x = vec.x;
+        this.target.movement.z = vec.z;
+      }
     }
 
     // jump key
@@ -1029,6 +1059,8 @@ Player.prototype = {
     }
   },
   handleMouseDown: function handleMouseDown(e) {
+    this.keys.click = true;
+
     var bound = this.domElement.getBoundingClientRect();
     var w = this.domElement.width;
     var x = (e.clientX - bound.left) / w;
@@ -1207,6 +1239,13 @@ var _VectorMaths = __webpack_require__(11);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var RayTracer = function RayTracer() {
+  this.position = new THREE.Vector3(0, 0, 0);
+  this.rotation = new THREE.Vector3(0, 0, 0);
+  this.smoothing = 0.25;
+  this.target = {
+    position: new THREE.Vector3(0, 0, 0),
+    rotation: new THREE.Vector3(0, 0, 0)
+  };
   this.precision = _Globals2.default.raytracer.precision;
   this.init();
 };
@@ -1214,7 +1253,10 @@ var RayTracer = function RayTracer() {
 RayTracer.prototype = {
   init: function init() {
     this.object = new THREE.Object3D();
-    this.object.add(new THREE.Mesh(new THREE.SphereBufferGeometry(.5), new THREE.MeshPhongMaterial({ emissive: 0xffffff })));
+    var cone = new THREE.Mesh(new THREE.ConeBufferGeometry(0.3, 1, 4), new THREE.MeshPhongMaterial({ emissive: 0xffffff }));
+    cone.rotation.x = Math.PI;
+    cone.position.y = 0.5;
+    this.object.add(cone);
   },
 
   getRayVector: function getRayVector(camera, h, v) {
@@ -1236,16 +1278,40 @@ RayTracer.prototype = {
   trace: function trace(point, vector, length, collider) {
     var travelled = 0;
     var collision = false;
+    var last = new THREE.Vector3();
 
     vector = (0, _VectorMaths.scaleVector)((0, _VectorMaths.normalise)(vector), this.precision);
 
     while (collision === false && travelled < length) {
+      last = (0, _VectorMaths.copyVector)(point);
       point = (0, _VectorMaths.addVector)(point, vector);
       collision = collider.collision(point);
       travelled += this.precision;
+
+      if (collision) {
+        var intersect = collider.intersect(last, point);
+        if (intersect != null) {
+          point = intersect.intersect;
+          this.target.rotation = intersect.plane.normal;
+        }
+      }
     }
 
-    this.object.position.set(point.x, point.y, point.z);
+    // smooth
+    this.target.position.x = point.x;
+    this.target.position.y = point.y;
+    this.target.position.z = point.z;
+    this.position.x += (this.target.position.x - this.position.x) * this.smoothing;
+    this.position.y += (this.target.position.y - this.position.y) * this.smoothing;
+    this.position.z += (this.target.position.z - this.position.z) * this.smoothing;
+
+    // rotate
+    this.rotation.x += (this.target.rotation.x - this.rotation.x) * this.smoothing;
+    this.rotation.y += (this.target.rotation.y - this.rotation.y) * this.smoothing;
+    this.rotation.z += (this.target.rotation.z - this.rotation.z) * this.smoothing;
+
+    //this.object.rotation.set(-this.rotation.x, -this.rotation.y, -this.rotation.z);
+    this.object.position.set(this.position.x, this.position.y, this.position.z);
 
     return {
       position: point,

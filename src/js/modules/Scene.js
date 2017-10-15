@@ -20,7 +20,7 @@ Scene.prototype = {
     this.renderer.setClearColor(0xf9e5a2, 1);
     this.renderer.setPixelRatio(window.devicePixelRatio);
     document.body.append(this.renderer.domElement);
-
+    
     // player & scene
     this.player = new Player(this.renderer.domElement);
     this.camera = this.player.camera;
