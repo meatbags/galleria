@@ -1666,6 +1666,9 @@ Loader.prototype = {
       var child = obj.children[i];
       var meta = materials.materialsInfo[child.material.name];
 
+      // set from material loader
+      child.material = materials.materials[child.material.name];
+
       // load lightmaps
       if (meta.map_ka) {
         var uvs = child.geometry.attributes.uv.array;
@@ -1707,10 +1710,12 @@ Loader.prototype = {
 
     return new Promise(function (resolve, reject) {
       try {
+        var t = new Date().getTime();
+        console.log('LOAD');
         self.materialLoader.load(filename + '.mtl', function (materials) {
-          console.log('MATERIALS', materials);
-          //materials.preload();
-          self.objectLoader.setMaterials(materials);
+          materials.preload();
+          console.log('MATERIALS', (new Date().getTime() - t) / 1000., materials);
+          //self.objectLoader.setMaterials(materials);
           self.objectLoader.load(filename + '.obj', function (obj) {
             self.process(obj, materials);
             resolve(obj);
