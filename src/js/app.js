@@ -7,11 +7,13 @@ import Scene from './modules/Scene';
 
 const App = {
 	init: function() {
-		App.fadeOut('.pre-loading');
 		App.timer = new Timer();
 		App.scene = new Scene();
+
+		// setup
 		App.bindControls();
 		App.resize();
+		App.fadeOut('.pre-loading');
 		App.loading();
 	},
 
@@ -21,7 +23,7 @@ const App = {
 		if (!App.scene.isLoaded()) {
 			requestAnimationFrame(App.loading);
 		} else {
-			App.fadeIn('.nav__links');
+			App.fadeIn('#nav-default');
 			App.fadeOut('.loading');
 			App.loop();
 		}

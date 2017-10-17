@@ -90,7 +90,7 @@ var Globals = {
       z: -40
     },
     rotation: {
-      x: 0,
+      x: Math.PI * 0.12,
       y: 0.3086,
       z: 0
     },
@@ -99,7 +99,7 @@ var Globals = {
     rotationSpeed: Math.PI * 0.75
   },
   raytracer: {
-    precision: .75,
+    precision: .7,
     length: 12.5
   },
   camera: {
@@ -112,23 +112,23 @@ var Globals = {
     lightMapIntensity: 0.6
   },
   artwork: {
-    clickBoxScale: 1.1
+    clickBoxScale: 1.25
   },
   artworkPlacement: {
-    '0': { scale: 6, pitch: 0, yaw: halfPI, position: (0, _Maths.v3)(8.5, 6, -10), eye: (0, _Maths.v3)(0, 0, -10) },
-    '1': { scale: 4, pitch: 0, yaw: halfPI, position: (0, _Maths.v3)(-8.5, 4, -15), eye: (0, _Maths.v3)(0, 0, -15) },
-    '2': { scale: 2, pitch: 0, yaw: halfPI, position: (0, _Maths.v3)(8.5, 3, 5), eye: (0, _Maths.v3)(4, 0, 5) },
-    '3': { scale: 2, pitch: 0, yaw: halfPI, position: (0, _Maths.v3)(8.5, 3, 15), eye: (0, _Maths.v3)(4, 0, 15) },
-    '4': { scale: 2, pitch: 0, yaw: halfPI, position: (0, _Maths.v3)(-8.5, 3, 5), eye: (0, _Maths.v3)(-4, 0, 5) },
-    '5': { scale: 2, pitch: 0, yaw: halfPI, position: (0, _Maths.v3)(-8.5, 3, 15), eye: (0, _Maths.v3)(-4, 0, 15) },
-    '6': { scale: 2, pitch: 0, yaw: 0, position: (0, _Maths.v3)(0, 3, 10), eye: (0, _Maths.v3)(0, 0, 5) },
-    '7': { scale: 2, pitch: 0, yaw: 0, position: (0, _Maths.v3)(0, 3, 11), eye: (0, _Maths.v3)(0, 0, 15) },
-    '8': { scale: 2, pitch: 0, yaw: halfPI, position: (0, _Maths.v3)(8.5, 11, 5), eye: (0, _Maths.v3)(4, 8, 5) },
-    '9': { scale: 2, pitch: 0, yaw: halfPI, position: (0, _Maths.v3)(8.5, 11, 15), eye: (0, _Maths.v3)(4, 8, 15) },
-    '10': { scale: 2, pitch: 0, yaw: halfPI, position: (0, _Maths.v3)(-8.5, 11, 5), eye: (0, _Maths.v3)(-4, 8, 5) },
-    '11': { scale: 2, pitch: 0, yaw: halfPI, position: (0, _Maths.v3)(-8.5, 11, 15), eye: (0, _Maths.v3)(-4, 8, 15) },
-    '12': { scale: 2, pitch: 0, yaw: 0, position: (0, _Maths.v3)(0, 11, 10), eye: (0, _Maths.v3)(0, 8, 5) },
-    '13': { scale: 2, pitch: 0, yaw: 0, position: (0, _Maths.v3)(0, 11, 11), eye: (0, _Maths.v3)(0, 8, 15) }
+    '0': { scale: 5, pitch: 0, yaw: halfPI, position: (0, _Maths.v3)(8.8, 6, -10), eye: (0, _Maths.v3)(0, 0, -10) },
+    '1': { scale: 4, pitch: 0, yaw: halfPI, position: (0, _Maths.v3)(-9.1, 4, -15), eye: (0, _Maths.v3)(-2, 0, -15) },
+    '2': { scale: 2.5, pitch: 0, yaw: halfPI, position: (0, _Maths.v3)(9.1, 3.25, 4.75), eye: (0, _Maths.v3)(5.5, 0, 4.75) },
+    '3': { scale: 2.75, pitch: 0, yaw: halfPI, position: (0, _Maths.v3)(9.1, 3.25, 15), eye: (0, _Maths.v3)(5.5, 0, 15) },
+    '4': { scale: 2, pitch: 0, yaw: halfPI, position: (0, _Maths.v3)(-9.1, 3.5, 4.75), eye: (0, _Maths.v3)(-5.5, 0, 4.75) },
+    '5': { scale: 2, pitch: 0, yaw: halfPI, position: (0, _Maths.v3)(-9.1, 3.5, 15), eye: (0, _Maths.v3)(-5.5, 0, 15) },
+    '6': { scale: 2, pitch: 0, yaw: 0, position: (0, _Maths.v3)(0, 3, 9.75), eye: (0, _Maths.v3)(0, 0, 4.5) },
+    '7': { scale: 2, pitch: 0, yaw: 0, position: (0, _Maths.v3)(0, 3, 10.25), eye: (0, _Maths.v3)(0, 0, 14.5) },
+    '8': { scale: 2.5, pitch: 0, yaw: halfPI, position: (0, _Maths.v3)(9.1, 11, 5), eye: (0, _Maths.v3)(5.5, 8, 5) },
+    '9': { scale: 2.5, pitch: 0, yaw: halfPI, position: (0, _Maths.v3)(9.1, 11, 15), eye: (0, _Maths.v3)(5.5, 8, 15) },
+    '10': { scale: 2, pitch: 0, yaw: halfPI, position: (0, _Maths.v3)(-9.1, 11, 5), eye: (0, _Maths.v3)(-5.5, 8, 5) },
+    '11': { scale: 2, pitch: 0, yaw: halfPI, position: (0, _Maths.v3)(-9.1, 11, 15), eye: (0, _Maths.v3)(-5.5, 8, 15) },
+    '12': { scale: 3, pitch: 0, yaw: 0, position: (0, _Maths.v3)(0, 11, 9.75), eye: (0, _Maths.v3)(0, 8, 5.5) },
+    '13': { scale: 2, pitch: 0, yaw: 0, position: (0, _Maths.v3)(0, 11, 10.25), eye: (0, _Maths.v3)(0, 8, 14.5) }
   }
 };
 
@@ -393,11 +393,13 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 var App = {
 	init: function init() {
-		App.fadeOut('.pre-loading');
 		App.timer = new _Timer2.default();
 		App.scene = new _Scene2.default();
+
+		// setup
 		App.bindControls();
 		App.resize();
+		App.fadeOut('.pre-loading');
 		App.loading();
 	},
 
@@ -407,7 +409,7 @@ var App = {
 		if (!App.scene.isLoaded()) {
 			requestAnimationFrame(App.loading);
 		} else {
-			App.fadeIn('.nav__links');
+			App.fadeIn('#nav-default');
 			App.fadeOut('.loading');
 			App.loop();
 		}
@@ -548,6 +550,7 @@ var Scene = function Scene() {
 Scene.prototype = {
   init: function init() {
     var self = this;
+    var isMonday = new Date().getDay() == 1;
 
     // threejs
     this.renderer = new THREE.WebGLRenderer({ antialias: false });
@@ -568,22 +571,46 @@ Scene.prototype = {
     this.collider = new Collider.System();
     this.loader = new _Loader2.default(appRoot + 'assets/3d/');
     this.toLoad = 2;
-    this.loader.loadOBJ('hangar_collision_map').then(function (map) {
-      for (var i = 0; i < map.children.length; i += 1) {
-        self.collider.add(new Collider.Mesh(map.children[i].geometry));
-      }
-      self.toLoad -= 1;
-    }, function (err) {
-      console.log(err);
-    });
 
-    // models
-    this.loader.loadOBJ('hangar').then(function (map) {
-      self.scene.add(map);
-      self.toLoad -= 1;
-    }, function (err) {
-      console.log(err);
-    });
+    if (!isMonday) {
+      // get gallery open maps
+
+      this.loader.loadOBJ('hangar_collision_map').then(function (map) {
+        for (var i = 0; i < map.children.length; i += 1) {
+          self.collider.add(new Collider.Mesh(map.children[i].geometry));
+        }
+        self.toLoad -= 1;
+      }, function (err) {
+        console.log(err);
+      });
+
+      // models
+      this.loader.loadOBJ('hangar').then(function (map) {
+        self.scene.add(map);
+        self.toLoad -= 1;
+      }, function (err) {
+        console.log(err);
+      });
+    } else {
+      // get gallery closed maps
+
+      this.loader.loadOBJ('hangar_collision_map_monday').then(function (map) {
+        for (var i = 0; i < map.children.length; i += 1) {
+          self.collider.add(new Collider.Mesh(map.children[i].geometry));
+        }
+        self.toLoad -= 1;
+      }, function (err) {
+        console.log(err);
+      });
+
+      // models
+      this.loader.loadOBJ('hangar_monday').then(function (map) {
+        self.scene.add(map);
+        self.toLoad -= 1;
+      }, function (err) {
+        console.log(err);
+      });
+    }
 
     // resize
     this.resize();
@@ -591,12 +618,14 @@ Scene.prototype = {
     // load gallery
     this.artworks = new _Artworks2.default();
 
-    $('.im').each(function (i, e) {
-      self.artworks.add($(e).find('.im__title').html(), $(e).find('.im__description').html(), $(e).find('.im__url').html(), $(e).find('.im__image').html());
-    });
+    if (!isMonday) {
+      $('.im').each(function (i, e) {
+        self.artworks.add($(e).find('.im__title').html(), $(e).find('.im__description').html(), $(e).find('.im__url').html(), $(e).find('.im__image').html());
+      });
 
-    this.artworks.placeImages();
-    this.scene.add(this.artworks.object);
+      this.artworks.placeImages();
+      this.scene.add(this.artworks.object);
+    }
 
     // lighting
     var ambient = new THREE.AmbientLight(0xffffff, .08);
@@ -617,12 +646,12 @@ Scene.prototype = {
   },
 
   isLoaded: function isLoaded() {
-    return this.toLoad === 0;
+    return this.toLoad === 0 && this.artworks.toLoad === 0;
   },
 
   resize: function resize() {
     var width = window.innerWidth;
-    var height = 520;
+    var height = 540;
     this.camera.aspect = width / height;
     this.camera.updateProjectionMatrix();
     this.renderer.setSize(width, height);
@@ -676,7 +705,7 @@ var Player = function Player(domElement) {
   this.object = new THREE.Object3D();
   this.position = new THREE.Vector3(_Globals2.default.player.position.x, _Globals2.default.player.position.y, _Globals2.default.player.position.z);
   this.movement = new THREE.Vector3(0, 0, 0);
-  this.rotation = new THREE.Vector3(_Globals2.default.player.rotation.x, _Globals2.default.player.rotation.y, _Globals2.default.player.rotation.z);
+  this.rotation = new THREE.Vector3(_Globals2.default.player.rotation.x * 1.1, _Globals2.default.player.rotation.y, _Globals2.default.player.rotation.z);
   this.mouse = {
     x: 0,
     y: 0,
@@ -995,6 +1024,9 @@ Player.prototype = {
       var dz = Math.cos(_yaw) * this.attributes.speed * _dir;
       this.target.movement.x = dx;
       this.target.movement.z = dz;
+
+      // reset pitch
+      this.target.rotation.x = 0;
     } else {
       this.target.movement.x = 0;
       this.target.movement.z = 0;
@@ -1335,6 +1367,7 @@ var Artworks = function Artworks() {
   this.sources = [];
   this.focalPoints = [];
   this.object = new THREE.Object3D();
+  this.toLoad = 0;
 };
 
 Artworks.prototype = {
@@ -1347,6 +1380,7 @@ Artworks.prototype = {
       url: url,
       image: image
     });
+    this.toLoad += 1;
   },
 
   activate: function activate(artwork) {
@@ -1414,6 +1448,7 @@ Artworks.prototype = {
       // create artwork mesh
       var mesh = new THREE.Mesh(new THREE.PlaneBufferGeometry(1, 1, 2, 2), _Materials.Materials.canvas.clone());
       var texture = textureLoader.load(_this.sources[i].image, function () {
+        self.toLoad -= 1;
         mesh.scale.x = texture.image.naturalWidth / 1000. * place.scale;
         mesh.scale.y = texture.image.naturalHeight / 1000. * place.scale;
         self.focalPoints[index].scale(mesh.scale.x, mesh.scale.y, mesh.scale.x);
@@ -1426,7 +1461,7 @@ Artworks.prototype = {
 
       // add to gallery
       self.object.add(mesh);
-      self.object.add(focal.object);
+      //self.object.add(focal.object);
     };
 
     for (var i = 0; i < this.sources.length; i += 1) {
@@ -1478,6 +1513,7 @@ Focal.prototype = {
   init: function init() {
     this.pitch = (0, _Maths.getPitch)(this.eye, new THREE.Vector3(this.position.x, this.position.y - _Globals2.default.player.height, this.position.z));
     this.yaw = (0, _Maths.getYaw)(this.eye, this.position);
+    this.direction = Math.abs(Math.sin(this.yaw)) < 0.5 ? 'z' : 'x';
     this.object = new THREE.Mesh(new THREE.BoxBufferGeometry(this.dimensions.x, this.dimensions.y, this.dimensions.z), _Materials.Materials.dev2);
     this.object.position.set(this.position.x, this.position.y, this.position.z);
     this.box = new THREE.Box3();
@@ -1494,8 +1530,8 @@ Focal.prototype = {
 
   setBox: function setBox() {
     // set collision box size
-    var min = (0, _VectorMaths.subtractVector)(this.position, (0, _VectorMaths.scaleVector)(this.dimensions, 0.5));
-    var max = (0, _VectorMaths.addVector)(this.position, (0, _VectorMaths.scaleVector)(this.dimensions, 0.5));
+    var min = (0, _VectorMaths.subtractVector)(this.object.position, (0, _VectorMaths.scaleVector)(this.dimensions, 0.5));
+    var max = (0, _VectorMaths.addVector)(this.object.position, (0, _VectorMaths.scaleVector)(this.dimensions, 0.5));
     this.box.set(min, max);
   },
 
@@ -1505,12 +1541,16 @@ Focal.prototype = {
 
   scale: function scale(x, y, z) {
     var s = _Globals2.default.artwork.clickBoxScale;
-    this.dimensions.x *= x * s;
+    var zScale = this.direction == 'z' ? 0.5 : 1;
+    var xScale = this.direction == 'x' ? 0.5 : 1;
+
+    this.dimensions.x *= x * s * xScale;
     this.dimensions.y *= y * s;
-    this.dimensions.z *= z * s;
-    this.object.scale.x = x * s;
+    this.dimensions.z *= z * s * zScale;
+    this.object.scale.x = x * s * xScale;
     this.object.scale.y = y * s;
-    this.object.scale.z = z * s;
+    this.object.scale.z = z * s * zScale;
+    this.object.position.set(this.position.x - Math.sin(this.yaw) * (x * xScale * 0.5), this.position.y, this.position.z - Math.cos(this.yaw) * (z * zScale * 0.5));
     this.setBox();
   }
 };

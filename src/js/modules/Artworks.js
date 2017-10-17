@@ -7,6 +7,7 @@ const Artworks = function() {
   this.sources = [];
   this.focalPoints = [];
   this.object = new THREE.Object3D();
+  this.toLoad = 0;
 };
 
 Artworks.prototype = {
@@ -19,6 +20,7 @@ Artworks.prototype = {
       url: url,
       image: image,
     });
+    this.toLoad += 1;
   },
 
   activate: function(artwork) {
@@ -87,6 +89,7 @@ Artworks.prototype = {
         Materials.canvas.clone()
       );
       const texture = textureLoader.load(this.sources[i].image, function(){
+        self.toLoad -= 1;
         mesh.scale.x = (texture.image.naturalWidth / 1000.) * place.scale;
         mesh.scale.y = (texture.image.naturalHeight / 1000.) * place.scale;
         self.focalPoints[index].scale(mesh.scale.x, mesh.scale.y, mesh.scale.x);
@@ -99,7 +102,7 @@ Artworks.prototype = {
 
       // add to gallery
       self.object.add(mesh);
-      self.object.add(focal.object);
+      //self.object.add(focal.object);
     }
   },
 }

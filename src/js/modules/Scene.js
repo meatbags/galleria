@@ -12,6 +12,7 @@ const Scene = function() {
 Scene.prototype = {
   init: function() {
     const self = this;
+    const isMonday = ((new Date()).getDay() == 1);
 
     // threejs
     this.renderer = new THREE.WebGLRenderer({antialias: false});
@@ -32,18 +33,38 @@ Scene.prototype = {
     this.collider = new Collider.System();
     this.loader = new Loader(appRoot + 'assets/3d/');
     this.toLoad = 2;
-    this.loader.loadOBJ('hangar_collision_map').then(function(map){
-      for (let i=0; i<map.children.length; i+=1) {
-        self.collider.add(new Collider.Mesh(map.children[i].geometry));
-      }
-      self.toLoad -= 1;
-    }, function(err){ console.log(err); });
 
-    // models
-    this.loader.loadOBJ('hangar').then(function(map) {
-      self.scene.add(map);
-      self.toLoad -= 1;
-    }, function(err){ console.log(err); });
+    if (!isMonday) {
+      // get gallery open maps
+
+      this.loader.loadOBJ('hangar_collision_map').then(function(map){
+        for (let i=0; i<map.children.length; i+=1) {
+          self.collider.add(new Collider.Mesh(map.children[i].geometry));
+        }
+        self.toLoad -= 1;
+      }, function(err){ console.log(err); });
+
+      // models
+      this.loader.loadOBJ('hangar').then(function(map) {
+        self.scene.add(map);
+        self.toLoad -= 1;
+      }, function(err){ console.log(err); });
+    } else {
+      // get gallery closed maps
+
+      this.loader.loadOBJ('hangar_collision_map_monday').then(function(map){
+        for (let i=0; i<map.children.length; i+=1) {
+          self.collider.add(new Collider.Mesh(map.children[i].geometry));
+        }
+        self.toLoad -= 1;
+      }, function(err){ console.log(err); });
+
+      // models
+      this.loader.loadOBJ('hangar_monday').then(function(map) {
+        self.scene.add(map);
+        self.toLoad -= 1;
+      }, function(err){ console.log(err); });
+    }
 
     // resize
     this.resize();
@@ -51,17 +72,19 @@ Scene.prototype = {
     // load gallery
     this.artworks = new Artworks();
 
-    $('.im').each(function(i, e){
-      self.artworks.add(
-        $(e).find('.im__title').html(),
-        $(e).find('.im__description').html(),
-        $(e).find('.im__url').html(),
-        $(e).find('.im__image').html()
-      );
-    });
+    if (!isMonday) {
+      $('.im').each(function(i, e){
+        self.artworks.add(
+          $(e).find('.im__title').html(),
+          $(e).find('.im__description').html(),
+          $(e).find('.im__url').html(),
+          $(e).find('.im__image').html()
+        );
+      });
 
-    this.artworks.placeImages();
-    this.scene.add(this.artworks.object);
+      this.artworks.placeImages();
+      this.scene.add(this.artworks.object);
+    }
 
     // lighting
     const ambient = new THREE.AmbientLight(0xffffff, .08);
@@ -90,12 +113,12 @@ Scene.prototype = {
   },
 
   isLoaded: function() {
-    return (this.toLoad === 0);
+    return (this.toLoad === 0 && this.artworks.toLoad === 0);
   },
 
   resize: function() {
     const width = window.innerWidth;
-    const height = 520;
+    const height = 540;
     this.camera.aspect = width / height;
     this.camera.updateProjectionMatrix();
     this.renderer.setSize(width, height);

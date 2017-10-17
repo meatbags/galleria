@@ -9,7 +9,7 @@ const Player = function(domElement) {
   this.object = new THREE.Object3D();
   this.position = new THREE.Vector3(Globals.player.position.x, Globals.player.position.y, Globals.player.position.z);
   this.movement = new THREE.Vector3(0, 0, 0);
-  this.rotation = new THREE.Vector3(Globals.player.rotation.x, Globals.player.rotation.y, Globals.player.rotation.z);
+  this.rotation = new THREE.Vector3(Globals.player.rotation.x * 1.1, Globals.player.rotation.y, Globals.player.rotation.z);
   this.mouse = {
     x: 0,
     y: 0,
@@ -342,6 +342,9 @@ Player.prototype = {
       const dz = Math.cos(yaw) * this.attributes.speed * dir;
       this.target.movement.x = dx;
       this.target.movement.z = dz;
+
+      // reset pitch
+      this.target.rotation.x = 0;
     } else {
       this.target.movement.x = 0;
       this.target.movement.z = 0;
