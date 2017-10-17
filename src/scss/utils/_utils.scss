@@ -10,8 +10,20 @@
 	font-size: $fontSizeMedium;
 }
 
+.text-huge {
+	font-size: $fontSizeHuge;
+}
+
+.text-bold {
+	font-weight: bold;
+}
+
 .text-small {
 	font-size: $fontSizeSmall;
+}
+
+.text-underline {
+	text-decoration: underline;
 }
 
 .text-em {

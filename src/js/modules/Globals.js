@@ -23,7 +23,7 @@ const Globals = {
     rotationSpeed: Math.PI * 0.75,
   },
   raytracer: {
-    precision: .7,
+    precision: .8,
     length: 12.5
   },
   camera: {

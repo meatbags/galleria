@@ -101,5 +101,13 @@
     justify-content: center;
     align-items: center;
     background: $translucent;
+
+    .menu__inner__about {
+      width: 45%;
+
+      a {
+        text-decoration: underline;
+      }
+    }
   }
 }
