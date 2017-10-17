@@ -67,10 +67,10 @@ Loader.prototype = {
       function(resolve, reject) {
         try {
           const t = (new Date()).getTime();
-          console.log('LOAD');
+          //console.log('LOAD');
           self.materialLoader.load(filename + '.mtl', function(materials) {
             materials.preload();
-            console.log('MATERIALS', ((new Date()).getTime() - t) / 1000.,  materials);
+            //console.log('MATERIALS', ((new Date()).getTime() - t) / 1000.,  materials);
             //self.objectLoader.setMaterials(materials);
             self.objectLoader.load(filename + '.obj', function(obj){
               self.process(obj, materials);
