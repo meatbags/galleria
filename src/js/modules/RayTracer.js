@@ -17,13 +17,6 @@ const RayTracer = function() {
 RayTracer.prototype = {
   init: function() {
     this.object = new THREE.Object3D();
-    const cone = new THREE.Mesh(
-      new THREE.ConeBufferGeometry(0.3, 1, 4),
-      new THREE.MeshPhongMaterial({emissive: 0xffffff})
-    );
-    cone.rotation.x = Math.PI;
-    cone.position.y = 0.5;
-    this.object.add(cone);
   },
 
   getRayVector: function(camera, h, v) {

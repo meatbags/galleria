@@ -1,3 +1,20 @@
 .underline {
 	text-decoration: underline;
 }
+
+.text-large {
+	font-size: $fontSizeLarge;
+}
+
+.text-medium {
+	font-size: $fontSizeMedium;
+}
+
+.noselect {
+  -webkit-touch-callout: none;
+    -webkit-user-select: none;
+     -khtml-user-select: none;
+       -moz-user-select: none;
+        -ms-user-select: none;
+            user-select: none;
+}

@@ -1,16 +1,22 @@
 import * as Maths from './VectorMaths';
 import Globals from './Globals';
 import RayTracer from './RayTracer';
+import HUD from './HUD';
 
 const Player = function(domElement) {
   this.domElement = domElement;
+  this.hud = new HUD();
   this.object = new THREE.Object3D();
   this.position = new THREE.Vector3(Globals.player.position.x, Globals.player.position.y, Globals.player.position.z);
   this.movement = new THREE.Vector3(0, 0, 0);
   this.rotation = new THREE.Vector3(0, 0, 0);
   this.mouse = {
     x: 0,
-    y: 0
+    y: 0,
+    region: {
+      left: -0.5,
+      right: 0.5
+    }
   };
   this.offset = {
     rotation: new THREE.Vector3(0, 0, 0)
@@ -27,7 +33,7 @@ const Player = function(domElement) {
     active: false,
     position: new THREE.Vector3(),
     rotation: new THREE.Vector3(),
-    threshold: 0.2,
+    threshold: 1,
   };
   this.attributes = {
     speed: Globals.player.speed,
@@ -41,9 +47,10 @@ const Player = function(domElement) {
     },
     cameraThreshold: 0.4,
     maxRotationOffset: Math.PI * 0.3,
+    maxRotationOffsetLower: Math.PI * 0.2,
     falling: false,
     adjust: {
-      slow: 0.02,
+      slow: 0.025,
       normal: 0.05,
       fast: 0.09,
       veryFast: 0.2,
@@ -95,6 +102,9 @@ Player.prototype = {
     }, false);
     self.domElement.addEventListener('mousedown', function(e){
       self.handleMouseDown(e);
+    }, false);
+    self.domElement.addEventListener('mouseout', function(e){
+      self.handleMouseOut(e);
     }, false);
 
     // keyboard
@@ -267,25 +277,37 @@ Player.prototype = {
     // click
     if (this.keys.click) {
       this.keys.click = false;
-      this.autoMove.active = true;
 
-      if (this.raytracer.lastCollision.type === Globals.type.TYPE_COLLISION) {
-        const ray = this.raytracer.lastCollision;
-        const yaw = Math.atan2(ray.vector.x, ray.vector.z);
-        //const pitch = ray.vector.y;
+      // if centre clicked
+      if (this.mouse.x >= this.mouse.region.left && this.mouse.x <= this.mouse.region.right) {
+        this.autoMove.active = true;
 
-        this.autoMove.position.x = ray.position.x;
-        this.autoMove.position.z = ray.position.z;
-        this.autoMove.rotation.x = 0;//pitch;
-        this.autoMove.rotation.y = yaw;
+        if (this.raytracer.lastCollision.type === Globals.type.TYPE_COLLISION) {
+          const ray = this.raytracer.lastCollision;
+          const yaw = Math.atan2(ray.vector.x, ray.vector.z);
+          //const pitch = ray.vector.y;
+
+          this.autoMove.position.x = ray.position.x;
+          this.autoMove.position.z = ray.position.z;
+          this.autoMove.rotation.x = 0;//pitch;
+          this.autoMove.rotation.y = yaw;
+        } else {
+          const artwork = this.raytracer.lastCollision.artwork;
+          // move to artwork
+          artworks.activate(artwork.id);
+          this.autoMove.position.x = artwork.eye.x;
+          this.autoMove.position.z = artwork.eye.z;
+          this.autoMove.rotation.x = artwork.pitch;
+          this.autoMove.rotation.y = artwork.yaw;
+        }
       } else {
-        const artwork = this.raytracer.lastCollision.artwork;
-        // move to artwork
-        artworks.activate(artwork.id);
-        this.autoMove.position.x = artwork.eye.x;
-        this.autoMove.position.z = artwork.eye.z;
-        this.autoMove.rotation.x = artwork.pitch;
-        this.autoMove.rotation.y = artwork.yaw;
+        this.autoMove.active = false;
+
+        if (this.mouse.x < this.mouse.region.left) {
+          this.hud.clickLeft();
+        } else if (this.mouse.x > this.mouse.region.right) {
+          this.hud.clickRight();
+        }
       }
     }
 
@@ -322,13 +344,20 @@ Player.prototype = {
     if (this.autoMove.active) {
       this.target.rotation.x = this.autoMove.rotation.x;
       this.target.rotation.y = this.autoMove.rotation.y;
+      const dist = Maths.distanceBetween2D(this.target.position, this.autoMove.position);
 
-      if (Maths.distanceBetween2D(this.position, this.autoMove.position) < this.autoMove.threshold) {
-        this.autoMove.active = false;
+      if (dist < this.autoMove.threshold) {
+        //this.autoMove.active = false;
         this.target.movement.x = 0;
         this.target.movement.z = 0;
       } else {
-        const vec = Maths.scaleVector(Maths.normalise(Maths.subtractVector(this.autoMove.position, this.position)), this.attributes.speed);
+        let vec = Maths.scaleVector(Maths.normalise(Maths.subtractVector(this.autoMove.position, this.position)), this.attributes.speed);
+        const mag = Maths.getMagnitude2D(vec);
+
+        if (mag > dist) {
+          vec = Maths.scaleVector(vec, dist / mag);
+        }
+
         this.target.movement.x = vec.x;
         this.target.movement.z = vec.z;
       }
@@ -348,7 +377,7 @@ Player.prototype = {
     this.falling = (this.movement.y != 0);
 
     // adjust movement if falling
-    if (!this.falling) {
+    if (!this.falling && !this.autoMove.active) {
       this.movement.x = this.target.movement.x;
       this.movement.z = this.target.movement.z;
     } else {
@@ -366,10 +395,12 @@ Player.prototype = {
     this.position.z += (this.target.position.z - this.position.z) * this.attributes.adjust.veryFast;
 
     // rotate
-    this.rotation.y += Maths.minAngleDifference(this.rotation.y, this.target.rotation.y) * this.attributes.adjust.fast;
-    this.rotation.x += Maths.minAngleDifference(this.rotation.x, this.target.rotation.x) * this.attributes.adjust.fast;
-    this.offset.rotation.x += (this.target.offset.rotation.x - this.offset.rotation.x) * this.attributes.adjust.normal;
+    const factor = (this.autoMove.active) ? this.attributes.adjust.slow : this.attributes.adjust.fast;
+
+    this.rotation.y += Maths.minAngleDifference(this.rotation.y, this.target.rotation.y) * factor;
+    this.rotation.x += Maths.minAngleDifference(this.rotation.x, this.target.rotation.x) * this.attributes.adjust.slow;
     this.offset.rotation.y += (this.target.offset.rotation.y - this.offset.rotation.y) * this.attributes.adjust.normal;
+    this.offset.rotation.x += (this.target.offset.rotation.x - this.offset.rotation.x) * this.attributes.adjust.slow;
 
     // limit rotation
     this.rotation.y += (this.rotation.y < 0) ? Maths.twoPi : ((this.rotation.y > Maths.twoPi) ? -Maths.twoPi : 0);
@@ -463,7 +494,7 @@ Player.prototype = {
     const y = (e.clientY - bound.top) / h;
     const t = this.attributes.cameraThreshold;
 
-    // adjust camera
+    // adjust yaw
     if (x < t) {
       this.target.offset.rotation.y = ((t - x) / t) * this.attributes.maxRotationOffset;
     } else if (x > 1 - t) {
@@ -472,10 +503,12 @@ Player.prototype = {
       this.target.offset.rotation.y = 0;
     }
 
+
+    // adjust pitch
     if (y < t) {
       this.target.offset.rotation.x = ((t - y) / t) * this.attributes.maxRotationOffset;
     } else if (y > (1 - t)) {
-      this.target.offset.rotation.x = ((y - (1 - t)) / t) * -this.attributes.maxRotationOffset;
+      this.target.offset.rotation.x = ((y - (1 - t)) / t) * -this.attributes.maxRotationOffsetLower;
     } else {
       this.target.offset.rotation.x = 0;
     }
@@ -483,6 +516,23 @@ Player.prototype = {
     // record mouse
     this.mouse.x = x * 2 - 1;
     this.mouse.y = y * 2 - 1;
+
+    // show HUD
+    if (this.mouse.x < this.mouse.region.left) {
+      this.hud.hoverLeft();
+    } else if (this.mouse.x > this.mouse.region.right) {
+      this.hud.hoverRight();
+    } else {
+      this.hud.clear();
+    }
+  },
+
+  handleMouseOut(e) {
+    if (this.target.offset.rotation.x < 0) {
+      this.target.offset.rotation.x = 0;
+    }
+    //this.target.offset.rotation.x = 0;
+    //this.target.offset.rotation.y = 0;
   }
 };
 

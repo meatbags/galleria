@@ -1,44 +1,96 @@
-$hudSideWidth: 12%;
-$gradientStart: rgba(255, 255, 255, 0);
-$gradientStop: rgba(255, 255, 255, 0.3);
+$gradStart: rgba(255,255,255,0.25);
+$gradStop: rgba(255,255,255,0);
+$gradPink: rgba(255, 190, 190, 1);
 
-.hud {
-	z-index: $zHUD;
-	position: fixed;
-	top: 0;
-	left: 0;
-	width: 100vw;
-	height: 100%;
-	color: $black;
-	pointer-events: none;
+.arrow-left, .arrow-right {
+  @extend .noselect;
 
-	.hud__left {
-		position: absolute;
-		width: $hudSideWidth;
-		height: 100%;
-		top: 0;
-		left: 0;
-		background: linear-gradient(to left, $gradientStart, $gradientStop);
-		opacity: 0;
-		transition: $speed;
+  opacity: 0;
+  pointer-events: none;
+  transition: $transitionFast;
+  height: 100vh;
+  width: 18vw;
+  top: 0;
+  position: fixed;
+  display: flex;
+  align-items: center;
+  z-index: $zHUD;
+  color: $white;
 
-		&.active {
-			opacity: 1;
-		}
-	}
+  .arrow__inner {
+    height: 540px;
+    width: 100%;
+    display: flex;
+    align-items: center;
+  }
 
-	.hud__right {
-		position: absolute;
-		width: $hudSideWidth;
-		height: 100%;
-		top: 0;
-		right: 0;
-		background: linear-gradient(to right, $gradientStart, $gradientStop);
-		opacity: 0;
-		transition: $speed;
+  &.hover {
+    opacity: 0.5;
 
-		&.active {
-			opacity: 1;
-		}
-	}
+    .arrow__inner {
+
+      .glyph {
+        transform: translateX(0);
+        padding: $space;
+      }
+    }
+  }
+
+  &.active {
+    opacity: 1;
+
+    .arrow__inner {
+      .glyph {
+        transform: translateX(0);
+      }
+    }
+  }
+}
+
+.arrow-left {
+  left: 0;
+
+  .arrow__inner {
+    background: linear-gradient(to right, $gradStart, $gradStop);
+    justify-content: flex-start;
+
+    .glyph {
+      transition: $transitionFast;
+      transform: translateX(40px);
+    }
+  }
+
+  &.active {
+    .arrow__inner {
+      background: linear-gradient(to right, $gradPink, $gradStop);
+
+      .glyph {
+        transform: translateX(-12px);
+      }
+    }
+  }
+}
+
+.arrow-right {
+  right: 0;
+
+  .arrow__inner {
+    background: linear-gradient(to right, $gradStop, $gradStart);
+    justify-content: flex-end;
+
+    .glyph {
+      transition: $transitionFast;
+      transform: translateX(-40px);
+    }
+  }
+
+  &.active {
+    .arrow__inner {
+      background: linear-gradient(to right, $gradStop, $gradPink);
+
+      .glyph {
+        transform: translateX(12px);
+      }
+    }
+  }
 }

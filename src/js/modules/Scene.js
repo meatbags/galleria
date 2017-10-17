@@ -58,9 +58,9 @@ Scene.prototype = {
     for (let i=0; i<tags.length; i+=1) {
       const im = tags[i];
       let title = '';
-      let caption = '';
+      let description = '';
       let url = '';
-      let src = '';
+      let image = '';
 
       for (let j=0; j<im.childNodes.length; j+=1) {
         const node = im.childNodes[j];
@@ -69,20 +69,20 @@ Scene.prototype = {
           case 'im__title':
             title = node.textContent;
             break;
-          case 'im__caption':
-            caption = node.textContent;
+          case 'im__description':
+            description = node.textContent;
             break;
           case 'im__url':
             url = node.textContent;
             break;
-          case 'im__src':
-            src = node.textContent;
+          case 'im__image':
+            image = node.textContent;
             break;
           default:
             break;
         }
       }
-      this.artworks.add(title, caption, url, src);
+      this.artworks.add(title, description, url, image);
     }
 
     this.artworks.placeImages();

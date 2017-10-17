@@ -1,4 +1,5 @@
 const Timer = function() {
+	this.maxDelta = 1 / 30.;
 	this.reset();
 };
 
@@ -10,7 +11,7 @@ Timer.prototype = {
 	},
 
 	getDelta: function() {
-		return this.delta;
+		return (this.delta > this.maxDelta) ? this.maxDelta : this.delta;
 	},
 
 	reset: function() {

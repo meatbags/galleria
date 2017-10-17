@@ -50,12 +50,13 @@ Focal.prototype = {
   },
 
   scale: function(x, y, z) {
-    this.dimensions.x *= x;
-    this.dimensions.y *= y;
-    this.dimensions.z *= z;
-    this.object.scale.x = x;
-    this.object.scale.y = y;
-    this.object.scale.z = z;
+    const s = Globals.artwork.clickBoxScale;
+    this.dimensions.x *= x * s;
+    this.dimensions.y *= y * s;
+    this.dimensions.z *= z * s;
+    this.object.scale.x = x * s;
+    this.object.scale.y = y * s;
+    this.object.scale.z = z * s;
     this.setBox();
   },
 };

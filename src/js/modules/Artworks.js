@@ -10,14 +10,14 @@ const Artworks = function() {
 };
 
 Artworks.prototype = {
-  add: function(title, caption, url, src) {
+  add: function(title, description, url, image) {
     // add an image source
 
     this.sources.push({
       title: title,
-      caption: caption,
+      description: description,
       url: url,
-      src: src
+      image: image,
     });
   },
 
@@ -49,7 +49,7 @@ Artworks.prototype = {
         new THREE.PlaneBufferGeometry(1, 1, 2, 2),
         Materials.canvas.clone()
       );
-      const texture = textureLoader.load(this.sources[i].src, function(){
+      const texture = textureLoader.load(this.sources[i].image, function(){
         mesh.scale.x = (texture.image.naturalWidth / 1000.) * place.scale;
         mesh.scale.y = (texture.image.naturalHeight / 1000.) * place.scale;
         self.focalPoints[index].scale(mesh.scale.x, mesh.scale.y, mesh.scale.x);

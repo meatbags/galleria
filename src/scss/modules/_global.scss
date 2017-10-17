@@ -4,9 +4,9 @@ div, * {
 
 html, body {
 	font-family: Arial, sans-serif;
-	font-size: 20px;
+	font-size: $fontSize;
 	line-height: 1.2;
-	letter-spacing: 1px;
+	letter-spacing: 1.5px;
 	margin: 0;
 	padding: 0;
 }

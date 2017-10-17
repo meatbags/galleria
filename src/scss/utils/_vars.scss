@@ -1,16 +1,32 @@
+// colours
+$white: #fff;
+$black: #000;
+
+// spacing
+$canvasHeight: 540px;
 $space: 12px;
 
 // z-index
-
 $zCanvas: 10;
-$zHUD: 11;
+$zOverlay: 11;
+$zPreLoading: 12;
+$zHUD: 13;
 
 // colours
-
 $black: #111;
 $white: #fff;
 $translucent: rgba(255,255,255,0.5);
 
 // animation
+$transition: 0.5s;
+$transitionFast: 0.25s;
+$transitionSlow: 0.75s;
 
-$speed: 0.5s;
+// type
+$fontStack: 'Work Sans', sans-serif;
+$fontSize: 16px;
+$fontSizeMedium: 30px;
+$fontSizeLarge: 50px;
+
+// borders
+$border: 1px black solid;

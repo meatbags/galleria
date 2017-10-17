@@ -10,6 +10,18 @@ const copyVector = function(vec) {
   return copied;
 };
 
+const getMagnitude = function(vec) {
+  const mag = Math.sqrt(vec.x * vec.x + vec.y * vec.y + vec.z * vec.z);
+
+  return mag;
+};
+
+const getMagnitude2D = function(vec) {
+  const mag = Math.sqrt(vec.x * vec.x + vec.z * vec.z);
+
+  return mag;
+};
+
 const addVector = function(a, b) {
   const c = new THREE.Vector3(
     a.x + b.x,
@@ -108,4 +120,4 @@ const dotProduct = function(a, b) {
   return a.x * b.x + a.y * b.y + a.z * b.z;
 };
 
-export { copyVector, isVectorEqual, pitchBetween, twoPi, distanceBetween, distanceBetween2D, minAngleDifference, dotProduct, addVector, subtractVector, scaleVector, crossProduct, reverseVector, normalise };
+export { getMagnitude, getMagnitude2D, copyVector, isVectorEqual, pitchBetween, twoPi, distanceBetween, distanceBetween2D, minAngleDifference, dotProduct, addVector, subtractVector, scaleVector, crossProduct, reverseVector, normalise };

@@ -94,8 +94,8 @@ var Globals = {
     rotationSpeed: Math.PI * 0.75
   },
   raytracer: {
-    precision: 1,
-    length: 10
+    precision: .75,
+    length: 12.5
   },
   camera: {
     fov: 58,
@@ -105,6 +105,9 @@ var Globals = {
   loader: {
     bumpScale: 0.02,
     lightMapIntensity: 0.6
+  },
+  artwork: {
+    clickBoxScale: 1.1
   },
   artworkPlacement: {
     '0': { scale: 6, pitch: 0, yaw: halfPI, position: (0, _Maths.v3)(8.5, 6, -10), eye: (0, _Maths.v3)(0, 0, -10) },
@@ -213,6 +216,18 @@ var copyVector = function copyVector(vec) {
   return copied;
 };
 
+var getMagnitude = function getMagnitude(vec) {
+  var mag = Math.sqrt(vec.x * vec.x + vec.y * vec.y + vec.z * vec.z);
+
+  return mag;
+};
+
+var getMagnitude2D = function getMagnitude2D(vec) {
+  var mag = Math.sqrt(vec.x * vec.x + vec.z * vec.z);
+
+  return mag;
+};
+
 var addVector = function addVector(a, b) {
   var c = new THREE.Vector3(a.x + b.x, a.y + b.y, a.z + b.z);
 
@@ -291,6 +306,8 @@ var dotProduct = function dotProduct(a, b) {
   return a.x * b.x + a.y * b.y + a.z * b.z;
 };
 
+exports.getMagnitude = getMagnitude;
+exports.getMagnitude2D = getMagnitude2D;
 exports.copyVector = copyVector;
 exports.isVectorEqual = isVectorEqual;
 exports.pitchBetween = pitchBetween;
@@ -371,6 +388,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 var App = {
 	init: function init() {
+		App.fadeOut('.pre-loading');
 		App.timer = new _Timer2.default();
 		App.scene = new _Scene2.default();
 		App.loading();
@@ -382,8 +400,16 @@ var App = {
 		if (!App.scene.isLoaded()) {
 			requestAnimationFrame(App.loading);
 		} else {
+			App.fadeOut('.loading');
 			App.loop();
 		}
+	},
+
+	fadeOut: function fadeOut(selector) {
+		$(selector).addClass('hidden');
+		setTimeout(function () {
+			$(selector).remove();
+		}, 750);
 	},
 
 	loop: function loop() {
@@ -407,6 +433,7 @@ Object.defineProperty(exports, "__esModule", {
 	value: true
 });
 var Timer = function Timer() {
+	this.maxDelta = 1 / 30.;
 	this.reset();
 };
 
@@ -418,7 +445,7 @@ Timer.prototype = {
 	},
 
 	getDelta: function getDelta() {
-		return this.delta;
+		return this.delta > this.maxDelta ? this.maxDelta : this.delta;
 	},
 
 	reset: function reset() {
@@ -519,9 +546,9 @@ Scene.prototype = {
     for (var i = 0; i < tags.length; i += 1) {
       var im = tags[i];
       var title = '';
-      var caption = '';
+      var description = '';
       var url = '';
-      var src = '';
+      var image = '';
 
       for (var j = 0; j < im.childNodes.length; j += 1) {
         var node = im.childNodes[j];
@@ -530,20 +557,20 @@ Scene.prototype = {
           case 'im__title':
             title = node.textContent;
             break;
-          case 'im__caption':
-            caption = node.textContent;
+          case 'im__description':
+            description = node.textContent;
             break;
           case 'im__url':
             url = node.textContent;
             break;
-          case 'im__src':
-            src = node.textContent;
+          case 'im__image':
+            image = node.textContent;
             break;
           default:
             break;
         }
       }
-      this.artworks.add(title, caption, url, src);
+      this.artworks.add(title, description, url, image);
     }
 
     this.artworks.placeImages();
@@ -613,19 +640,28 @@ var _RayTracer = __webpack_require__(8);
 
 var _RayTracer2 = _interopRequireDefault(_RayTracer);
 
+var _HUD = __webpack_require__(13);
+
+var _HUD2 = _interopRequireDefault(_HUD);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
 var Player = function Player(domElement) {
   this.domElement = domElement;
+  this.hud = new _HUD2.default();
   this.object = new THREE.Object3D();
   this.position = new THREE.Vector3(_Globals2.default.player.position.x, _Globals2.default.player.position.y, _Globals2.default.player.position.z);
   this.movement = new THREE.Vector3(0, 0, 0);
   this.rotation = new THREE.Vector3(0, 0, 0);
   this.mouse = {
     x: 0,
-    y: 0
+    y: 0,
+    region: {
+      left: -0.5,
+      right: 0.5
+    }
   };
   this.offset = {
     rotation: new THREE.Vector3(0, 0, 0)
@@ -642,7 +678,7 @@ var Player = function Player(domElement) {
     active: false,
     position: new THREE.Vector3(),
     rotation: new THREE.Vector3(),
-    threshold: 0.2
+    threshold: 1
   };
   this.attributes = {
     speed: _Globals2.default.player.speed,
@@ -656,9 +692,10 @@ var Player = function Player(domElement) {
     },
     cameraThreshold: 0.4,
     maxRotationOffset: Math.PI * 0.3,
+    maxRotationOffsetLower: Math.PI * 0.2,
     falling: false,
     adjust: {
-      slow: 0.02,
+      slow: 0.025,
       normal: 0.05,
       fast: 0.09,
       veryFast: 0.2
@@ -707,6 +744,9 @@ Player.prototype = {
     }, false);
     self.domElement.addEventListener('mousedown', function (e) {
       self.handleMouseDown(e);
+    }, false);
+    self.domElement.addEventListener('mouseout', function (e) {
+      self.handleMouseOut(e);
     }, false);
 
     // keyboard
@@ -868,25 +908,37 @@ Player.prototype = {
     // click
     if (this.keys.click) {
       this.keys.click = false;
-      this.autoMove.active = true;
 
-      if (this.raytracer.lastCollision.type === _Globals2.default.type.TYPE_COLLISION) {
-        var ray = this.raytracer.lastCollision;
-        var yaw = Math.atan2(ray.vector.x, ray.vector.z);
-        //const pitch = ray.vector.y;
+      // if centre clicked
+      if (this.mouse.x >= this.mouse.region.left && this.mouse.x <= this.mouse.region.right) {
+        this.autoMove.active = true;
 
-        this.autoMove.position.x = ray.position.x;
-        this.autoMove.position.z = ray.position.z;
-        this.autoMove.rotation.x = 0; //pitch;
-        this.autoMove.rotation.y = yaw;
+        if (this.raytracer.lastCollision.type === _Globals2.default.type.TYPE_COLLISION) {
+          var ray = this.raytracer.lastCollision;
+          var yaw = Math.atan2(ray.vector.x, ray.vector.z);
+          //const pitch = ray.vector.y;
+
+          this.autoMove.position.x = ray.position.x;
+          this.autoMove.position.z = ray.position.z;
+          this.autoMove.rotation.x = 0; //pitch;
+          this.autoMove.rotation.y = yaw;
+        } else {
+          var artwork = this.raytracer.lastCollision.artwork;
+          // move to artwork
+          artworks.activate(artwork.id);
+          this.autoMove.position.x = artwork.eye.x;
+          this.autoMove.position.z = artwork.eye.z;
+          this.autoMove.rotation.x = artwork.pitch;
+          this.autoMove.rotation.y = artwork.yaw;
+        }
       } else {
-        var artwork = this.raytracer.lastCollision.artwork;
-        // move to artwork
-        artworks.activate(artwork.id);
-        this.autoMove.position.x = artwork.eye.x;
-        this.autoMove.position.z = artwork.eye.z;
-        this.autoMove.rotation.x = artwork.pitch;
-        this.autoMove.rotation.y = artwork.yaw;
+        this.autoMove.active = false;
+
+        if (this.mouse.x < this.mouse.region.left) {
+          this.hud.clickLeft();
+        } else if (this.mouse.x > this.mouse.region.right) {
+          this.hud.clickRight();
+        }
       }
     }
 
@@ -923,13 +975,20 @@ Player.prototype = {
     if (this.autoMove.active) {
       this.target.rotation.x = this.autoMove.rotation.x;
       this.target.rotation.y = this.autoMove.rotation.y;
+      var dist = Maths.distanceBetween2D(this.target.position, this.autoMove.position);
 
-      if (Maths.distanceBetween2D(this.position, this.autoMove.position) < this.autoMove.threshold) {
-        this.autoMove.active = false;
+      if (dist < this.autoMove.threshold) {
+        //this.autoMove.active = false;
         this.target.movement.x = 0;
         this.target.movement.z = 0;
       } else {
         var vec = Maths.scaleVector(Maths.normalise(Maths.subtractVector(this.autoMove.position, this.position)), this.attributes.speed);
+        var mag = Maths.getMagnitude2D(vec);
+
+        if (mag > dist) {
+          vec = Maths.scaleVector(vec, dist / mag);
+        }
+
         this.target.movement.x = vec.x;
         this.target.movement.z = vec.z;
       }
@@ -949,7 +1008,7 @@ Player.prototype = {
     this.falling = this.movement.y != 0;
 
     // adjust movement if falling
-    if (!this.falling) {
+    if (!this.falling && !this.autoMove.active) {
       this.movement.x = this.target.movement.x;
       this.movement.z = this.target.movement.z;
     } else {
@@ -967,10 +1026,12 @@ Player.prototype = {
     this.position.z += (this.target.position.z - this.position.z) * this.attributes.adjust.veryFast;
 
     // rotate
-    this.rotation.y += Maths.minAngleDifference(this.rotation.y, this.target.rotation.y) * this.attributes.adjust.fast;
-    this.rotation.x += Maths.minAngleDifference(this.rotation.x, this.target.rotation.x) * this.attributes.adjust.fast;
-    this.offset.rotation.x += (this.target.offset.rotation.x - this.offset.rotation.x) * this.attributes.adjust.normal;
+    var factor = this.autoMove.active ? this.attributes.adjust.slow : this.attributes.adjust.fast;
+
+    this.rotation.y += Maths.minAngleDifference(this.rotation.y, this.target.rotation.y) * factor;
+    this.rotation.x += Maths.minAngleDifference(this.rotation.x, this.target.rotation.x) * this.attributes.adjust.slow;
     this.offset.rotation.y += (this.target.offset.rotation.y - this.offset.rotation.y) * this.attributes.adjust.normal;
+    this.offset.rotation.x += (this.target.offset.rotation.x - this.offset.rotation.x) * this.attributes.adjust.slow;
 
     // limit rotation
     this.rotation.y += this.rotation.y < 0 ? Maths.twoPi : this.rotation.y > Maths.twoPi ? -Maths.twoPi : 0;
@@ -1056,7 +1117,7 @@ Player.prototype = {
     var y = (e.clientY - bound.top) / h;
     var t = this.attributes.cameraThreshold;
 
-    // adjust camera
+    // adjust yaw
     if (x < t) {
       this.target.offset.rotation.y = (t - x) / t * this.attributes.maxRotationOffset;
     } else if (x > 1 - t) {
@@ -1065,10 +1126,11 @@ Player.prototype = {
       this.target.offset.rotation.y = 0;
     }
 
+    // adjust pitch
     if (y < t) {
       this.target.offset.rotation.x = (t - y) / t * this.attributes.maxRotationOffset;
     } else if (y > 1 - t) {
-      this.target.offset.rotation.x = (y - (1 - t)) / t * -this.attributes.maxRotationOffset;
+      this.target.offset.rotation.x = (y - (1 - t)) / t * -this.attributes.maxRotationOffsetLower;
     } else {
       this.target.offset.rotation.x = 0;
     }
@@ -1076,6 +1138,22 @@ Player.prototype = {
     // record mouse
     this.mouse.x = x * 2 - 1;
     this.mouse.y = y * 2 - 1;
+
+    // show HUD
+    if (this.mouse.x < this.mouse.region.left) {
+      this.hud.hoverLeft();
+    } else if (this.mouse.x > this.mouse.region.right) {
+      this.hud.hoverRight();
+    } else {
+      this.hud.clear();
+    }
+  },
+  handleMouseOut: function handleMouseOut(e) {
+    if (this.target.offset.rotation.x < 0) {
+      this.target.offset.rotation.x = 0;
+    }
+    //this.target.offset.rotation.x = 0;
+    //this.target.offset.rotation.y = 0;
   }
 };
 
@@ -1116,10 +1194,6 @@ var RayTracer = function RayTracer() {
 RayTracer.prototype = {
   init: function init() {
     this.object = new THREE.Object3D();
-    var cone = new THREE.Mesh(new THREE.ConeBufferGeometry(0.3, 1, 4), new THREE.MeshPhongMaterial({ emissive: 0xffffff }));
-    cone.rotation.x = Math.PI;
-    cone.position.y = 0.5;
-    this.object.add(cone);
   },
 
   getRayVector: function getRayVector(camera, h, v) {
@@ -1232,14 +1306,14 @@ var Artworks = function Artworks() {
 };
 
 Artworks.prototype = {
-  add: function add(title, caption, url, src) {
+  add: function add(title, description, url, image) {
     // add an image source
 
     this.sources.push({
       title: title,
-      caption: caption,
+      description: description,
       url: url,
-      src: src
+      image: image
     });
   },
 
@@ -1270,7 +1344,7 @@ Artworks.prototype = {
 
       // create artwork mesh
       var mesh = new THREE.Mesh(new THREE.PlaneBufferGeometry(1, 1, 2, 2), _Materials.Materials.canvas.clone());
-      var texture = textureLoader.load(_this.sources[i].src, function () {
+      var texture = textureLoader.load(_this.sources[i].image, function () {
         mesh.scale.x = texture.image.naturalWidth / 1000. * place.scale;
         mesh.scale.y = texture.image.naturalHeight / 1000. * place.scale;
         self.focalPoints[index].scale(mesh.scale.x, mesh.scale.y, mesh.scale.x);
@@ -1362,12 +1436,13 @@ Focal.prototype = {
   },
 
   scale: function scale(x, y, z) {
-    this.dimensions.x *= x;
-    this.dimensions.y *= y;
-    this.dimensions.z *= z;
-    this.object.scale.x = x;
-    this.object.scale.y = y;
-    this.object.scale.z = z;
+    var s = _Globals2.default.artwork.clickBoxScale;
+    this.dimensions.x *= x * s;
+    this.dimensions.y *= y * s;
+    this.dimensions.z *= z * s;
+    this.object.scale.x = x * s;
+    this.object.scale.y = y * s;
+    this.object.scale.z = z * s;
     this.setBox();
   }
 };
@@ -1604,6 +1679,70 @@ THREE.Sky.SkyShader = {
 		'	float sundisk = smoothstep( sunAngularDiameterCos, sunAngularDiameterCos + 0.00002, cosTheta );', '	L0 += ( vSunE * 19000.0 * Fex ) * sundisk;', '	vec3 texColor = ( Lin + L0 ) * 0.04 + vec3( 0.0, 0.0003, 0.00075 );', '	vec3 curr = Uncharted2Tonemap( ( log2( 2.0 / pow( luminance, 4.0 ) ) ) * texColor );', '	vec3 color = curr * whiteScale;', '	vec3 retColor = pow( color, vec3( 1.0 / ( 1.2 + ( 1.2 * vSunfade ) ) ) );', '	gl_FragColor = vec4( retColor, 1.0 );', '}'].join('\n')
 
 };
+
+/***/ }),
+/* 13 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+var HUD = function HUD() {
+  this.elements = {
+    left: $('.arrow-left'),
+    right: $('.arrow-right')
+  };
+};
+
+HUD.prototype = {
+  clear: function clear() {
+    this.removeClass(this.elements.left, 'hover');
+    this.removeClass(this.elements.right, 'hover');
+  },
+
+  hoverLeft: function hoverLeft() {
+    this.addClass(this.elements.left, 'hover');
+    this.removeClass(this.elements.right, 'hover');
+  },
+
+  hoverRight: function hoverRight() {
+    this.addClass(this.elements.right, 'hover');
+    this.removeClass(this.elements.left, 'hover');
+  },
+
+  clickLeft: function clickLeft() {
+    var self = this;
+    this.addClass(this.elements.left, 'active');
+    setTimeout(function () {
+      self.removeClass(self.elements.left, 'active');
+    }, 250);
+  },
+
+  clickRight: function clickRight() {
+    var self = this;
+    this.addClass(this.elements.right, 'active');
+    setTimeout(function () {
+      self.removeClass(self.elements.right, 'active');
+    }, 250);
+  },
+
+  addClass: function addClass(elem, className) {
+    if (!elem.hasClass(className)) {
+      elem.addClass(className);
+    }
+  },
+
+  removeClass: function removeClass(elem, className) {
+    if (elem.hasClass(className)) {
+      elem.removeClass(className);
+    }
+  }
+};
+
+exports.default = HUD;
 
 /***/ })
 /******/ ]);
