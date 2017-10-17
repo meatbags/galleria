@@ -9,9 +9,14 @@ const Globals = {
   },
   player: {
     position: {
-      x: 0,
+      x: -15.75,
       y: 0,
       z: -40,
+    },
+    rotation: {
+      x: 0, 
+      y: 0.3086,
+      z: 0
     },
     height: 1.8,
     speed: 8,

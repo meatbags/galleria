@@ -26,7 +26,7 @@ HUD.prototype = {
     this.addClass(this.elements.left, 'active');
     setTimeout(function(){
       self.removeClass(self.elements.left, 'active');
-    }, 250);
+    }, 500);
   },
 
   clickRight: function() {
@@ -34,7 +34,7 @@ HUD.prototype = {
     this.addClass(this.elements.right, 'active');
     setTimeout(function(){
       self.removeClass(self.elements.right, 'active');
-    }, 250);
+    }, 500);
   },
 
   addClass: function(elem, className) {

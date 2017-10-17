@@ -85,9 +85,14 @@ var Globals = {
   },
   player: {
     position: {
-      x: 0,
+      x: -15.75,
       y: 0,
       z: -40
+    },
+    rotation: {
+      x: 0,
+      y: 0.3086,
+      z: 0
     },
     height: 1.8,
     speed: 8,
@@ -391,6 +396,8 @@ var App = {
 		App.fadeOut('.pre-loading');
 		App.timer = new _Timer2.default();
 		App.scene = new _Scene2.default();
+		App.bindControls();
+		App.resize();
 		App.loading();
 	},
 
@@ -400,16 +407,61 @@ var App = {
 		if (!App.scene.isLoaded()) {
 			requestAnimationFrame(App.loading);
 		} else {
+			App.fadeIn('.nav__links');
 			App.fadeOut('.loading');
 			App.loop();
 		}
+	},
+
+	bindControls: function bindControls() {
+		$('.nav-menu').on('click', function () {
+			var target = $(this).data('menu');
+			App.toggleMenu(target);
+		});
+		$('.menu-close').on('click', function () {
+			var target = $(this).data('menu');
+			App.closeMenu(target);
+		});
+		window.addEventListener('resize', App.resize);
+	},
+
+	resize: function resize() {
+		var top = $('canvas').offset().top + $('canvas').height();
+		$('.nav').css({ top: top + 'px' });
+		App.scene.resize();
+	},
+
+	toggleMenu: function toggleMenu(selector) {
+		if ($(selector).hasClass('hidden')) {
+			$('.menu').each(function (i, e) {
+				$(e).removeClass('active');
+				if (!$(e).hasClass('hidden')) {
+					$(e).addClass('hidden');
+				}
+			});
+			$(selector).removeClass('hidden');
+			$(selector).addClass('active');
+		} else {
+			App.closeMenu(selector);
+		}
+	},
+
+	closeMenu: function closeMenu(selector) {
+		if (!$(selector).hasClass('hidden')) {
+			$(selector).addClass('hidden');
+		}
+		$(selector).removeClass('active');
+	},
+
+	fadeIn: function fadeIn(selector) {
+		$(selector).removeClass('hidden');
 	},
 
 	fadeOut: function fadeOut(selector) {
 		$(selector).addClass('hidden');
 		setTimeout(function () {
 			$(selector).remove();
-		}, 750);
+		}, 1000);
 	},
 
 	loop: function loop() {
@@ -502,7 +554,7 @@ Scene.prototype = {
     this.renderer.setSize(640, 480);
     this.renderer.setClearColor(0xf9e5a2, 1);
     this.renderer.setPixelRatio(window.devicePixelRatio);
-    document.body.append(this.renderer.domElement);
+    $('.wrapper .content').append(this.renderer.domElement);
 
     // player & scene
     this.player = new _Player2.default(this.renderer.domElement);
@@ -535,43 +587,13 @@ Scene.prototype = {
 
     // resize
     this.resize();
-    window.addEventListener('resize', function () {
-      self.resize();
-    });
 
     // load gallery
-    var tags = document.getElementsByClassName('im');
     this.artworks = new _Artworks2.default();
 
-    for (var i = 0; i < tags.length; i += 1) {
-      var im = tags[i];
-      var title = '';
-      var description = '';
-      var url = '';
-      var image = '';
-
-      for (var j = 0; j < im.childNodes.length; j += 1) {
-        var node = im.childNodes[j];
-
-        switch (node.className) {
-          case 'im__title':
-            title = node.textContent;
-            break;
-          case 'im__description':
-            description = node.textContent;
-            break;
-          case 'im__url':
-            url = node.textContent;
-            break;
-          case 'im__image':
-            image = node.textContent;
-            break;
-          default:
-            break;
-        }
-      }
-      this.artworks.add(title, description, url, image);
-    }
+    $('.im').each(function (i, e) {
+      self.artworks.add($(e).find('.im__title').html(), $(e).find('.im__description').html(), $(e).find('.im__url').html(), $(e).find('.im__image').html());
+    });
 
     this.artworks.placeImages();
     this.scene.add(this.artworks.object);
@@ -600,7 +622,7 @@ Scene.prototype = {
 
   resize: function resize() {
     var width = window.innerWidth;
-    var height = 540; //Math.min(520, window.innerHeight * 0.75);
+    var height = 520;
     this.camera.aspect = width / height;
     this.camera.updateProjectionMatrix();
     this.renderer.setSize(width, height);
@@ -654,7 +676,7 @@ var Player = function Player(domElement) {
   this.object = new THREE.Object3D();
   this.position = new THREE.Vector3(_Globals2.default.player.position.x, _Globals2.default.player.position.y, _Globals2.default.player.position.z);
   this.movement = new THREE.Vector3(0, 0, 0);
-  this.rotation = new THREE.Vector3(0, 0, 0);
+  this.rotation = new THREE.Vector3(_Globals2.default.player.rotation.x, _Globals2.default.player.rotation.y, _Globals2.default.player.rotation.z);
   this.mouse = {
     x: 0,
     y: 0,
@@ -669,7 +691,7 @@ var Player = function Player(domElement) {
   this.target = {
     position: new THREE.Vector3(this.position.x, this.position.y, this.position.z),
     movement: new THREE.Vector3(0, 0, 0),
-    rotation: new THREE.Vector3(0, 0, 0),
+    rotation: new THREE.Vector3(_Globals2.default.player.rotation.x, _Globals2.default.player.rotation.y, _Globals2.default.player.rotation.z),
     offset: {
       rotation: new THREE.Vector3(0, 0, 0)
     }
@@ -696,6 +718,7 @@ var Player = function Player(domElement) {
     falling: false,
     adjust: {
       slow: 0.025,
+      medium: 0.04,
       normal: 0.05,
       fast: 0.09,
       veryFast: 0.2
@@ -922,10 +945,16 @@ Player.prototype = {
           this.autoMove.position.z = ray.position.z;
           this.autoMove.rotation.x = 0; //pitch;
           this.autoMove.rotation.y = yaw;
+
+          // deactivate artwork
+          artworks.deactivate();
         } else {
           var artwork = this.raytracer.lastCollision.artwork;
+
+          // activate artwork
+          artworks.activate(artwork);
+
           // move to artwork
-          artworks.activate(artwork.id);
           this.autoMove.position.x = artwork.eye.x;
           this.autoMove.position.z = artwork.eye.z;
           this.autoMove.rotation.x = artwork.pitch;
@@ -1008,12 +1037,15 @@ Player.prototype = {
     this.falling = this.movement.y != 0;
 
     // adjust movement if falling
-    if (!this.falling && !this.autoMove.active) {
-      this.movement.x = this.target.movement.x;
-      this.movement.z = this.target.movement.z;
-    } else {
+    if (this.autoMove.active) {
+      this.movement.x += (this.target.movement.x - this.movement.x) * this.attributes.adjust.medium;
+      this.movement.z += (this.target.movement.z - this.movement.z) * this.attributes.adjust.medium;
+    } else if (this.falling) {
       this.movement.x += (this.target.movement.x - this.movement.x) * this.attributes.adjust.slow;
       this.movement.z += (this.target.movement.z - this.movement.z) * this.attributes.adjust.slow;
+    } else {
+      this.movement.x = this.target.movement.x;
+      this.movement.z = this.target.movement.z;
     }
   },
 
@@ -1317,13 +1349,50 @@ Artworks.prototype = {
     });
   },
 
-  activate: function activate(id) {
-    for (var i = 0; i < this.focalPoints.length; i += 1) {
-      if (this.focalPoints[i].id === id) {
-        this.focalPoints[i].activate();
-      } else {
-        this.focalPoints[i].deactivate();
+  activate: function activate(artwork) {
+    if (!artwork.active) {
+      for (var i = 0; i < this.focalPoints.length; i += 1) {
+        if (this.focalPoints[i].id === artwork.id) {
+          this.focalPoints[i].activate();
+        } else {
+          this.focalPoints[i].deactivate();
+        }
       }
+
+      // remove nav and show artwork information
+      if (!$('#nav-default').hasClass('hidden')) {
+        $('#nav-default').addClass('hidden');
+      }
+
+      // animate out and in
+      var timeout = 1;
+
+      if (!$('#nav-artwork').hasClass('hidden')) {
+        $('#nav-artwork').addClass('hidden');
+        timeout = 500;
+      }
+
+      setTimeout(function () {
+        $('#nav-artwork .nav__title').text(artwork.source.title);
+        $('#nav-artwork .nav__description').html(artwork.source.description);
+        $('#nav-artwork .nav__links').html('<a target="_blank" href="' + artwork.source.url + '">Order print</a>');
+        $('#nav-artwork').removeClass('hidden');
+      }, timeout);
+    }
+  },
+
+  deactivate: function deactivate() {
+    // deactivate artworks
+    for (var i = 0; i < this.focalPoints.length; i += 1) {
+      this.focalPoints[i].deactivate();
+    }
+
+    // show default nav
+    if (!$('#nav-artwork').hasClass('hidden')) {
+      $('#nav-artwork').addClass('hidden');
+    }
+    if ($('#nav-default').hasClass('hidden')) {
+      $('#nav-default').removeClass('hidden');
     }
   },
 
@@ -1417,7 +1486,6 @@ Focal.prototype = {
 
   activate: function activate() {
     this.active = true;
-    console.log(this.source);
   },
 
   deactivate: function deactivate() {
@@ -1718,7 +1786,7 @@ HUD.prototype = {
     this.addClass(this.elements.left, 'active');
     setTimeout(function () {
       self.removeClass(self.elements.left, 'active');
-    }, 250);
+    }, 500);
   },
 
   clickRight: function clickRight() {
@@ -1726,7 +1794,7 @@ HUD.prototype = {
     this.addClass(this.elements.right, 'active');
     setTimeout(function () {
       self.removeClass(self.elements.right, 'active');
-    }, 250);
+    }, 500);
   },
 
   addClass: function addClass(elem, className) {

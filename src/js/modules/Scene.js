@@ -18,7 +18,7 @@ Scene.prototype = {
     this.renderer.setSize(640, 480);
     this.renderer.setClearColor(0xf9e5a2, 1);
     this.renderer.setPixelRatio(window.devicePixelRatio);
-    document.body.append(this.renderer.domElement);
+    $('.wrapper .content').append(this.renderer.domElement);
 
     // player & scene
     this.player = new Player(this.renderer.domElement);
@@ -47,43 +47,18 @@ Scene.prototype = {
 
     // resize
     this.resize();
-    window.addEventListener('resize', function() {
-      self.resize();
-    });
 
     // load gallery
-    const tags = document.getElementsByClassName('im');
     this.artworks = new Artworks();
 
-    for (let i=0; i<tags.length; i+=1) {
-      const im = tags[i];
-      let title = '';
-      let description = '';
-      let url = '';
-      let image = '';
-
-      for (let j=0; j<im.childNodes.length; j+=1) {
-        const node = im.childNodes[j];
-
-        switch (node.className) {
-          case 'im__title':
-            title = node.textContent;
-            break;
-          case 'im__description':
-            description = node.textContent;
-            break;
-          case 'im__url':
-            url = node.textContent;
-            break;
-          case 'im__image':
-            image = node.textContent;
-            break;
-          default:
-            break;
-        }
-      }
-      this.artworks.add(title, description, url, image);
-    }
+    $('.im').each(function(i, e){
+      self.artworks.add(
+        $(e).find('.im__title').html(),
+        $(e).find('.im__description').html(),
+        $(e).find('.im__url').html(),
+        $(e).find('.im__image').html()
+      );
+    });
 
     this.artworks.placeImages();
     this.scene.add(this.artworks.object);
@@ -120,7 +95,7 @@ Scene.prototype = {
 
   resize: function() {
     const width = window.innerWidth;
-    const height = 540;//Math.min(520, window.innerHeight * 0.75);
+    const height = 520;
     this.camera.aspect = width / height;
     this.camera.updateProjectionMatrix();
     this.renderer.setSize(width, height);

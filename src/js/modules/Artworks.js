@@ -21,13 +21,50 @@ Artworks.prototype = {
     });
   },
 
-  activate: function(id) {
-    for (let i=0; i<this.focalPoints.length; i+=1) {
-      if (this.focalPoints[i].id === id) {
-        this.focalPoints[i].activate();
-      } else {
-        this.focalPoints[i].deactivate();
+  activate: function(artwork) {
+    if (!artwork.active) {
+      for (let i=0; i<this.focalPoints.length; i+=1) {
+        if (this.focalPoints[i].id === artwork.id) {
+          this.focalPoints[i].activate();
+        } else {
+          this.focalPoints[i].deactivate();
+        }
       }
+
+      // remove nav and show artwork information
+      if (!$('#nav-default').hasClass('hidden')) {
+        $('#nav-default').addClass('hidden');
+      }
+
+      // animate out and in
+      let timeout = 1;
+
+      if (!$('#nav-artwork').hasClass('hidden')) {
+        $('#nav-artwork').addClass('hidden');
+        timeout = 500;
+      }
+
+      setTimeout(function(){
+        $('#nav-artwork .nav__title').text(artwork.source.title);
+        $('#nav-artwork .nav__description').html(artwork.source.description);
+        $('#nav-artwork .nav__links').html('<a target="_blank" href="' + artwork.source.url + '">Order print</a>');
+        $('#nav-artwork').removeClass('hidden');
+      }, timeout);
+    }
+  },
+
+  deactivate: function() {
+    // deactivate artworks
+    for (let i=0; i<this.focalPoints.length; i+=1) {
+      this.focalPoints[i].deactivate();
+    }
+
+    // show default nav
+    if (!$('#nav-artwork').hasClass('hidden')) {
+      $('#nav-artwork').addClass('hidden');
+    }
+    if ($('#nav-default').hasClass('hidden')) {
+      $('#nav-default').removeClass('hidden');
     }
   },
 

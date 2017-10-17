@@ -4,21 +4,20 @@ $gradPink: rgba(255, 190, 190, 1);
 
 .arrow-left, .arrow-right {
   @extend .noselect;
-
   opacity: 0;
   pointer-events: none;
-  transition: $transitionFast;
-  height: 100vh;
+  transition: $transition;
+  height: 100%;
   width: 18vw;
   top: 0;
-  position: fixed;
+  position: absolute;
   display: flex;
   align-items: center;
   z-index: $zHUD;
   color: $white;
 
   .arrow__inner {
-    height: 540px;
+    height: 100%;
     width: 100%;
     display: flex;
     align-items: center;
@@ -55,17 +54,17 @@ $gradPink: rgba(255, 190, 190, 1);
     justify-content: flex-start;
 
     .glyph {
-      transition: $transitionFast;
+      transition: $transition;
       transform: translateX(40px);
     }
   }
 
   &.active {
     .arrow__inner {
-      background: linear-gradient(to right, $gradPink, $gradStop);
+      //background: linear-gradient(to right, $gradPink, $gradStop);
 
       .glyph {
-        transform: translateX(-12px);
+
       }
     }
   }
@@ -79,17 +78,17 @@ $gradPink: rgba(255, 190, 190, 1);
     justify-content: flex-end;
 
     .glyph {
-      transition: $transitionFast;
+      transition: $transition;
       transform: translateX(-40px);
     }
   }
 
   &.active {
     .arrow__inner {
-      background: linear-gradient(to right, $gradStop, $gradPink);
+      //background: linear-gradient(to right, $gradStop, $gradPink);
 
       .glyph {
-        transform: translateX(12px);
+
       }
     }
   }

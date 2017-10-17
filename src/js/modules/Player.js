@@ -9,7 +9,7 @@ const Player = function(domElement) {
   this.object = new THREE.Object3D();
   this.position = new THREE.Vector3(Globals.player.position.x, Globals.player.position.y, Globals.player.position.z);
   this.movement = new THREE.Vector3(0, 0, 0);
-  this.rotation = new THREE.Vector3(0, 0, 0);
+  this.rotation = new THREE.Vector3(Globals.player.rotation.x, Globals.player.rotation.y, Globals.player.rotation.z);
   this.mouse = {
     x: 0,
     y: 0,
@@ -24,7 +24,7 @@ const Player = function(domElement) {
   this.target = {
     position: new THREE.Vector3(this.position.x, this.position.y, this.position.z),
     movement: new THREE.Vector3(0, 0, 0),
-    rotation: new THREE.Vector3(0, 0, 0),
+    rotation: new THREE.Vector3(Globals.player.rotation.x, Globals.player.rotation.y, Globals.player.rotation.z),
     offset: {
       rotation: new THREE.Vector3(0, 0, 0)
     }
@@ -51,6 +51,7 @@ const Player = function(domElement) {
     falling: false,
     adjust: {
       slow: 0.025,
+      medium: 0.04,
       normal: 0.05,
       fast: 0.09,
       veryFast: 0.2,
@@ -291,10 +292,16 @@ Player.prototype = {
           this.autoMove.position.z = ray.position.z;
           this.autoMove.rotation.x = 0;//pitch;
           this.autoMove.rotation.y = yaw;
+
+          // deactivate artwork
+          artworks.deactivate();
         } else {
           const artwork = this.raytracer.lastCollision.artwork;
+
+          // activate artwork
+          artworks.activate(artwork);
+
           // move to artwork
-          artworks.activate(artwork.id);
           this.autoMove.position.x = artwork.eye.x;
           this.autoMove.position.z = artwork.eye.z;
           this.autoMove.rotation.x = artwork.pitch;
@@ -377,12 +384,15 @@ Player.prototype = {
     this.falling = (this.movement.y != 0);
 
     // adjust movement if falling
-    if (!this.falling && !this.autoMove.active) {
-      this.movement.x = this.target.movement.x;
-      this.movement.z = this.target.movement.z;
-    } else {
+    if (this.autoMove.active) {
+      this.movement.x += (this.target.movement.x - this.movement.x) * this.attributes.adjust.medium;
+      this.movement.z += (this.target.movement.z - this.movement.z) * this.attributes.adjust.medium;
+    } else if (this.falling) {
       this.movement.x += (this.target.movement.x - this.movement.x) * this.attributes.adjust.slow;
       this.movement.z += (this.target.movement.z - this.movement.z) * this.attributes.adjust.slow;
+    } else {
+      this.movement.x = this.target.movement.x;
+      this.movement.z = this.target.movement.z;
     }
   },
 

@@ -31,7 +31,6 @@ Focal.prototype = {
 
   activate: function() {
     this.active = true;
-    console.log(this.source);
   },
 
   deactivate: function() {
