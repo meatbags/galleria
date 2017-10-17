@@ -525,11 +525,11 @@ var _Player = __webpack_require__(7);
 
 var _Player2 = _interopRequireDefault(_Player);
 
-var _Artworks = __webpack_require__(9);
+var _Artworks = __webpack_require__(10);
 
 var _Artworks2 = _interopRequireDefault(_Artworks);
 
-var _Loader = __webpack_require__(11);
+var _Loader = __webpack_require__(12);
 
 var _Loader2 = _interopRequireDefault(_Loader);
 
@@ -539,7 +539,7 @@ var _Globals = __webpack_require__(0);
 
 var _Globals2 = _interopRequireDefault(_Globals);
 
-__webpack_require__(12);
+__webpack_require__(13);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -697,7 +697,7 @@ var _RayTracer = __webpack_require__(8);
 
 var _RayTracer2 = _interopRequireDefault(_RayTracer);
 
-var _HUD = __webpack_require__(13);
+var _HUD = __webpack_require__(9);
 
 var _HUD2 = _interopRequireDefault(_HUD);
 
@@ -1356,12 +1356,76 @@ exports.default = RayTracer;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
+var HUD = function HUD() {
+  this.elements = {
+    left: $('.arrow-left'),
+    right: $('.arrow-right')
+  };
+};
+
+HUD.prototype = {
+  clear: function clear() {
+    this.removeClass(this.elements.left, 'hover');
+    this.removeClass(this.elements.right, 'hover');
+  },
+
+  hoverLeft: function hoverLeft() {
+    this.addClass(this.elements.left, 'hover');
+    this.removeClass(this.elements.right, 'hover');
+  },
+
+  hoverRight: function hoverRight() {
+    this.addClass(this.elements.right, 'hover');
+    this.removeClass(this.elements.left, 'hover');
+  },
+
+  clickLeft: function clickLeft() {
+    var self = this;
+    this.addClass(this.elements.left, 'active');
+    setTimeout(function () {
+      self.removeClass(self.elements.left, 'active');
+    }, 500);
+  },
+
+  clickRight: function clickRight() {
+    var self = this;
+    this.addClass(this.elements.right, 'active');
+    setTimeout(function () {
+      self.removeClass(self.elements.right, 'active');
+    }, 500);
+  },
+
+  addClass: function addClass(elem, className) {
+    if (!elem.hasClass(className)) {
+      elem.addClass(className);
+    }
+  },
+
+  removeClass: function removeClass(elem, className) {
+    if (elem.hasClass(className)) {
+      elem.removeClass(className);
+    }
+  }
+};
+
+exports.default = HUD;
+
+/***/ }),
+/* 10 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
 
 var _Materials = __webpack_require__(3);
 
 var _Maths = __webpack_require__(1);
 
-var _Focal = __webpack_require__(10);
+var _Focal = __webpack_require__(11);
 
 var _Globals = __webpack_require__(0);
 
@@ -1479,7 +1543,7 @@ Artworks.prototype = {
 exports.default = Artworks;
 
 /***/ }),
-/* 10 */
+/* 11 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1565,7 +1629,7 @@ exports.Focal = Focal;
 exports.TYPE_FOCAL = TYPE_FOCAL;
 
 /***/ }),
-/* 11 */
+/* 12 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1644,7 +1708,8 @@ Loader.prototype = {
     return new Promise(function (resolve, reject) {
       try {
         self.materialLoader.load(filename + '.mtl', function (materials) {
-          materials.preload();
+          console.log('MATERIALS', materials);
+          //materials.preload();
           self.objectLoader.setMaterials(materials);
           self.objectLoader.load(filename + '.obj', function (obj) {
             self.process(obj, materials);
@@ -1661,7 +1726,7 @@ Loader.prototype = {
 exports.default = Loader;
 
 /***/ }),
-/* 12 */
+/* 13 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1793,70 +1858,6 @@ THREE.Sky.SkyShader = {
 		'	float sundisk = smoothstep( sunAngularDiameterCos, sunAngularDiameterCos + 0.00002, cosTheta );', '	L0 += ( vSunE * 19000.0 * Fex ) * sundisk;', '	vec3 texColor = ( Lin + L0 ) * 0.04 + vec3( 0.0, 0.0003, 0.00075 );', '	vec3 curr = Uncharted2Tonemap( ( log2( 2.0 / pow( luminance, 4.0 ) ) ) * texColor );', '	vec3 color = curr * whiteScale;', '	vec3 retColor = pow( color, vec3( 1.0 / ( 1.2 + ( 1.2 * vSunfade ) ) ) );', '	gl_FragColor = vec4( retColor, 1.0 );', '}'].join('\n')
 
 };
-
-/***/ }),
-/* 13 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-var HUD = function HUD() {
-  this.elements = {
-    left: $('.arrow-left'),
-    right: $('.arrow-right')
-  };
-};
-
-HUD.prototype = {
-  clear: function clear() {
-    this.removeClass(this.elements.left, 'hover');
-    this.removeClass(this.elements.right, 'hover');
-  },
-
-  hoverLeft: function hoverLeft() {
-    this.addClass(this.elements.left, 'hover');
-    this.removeClass(this.elements.right, 'hover');
-  },
-
-  hoverRight: function hoverRight() {
-    this.addClass(this.elements.right, 'hover');
-    this.removeClass(this.elements.left, 'hover');
-  },
-
-  clickLeft: function clickLeft() {
-    var self = this;
-    this.addClass(this.elements.left, 'active');
-    setTimeout(function () {
-      self.removeClass(self.elements.left, 'active');
-    }, 500);
-  },
-
-  clickRight: function clickRight() {
-    var self = this;
-    this.addClass(this.elements.right, 'active');
-    setTimeout(function () {
-      self.removeClass(self.elements.right, 'active');
-    }, 500);
-  },
-
-  addClass: function addClass(elem, className) {
-    if (!elem.hasClass(className)) {
-      elem.addClass(className);
-    }
-  },
-
-  removeClass: function removeClass(elem, className) {
-    if (elem.hasClass(className)) {
-      elem.removeClass(className);
-    }
-  }
-};
-
-exports.default = HUD;
 
 /***/ })
 /******/ ]);

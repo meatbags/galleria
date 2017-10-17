@@ -64,7 +64,8 @@ Loader.prototype = {
       function(resolve, reject) {
         try {
           self.materialLoader.load(filename + '.mtl', function(materials) {
-            materials.preload();
+            console.log('MATERIALS', materials)
+            //materials.preload();
             self.objectLoader.setMaterials(materials);
             self.objectLoader.load(filename + '.obj', function(obj){
               self.process(obj, materials);
