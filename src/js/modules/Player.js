@@ -96,7 +96,7 @@ Player.prototype = {
       y: 0,
       time: 0,
       clickTimeThreshold: 0.2,
-      clickMagnitudeThreshold: 0.05,
+      clickMagnitudeThreshold: 0.1,
       active: false,
       locked: false,
       lockTime: 100, //ms
@@ -125,7 +125,7 @@ Player.prototype = {
     self.domElement.addEventListener('touchstart', function(e){ self.handleMouseDown(e.touches[0])})
     self.domElement.addEventListener('touchmove', function(e){ self.handleMouseMove(e.touches[0])})
     self.domElement.addEventListener('touchend', function(e){
-      self.hanldeMouseClick(e.touches[0]);
+      self.handleMouseClick(e.touches[0]);
       self.handleMouseUp(e.touches[0]);
     })
 
@@ -522,20 +522,22 @@ Player.prototype = {
       this.target.rotation.y = this.mouse.rotation.y + this.mouse.delta.x * 1;
 
       // pitch is dependent, so set it to offset.rotation
-      let pitch = this.mouse.rotation.x + this.mouse.delta.y * 0.75;
+      if (!Globals.isMobile) {
+        let pitch = this.mouse.rotation.x + this.mouse.delta.y * 0.75;
 
-      // if limit reached, reset start point
-      if (pitch > this.attributes.maxRotationOffset) {
-        pitch = this.attributes.maxRotationOffset;
-        this.mouse.start.y = this.mouse.y;
-        this.mouse.rotation.x = pitch;
-      } else if (pitch < -this.attributes.maxRotationOffsetLower) {
-        pitch = -this.attributes.maxRotationOffsetLower;
-        this.mouse.start.y = this.mouse.y;
-        this.mouse.rotation.x = pitch;
+        // if limit reached, reset start point
+        if (pitch > this.attributes.maxRotationOffset) {
+          pitch = this.attributes.maxRotationOffset;
+          this.mouse.start.y = this.mouse.y;
+          this.mouse.rotation.x = pitch;
+        } else if (pitch < -this.attributes.maxRotationOffsetLower) {
+          pitch = -this.attributes.maxRotationOffsetLower;
+          this.mouse.start.y = this.mouse.y;
+          this.mouse.rotation.x = pitch;
+        }
+
+        this.target.offset.rotation.x = pitch;
       }
-
-      this.target.offset.rotation.x = pitch;
     }
   },
 
