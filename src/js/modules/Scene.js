@@ -101,9 +101,9 @@ Scene.prototype = {
         point2,
         hemisphere,
         this.neonSign,
-        this.player.object,
-        this.player.raytracer.object
+        this.player.object
       );
+      //this.player.raytracer.object
     } else {
       // gallery closed, minimal lighting
 

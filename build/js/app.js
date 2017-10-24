@@ -638,7 +638,8 @@ Scene.prototype = {
       point2.position.set(-19, 8, 5);
       this.neonSign.position.set(0, 14, -32);
 
-      this.scene.add(ambient, point1, point2, hemisphere, this.neonSign, this.player.object, this.player.raytracer.object);
+      this.scene.add(ambient, point1, point2, hemisphere, this.neonSign, this.player.object);
+      //this.player.raytracer.object
     } else {
       // gallery closed, minimal lighting
 
@@ -1170,17 +1171,21 @@ Player.prototype = {
   },
 
   handleMouseDown: function handleMouseDown(e) {
+    var bound = this.domElement.getBoundingClientRect();
+
     this.mouse.active = true;
     this.mouse.rotation.x = this.offset.rotation.x;
     this.mouse.rotation.y = this.rotation.y;
     this.mouse.time = new Date().getTime();
     this.mouse.start.x = e.clientX / this.domElement.width * 2 - 1;
-    this.mouse.start.y = e.clientY / this.domElement.height * 2 - 1;
+    this.mouse.start.y = (e.clientY - bound.y) / this.domElement.height * 2 - 1;
   },
 
   handleMouseMove: function handleMouseMove(e) {
+    var bound = this.domElement.getBoundingClientRect();
+
     this.mouse.x = e.clientX / this.domElement.width * 2 - 1;
-    this.mouse.y = e.clientY / this.domElement.height * 2 - 1;
+    this.mouse.y = (e.clientY - bound.y) / this.domElement.height * 2 - 1;
 
     if (this.mouse.active) {
       this.mouse.delta.x = this.mouse.x - this.mouse.start.x;

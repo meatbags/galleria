@@ -476,17 +476,21 @@ Player.prototype = {
   },
 
   handleMouseDown: function(e) {
+    const bound = this.domElement.getBoundingClientRect();
+
     this.mouse.active = true;
     this.mouse.rotation.x = this.offset.rotation.x;
     this.mouse.rotation.y = this.rotation.y;
     this.mouse.time = (new Date()).getTime()
     this.mouse.start.x = (e.clientX / this.domElement.width) * 2 - 1;
-    this.mouse.start.y = (e.clientY / this.domElement.height) * 2 - 1;
+    this.mouse.start.y = ((e.clientY - bound.y) / this.domElement.height) * 2 - 1;
   },
 
   handleMouseMove: function(e) {
+    const bound = this.domElement.getBoundingClientRect();
+
     this.mouse.x = (e.clientX / this.domElement.width) * 2 - 1;
-    this.mouse.y = (e.clientY / this.domElement.height) * 2 - 1;
+    this.mouse.y = ((e.clientY - bound.y) / this.domElement.height) * 2 - 1;
 
     if (this.mouse.active) {
       this.mouse.delta.x = this.mouse.x - this.mouse.start.x;
