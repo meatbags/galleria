@@ -51,8 +51,8 @@ Focal.prototype = {
 
   scale: function(x, y, z) {
     const s = Globals.artwork.clickBoxScale;
-    const zScale = (this.direction == 'z') ? 0.5 : 1;
-    const xScale = (this.direction == 'x') ? 0.5 : 1;
+    const zScale = (this.direction == 'z') ? 0.25 : 1;
+    const xScale = (this.direction == 'x') ? 0.25 : 1;
 
     this.dimensions.x *= x * s * xScale;
     this.dimensions.y *= y * s;

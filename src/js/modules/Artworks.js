@@ -61,7 +61,7 @@ Artworks.prototype = {
   },
 
   deactivate: function() {
-    if (!this.active) {
+    if (this.active) {
       this.active = false;
 
       // deactivate artworks
@@ -103,7 +103,7 @@ Artworks.prototype = {
         mesh.scale.y = (texture.image.naturalHeight / 1000.) * place.scale;
         self.focalPoints[index].scale(mesh.scale.x, mesh.scale.y, mesh.scale.x);
       });
-      
+
       // apply texture
       mesh.material.map = texture;
       mesh.rotation.set(place.pitch, place.yaw, 0);
@@ -112,7 +112,7 @@ Artworks.prototype = {
       // add to gallery
       self.object.add(mesh);
       // helper
-      self.object.add(focal.object);
+      //self.object.add(focal.object);
     }
   },
 }

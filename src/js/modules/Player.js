@@ -26,6 +26,7 @@ const Player = function(domElement) {
     position: new THREE.Vector3(),
     rotation: new THREE.Vector3(),
     threshold: 1,
+    trackingArtwork: false
   };
   this.attributes = {
     speed: Globals.player.speed,
@@ -97,6 +98,8 @@ Player.prototype = {
       clickTimeThreshold: 0.2,
       clickMagnitudeThreshold: 0.05,
       active: false,
+      locked: false,
+      lockTime: 100, //ms
       start: {
         x: 0,
         y: 0
@@ -259,7 +262,6 @@ Player.prototype = {
 
   handleInput: function(delta, artworks) {
     // handle controls
-
     // click
     if (this.keys.click) {
       this.keys.click = false;
@@ -268,15 +270,18 @@ Player.prototype = {
       this.autoMove.active = true;
 
       if (this.raytracer.lastCollision.type === Globals.type.TYPE_NONE) {
-        // remove description
-        artworks.deactivate();
-
         const yaw = this.rotation.y;
 
-        this.autoMove.position.x = this.position.x + Math.sin(yaw) * 10;
-        this.autoMove.position.z = this.position.z + Math.cos(yaw) * 10;
+        // remove description
+        artworks.deactivate();
+        this.autoMove.trackingArtwork = false;
+
+        this.autoMove.position.x = this.position.x + Math.sin(yaw) * Globals.player.autowalkDistance;
+        this.autoMove.position.z = this.position.z + Math.cos(yaw) * Globals.player.autowalkDistance;
         this.autoMove.rotation.x = 0;
         this.autoMove.rotation.y = yaw;
+        //this.target.rotation.x = this.autoMove.rotation.x;
+        this.target.rotation.y = this.autoMove.rotation.y;
       } else {
         const artwork = this.raytracer.lastCollision.artwork;
 
@@ -290,6 +295,7 @@ Player.prototype = {
         this.autoMove.rotation.x = artwork.pitch;
         this.autoMove.rotation.y = artwork.yaw;
         this.target.rotation.x = this.autoMove.rotation.x;
+        this.target.offset.rotation.x = 0;
         this.target.rotation.y = this.autoMove.rotation.y;
       }
     }
@@ -334,8 +340,6 @@ Player.prototype = {
 
     // move and look automatically
     if (this.autoMove.active) {
-      //this.target.rotation.x = this.autoMove.rotation.x;
-      //this.target.rotation.y = this.autoMove.rotation.y;
       const dist = Maths.distanceBetween2D(this.target.position, this.autoMove.position);
 
       if (dist < this.autoMove.threshold) {
@@ -390,9 +394,9 @@ Player.prototype = {
     this.position.z += (this.target.position.z - this.position.z) * this.attributes.adjust.veryFast;
 
     // rotate
-    //const factor = (this.autoMove.active) ? this.attributes.adjust.slow : this.attributes.adjust.veryFast;
+    const factor = (this.autoMove.active && !this.mouse.active) ? this.attributes.adjust.slow : this.attributes.adjust.veryFast;
 
-    this.rotation.y += Maths.minAngleDifference(this.rotation.y, this.target.rotation.y) * this.attributes.adjust.veryFast;
+    this.rotation.y += Maths.minAngleDifference(this.rotation.y, this.target.rotation.y) * factor;
     this.rotation.x += Maths.minAngleDifference(this.rotation.x, this.target.rotation.x) * this.attributes.adjust.normal;
     this.offset.rotation.y += (this.target.offset.rotation.y - this.offset.rotation.y) * this.attributes.adjust.normal;
     this.offset.rotation.x += (this.target.offset.rotation.x - this.offset.rotation.x) * this.attributes.adjust.fast;
@@ -464,8 +468,9 @@ Player.prototype = {
   },
 
   handleMouseClick: function(e) {
-    var t = ((new Date()).getTime() - this.mouse.time) / 1000.;
-    var mag = Math.sqrt(
+    const self = this;
+    const t = ((new Date()).getTime() - this.mouse.time) / 1000.;
+    const mag = Math.sqrt(
       Math.pow(this.mouse.x - this.mouse.start.x, 2) +
       Math.pow(this.mouse.y - this.mouse.start.y, 2)
     );
@@ -476,14 +481,23 @@ Player.prototype = {
   },
 
   handleMouseDown: function(e) {
-    const bound = this.domElement.getBoundingClientRect();
+    if (!this.mouse.locked) {
+      const self = this;
+      const bound = this.domElement.getBoundingClientRect();
 
-    this.mouse.active = true;
-    this.mouse.rotation.x = this.offset.rotation.x;
-    this.mouse.rotation.y = this.rotation.y;
-    this.mouse.time = (new Date()).getTime()
-    this.mouse.start.x = (e.clientX / this.domElement.width) * 2 - 1;
-    this.mouse.start.y = ((e.clientY - bound.y) / this.domElement.height) * 2 - 1;
+      this.mouse.active = true;
+      this.mouse.rotation.x = this.offset.rotation.x;
+      this.mouse.rotation.y = this.rotation.y;
+      this.mouse.time = (new Date()).getTime()
+      this.mouse.start.x = (e.clientX / this.domElement.width) * 2 - 1;
+      this.mouse.start.y = ((e.clientY - bound.y) / this.domElement.height) * 2 - 1;
+
+      // lock mouse (prevent double click)
+      this.mouse.locked = true;
+      setTimeout(function(){
+        self.mouse.locked = false;
+      }, self.mouse.lockTime);
+    }
   },
 
   handleMouseMove: function(e) {

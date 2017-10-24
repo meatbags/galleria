@@ -19,13 +19,14 @@ const Globals = {
       y: 0.3086,
       z: 0
     },
-    height: 2,
+    height: 2.5,
     speed: 8,
     rotationSpeed: Math.PI * 0.75,
+    autowalkDistance: 10,
   },
   raytracer: {
-    precision: .8,
-    length: 12.5
+    precision: 0.5,
+    length: 15
   },
   camera: {
     fov: 58,
