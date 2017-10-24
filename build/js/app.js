@@ -81,7 +81,8 @@ var halfPI = Math.PI / 2;
 var Globals = {
   type: {
     TYPE_ARTWORK: 'TYPE_ARTWORK',
-    TYPE_COLLISION: 'TYPE_COLLISION'
+    TYPE_COLLISION: 'TYPE_COLLISION',
+    TYPE_NONE: 'TYPE_NONE'
   },
   player: {
     position: {
@@ -94,7 +95,7 @@ var Globals = {
       y: 0.3086,
       z: 0
     },
-    height: 1.8,
+    height: 2,
     speed: 8,
     rotationSpeed: Math.PI * 0.75
   },
@@ -389,10 +390,11 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 /**
  * @author meatbags / https://github.com/meatbags
-*/
+**/
 
 var App = {
 	init: function init() {
+		App.mode = window.location.port === '8080' ? 'dev' : 'production';
 		App.timer = new _Timer2.default();
 		App.scene = new _Scene2.default();
 
@@ -406,7 +408,7 @@ var App = {
 	loading: function loading() {
 		App.timer.update();
 
-		if (!App.scene.isLoaded()) {
+		if (!App.scene.isLoaded() && App.mode != 'dev') {
 			requestAnimationFrame(App.loading);
 		} else {
 			App.fadeIn('#nav-default');
@@ -636,7 +638,7 @@ Scene.prototype = {
       point2.position.set(-19, 8, 5);
       this.neonSign.position.set(0, 14, -32);
 
-      this.scene.add(ambient, point1, point2, hemisphere, this.neonSign, this.player.object);
+      this.scene.add(ambient, point1, point2, hemisphere, this.neonSign, this.player.object, this.player.raytracer.object);
     } else {
       // gallery closed, minimal lighting
 
@@ -657,7 +659,7 @@ Scene.prototype = {
 
   resize: function resize() {
     var width = window.innerWidth;
-    var height = 540;
+    var height = 520;
     this.camera.aspect = width / height;
     this.camera.updateProjectionMatrix();
     this.renderer.setSize(width, height);
@@ -697,29 +699,19 @@ var _RayTracer = __webpack_require__(8);
 
 var _RayTracer2 = _interopRequireDefault(_RayTracer);
 
-var _HUD = __webpack_require__(9);
-
-var _HUD2 = _interopRequireDefault(_HUD);
-
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
+//import HUD from './HUD';
+
 var Player = function Player(domElement) {
   this.domElement = domElement;
-  this.hud = new _HUD2.default();
+  //this.hud = new HUD();
   this.object = new THREE.Object3D();
   this.position = new THREE.Vector3(_Globals2.default.player.position.x, _Globals2.default.player.position.y, _Globals2.default.player.position.z);
   this.movement = new THREE.Vector3(0, 0, 0);
   this.rotation = new THREE.Vector3(_Globals2.default.player.rotation.x * 1.1, _Globals2.default.player.rotation.y, _Globals2.default.player.rotation.z);
-  this.mouse = {
-    x: 0,
-    y: 0,
-    region: {
-      left: -0.5,
-      right: 0.5
-    }
-  };
   this.offset = {
     rotation: new THREE.Vector3(0, 0, 0)
   };
@@ -748,15 +740,15 @@ var Player = function Player(domElement) {
       far: _Globals2.default.camera.far
     },
     cameraThreshold: 0.4,
-    maxRotationOffset: Math.PI * 0.3,
-    maxRotationOffsetLower: Math.PI * 0.2,
+    maxRotationOffset: Math.PI * 0.35,
+    maxRotationOffsetLower: Math.PI * 0.35,
     falling: false,
     adjust: {
       slow: 0.025,
       medium: 0.04,
       normal: 0.05,
       fast: 0.09,
-      veryFast: 0.2
+      veryFast: 0.15
     },
     climb: {
       up: 1,
@@ -769,7 +761,6 @@ var Player = function Player(domElement) {
       jumpVelocity: 5
     }
   };
-  this.outputLog = [];
   this.camera = new THREE.PerspectiveCamera(this.attributes.camera.fov, 1, this.attributes.camera.near, this.attributes.camera.far);
   this.camera.up = new THREE.Vector3(0, 1, 0);
   this.raytracer = new _RayTracer2.default();
@@ -796,47 +787,57 @@ Player.prototype = {
   bindControls: function bindControls() {
     var self = this;
 
-    // mouse
+    // store
+    self.keys = { up: false, down: false, left: false, right: false, jump: false, click: false };
+    self.mouse = {
+      x: 0,
+      y: 0,
+      time: 0,
+      clickTimeThreshold: 0.2,
+      clickMagnitudeThreshold: 0.05,
+      active: false,
+      start: {
+        x: 0,
+        y: 0
+      },
+      delta: {
+        x: 0,
+        y: 0
+      },
+      rotation: {
+        x: 0,
+        y: 0
+      }
+    };
+
+    // mouse events
     self.domElement.addEventListener('mousemove', function (e) {
       self.handleMouseMove(e);
-    }, false);
+    });
+    self.domElement.addEventListener('click', function (e) {
+      self.handleMouseClick(e);
+    });
     self.domElement.addEventListener('mousedown', function (e) {
       self.handleMouseDown(e);
-    }, false);
-    self.domElement.addEventListener('mouseout', function (e) {
+    });
+    document.addEventListener('mouseup', function (e) {
+      self.handleMouseUp(e);
+    });
+    document.addEventListener('mouseleave', function (e) {
       self.handleMouseOut(e);
-    }, false);
+    });
 
-    // keyboard
-    self.keys = {
-      up: false,
-      down: false,
-      left: false,
-      right: false,
-      jump: false,
-      click: false
-    };
+    // keyboard events
     document.addEventListener("keydown", function (e) {
       self.handleKeyDown(e);
-    }, false);
+    });
     document.addEventListener("keyup", function (e) {
       self.handleKeyUp(e);
-    }, false);
-  },
-
-  log: function log() {
-    var text = '';
-    for (var i = 0; i < arguments.length; i += 1) {
-      text += arguments[i] + ' ';
-    }
-    this.outputLog.push(text);
+    });
   },
 
   update: function update(delta, collider, artworks) {
     // handle key presses and move player
-
-    this.outputLog = [];
-
     // controls
     this.handleInput(delta, artworks);
 
@@ -859,7 +860,7 @@ Player.prototype = {
 
     // raytracer
     var ray = this.raytracer.getRayVector(this.camera, this.mouse.x, this.mouse.y);
-    var collision = this.raytracer.trace(this.camera.position, ray, _Globals2.default.raytracer.length, collider, artworks);
+    var collision = this.raytracer.trace(this.camera.position, ray, _Globals2.default.raytracer.length, artworks); //collider
   },
 
   processCollisions: function processCollisions(next, collider) {
@@ -868,7 +869,6 @@ Player.prototype = {
     var collisions = collider.collisions(next);
 
     if (collisions.length > 0) {
-      this.log('Collisions', collisions.length);
 
       // check for floor
 
@@ -882,7 +882,6 @@ Player.prototype = {
           // ascend
           if (ceiling.y >= next.y) {
             next.y = ceiling.y;
-            this.log('CLIMBED');
           }
         }
       }
@@ -959,7 +958,6 @@ Player.prototype = {
     }
   },
 
-
   handleInput: function handleInput(delta, artworks) {
     // handle controls
 
@@ -968,41 +966,32 @@ Player.prototype = {
       this.keys.click = false;
 
       // if centre clicked
-      if (this.mouse.x >= this.mouse.region.left && this.mouse.x <= this.mouse.region.right) {
-        this.autoMove.active = true;
+      this.autoMove.active = true;
 
-        if (this.raytracer.lastCollision.type === _Globals2.default.type.TYPE_COLLISION) {
-          var ray = this.raytracer.lastCollision;
-          var yaw = Math.atan2(ray.vector.x, ray.vector.z);
-          //const pitch = ray.vector.y;
+      if (this.raytracer.lastCollision.type === _Globals2.default.type.TYPE_NONE) {
+        // remove description
+        artworks.deactivate();
 
-          this.autoMove.position.x = ray.position.x;
-          this.autoMove.position.z = ray.position.z;
-          this.autoMove.rotation.x = 0; //pitch;
-          this.autoMove.rotation.y = yaw;
+        var yaw = this.rotation.y;
 
-          // deactivate artwork
-          artworks.deactivate();
-        } else {
-          var artwork = this.raytracer.lastCollision.artwork;
-
-          // activate artwork
-          artworks.activate(artwork);
-
-          // move to artwork
-          this.autoMove.position.x = artwork.eye.x;
-          this.autoMove.position.z = artwork.eye.z;
-          this.autoMove.rotation.x = artwork.pitch;
-          this.autoMove.rotation.y = artwork.yaw;
-        }
+        this.autoMove.position.x = this.position.x + Math.sin(yaw) * 10;
+        this.autoMove.position.z = this.position.z + Math.cos(yaw) * 10;
+        this.autoMove.rotation.x = 0;
+        this.autoMove.rotation.y = yaw;
       } else {
-        this.autoMove.active = false;
+        var artwork = this.raytracer.lastCollision.artwork;
 
-        if (this.mouse.x < this.mouse.region.left) {
-          this.hud.clickLeft();
-        } else if (this.mouse.x > this.mouse.region.right) {
-          this.hud.clickRight();
-        }
+        // add new description
+        artworks.deactivate();
+        artworks.activate(artwork);
+
+        // move to artwork
+        this.autoMove.position.x = artwork.eye.x;
+        this.autoMove.position.z = artwork.eye.z;
+        this.autoMove.rotation.x = artwork.pitch;
+        this.autoMove.rotation.y = artwork.yaw;
+        this.target.rotation.x = this.autoMove.rotation.x;
+        this.target.rotation.y = this.autoMove.rotation.y;
       }
     }
 
@@ -1016,6 +1005,9 @@ Player.prototype = {
 
       // reset pitch
       this.target.rotation.x = 0;
+
+      // remove description
+      artworks.deactivate();
     }
 
     // up/ down keys
@@ -1033,6 +1025,9 @@ Player.prototype = {
 
       // reset pitch
       this.target.rotation.x = 0;
+
+      // remove description
+      artworks.deactivate();
     } else {
       this.target.movement.x = 0;
       this.target.movement.z = 0;
@@ -1040,8 +1035,8 @@ Player.prototype = {
 
     // move and look automatically
     if (this.autoMove.active) {
-      this.target.rotation.x = this.autoMove.rotation.x;
-      this.target.rotation.y = this.autoMove.rotation.y;
+      //this.target.rotation.x = this.autoMove.rotation.x;
+      //this.target.rotation.y = this.autoMove.rotation.y;
       var dist = Maths.distanceBetween2D(this.target.position, this.autoMove.position);
 
       if (dist < this.autoMove.threshold) {
@@ -1096,12 +1091,12 @@ Player.prototype = {
     this.position.z += (this.target.position.z - this.position.z) * this.attributes.adjust.veryFast;
 
     // rotate
-    var factor = this.autoMove.active ? this.attributes.adjust.slow : this.attributes.adjust.fast;
+    //const factor = (this.autoMove.active) ? this.attributes.adjust.slow : this.attributes.adjust.veryFast;
 
-    this.rotation.y += Maths.minAngleDifference(this.rotation.y, this.target.rotation.y) * factor;
-    this.rotation.x += Maths.minAngleDifference(this.rotation.x, this.target.rotation.x) * this.attributes.adjust.slow;
+    this.rotation.y += Maths.minAngleDifference(this.rotation.y, this.target.rotation.y) * this.attributes.adjust.veryFast;
+    this.rotation.x += Maths.minAngleDifference(this.rotation.x, this.target.rotation.x) * this.attributes.adjust.normal;
     this.offset.rotation.y += (this.target.offset.rotation.y - this.offset.rotation.y) * this.attributes.adjust.normal;
-    this.offset.rotation.x += (this.target.offset.rotation.x - this.offset.rotation.x) * this.attributes.adjust.slow;
+    this.offset.rotation.x += (this.target.offset.rotation.x - this.offset.rotation.x) * this.attributes.adjust.fast;
 
     // limit rotation
     this.rotation.y += this.rotation.y < 0 ? Maths.twoPi : this.rotation.y > Maths.twoPi ? -Maths.twoPi : 0;
@@ -1117,6 +1112,7 @@ Player.prototype = {
     this.camera.position.set(this.position.x, height, this.position.z);
     this.camera.lookAt(new THREE.Vector3(this.position.x + Math.sin(yaw), height + Math.sin(pitch), this.position.z + Math.cos(yaw)));
   },
+
   handleKeyDown: function handleKeyDown(e) {
     switch (e.keyCode) {
       case 38:
@@ -1142,6 +1138,7 @@ Player.prototype = {
         break;
     }
   },
+
   handleKeyUp: function handleKeyUp(e) {
     switch (e.keyCode) {
       case 38:
@@ -1162,68 +1159,60 @@ Player.prototype = {
         break;
     }
   },
+
+  handleMouseClick: function handleMouseClick(e) {
+    var t = (new Date().getTime() - this.mouse.time) / 1000.;
+    var mag = Math.sqrt(Math.pow(this.mouse.x - this.mouse.start.x, 2) + Math.pow(this.mouse.y - this.mouse.start.y, 2));
+
+    if (t < this.mouse.clickTimeThreshold && mag < this.mouse.clickMagnitudeThreshold) {
+      this.keys.click = true;
+    }
+  },
+
   handleMouseDown: function handleMouseDown(e) {
-    this.keys.click = true;
-
-    var bound = this.domElement.getBoundingClientRect();
-    var w = this.domElement.width;
-    var x = (e.clientX - bound.left) / w;
-    var t = this.attributes.cameraThreshold;
-
-    // adjust camera
-    if (x < t) {
-      this.target.rotation.y = this.rotation.y + (t - x) / t * this.attributes.maxRotationOffset;
-    } else if (x > 1 - t) {
-      this.target.rotation.y = this.rotation.y + (x - (1 - t)) / t * -this.attributes.maxRotationOffset;
-    } else {
-      this.target.rotation.y = this.rotation.y;
-    }
+    this.mouse.active = true;
+    this.mouse.rotation.x = this.offset.rotation.x;
+    this.mouse.rotation.y = this.rotation.y;
+    this.mouse.time = new Date().getTime();
+    this.mouse.start.x = e.clientX / this.domElement.width * 2 - 1;
+    this.mouse.start.y = e.clientY / this.domElement.height * 2 - 1;
   },
+
   handleMouseMove: function handleMouseMove(e) {
-    var bound = this.domElement.getBoundingClientRect();
-    var w = this.domElement.width;
-    var h = this.domElement.height;
-    var x = (e.clientX - bound.left) / w;
-    var y = (e.clientY - bound.top) / h;
-    var t = this.attributes.cameraThreshold;
+    this.mouse.x = e.clientX / this.domElement.width * 2 - 1;
+    this.mouse.y = e.clientY / this.domElement.height * 2 - 1;
 
-    // adjust yaw
-    if (x < t) {
-      this.target.offset.rotation.y = (t - x) / t * this.attributes.maxRotationOffset;
-    } else if (x > 1 - t) {
-      this.target.offset.rotation.y = (x - (1 - t)) / t * -this.attributes.maxRotationOffset;
-    } else {
-      this.target.offset.rotation.y = 0;
-    }
+    if (this.mouse.active) {
+      this.mouse.delta.x = this.mouse.x - this.mouse.start.x;
+      this.mouse.delta.y = this.mouse.y - this.mouse.start.y;
 
-    // adjust pitch
-    if (y < t) {
-      this.target.offset.rotation.x = (t - y) / t * this.attributes.maxRotationOffset;
-    } else if (y > 1 - t) {
-      this.target.offset.rotation.x = (y - (1 - t)) / t * -this.attributes.maxRotationOffsetLower;
-    } else {
-      this.target.offset.rotation.x = 0;
-    }
+      // target rotation yaw
+      this.target.rotation.y = this.mouse.rotation.y + this.mouse.delta.x * 1;
 
-    // record mouse
-    this.mouse.x = x * 2 - 1;
-    this.mouse.y = y * 2 - 1;
+      // pitch is dependent, so set it to offset.rotation
+      var pitch = this.mouse.rotation.x + this.mouse.delta.y * 0.75;
 
-    // show HUD
-    if (this.mouse.x < this.mouse.region.left) {
-      this.hud.hoverLeft();
-    } else if (this.mouse.x > this.mouse.region.right) {
-      this.hud.hoverRight();
-    } else {
-      this.hud.clear();
+      // if limit reached, reset start point
+      if (pitch > this.attributes.maxRotationOffset) {
+        pitch = this.attributes.maxRotationOffset;
+        this.mouse.start.y = this.mouse.y;
+        this.mouse.rotation.x = pitch;
+      } else if (pitch < -this.attributes.maxRotationOffsetLower) {
+        pitch = -this.attributes.maxRotationOffsetLower;
+        this.mouse.start.y = this.mouse.y;
+        this.mouse.rotation.x = pitch;
+      }
+
+      this.target.offset.rotation.x = pitch;
     }
   },
+
   handleMouseOut: function handleMouseOut(e) {
-    if (this.target.offset.rotation.x < 0) {
-      this.target.offset.rotation.x = 0;
-    }
-    //this.target.offset.rotation.x = 0;
-    //this.target.offset.rotation.y = 0;
+    this.mouse.active = false;
+  },
+
+  handleMouseUp: function handleMouseUp(e) {
+    this.mouse.active = false;
   }
 };
 
@@ -1264,6 +1253,7 @@ var RayTracer = function RayTracer() {
 RayTracer.prototype = {
   init: function init() {
     this.object = new THREE.Object3D();
+    this.object.add(new THREE.Mesh(new THREE.SphereBufferGeometry(0.25), new THREE.MeshPhongMaterial({})));
   },
 
   getRayVector: function getRayVector(camera, h, v) {
@@ -1282,7 +1272,7 @@ RayTracer.prototype = {
     return vec;
   },
 
-  trace: function trace(point, vector, length, collider, artworks) {
+  trace: function trace(point, vector, length, artworks) {
     // check ray against artworks and geometry
 
     var travelled = 0;
@@ -1303,18 +1293,18 @@ RayTracer.prototype = {
         }
       }
 
+      /*
       if (!artwork) {
         collision = collider.collision(point);
-
-        if (collision) {
-          var intersect = collider.intersect(last, point);
-
-          if (intersect != null) {
+         if (collision) {
+          const intersect = collider.intersect(last, point);
+           if (intersect != null) {
             point = intersect.intersect;
             this.target.rotation = intersect.plane.normal;
           }
         }
       }
+      */
     }
 
     // smooth motion
@@ -1335,7 +1325,7 @@ RayTracer.prototype = {
       };
     } else {
       this.lastCollision = {
-        type: _Globals2.default.type.TYPE_COLLISION,
+        type: _Globals2.default.type.TYPE_NONE,
         position: point,
         collision: collision,
         vector: vector
@@ -1347,70 +1337,7 @@ RayTracer.prototype = {
 exports.default = RayTracer;
 
 /***/ }),
-/* 9 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-var HUD = function HUD() {
-  this.elements = {
-    left: $('.arrow-left'),
-    right: $('.arrow-right')
-  };
-};
-
-HUD.prototype = {
-  clear: function clear() {
-    this.removeClass(this.elements.left, 'hover');
-    this.removeClass(this.elements.right, 'hover');
-  },
-
-  hoverLeft: function hoverLeft() {
-    this.addClass(this.elements.left, 'hover');
-    this.removeClass(this.elements.right, 'hover');
-  },
-
-  hoverRight: function hoverRight() {
-    this.addClass(this.elements.right, 'hover');
-    this.removeClass(this.elements.left, 'hover');
-  },
-
-  clickLeft: function clickLeft() {
-    var self = this;
-    this.addClass(this.elements.left, 'active');
-    setTimeout(function () {
-      self.removeClass(self.elements.left, 'active');
-    }, 500);
-  },
-
-  clickRight: function clickRight() {
-    var self = this;
-    this.addClass(this.elements.right, 'active');
-    setTimeout(function () {
-      self.removeClass(self.elements.right, 'active');
-    }, 500);
-  },
-
-  addClass: function addClass(elem, className) {
-    if (!elem.hasClass(className)) {
-      elem.addClass(className);
-    }
-  },
-
-  removeClass: function removeClass(elem, className) {
-    if (elem.hasClass(className)) {
-      elem.removeClass(className);
-    }
-  }
-};
-
-exports.default = HUD;
-
-/***/ }),
+/* 9 */,
 /* 10 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -1438,65 +1365,74 @@ var Artworks = function Artworks() {
   this.focalPoints = [];
   this.object = new THREE.Object3D();
   this.toLoad = 0;
+  this.active = false;
 };
 
 Artworks.prototype = {
   add: function add(title, description, url, image) {
     // add an image source
 
+    this.toLoad += 1;
     this.sources.push({
       title: title,
       description: description,
       url: url,
       image: image
     });
-    this.toLoad += 1;
   },
 
   activate: function activate(artwork) {
-    if (!artwork.active) {
-      for (var i = 0; i < this.focalPoints.length; i += 1) {
-        if (this.focalPoints[i].id === artwork.id) {
-          this.focalPoints[i].activate();
-        } else {
-          this.focalPoints[i].deactivate();
+    if (!this.active) {
+      this.active = true;
+
+      if (!artwork.active) {
+        for (var i = 0; i < this.focalPoints.length; i += 1) {
+          if (this.focalPoints[i].id === artwork.id) {
+            this.focalPoints[i].activate();
+          } else {
+            this.focalPoints[i].deactivate();
+          }
         }
+
+        // remove nav and show artwork information
+        if (!$('#nav-default').hasClass('hidden')) {
+          $('#nav-default').addClass('hidden');
+        }
+
+        // animate out and in
+        var timeout = 1;
+
+        if (!$('#nav-artwork').hasClass('hidden')) {
+          $('#nav-artwork').addClass('hidden');
+          timeout = 500;
+        }
+
+        setTimeout(function () {
+          $('#nav-artwork .nav__title').text(artwork.source.title);
+          $('#nav-artwork .nav__description').html(artwork.source.description);
+          $('#nav-artwork .nav__links').html('<a target="_blank" href="' + artwork.source.url + '">Order print</a>');
+          $('#nav-artwork').removeClass('hidden');
+        }, timeout);
       }
-
-      // remove nav and show artwork information
-      if (!$('#nav-default').hasClass('hidden')) {
-        $('#nav-default').addClass('hidden');
-      }
-
-      // animate out and in
-      var timeout = 1;
-
-      if (!$('#nav-artwork').hasClass('hidden')) {
-        $('#nav-artwork').addClass('hidden');
-        timeout = 500;
-      }
-
-      setTimeout(function () {
-        $('#nav-artwork .nav__title').text(artwork.source.title);
-        $('#nav-artwork .nav__description').html(artwork.source.description);
-        $('#nav-artwork .nav__links').html('<a target="_blank" href="' + artwork.source.url + '">Order print</a>');
-        $('#nav-artwork').removeClass('hidden');
-      }, timeout);
     }
   },
 
   deactivate: function deactivate() {
-    // deactivate artworks
-    for (var i = 0; i < this.focalPoints.length; i += 1) {
-      this.focalPoints[i].deactivate();
-    }
+    if (!this.active) {
+      this.active = false;
 
-    // show default nav
-    if (!$('#nav-artwork').hasClass('hidden')) {
-      $('#nav-artwork').addClass('hidden');
-    }
-    if ($('#nav-default').hasClass('hidden')) {
-      $('#nav-default').removeClass('hidden');
+      // deactivate artworks
+      for (var i = 0; i < this.focalPoints.length; i += 1) {
+        this.focalPoints[i].deactivate();
+      }
+
+      // show default nav
+      if (!$('#nav-artwork').hasClass('hidden')) {
+        $('#nav-artwork').addClass('hidden');
+      }
+      if ($('#nav-default').hasClass('hidden')) {
+        $('#nav-default').removeClass('hidden');
+      }
     }
   },
 
@@ -1531,7 +1467,8 @@ Artworks.prototype = {
 
       // add to gallery
       self.object.add(mesh);
-      //self.object.add(focal.object);
+      // helper
+      self.object.add(focal.object);
     };
 
     for (var i = 0; i < this.sources.length; i += 1) {
@@ -1711,10 +1648,8 @@ Loader.prototype = {
     return new Promise(function (resolve, reject) {
       try {
         var t = new Date().getTime();
-        //console.log('LOAD');
         self.materialLoader.load(filename + '.mtl', function (materials) {
           materials.preload();
-          //console.log('MATERIALS', ((new Date()).getTime() - t) / 1000.,  materials);
           //self.objectLoader.setMaterials(materials);
           self.objectLoader.load(filename + '.obj', function (obj) {
             self.process(obj, materials);

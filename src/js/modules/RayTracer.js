@@ -17,6 +17,10 @@ const RayTracer = function() {
 RayTracer.prototype = {
   init: function() {
     this.object = new THREE.Object3D();
+    this.object.add(new THREE.Mesh(
+      new THREE.SphereBufferGeometry(0.25),
+      new THREE.MeshPhongMaterial({})
+    ))
   },
 
   getRayVector: function(camera, h, v) {
@@ -35,7 +39,7 @@ RayTracer.prototype = {
     return vec;
   },
 
-  trace: function(point, vector, length, collider, artworks) {
+  trace: function(point, vector, length, artworks) {
     // check ray against artworks and geometry
 
     let travelled = 0;
@@ -56,6 +60,7 @@ RayTracer.prototype = {
         }
       }
 
+      /*
       if (!artwork) {
         collision = collider.collision(point);
 
@@ -68,6 +73,7 @@ RayTracer.prototype = {
           }
         }
       }
+      */
     }
 
     // smooth motion
@@ -88,7 +94,7 @@ RayTracer.prototype = {
       };
     } else {
       this.lastCollision = {
-        type: Globals.type.TYPE_COLLISION,
+        type: Globals.type.TYPE_NONE,
         position: point,
         collision: collision,
         vector: vector

@@ -5,7 +5,8 @@ const halfPI = Math.PI / 2;
 const Globals = {
   type: {
     TYPE_ARTWORK: 'TYPE_ARTWORK',
-    TYPE_COLLISION: 'TYPE_COLLISION'
+    TYPE_COLLISION: 'TYPE_COLLISION',
+    TYPE_NONE: 'TYPE_NONE'
   },
   player: {
     position: {
@@ -18,7 +19,7 @@ const Globals = {
       y: 0.3086,
       z: 0
     },
-    height: 1.8,
+    height: 2,
     speed: 8,
     rotationSpeed: Math.PI * 0.75,
   },

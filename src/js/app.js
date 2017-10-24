@@ -1,12 +1,13 @@
 /**
  * @author meatbags / https://github.com/meatbags
-*/
+**/
 
 import Timer from './modules/Timer';
 import Scene from './modules/Scene';
 
 const App = {
 	init: function() {
+		App.mode = (window.location.port === '8080') ? 'dev' : 'production';
 		App.timer = new Timer();
 		App.scene = new Scene();
 
@@ -20,7 +21,7 @@ const App = {
 	loading: function() {
 		App.timer.update();
 
-		if (!App.scene.isLoaded()) {
+		if (!App.scene.isLoaded() && App.mode != 'dev') {
 			requestAnimationFrame(App.loading);
 		} else {
 			App.fadeIn('#nav-default');

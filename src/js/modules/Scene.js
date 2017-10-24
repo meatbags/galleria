@@ -101,7 +101,8 @@ Scene.prototype = {
         point2,
         hemisphere,
         this.neonSign,
-        this.player.object
+        this.player.object,
+        this.player.raytracer.object
       );
     } else {
       // gallery closed, minimal lighting
@@ -127,7 +128,7 @@ Scene.prototype = {
 
   resize: function() {
     const width = window.innerWidth;
-    const height = 540;
+    const height = 520;
     this.camera.aspect = width / height;
     this.camera.updateProjectionMatrix();
     this.renderer.setSize(width, height);
