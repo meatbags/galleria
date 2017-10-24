@@ -483,7 +483,7 @@ Player.prototype = {
       Math.pow(this.mouse.y - this.mouse.start.y, 2)
     );
 
-    if (t < this.mouse.clickTimeThreshold && mag < this.mouse.clickMagnitudeThreshold) {
+    if (t < this.mouse.clickTimeThreshold && (Globals.isMobile || mag < this.mouse.clickMagnitudeThreshold)) {
       this.keys.click = true;
     }
   },

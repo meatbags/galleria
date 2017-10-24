@@ -1192,7 +1192,7 @@ Player.prototype = {
     var t = (new Date().getTime() - this.mouse.time) / 1000.;
     var mag = Math.sqrt(Math.pow(this.mouse.x - this.mouse.start.x, 2) + Math.pow(this.mouse.y - this.mouse.start.y, 2));
 
-    if (t < this.mouse.clickTimeThreshold && mag < this.mouse.clickMagnitudeThreshold) {
+    if (t < this.mouse.clickTimeThreshold && (_Globals2.default.isMobile || mag < this.mouse.clickMagnitudeThreshold)) {
       this.keys.click = true;
     }
   },
