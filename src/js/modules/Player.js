@@ -121,13 +121,25 @@ Player.prototype = {
     document.addEventListener('mouseup', function(e){ self.handleMouseUp(e) });
     document.addEventListener('mouseleave', function(e){ self.handleMouseOut(e) });
 
+    // tablet events
+    self.domElement.addEventListener('touchstart', function(e){ self.handleMouseDown(e.touches[0])})
+    self.domElement.addEventListener('touchmove', function(e){ self.handleMouseMove(e.touches[0])})
+    self.domElement.addEventListener('touchend', function(e){
+      self.hanldeMouseClick(e.touches[0]);
+      self.handleMouseUp(e.touches[0]);
+    })
+
     // keyboard events
 		document.addEventListener("keydown", function(e){ self.handleKeyDown(e) });
 		document.addEventListener("keyup", function(e){ self.handleKeyUp(e) });
 	},
 
 	update: function(delta, collider, artworks) {
-    // handle key presses and move player
+    // handle input & move player
+    // raytracer
+    const ray = this.raytracer.getRayVector(this.camera, this.mouse.x, this.mouse.y);
+    const collision = this.raytracer.trace(this.camera.position, ray, Globals.raytracer.length, artworks); //collider
+
     // controls
     this.handleInput(delta, artworks);
 
@@ -147,10 +159,6 @@ Player.prototype = {
 
     // move & rotate camera
     this.setPosition();
-
-    // raytracer
-    const ray = this.raytracer.getRayVector(this.camera, this.mouse.x, this.mouse.y);
-    const collision = this.raytracer.trace(this.camera.position, ray, Globals.raytracer.length, artworks); //collider
 	},
 
   processCollisions: function(next, collider) {

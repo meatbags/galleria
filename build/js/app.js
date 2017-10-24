@@ -528,11 +528,11 @@ var _Player = __webpack_require__(7);
 
 var _Player2 = _interopRequireDefault(_Player);
 
-var _Artworks = __webpack_require__(10);
+var _Artworks = __webpack_require__(9);
 
 var _Artworks2 = _interopRequireDefault(_Artworks);
 
-var _Loader = __webpack_require__(12);
+var _Loader = __webpack_require__(11);
 
 var _Loader2 = _interopRequireDefault(_Loader);
 
@@ -542,7 +542,7 @@ var _Globals = __webpack_require__(0);
 
 var _Globals2 = _interopRequireDefault(_Globals);
 
-__webpack_require__(13);
+__webpack_require__(12);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -832,6 +832,18 @@ Player.prototype = {
       self.handleMouseOut(e);
     });
 
+    // tablet events
+    self.domElement.addEventListener('touchstart', function (e) {
+      self.handleMouseDown(e.touches[0]);
+    });
+    self.domElement.addEventListener('touchmove', function (e) {
+      self.handleMouseMove(e.touches[0]);
+    });
+    self.domElement.addEventListener('touchend', function (e) {
+      self.hanldeMouseClick(e.touches[0]);
+      self.handleMouseUp(e.touches[0]);
+    });
+
     // keyboard events
     document.addEventListener("keydown", function (e) {
       self.handleKeyDown(e);
@@ -842,7 +854,11 @@ Player.prototype = {
   },
 
   update: function update(delta, collider, artworks) {
-    // handle key presses and move player
+    // handle input & move player
+    // raytracer
+    var ray = this.raytracer.getRayVector(this.camera, this.mouse.x, this.mouse.y);
+    var collision = this.raytracer.trace(this.camera.position, ray, _Globals2.default.raytracer.length, artworks); //collider
+
     // controls
     this.handleInput(delta, artworks);
 
@@ -862,10 +878,6 @@ Player.prototype = {
 
     // move & rotate camera
     this.setPosition();
-
-    // raytracer
-    var ray = this.raytracer.getRayVector(this.camera, this.mouse.x, this.mouse.y);
-    var collision = this.raytracer.trace(this.camera.position, ray, _Globals2.default.raytracer.length, artworks); //collider
   },
 
   processCollisions: function processCollisions(next, collider) {
@@ -1357,8 +1369,7 @@ RayTracer.prototype = {
 exports.default = RayTracer;
 
 /***/ }),
-/* 9 */,
-/* 10 */
+/* 9 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1372,7 +1383,7 @@ var _Materials = __webpack_require__(3);
 
 var _Maths = __webpack_require__(1);
 
-var _Focal = __webpack_require__(11);
+var _Focal = __webpack_require__(10);
 
 var _Globals = __webpack_require__(0);
 
@@ -1500,7 +1511,7 @@ Artworks.prototype = {
 exports.default = Artworks;
 
 /***/ }),
-/* 11 */
+/* 10 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1586,7 +1597,7 @@ exports.Focal = Focal;
 exports.TYPE_FOCAL = TYPE_FOCAL;
 
 /***/ }),
-/* 12 */
+/* 11 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1686,7 +1697,7 @@ Loader.prototype = {
 exports.default = Loader;
 
 /***/ }),
-/* 13 */
+/* 12 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
