@@ -562,7 +562,7 @@ var Scene = function Scene() {
 Scene.prototype = {
   init: function init() {
     var self = this;
-    var isMonday = new Date().getDay() == 1 || window.location.hash == '#monday';
+    var isMonday = (new Date().getDay() == 1 || window.location.hash == '#monday') && window.location.hash != '#tuesday';
 
     // threejs
     this.renderer = new THREE.WebGLRenderer({ antialias: false });

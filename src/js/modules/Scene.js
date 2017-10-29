@@ -12,7 +12,7 @@ const Scene = function() {
 Scene.prototype = {
   init: function() {
     const self = this;
-    const isMonday = ((new Date()).getDay() == 1 || window.location.hash == '#monday');
+    const isMonday = (((new Date()).getDay() == 1 || window.location.hash == '#monday') && (window.location.hash != '#tuesday'));
 
     // threejs
     this.renderer = new THREE.WebGLRenderer({antialias: false});
