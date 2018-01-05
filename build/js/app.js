@@ -340,7 +340,6 @@ Scene.prototype = {
 
     // threejs
     this.renderer = new THREE.WebGLRenderer({ antialias: false });
-    this.renderer.setSize(640, 480);
     this.renderer.setClearColor(0xf9e5a2, 1);
     this.renderer.setPixelRatio(window.devicePixelRatio);
     $('.wrapper .content').append(this.renderer.domElement);
@@ -363,28 +362,21 @@ Scene.prototype = {
     this.resize();
 
     // load gallery & lighting
-
     this.lightHandler = new _loader.LightHandler(this.scene, this.player);
     this.lightHandler.load(isMonday);
     this.artworks = new _art.Artworks();
 
-    if (!isMonday) {}
-    /*
-    $('.im').each(function(i, e){
-      self.artworks.add(
-        $(e).find('.im__title').html(),
-        $(e).find('.im__description').html(),
-        $(e).find('.im__url').html(),
-        $(e).find('.im__image').html()
-      );
-    });
+    if (!isMonday) {
+      $('.im').each(function (i, e) {
+        self.artworks.add($(e).find('.im__title').html(), $(e).find('.im__description').html(), $(e).find('.im__url').html(), $(e).find('.im__image').html());
+      });
+
       this.artworks.placeImages();
-    this.scene.add(this.artworks.object);
-    */
+      this.scene.add(this.artworks.object);
 
-    // lighting
-    //this.player.raytracer.object
-
+      // lighting
+      //this.player.raytracer.object
+    }
 
     // skybox
     var sky = new THREE.Sky();
@@ -404,23 +396,25 @@ Scene.prototype = {
     this.camera.aspect = width / height;
     this.camera.updateProjectionMatrix();
     this.renderer.setSize(width, height);
+    this.width = width;
+    this.height = height;
   },
 
   postprocessing: function postprocessing() {
     // post-processing passes
     this.renderPass = new THREE.RenderPass(this.scene, this.camera);
-    //this.mechanicsPass = new THREE.MechanicsPass(this.size);
-    //this.bloomPass = new THREE.UnrealBloomPass(this.size, 0.7, 1.0, 0.7); // res, strength, radius, threshold
-    this.FXAAPass = new THREE.ShaderPass(THREE.FXAAShader);
-    this.FXAAPass.renderToScreen = true;
+    this.mechanicsPass = new THREE.MechanicsPass(this.size);
+    this.bloomPass = new THREE.UnrealBloomPass(this.size, .75, 1.2, 0.9); // res, strength, radius, threshold
+    //this.ssaoPass = new THREE.SSAOPass(this.scene, this.camera);
+    this.bloomPass.renderToScreen = true;
 
     // set composer
     this.composer = new THREE.EffectComposer(this.renderer);
     this.composer.setSize(this.width, this.height);
     this.composer.addPass(this.renderPass);
-    //this.composer.addPass(this.mechanicsPass);
-    //this.composer.addPass(this.bloomPass);
-    this.composer.addPass(this.FXAAPass);
+    this.composer.addPass(this.mechanicsPass);
+    //this.composer.addPass(this.ssaoPass);
+    this.composer.addPass(this.bloomPass);
 
     // gamma
     //this.renderer.gammaInput = true;
@@ -432,8 +426,8 @@ Scene.prototype = {
   },
 
   render: function render(delta) {
-    //this.composer.render(delta);
-    this.renderer.render(this.scene, this.camera);
+    this.composer.render(delta);
+    //this.renderer.render(this.scene, this.camera);
   }
 };
 
@@ -6215,7 +6209,7 @@ THREE.MechanicsShader = {
     'tDiffuse': { value: null }
   },
   vertexShader: '\n    varying vec2 vUv;\n\n    void main() {\n      vUv = uv;\n      gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);\n    }\n  ',
-  fragmentShader: '\n    #define PI 3.14159\n    #define UV_SCALE 0.02\n    #define MAX_HEIGHT 4.0\n\n    varying vec2 vUv;\n    uniform sampler2D tDiffuse;\n    uniform float time;\n\n    float rand(vec2 seed) {\n      return fract(sin(dot(seed.xy, vec2(12.9898,78.233))) * 43758.5453);\n    }\n\n    vec2 randVec2() {\n      return vec2(rand(vUv + time), rand(vUv + time + 1.));\n    }\n\n    vec3 getPosition(vec2 coords) {\n      vec4 sample = texture2D(tDiffuse, coords);\n      vec3 res = vec3(coords.x / UV_SCALE, sample.x * MAX_HEIGHT, coords.y / UV_SCALE);\n      return res;\n    }\n\n    float computeAO(vec2 uvOff, vec3 P, vec3 N) {\n      vec3 Vpos = getPosition(vUv + uvOff * UV_SCALE) - P;\n      vec3 Vnorm = normalize(Vpos);\n      float dist = length(Vpos);\n      return max(dot(N, Vnorm) * (1.0 / (1.0 + dist)), 0.0);\n    }\n\n    float sampleAO(vec3 P) {\n      vec3 N = vec3(0., 1., 0.);\n      vec2 randOffset = randVec2();\n      const int iterations = 4;\n      float totalAO = 0.0;\n\n      for (int i=0; i<iterations; i++) {\n        vec2 coord1 = reflect(vec2(\n          (i < 2) ? ((i == 0) ? 1.0 : -1.0) : 0.0,\n          (i > 1) ? ((i == 2) ? 1.0 : -1.0) : 0.0\n        ), randOffset);\n        vec2 coord2 = vec2(\n          coord1.x * 0.707 - coord1.y * 0.707,\n          coord1.x * 0.707 + coord1.y * 0.707\n        );\n        totalAO += computeAO(coord1 * 0.25, P, N);\n        totalAO += computeAO(coord2 * 0.5, P, N);\n        totalAO += computeAO(coord1 * 0.75, P, N);\n        totalAO += computeAO(coord2, P, N);\n      }\n\n      return (totalAO / (float(iterations) * 4.));\n    }\n\n    void main() {\n      vec4 tex = texture2D(tDiffuse, vUv);\n      vec3 P = getPosition(vUv);\n      float ao = sampleAO(P);\n      vec4 frag = tex - ao;\n      frag.r += ao * 1.5;\n\n      gl_FragColor = frag;\n    }\n  '
+  fragmentShader: '\n    #define PI 3.14159\n    #define UV_SCALE 0.02\n    #define MAX_HEIGHT 6.0\n\n    varying vec2 vUv;\n    uniform sampler2D tDiffuse;\n    uniform float time;\n\n    float rand(vec2 seed) {\n      return fract(sin(dot(seed.xy, vec2(12.9898,78.233))) * 43758.5453);\n    }\n\n    vec2 randVec2() {\n      return vec2(rand(vUv + time), rand(vUv + time + 1.));\n    }\n\n    vec3 getPosition(vec2 coords) {\n      vec4 sample = texture2D(tDiffuse, coords);\n      vec3 res = vec3(coords.x / UV_SCALE, sample.y * MAX_HEIGHT, coords.y / UV_SCALE);\n      return res;\n    }\n\n    float computeAO(vec2 uvOff, vec3 P, vec3 N) {\n      vec3 Vpos = getPosition(vUv + uvOff * UV_SCALE) - P;\n      vec3 Vnorm = normalize(Vpos);\n      float dist = length(Vpos);\n      return max(dot(N, Vnorm) * (1.0 / (1.0 + dist)), 0.0);\n    }\n\n    float sampleAO(vec3 P) {\n      vec3 N = vec3(0., 1., 0.);\n      vec2 randOffset = randVec2();\n      const int iterations = 4;\n      float totalAO = 0.0;\n\n      for (int i=0; i<iterations; i++) {\n        vec2 coord1 = reflect(vec2(\n          (i < 2) ? ((i == 0) ? 1.0 : -1.0) : 0.0,\n          (i > 1) ? ((i == 2) ? 1.0 : -1.0) : 0.0\n        ), randOffset);\n        vec2 coord2 = vec2(\n          coord1.x * 0.707 - coord1.y * 0.707,\n          coord1.x * 0.707 + coord1.y * 0.707\n        );\n        totalAO += computeAO(coord1 * 0.25, P, N);\n        totalAO += computeAO(coord2 * 0.5, P, N);\n        totalAO += computeAO(coord1 * 0.75, P, N);\n        totalAO += computeAO(coord2, P, N);\n      }\n\n      return (totalAO / (float(iterations) * 4.));\n    }\n\n    void main() {\n      vec4 tex = texture2D(tDiffuse, vUv);\n      vec3 P = getPosition(vUv);\n      float ao = sampleAO(P);\n      vec4 frag = tex - ao * 0.25;\n\n      gl_FragColor = frag;\n    }\n  '
 };
 
 // render pass
@@ -6508,7 +6502,7 @@ var LightHandler = function () {
         this.neonSign = new THREE.PointLight(0xff0000, 0.8, 15, 1);
 
         point1.position.set(0, 5, -10);
-        point2.position.set(-19, 8, 5);
+        //point2.position.set(-19, 8, 5);
         this.neonSign.position.set(0, 14, -32);
 
         this.scene.add(ambient, point1,

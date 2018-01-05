@@ -16,7 +16,7 @@ class LightHandler {
       this.neonSign = new THREE.PointLight(0xff0000, 0.8, 15, 1);
 
       point1.position.set(0, 5, -10);
-      point2.position.set(-19, 8, 5);
+    //point2.position.set(-19, 8, 5);
       this.neonSign.position.set(0, 14, -32);
 
       this.scene.add(

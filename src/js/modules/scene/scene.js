@@ -17,7 +17,6 @@ Scene.prototype = {
 
     // threejs
     this.renderer = new THREE.WebGLRenderer({antialias: false});
-    this.renderer.setSize(640, 480);
     this.renderer.setClearColor(0xf9e5a2, 1);
     this.renderer.setPixelRatio(window.devicePixelRatio);
     $('.wrapper .content').append(this.renderer.domElement);
@@ -40,13 +39,11 @@ Scene.prototype = {
     this.resize();
 
     // load gallery & lighting
-
     this.lightHandler = new LightHandler(this.scene, this.player);
     this.lightHandler.load(isMonday);
     this.artworks = new Artworks();
 
     if (!isMonday) {
-      /*
       $('.im').each(function(i, e){
         self.artworks.add(
           $(e).find('.im__title').html(),
@@ -58,7 +55,6 @@ Scene.prototype = {
 
       this.artworks.placeImages();
       this.scene.add(this.artworks.object);
-      */
 
       // lighting
       //this.player.raytracer.object
@@ -82,23 +78,25 @@ Scene.prototype = {
     this.camera.aspect = width / height;
     this.camera.updateProjectionMatrix();
     this.renderer.setSize(width, height);
+    this.width = width;
+    this.height = height;
   },
 
   postprocessing: function() {
     // post-processing passes
     this.renderPass = new THREE.RenderPass(this.scene, this.camera);
-    //this.mechanicsPass = new THREE.MechanicsPass(this.size);
-    //this.bloomPass = new THREE.UnrealBloomPass(this.size, 0.7, 1.0, 0.7); // res, strength, radius, threshold
-    this.FXAAPass = new THREE.ShaderPass(THREE.FXAAShader);
-    this.FXAAPass.renderToScreen = true;
+    this.mechanicsPass = new THREE.MechanicsPass(this.size);
+    this.bloomPass = new THREE.UnrealBloomPass(this.size, .75, 1.2, 0.9); // res, strength, radius, threshold
+    //this.ssaoPass = new THREE.SSAOPass(this.scene, this.camera);
+    this.bloomPass.renderToScreen = true;
 
     // set composer
     this.composer = new THREE.EffectComposer(this.renderer);
     this.composer.setSize(this.width, this.height);
     this.composer.addPass(this.renderPass);
-    //this.composer.addPass(this.mechanicsPass);
-    //this.composer.addPass(this.bloomPass);
-    this.composer.addPass(this.FXAAPass);
+    this.composer.addPass(this.mechanicsPass);
+    //this.composer.addPass(this.ssaoPass);
+    this.composer.addPass(this.bloomPass);
 
     // gamma
     //this.renderer.gammaInput = true;
@@ -110,8 +108,8 @@ Scene.prototype = {
   },
 
   render: function(delta) {
-    //this.composer.render(delta);
-    this.renderer.render(this.scene, this.camera);
+    this.composer.render(delta);
+    //this.renderer.render(this.scene, this.camera);
   },
 };
 
