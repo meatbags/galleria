@@ -2,8 +2,8 @@
  * @author meatbags / https://github.com/meatbags
 **/
 
-import Timer from './modules/Timer';
-import Scene from './modules/Scene';
+import { Timer } from './modules/performance';
+import { Scene } from './modules/scene';
 
 const App = {
 	init: function() {
@@ -83,9 +83,10 @@ const App = {
 
 	loop: function() {
 		requestAnimationFrame(App.loop);
+		const delta = App.timer.getDelta();
 		App.timer.update();
-		App.scene.update(App.timer.getDelta());
-		App.scene.render();
+		App.scene.update(delta);
+		App.scene.render(delta);
 	}
 };
 
