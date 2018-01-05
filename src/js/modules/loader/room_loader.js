@@ -8,7 +8,7 @@ class RoomLoader {
     this.collider = collider;
     this.isMonday = isMonday;
     this.toLoad = 2;
-    this.loader = new LoadOBJ()
+    this.loader = new LoadOBJ(appRoot + 'assets/3d/');
     this._load();
   }
 
@@ -21,19 +21,34 @@ class RoomLoader {
     const collisionSource = (this.isMonday) ? 'hangar_collision_map_monday' : 'hangar_collision_map';
 
     // load collisions
-    this.loader.loadOBJ(collisionSource).then(function(map){
-      for (let i=0; i<map.children.length; i+=1) {
-        self.collider.add(new Collider.Mesh(map.children[i].geometry));
-      }
-      self.toLoad -= 1;
-    }, function(err){ console.log(err); });
+    this.loader.loadOBJ(collisionSource).then((map) => {
+      map.children.forEach((child) => {
+        this.collider.add(new Collider.Mesh(child.geometry));
+      });
+      this.toLoad -= 1;
+    }, (err) => { console.log(err); });
 
     // load map
-    this.loader.loadOBJ(mapSource).then(function(map) {
-      self.scene.add(map);
-      self.toLoad -= 1;
-    }, function(err){ console.log(err); });
+    this.loader.loadOBJ(mapSource).then((map) => {
+      this.scene.add(map);
+      this.toLoad -= 1;
+    }, (err) => { console.log(err); });
   }
 }
+
+/*
+if (!isMonday) {
+  const path = appRoot + 'assets/3d/gallery.fbx';
+
+  console.log(path);
+
+  LoadFBX(path, new THREE.ShaderMaterial(THREE.DepthShader)).then((meshes) => {
+    this.toLoad -= 1;
+    meshes.forEach((mesh) => {
+      this.scene.add(mesh)
+    });
+  }, (err) => { throw(err); });
+}
+*/
 
 export default RoomLoader;

@@ -15,10 +15,6 @@ LoadOBJ.prototype = {
 
   process: function(obj, materials) {
     // fix materials
-    for (let i=0; i<obj.children.length; i++) {
-      obj.children[i].material = new THREE.MeshPhongMaterial({});
-    }
-    /*
     const self = this;
 
     for (let i=0; i<obj.children.length; i+=1) {
@@ -62,7 +58,6 @@ LoadOBJ.prototype = {
         child.material.emissive = child.material.color;
       }
     }
-    */
   },
 
   loadOBJ: function(filename) {

@@ -4,7 +4,7 @@ import Player from './player';
 import { Globals } from '../config';
 import { Artworks } from '../art';
 import { v3 } from '../maths';
-import { LoadFBX, LoadOBJ } from '../loader';
+import { RoomLoader, LightHandler } from '../loader';
 
 const Scene = function() {
   this.init();
@@ -32,34 +32,21 @@ Scene.prototype = {
 
     // collision map
     this.collider = new Collider.System();
-    //this.loadOBJ = new LoadOBJ(appRoot + 'assets/3d/');
-    //this.toLoad = 1;
 
-    this.roomLoader = new LoadRoom(this.scene, this.collider, isMonday);
-
-    /*
-    if (!isMonday) {
-      const path = appRoot + 'assets/3d/gallery.fbx';
-
-      console.log(path);
-
-      LoadFBX(path, new THREE.ShaderMaterial(THREE.DepthShader)).then((meshes) => {
-        this.toLoad -= 1;
-        meshes.forEach((mesh) => {
-          this.scene.add(mesh)
-        });
-      }, (err) => { throw(err); });
-    }
-    */
+    // load !
+    this.roomLoader = new RoomLoader(this.scene, this.collider, isMonday);
 
     // resize
     this.resize();
 
     // load gallery & lighting
 
+    this.lightHandler = new LightHandler(this.scene, this.player);
+    this.lightHandler.load(isMonday);
     this.artworks = new Artworks();
-    /*
+
     if (!isMonday) {
+      /*
       $('.im').each(function(i, e){
         self.artworks.add(
           $(e).find('.im__title').html(),
@@ -71,39 +58,11 @@ Scene.prototype = {
 
       this.artworks.placeImages();
       this.scene.add(this.artworks.object);
+      */
+
       // lighting
-      const ambient = new THREE.AmbientLight(0xffffff, .08);
-      const hemisphere = new THREE.HemisphereLight(0xffaabb, 0x080820, 0.1);
-      const point1 = new THREE.PointLight(0xffffff, 0.5, 13, 1);
-      const point2 = new THREE.PointLight(0xfeff87, 0.5, 12, 1);
-      this.neonSign = new THREE.PointLight(0xff0000, 0.8, 15, 1);
-
-      point1.position.set(0, 5, -10);
-      point2.position.set(-19, 8, 5);
-      this.neonSign.position.set(0, 14, -32);
-
-      this.scene.add(
-        ambient,
-        point1,
-        point2,
-        hemisphere,
-        this.neonSign,
-        this.player.object
-      );
       //this.player.raytracer.object
-    } else {
-      // gallery closed, minimal lighting
-
-      const ambient = new THREE.AmbientLight(0xffffff, .08);
-      const hemisphere = new THREE.HemisphereLight(0xffaabb, 0x080820, 0.1);
-
-      this.scene.add(
-        ambient,
-        hemisphere,
-        this.player.object
-      );
     }
-    */
 
     // skybox
     const sky = new THREE.Sky();
@@ -142,8 +101,8 @@ Scene.prototype = {
     this.composer.addPass(this.FXAAPass);
 
     // gamma
-    this.renderer.gammaInput = true;
-    this.renderer.gammaOutput = true;
+    //this.renderer.gammaInput = true;
+    //this.renderer.gammaOutput = true;
   },
 
   update: function(delta) {

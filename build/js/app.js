@@ -355,71 +355,36 @@ Scene.prototype = {
 
     // collision map
     this.collider = new Collider.System();
-    //this.loadOBJ = new LoadOBJ(appRoot + 'assets/3d/');
-    //this.toLoad = 1;
 
-    this.roomLoader = new LoadRoom(this.scene, this.collider, isMonday);
-
-    /*
-    if (!isMonday) {
-      const path = appRoot + 'assets/3d/gallery.fbx';
-        console.log(path);
-        LoadFBX(path, new THREE.ShaderMaterial(THREE.DepthShader)).then((meshes) => {
-        this.toLoad -= 1;
-        meshes.forEach((mesh) => {
-          this.scene.add(mesh)
-        });
-      }, (err) => { throw(err); });
-    }
-    */
+    // load !
+    this.roomLoader = new _loader.RoomLoader(this.scene, this.collider, isMonday);
 
     // resize
     this.resize();
 
     // load gallery & lighting
 
+    this.lightHandler = new _loader.LightHandler(this.scene, this.player);
+    this.lightHandler.load(isMonday);
     this.artworks = new _art.Artworks();
+
+    if (!isMonday) {}
     /*
-    if (!isMonday) {
-      $('.im').each(function(i, e){
-        self.artworks.add(
-          $(e).find('.im__title').html(),
-          $(e).find('.im__description').html(),
-          $(e).find('.im__url').html(),
-          $(e).find('.im__image').html()
-        );
-      });
-        this.artworks.placeImages();
-      this.scene.add(this.artworks.object);
-      // lighting
-      const ambient = new THREE.AmbientLight(0xffffff, .08);
-      const hemisphere = new THREE.HemisphereLight(0xffaabb, 0x080820, 0.1);
-      const point1 = new THREE.PointLight(0xffffff, 0.5, 13, 1);
-      const point2 = new THREE.PointLight(0xfeff87, 0.5, 12, 1);
-      this.neonSign = new THREE.PointLight(0xff0000, 0.8, 15, 1);
-        point1.position.set(0, 5, -10);
-      point2.position.set(-19, 8, 5);
-      this.neonSign.position.set(0, 14, -32);
-        this.scene.add(
-        ambient,
-        point1,
-        point2,
-        hemisphere,
-        this.neonSign,
-        this.player.object
+    $('.im').each(function(i, e){
+      self.artworks.add(
+        $(e).find('.im__title').html(),
+        $(e).find('.im__description').html(),
+        $(e).find('.im__url').html(),
+        $(e).find('.im__image').html()
       );
-      //this.player.raytracer.object
-    } else {
-      // gallery closed, minimal lighting
-        const ambient = new THREE.AmbientLight(0xffffff, .08);
-      const hemisphere = new THREE.HemisphereLight(0xffaabb, 0x080820, 0.1);
-        this.scene.add(
-        ambient,
-        hemisphere,
-        this.player.object
-      );
-    }
+    });
+      this.artworks.placeImages();
+    this.scene.add(this.artworks.object);
     */
+
+    // lighting
+    //this.player.raytracer.object
+
 
     // skybox
     var sky = new THREE.Sky();
@@ -458,8 +423,8 @@ Scene.prototype = {
     this.composer.addPass(this.FXAAPass);
 
     // gamma
-    this.renderer.gammaInput = true;
-    this.renderer.gammaOutput = true;
+    //this.renderer.gammaInput = true;
+    //this.renderer.gammaOutput = true;
   },
 
   update: function update(delta) {
@@ -1728,7 +1693,7 @@ exports.default = Artworks;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.LoadRoom = exports.LoadOBJ = exports.LoadFBX = undefined;
+exports.LightHandler = exports.RoomLoader = exports.LoadOBJ = exports.LoadFBX = undefined;
 
 var _load_fbx = __webpack_require__(18);
 
@@ -1738,15 +1703,20 @@ var _load_obj = __webpack_require__(21);
 
 var _load_obj2 = _interopRequireDefault(_load_obj);
 
-var _load_room = __webpack_require__(34);
+var _room_loader = __webpack_require__(35);
 
-var _load_room2 = _interopRequireDefault(_load_room);
+var _room_loader2 = _interopRequireDefault(_room_loader);
+
+var _light_handler = __webpack_require__(37);
+
+var _light_handler2 = _interopRequireDefault(_light_handler);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 exports.LoadFBX = _load_fbx2.default;
 exports.LoadOBJ = _load_obj2.default;
-exports.LoadRoom = _load_room2.default;
+exports.RoomLoader = _room_loader2.default;
+exports.LightHandler = _light_handler2.default;
 
 /***/ }),
 /* 18 */
@@ -5343,36 +5313,40 @@ LoadOBJ.prototype = {
 
   process: function process(obj, materials) {
     // fix materials
-    for (var i = 0; i < obj.children.length; i++) {
-      obj.children[i].material = new THREE.MeshPhongMaterial({});
-    }
-    /*
-    const self = this;
-      for (let i=0; i<obj.children.length; i+=1) {
-      const child = obj.children[i];
-      const meta = materials.materialsInfo[child.material.name];
-        // set from material loader
+    var self = this;
+
+    for (var i = 0; i < obj.children.length; i += 1) {
+      var child = obj.children[i];
+      var meta = materials.materialsInfo[child.material.name];
+
+      // set from material loader
       child.material = materials.materials[child.material.name];
-        // load lightmaps
+
+      // load lightmaps
       if (meta.map_ka) {
-        const uvs = child.geometry.attributes.uv.array;
-        const src = meta.map_ka;
-        const tex = new THREE.TextureLoader().load(self.basePath + src);
-          child.material.lightMap = tex;
-        child.material.lightMapIntensity = Globals.loader.lightMapIntensity;
+        var uvs = child.geometry.attributes.uv.array;
+        var src = meta.map_ka;
+        var tex = new THREE.TextureLoader().load(self.basePath + src);
+
+        child.material.lightMap = tex;
+        child.material.lightMapIntensity = _config.Globals.loader.lightMapIntensity;
         child.geometry.addAttribute('uv2', new THREE.BufferAttribute(uvs, 2));
       }
-        child.material.bumpScale = Globals.loader.bumpScale;
-        // make glass translucent
+
+      child.material.bumpScale = _config.Globals.loader.bumpScale;
+
+      // make glass translucent
       if (child.material.map) {
         // if textured, set full colour
         child.material.color = new THREE.Color(0xffffff);
-          // set transparent for .png
+
+        // set transparent for .png
         if (child.material.map.image.src.indexOf('.png') !== -1) {
           child.material.transparent = true;
           child.material.side = THREE.DoubleSide;
         }
-          // for glass
+
+        // for glass
         if (child.material.map.image.src.indexOf('glass') != -1) {
           child.material.transparent = true;
           child.material.opacity = 0.4;
@@ -5382,7 +5356,6 @@ LoadOBJ.prototype = {
         child.material.emissive = child.material.color;
       }
     }
-    */
   },
 
   loadOBJ: function loadOBJ(filename) {
@@ -6410,11 +6383,150 @@ THREE.Sky.SkyShader = {
 
 /***/ }),
 /* 33 */,
-/* 34 */
-/***/ (function(module, exports) {
+/* 34 */,
+/* 35 */
+/***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-throw new Error("Module build failed: Error: ENOENT: no such file or directory, open 'E:\\Programs\\XAMPP\\htdocs\\gallery\\wp-content\\themes\\gallery\\galleria\\galleria\\src\\js\\modules\\loader\\load_room.js'");
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _load_obj = __webpack_require__(21);
+
+var _load_obj2 = _interopRequireDefault(_load_obj);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+// load rooms
+
+var RoomLoader = function () {
+  function RoomLoader(scene, collider, isMonday) {
+    _classCallCheck(this, RoomLoader);
+
+    this.scene = scene;
+    this.collider = collider;
+    this.isMonday = isMonday;
+    this.toLoad = 2;
+    this.loader = new _load_obj2.default(appRoot + 'assets/3d/');
+    this._load();
+  }
+
+  _createClass(RoomLoader, [{
+    key: 'isLoaded',
+    value: function isLoaded() {
+      return this.toLoad == 0;
+    }
+  }, {
+    key: '_load',
+    value: function _load() {
+      var _this = this;
+
+      var mapSource = this.isMonday ? 'hangar_monday' : 'hangar';
+      var collisionSource = this.isMonday ? 'hangar_collision_map_monday' : 'hangar_collision_map';
+
+      // load collisions
+      this.loader.loadOBJ(collisionSource).then(function (map) {
+        map.children.forEach(function (child) {
+          _this.collider.add(new Collider.Mesh(child.geometry));
+        });
+        _this.toLoad -= 1;
+      }, function (err) {
+        console.log(err);
+      });
+
+      // load map
+      this.loader.loadOBJ(mapSource).then(function (map) {
+        _this.scene.add(map);
+        _this.toLoad -= 1;
+      }, function (err) {
+        console.log(err);
+      });
+    }
+  }]);
+
+  return RoomLoader;
+}();
+
+/*
+if (!isMonday) {
+  const path = appRoot + 'assets/3d/gallery.fbx';
+
+  console.log(path);
+
+  LoadFBX(path, new THREE.ShaderMaterial(THREE.DepthShader)).then((meshes) => {
+    this.toLoad -= 1;
+    meshes.forEach((mesh) => {
+      this.scene.add(mesh)
+    });
+  }, (err) => { throw(err); });
+}
+*/
+
+exports.default = RoomLoader;
+
+/***/ }),
+/* 36 */,
+/* 37 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var LightHandler = function () {
+  function LightHandler(scene, player) {
+    _classCallCheck(this, LightHandler);
+
+    this.scene = scene;
+    this.player = player;
+  }
+
+  _createClass(LightHandler, [{
+    key: "load",
+    value: function load(isMonday) {
+      // load the lights
+
+      if (!isMonday) {
+        var ambient = new THREE.AmbientLight(0xffffff, .08);
+        var hemisphere = new THREE.HemisphereLight(0xffaabb, 0x080820, 0.1);
+        var point1 = new THREE.PointLight(0xffffff, 0.5, 13, 1);
+        //const point2 = new THREE.PointLight(0xfeff87, 0.5, 12, 1);
+        this.neonSign = new THREE.PointLight(0xff0000, 0.8, 15, 1);
+
+        point1.position.set(0, 5, -10);
+        point2.position.set(-19, 8, 5);
+        this.neonSign.position.set(0, 14, -32);
+
+        this.scene.add(ambient, point1,
+        //point2,
+        hemisphere, this.neonSign, this.player.object);
+      } else {
+        var _ambient = new THREE.AmbientLight(0xffffff, .08);
+        var _hemisphere = new THREE.HemisphereLight(0xffaabb, 0x080820, 0.1);
+
+        this.scene.add(_ambient, _hemisphere, this.player.object);
+      }
+    }
+  }]);
+
+  return LightHandler;
+}();
+
+exports.default = LightHandler;
 
 /***/ })
 /******/ ]);

@@ -1,5 +1,6 @@
 import LoadFBX from './load_fbx';
 import LoadOBJ from './load_obj';
-import LoadRoom from './load_room';
+import RoomLoader from './room_loader';
+import LightHandler from './light_handler';
 
-export { LoadFBX, LoadOBJ, LoadRoom };
+export { LoadFBX, LoadOBJ, RoomLoader, LightHandler };
