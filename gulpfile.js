@@ -3,7 +3,7 @@ var gulp = require("gulp"),
 	cleanCSS = require("gulp-clean-css");
 
 gulp.task("sass", function(){
-  return gulp.src("./src/scss/style.scss", {style: "compressed"})
+  return gulp.src("./scss/style.scss", {style: "compressed"})
 	  .pipe(sass({
 			includePaths: require('node-normalize-scss').includePaths
 		}))
@@ -15,5 +15,5 @@ gulp.task("sass", function(){
 });
 
 gulp.task('watch', function(){
-	gulp.watch(["src/scss/**/*.scss"], ["sass"]);
+	gulp.watch(['scss/**/*.scss'], ['sass']);
 });
