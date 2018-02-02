@@ -462,27 +462,55 @@ exports.Timer = _timer2.default;
 Object.defineProperty(exports, "__esModule", {
 	value: true
 });
-var Timer = function Timer() {
-	this.maxDelta = 1 / 30.;
-	this.reset();
-};
 
-Timer.prototype = {
-	update: function update() {
-		this.then = this.now;
-		this.now = new Date().getTime();
-		this.delta = (this.now - this.then) / 1000.;
-	},
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-	getDelta: function getDelta() {
-		return this.delta > this.maxDelta ? this.maxDelta : this.delta;
-	},
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-	reset: function reset() {
-		this.now = new Date().getTime();
-		this.then = this.now;
+var Timer = function () {
+	function Timer() {
+		_classCallCheck(this, Timer);
+
+		// timing and performance
+
+		this.delta = 0;
+		this.maxDelta = 1 / 30;
+		this.now = 0;
+		this.then = 0;
+
+		// set
+
+		this.reset();
 	}
-};
+
+	_createClass(Timer, [{
+		key: "update",
+		value: function update() {
+			// update timer
+
+			this.then = this.now;
+			this.now = new Date().getTime();
+			this.delta = (this.now - this.then) / 1000.;
+		}
+	}, {
+		key: "getDelta",
+		value: function getDelta() {
+			// get delta
+
+			return Math.min(this.delta, this.maxDelta);
+		}
+	}, {
+		key: "reset",
+		value: function reset() {
+			// reset timer
+
+			this.now = new Date().getTime();
+			this.then = this.now;
+		}
+	}]);
+
+	return Timer;
+}();
 
 exports.default = Timer;
 

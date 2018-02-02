@@ -1,20 +1,34 @@
-const Timer = function() {
-	this.maxDelta = 1 / 30.;
-	this.reset();
-};
+class Timer {
+	constructor() {
+		// timing and performance
 
-Timer.prototype = {
-	update: function() {
+		this.delta = 0;
+		this.maxDelta = 1 / 30;
+		this.now = 0;
+		this.then = 0;
+
+		// set
+
+		this.reset();
+	}
+
+	update() {
+		// update timer
+
 		this.then = this.now;
 		this.now = (new Date()).getTime();
 		this.delta = (this.now - this.then) / 1000.;
-	},
+	}
 
-	getDelta: function() {
-		return (this.delta > this.maxDelta) ? this.maxDelta : this.delta;
-	},
+	getDelta() {
+		// get delta
 
-	reset: function() {
+		return Math.min(this.delta, this.maxDelta);
+	}
+
+	reset() {
+		// reset timer
+
 		this.now = (new Date()).getTime();
 		this.then = this.now;
 	}
