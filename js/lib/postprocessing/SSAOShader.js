@@ -183,49 +183,34 @@ THREE.SSAOShader = {
 
 			"vec2 noise = rand( vUv );",
 			"float depth = readDepth( vUv );",
-
 			"float tt = clamp( depth, aoClamp, 1.0 );",
-
 			"float w = ( 1.0 / size.x ) / tt + ( noise.x * ( 1.0 - noise.x ) );",
 			"float h = ( 1.0 / size.y ) / tt + ( noise.y * ( 1.0 - noise.y ) );",
-
 			"float ao = 0.0;",
-
 			"float dz = 1.0 / float( samples );",
 			"float l = 0.0;",
 			"float z = 1.0 - dz / 2.0;",
-
 			"for ( int i = 0; i <= samples; i ++ ) {",
-
 				"float r = sqrt( 1.0 - z );",
-
 				"float pw = cos( l ) * r;",
 				"float ph = sin( l ) * r;",
 				"ao += calcAO( depth, pw * w, ph * h );",
 				"z = z - dz;",
 				"l = l + DL;",
-
 			"}",
-
 			"ao /= float( samples );",
 			"ao = 1.0 - ao;",
-
 			"vec3 color = texture2D( tDiffuse, vUv ).rgb;",
-
 			"vec3 lumcoeff = vec3( 0.299, 0.587, 0.114 );",
 			"float lum = dot( color.rgb, lumcoeff );",
 			"vec3 luminance = vec3( lum );",
-
 			"vec3 final = vec3( color * mix( vec3( ao ), vec3( 1.0 ), luminance * lumInfluence ) );",  // mix( color * ao, white, luminance )
 
 			"if ( onlyAO ) {",
-
 				"final = vec3( mix( vec3( ao ), vec3( 1.0 ), luminance * lumInfluence ) );",  // ambient occlusion only
-
 			"}",
 
 			"gl_FragColor = vec4( final, 1.0 );",
-
 		"}"
 
 	].join( "\n" )

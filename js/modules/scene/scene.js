@@ -56,7 +56,9 @@ class Scene {
     this.camera = this.player.camera;
     this.scene = new THREE.Scene();
     this.scene.fog = new THREE.FogExp2(0xCCCFFF, 0.008);
+
     this.collider = new Collider.System();
+
     this.lightHandler = new LightHandler(this.scene, this.player);
     this.lightHandler.load(this.isMonday);
     this.artworks = new Artworks();
@@ -66,6 +68,7 @@ class Scene {
     // get artworks
 
     if (!this.isMonday) {
+      /*
       $('.im').each((i, e) => {
         this.artworks.add(
           $(e).find('.im__title').html(),
@@ -77,15 +80,13 @@ class Scene {
 
       this.artworks.placeImages();
       this.scene.add(this.artworks.object);
-
-      // lighting
-      //this.player.raytracer.object
+      */
     }
 
     // main update func
 
     this.update = (delta) => {
-      this.player.update(delta, this.collider, this.artworks);
+      this.player.updatePlayer(delta, this.collider, this.artworks);
     }
   }
 
@@ -106,19 +107,19 @@ class Scene {
 
     this.renderPass = new THREE.RenderPass(this.scene, this.camera);
     this.mechanicsPass = new THREE.MechanicsPass(this.size);
-    //this.bloomPass = new THREE.UnrealBloomPass(this.size, .75, 1.2, 0.9); // res, strength, radius, threshold
-    //this.ssaoPass = new THREE.SSAOPass(this.scene, this.camera);
-    //this.bloomPass.renderToScreen = true;
-    this.mechanicsPass.renderToScreen = true;
+    this.bloomPass = new THREE.UnrealBloomPass(this.size, .75, 1.2, 0.9); // res, strength, radius, threshold
+    //this.ssaoPass = new THREE.SSAOPass(this.scene, this.camera, this.width, this.height);
+    this.bloomPass.renderToScreen = true;
 
     // add passes to composer
 
     this.composer = new THREE.EffectComposer(this.renderer);
     this.composer.setSize(this.width, this.height);
     this.composer.addPass(this.renderPass);
-    this.composer.addPass(this.mechanicsPass);
+
     //this.composer.addPass(this.ssaoPass);
-    //this.composer.addPass(this.bloomPass);
+    this.composer.addPass(this.mechanicsPass);
+    this.composer.addPass(this.bloomPass);
   }
 }
 

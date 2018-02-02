@@ -20,7 +20,7 @@ THREE.MechanicsShader = {
   fragmentShader: `
     #define PI 3.14159
     #define UV_SCALE 0.02
-    #define MAX_HEIGHT 6.0
+    #define MAX_HEIGHT 0.5
 
     varying vec2 vUv;
     uniform sampler2D tDiffuse;
@@ -73,9 +73,14 @@ THREE.MechanicsShader = {
 
     void main() {
       vec4 tex = texture2D(tDiffuse, vUv);
-      vec3 P = getPosition(vUv);
-      float ao = sampleAO(P);
-      vec4 frag = tex - ao * 0.25;
+      //vec3 P = getPosition(vUv);
+      //float ao = sampleAO(P);
+      //vec4 frag = tex - ao;
+
+      vec4 frag = tex;
+      frag.r = floor(frag.r * 16.0) / 16.0;
+      //frag.g = floor(frag.g * 64.0) / 64.0;
+      //frag.b = floor(frag.b * 64.0) / 64.0;
 
       gl_FragColor = frag;
     }

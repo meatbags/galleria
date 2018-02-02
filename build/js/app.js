@@ -654,7 +654,9 @@ var Scene = function () {
             this.camera = this.player.camera;
             this.scene = new THREE.Scene();
             this.scene.fog = new THREE.FogExp2(0xCCCFFF, 0.008);
+
             this.collider = new Collider.System();
+
             this.lightHandler = new _loader.LightHandler(this.scene, this.player);
             this.lightHandler.load(this.isMonday);
             this.artworks = new _art.Artworks();
@@ -663,22 +665,25 @@ var Scene = function () {
 
             // get artworks
 
-            if (!this.isMonday) {
-                $('.im').each(function (i, e) {
-                    _this2.artworks.add($(e).find('.im__title').html(), $(e).find('.im__description').html(), $(e).find('.im__url').html(), $(e).find('.im__image').html());
-                });
+            if (!this.isMonday) {}
+            /*
+            $('.im').each((i, e) => {
+              this.artworks.add(
+                $(e).find('.im__title').html(),
+                $(e).find('.im__description').html(),
+                $(e).find('.im__url').html(),
+                $(e).find('.im__image').html()
+              );
+            });
+              this.artworks.placeImages();
+            this.scene.add(this.artworks.object);
+            */
 
-                this.artworks.placeImages();
-                this.scene.add(this.artworks.object);
-
-                // lighting
-                //this.player.raytracer.object
-            }
 
             // main update func
 
             this.update = function (delta) {
-                _this2.player.update(delta, _this2.collider, _this2.artworks);
+                _this2.player.updatePlayer(delta, _this2.collider, _this2.artworks);
             };
         }
     }, {
@@ -703,19 +708,19 @@ var Scene = function () {
 
             this.renderPass = new THREE.RenderPass(this.scene, this.camera);
             this.mechanicsPass = new THREE.MechanicsPass(this.size);
-            //this.bloomPass = new THREE.UnrealBloomPass(this.size, .75, 1.2, 0.9); // res, strength, radius, threshold
-            //this.ssaoPass = new THREE.SSAOPass(this.scene, this.camera);
-            //this.bloomPass.renderToScreen = true;
-            this.mechanicsPass.renderToScreen = true;
+            this.bloomPass = new THREE.UnrealBloomPass(this.size, .75, 1.2, 0.9); // res, strength, radius, threshold
+            //this.ssaoPass = new THREE.SSAOPass(this.scene, this.camera, this.width, this.height);
+            this.bloomPass.renderToScreen = true;
 
             // add passes to composer
 
             this.composer = new THREE.EffectComposer(this.renderer);
             this.composer.setSize(this.width, this.height);
             this.composer.addPass(this.renderPass);
-            this.composer.addPass(this.mechanicsPass);
+
             //this.composer.addPass(this.ssaoPass);
-            //this.composer.addPass(this.bloomPass);
+            this.composer.addPass(this.mechanicsPass);
+            this.composer.addPass(this.bloomPass);
         }
     }]);
 
@@ -1558,7 +1563,7 @@ THREE.MechanicsShader = {
     'tDiffuse': { value: null }
   },
   vertexShader: '\n    varying vec2 vUv;\n\n    void main() {\n      vUv = uv;\n      gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);\n    }\n  ',
-  fragmentShader: '\n    #define PI 3.14159\n    #define UV_SCALE 0.02\n    #define MAX_HEIGHT 6.0\n\n    varying vec2 vUv;\n    uniform sampler2D tDiffuse;\n    uniform float time;\n\n    float rand(vec2 seed) {\n      return fract(sin(dot(seed.xy, vec2(12.9898,78.233))) * 43758.5453);\n    }\n\n    vec2 randVec2() {\n      return vec2(rand(vUv + time), rand(vUv + time + 1.));\n    }\n\n    vec3 getPosition(vec2 coords) {\n      vec4 sample = texture2D(tDiffuse, coords);\n      vec3 res = vec3(coords.x / UV_SCALE, sample.y * MAX_HEIGHT, coords.y / UV_SCALE);\n      return res;\n    }\n\n    float computeAO(vec2 uvOff, vec3 P, vec3 N) {\n      vec3 Vpos = getPosition(vUv + uvOff * UV_SCALE) - P;\n      vec3 Vnorm = normalize(Vpos);\n      float dist = length(Vpos);\n      return max(dot(N, Vnorm) * (1.0 / (1.0 + dist)), 0.0);\n    }\n\n    float sampleAO(vec3 P) {\n      vec3 N = vec3(0., 1., 0.);\n      vec2 randOffset = randVec2();\n      const int iterations = 4;\n      float totalAO = 0.0;\n\n      for (int i=0; i<iterations; i++) {\n        vec2 coord1 = reflect(vec2(\n          (i < 2) ? ((i == 0) ? 1.0 : -1.0) : 0.0,\n          (i > 1) ? ((i == 2) ? 1.0 : -1.0) : 0.0\n        ), randOffset);\n        vec2 coord2 = vec2(\n          coord1.x * 0.707 - coord1.y * 0.707,\n          coord1.x * 0.707 + coord1.y * 0.707\n        );\n        totalAO += computeAO(coord1 * 0.25, P, N);\n        totalAO += computeAO(coord2 * 0.5, P, N);\n        totalAO += computeAO(coord1 * 0.75, P, N);\n        totalAO += computeAO(coord2, P, N);\n      }\n\n      return (totalAO / (float(iterations) * 4.));\n    }\n\n    void main() {\n      vec4 tex = texture2D(tDiffuse, vUv);\n      vec3 P = getPosition(vUv);\n      float ao = sampleAO(P);\n      vec4 frag = tex - ao * 0.25;\n\n      gl_FragColor = frag;\n    }\n  '
+  fragmentShader: '\n    #define PI 3.14159\n    #define UV_SCALE 0.02\n    #define MAX_HEIGHT 0.5\n\n    varying vec2 vUv;\n    uniform sampler2D tDiffuse;\n    uniform float time;\n\n    float rand(vec2 seed) {\n      return fract(sin(dot(seed.xy, vec2(12.9898,78.233))) * 43758.5453);\n    }\n\n    vec2 randVec2() {\n      return vec2(rand(vUv + time), rand(vUv + time + 1.));\n    }\n\n    vec3 getPosition(vec2 coords) {\n      vec4 sample = texture2D(tDiffuse, coords);\n      vec3 res = vec3(coords.x / UV_SCALE, sample.y * MAX_HEIGHT, coords.y / UV_SCALE);\n      return res;\n    }\n\n    float computeAO(vec2 uvOff, vec3 P, vec3 N) {\n      vec3 Vpos = getPosition(vUv + uvOff * UV_SCALE) - P;\n      vec3 Vnorm = normalize(Vpos);\n      float dist = length(Vpos);\n      return max(dot(N, Vnorm) * (1.0 / (1.0 + dist)), 0.0);\n    }\n\n    float sampleAO(vec3 P) {\n      vec3 N = vec3(0., 1., 0.);\n      vec2 randOffset = randVec2();\n      const int iterations = 4;\n      float totalAO = 0.0;\n\n      for (int i=0; i<iterations; i++) {\n        vec2 coord1 = reflect(vec2(\n          (i < 2) ? ((i == 0) ? 1.0 : -1.0) : 0.0,\n          (i > 1) ? ((i == 2) ? 1.0 : -1.0) : 0.0\n        ), randOffset);\n        vec2 coord2 = vec2(\n          coord1.x * 0.707 - coord1.y * 0.707,\n          coord1.x * 0.707 + coord1.y * 0.707\n        );\n        totalAO += computeAO(coord1 * 0.25, P, N);\n        totalAO += computeAO(coord2 * 0.5, P, N);\n        totalAO += computeAO(coord1 * 0.75, P, N);\n        totalAO += computeAO(coord2, P, N);\n      }\n\n      return (totalAO / (float(iterations) * 4.));\n    }\n\n    void main() {\n      vec4 tex = texture2D(tDiffuse, vUv);\n      //vec3 P = getPosition(vUv);\n      //float ao = sampleAO(P);\n      //vec4 frag = tex - ao;\n\n      vec4 frag = tex;\n      frag.r = floor(frag.r * 16.0) / 16.0;\n      //frag.g = floor(frag.g * 64.0) / 64.0;\n      //frag.b = floor(frag.b * 64.0) / 64.0;\n\n      gl_FragColor = frag;\n    }\n  '
 };
 
 // render pass
@@ -1735,564 +1740,63 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _maths = __webpack_require__(0);
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var Maths = _interopRequireWildcard(_maths);
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var _config = __webpack_require__(1);
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 
-var _ray_tracer = __webpack_require__(25);
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-var _ray_tracer2 = _interopRequireDefault(_ray_tracer);
+var Player = function (_Collider$Player) {
+  _inherits(Player, _Collider$Player);
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+  function Player(domElement) {
+    _classCallCheck(this, Player);
 
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+    var _this = _possibleConstructorReturn(this, (Player.__proto__ || Object.getPrototypeOf(Player)).call(this, domElement));
 
-//import HUD from './HUD';
-
-var Player = function Player(domElement) {
-  this.domElement = domElement;
-  //this.hud = new HUD();
-  this.object = new THREE.Object3D();
-  this.position = new THREE.Vector3(_config.Globals.player.position.x, _config.Globals.player.position.y, _config.Globals.player.position.z);
-  this.movement = new THREE.Vector3(0, 0, 0);
-  this.rotation = new THREE.Vector3(_config.Globals.player.rotation.x * 1.1, _config.Globals.player.rotation.y, _config.Globals.player.rotation.z);
-  this.offset = {
-    rotation: new THREE.Vector3(0, 0, 0)
-  };
-  this.target = {
-    position: new THREE.Vector3(this.position.x, this.position.y, this.position.z),
-    movement: new THREE.Vector3(0, 0, 0),
-    rotation: new THREE.Vector3(_config.Globals.player.rotation.x, _config.Globals.player.rotation.y, _config.Globals.player.rotation.z),
-    offset: {
-      rotation: new THREE.Vector3(0, 0, 0)
-    }
-  };
-  this.autoMove = {
-    active: false,
-    position: new THREE.Vector3(),
-    rotation: new THREE.Vector3(),
-    threshold: 1,
-    trackingArtwork: false
-  };
-  this.attributes = {
-    speed: _config.Globals.player.speed,
-    speedWhileJumping: _config.Globals.player.speed / 2,
-    height: _config.Globals.player.height,
-    rotation: _config.Globals.player.rotationSpeed,
-    camera: {
-      fov: _config.Globals.camera.fov,
-      near: _config.Globals.camera.near,
-      far: _config.Globals.camera.far
-    },
-    cameraThreshold: 0.4,
-    maxRotationOffset: Math.PI * 0.35,
-    maxRotationOffsetLower: Math.PI * 0.35,
-    falling: false,
-    adjust: {
-      slow: 0.025,
-      medium: 0.04,
-      normal: 0.05,
-      fast: 0.09,
-      veryFast: 0.15
-    },
-    climb: {
-      up: 1,
-      down: 0.5,
-      minYNormal: 0.5
-    },
-    gravity: {
-      accel: 10,
-      maxVelocity: 50,
-      jumpVelocity: 5
-    }
-  };
-  this.camera = new THREE.PerspectiveCamera(this.attributes.camera.fov, 1, this.attributes.camera.near, this.attributes.camera.far);
-  this.camera.up = new THREE.Vector3(0, 1, 0);
-  this.raytracer = new _ray_tracer2.default();
-  this.init();
-};
-
-Player.prototype = {
-  init: function init() {
-    this.object = new THREE.Mesh(new THREE.SphereBufferGeometry(0.05), new THREE.MeshPhongMaterial());
-    this.bindControls();
-    this.resizeCamera();
-    this.light = new THREE.PointLight(0xffffff, 0.8, 10, 2);
-    this.light.position.set(0, 2, 0);
-    this.object.add(this.light);
-  },
-
-  resizeCamera: function resizeCamera() {
-    var w = this.domElement.width;
-    var h = this.domElement.height;
-    this.camera.aspect = w / h;
-    this.camera.updateProjectionMatrix();
-  },
-
-  bindControls: function bindControls() {
-    var self = this;
-
-    // store
-    self.keys = { up: false, down: false, left: false, right: false, jump: false, click: false };
-    self.mouse = {
-      x: 0,
-      y: 0,
-      time: 0,
-      clickTimeThreshold: 0.2,
-      clickMagnitudeThreshold: 0.1,
-      active: false,
-      locked: false,
-      lockTime: 100, //ms
-      start: {
-        x: 0,
-        y: 0
-      },
-      delta: {
-        x: 0,
-        y: 0
-      },
-      rotation: {
-        x: 0,
-        y: 0
-      }
-    };
-
-    // mouse events
-    self.domElement.addEventListener('mousemove', function (e) {
-      self.handleMouseMove(e);
-    });
-    self.domElement.addEventListener('click', function (e) {
-      self.handleMouseClick(e);
-    });
-    self.domElement.addEventListener('mousedown', function (e) {
-      self.handleMouseDown(e);
-    });
-    document.addEventListener('mouseup', function (e) {
-      self.handleMouseUp(e);
-    });
-    document.addEventListener('mouseleave', function (e) {
-      self.handleMouseOut(e);
-    });
-
-    // tablet events
-    self.domElement.addEventListener('touchstart', function (e) {
-      self.handleMouseDown(e.touches[0]);
-    });
-    self.domElement.addEventListener('touchmove', function (e) {
-      self.handleMouseMove(e.touches[0]);
-    });
-    self.domElement.addEventListener('touchend', function (e) {
-      self.handleMouseClick(e.touches[0]);
-      self.handleMouseUp(e.touches[0]);
-    });
-
-    // keyboard events
-    document.addEventListener("keydown", function (e) {
-      self.handleKeyDown(e);
-    });
-    document.addEventListener("keyup", function (e) {
-      self.handleKeyUp(e);
-    });
-  },
-
-  update: function update(delta, collider, artworks) {
-    // handle input & move player
-    // raytracer
-    var ray = this.raytracer.getRayVector(this.camera, this.mouse.x, this.mouse.y);
-    var collision = this.raytracer.trace(this.camera.position, ray, _config.Globals.raytracer.length, artworks); //collider
-
-    // controls
-    this.handleInput(delta, artworks);
-
-    // check next position for collision
-    var next = Maths.addVector(Maths.scaleVector(this.movement, delta), this.target.position);
-
-    // apply gravity
-    this.movement.y = Math.max(this.movement.y - this.attributes.gravity.accel * delta, -this.attributes.gravity.maxVelocity);
-
-    // collisions
-    this.processCollisions(next, collider);
-
-    // set new position target
-    this.target.position.x = next.x;
-    this.target.position.y = next.y;
-    this.target.position.z = next.z;
-
-    // move & rotate camera
-    this.setPosition();
-  },
-
-  processCollisions: function processCollisions(next, collider) {
-    // handle collision cases
-
-    var collisions = collider.collisions(next);
-
-    if (collisions.length > 0) {
-
-      // check for floor
-
-      for (var i = 0; i < collisions.length; i += 1) {
-        var ceiling = collisions[i].ceilingPlane(next);
-
-        if (ceiling.y != null && ceiling.plane.normal.y >= this.attributes.climb.minYNormal && ceiling.y - this.target.position.y <= this.attributes.climb.up) {
-          // ground
-          this.movement.y = 0;
-
-          // ascend
-          if (ceiling.y >= next.y) {
-            next.y = ceiling.y;
-          }
-        }
-      }
-
-      // check for walls
-
-      collisions = collider.collisions(next);
-      var walls = [];
-
-      for (var _i = 0; _i < collisions.length; _i += 1) {
-        var _ceiling = collisions[_i].ceilingPlane(next);
-
-        if (_ceiling.y != null && (_ceiling.plane.normal.y < this.attributes.climb.minYNormal || _ceiling.y - this.target.position.y > this.attributes.climb.up)) {
-          walls.push(collisions[_i]);
-        }
-      }
-
-      // if inside a wall, extrude out
-
-      if (walls.length > 0) {
-        var extrude = Maths.copyVector(next);
-
-        for (var _i2 = 0; _i2 < walls.length; _i2 += 1) {
-          var mesh = walls[_i2];
-          extrude = mesh.nearest2DIntersect(this.target.position, next);
-        }
-
-        next.x = extrude.x;
-        next.z = extrude.z;
-
-        // helper
-
-        this.object.position.set(next.x, next.y, next.z);
-
-        // check extruded point for collisions
-
-        var hits = 0;
-        collisions = collider.collisions(next);
-
-        for (var _i3 = 0; _i3 < collisions.length; _i3 += 1) {
-          var _ceiling2 = collisions[_i3].ceilingPlane(next);
-
-          if (_ceiling2.y != null && (_ceiling2.plane.normal.y < this.attributes.climb.minYNormal || _ceiling2.y - this.target.position.y > this.attributes.climb.up)) {
-            hits += 1;
-          }
-        }
-
-        // if contact with > 1 walls, stop motion
-
-        if (hits > 1) {
-          next.x = this.target.position.x;
-          next.z = this.target.position.z;
-        }
-      }
-    } else {
-      // check if on downward slope
-      var testUnder = Maths.copyVector(next);
-      testUnder.y -= this.attributes.climb.down;
-
-      if (!this.falling && collider.collision(testUnder)) {
-        var _ceiling3 = collider.ceilingPlane(testUnder);
-
-        // snap to slope if not too steep
-        if (_ceiling3.plane.normal.y >= this.attributes.climb.minYNormal) {
-          next.y = _ceiling3.y;
-          this.movement.y = 0;
-        }
-      }
-    }
-
-    if (next.y < 0) {
-      next.y = 0;
-      this.movement.y = 0;
-    }
-  },
-
-  handleInput: function handleInput(delta, artworks) {
-    // handle controls
-    // click
-    if (this.keys.click) {
-      this.keys.click = false;
-
-      // if centre clicked
-      this.autoMove.active = true;
-
-      if (this.raytracer.lastCollision.type === _config.Globals.type.TYPE_NONE) {
-        var yaw = this.rotation.y;
-
-        // remove description
-        artworks.deactivate();
-        this.autoMove.trackingArtwork = false;
-
-        this.autoMove.position.x = this.position.x + Math.sin(yaw) * _config.Globals.player.autowalkDistance;
-        this.autoMove.position.z = this.position.z + Math.cos(yaw) * _config.Globals.player.autowalkDistance;
-        this.autoMove.rotation.x = 0;
-        this.autoMove.rotation.y = yaw;
-        //this.target.rotation.x = this.autoMove.rotation.x;
-        this.target.rotation.y = this.autoMove.rotation.y;
-      } else {
-        var artwork = this.raytracer.lastCollision.artwork;
-
-        // add new description
-        artworks.deactivate();
-        artworks.activate(artwork);
-
-        // move to artwork
-        this.autoMove.position.x = artwork.eye.x;
-        this.autoMove.position.z = artwork.eye.z;
-        this.autoMove.rotation.x = artwork.pitch;
-        this.autoMove.rotation.y = artwork.yaw;
-        this.target.rotation.x = this.autoMove.rotation.x;
-        this.target.offset.rotation.x = 0;
-        this.target.rotation.y = this.autoMove.rotation.y;
-      }
-    }
-
-    // update rotation vector
-    if (this.keys.left || this.keys.right) {
-      // disable automove
-      this.autoMove.active = false;
-
-      var dir = (this.keys.left ? 1 : 0) + (this.keys.right ? -1 : 0);
-      this.target.rotation.y += this.attributes.rotation * delta * dir;
-
-      // reset pitch
-      this.target.rotation.x = 0;
-
-      // remove description
-      artworks.deactivate();
-    }
-
-    // up/ down keys
-    if (this.keys.up || this.keys.down) {
-      // disable automove
-      this.autoMove.active = false;
-
-      // get next move vector
-      var _dir = (this.keys.up ? 1 : 0) + (this.keys.down ? -1 : 0);
-      var _yaw = this.rotation.y + this.offset.rotation.y;
-      var dx = Math.sin(_yaw) * this.attributes.speed * _dir;
-      var dz = Math.cos(_yaw) * this.attributes.speed * _dir;
-      this.target.movement.x = dx;
-      this.target.movement.z = dz;
-
-      // reset pitch
-      this.target.rotation.x = 0;
-
-      // remove description
-      artworks.deactivate();
-    } else {
-      this.target.movement.x = 0;
-      this.target.movement.z = 0;
-    }
-
-    // move and look automatically
-    if (this.autoMove.active) {
-      var dist = Maths.distanceBetween2D(this.target.position, this.autoMove.position);
-
-      if (dist < this.autoMove.threshold) {
-        //this.autoMove.active = false;
-        this.target.movement.x = 0;
-        this.target.movement.z = 0;
-      } else {
-        var vec = Maths.scaleVector(Maths.normalise(Maths.subtractVector(this.autoMove.position, this.position)), this.attributes.speed);
-        var mag = Maths.getMagnitude2D(vec);
-
-        if (mag > dist) {
-          vec = Maths.scaleVector(vec, dist / mag);
-        }
-
-        this.target.movement.x = vec.x;
-        this.target.movement.z = vec.z;
-      }
-    }
-
-    // jump key
-    if (this.keys.jump) {
-      this.keys.jump = false;
-
-      // jump if not falling
-      if (this.movement.y == 0) {
-        this.movement.y = this.attributes.gravity.jumpVelocity;
-      }
-    }
-
-    // set falling
-    this.falling = this.movement.y != 0;
-
-    // adjust movement if falling
-    if (this.autoMove.active) {
-      this.movement.x += (this.target.movement.x - this.movement.x) * this.attributes.adjust.medium;
-      this.movement.z += (this.target.movement.z - this.movement.z) * this.attributes.adjust.medium;
-    } else if (this.falling) {
-      this.movement.x += (this.target.movement.x - this.movement.x) * this.attributes.adjust.slow;
-      this.movement.z += (this.target.movement.z - this.movement.z) * this.attributes.adjust.slow;
-    } else {
-      this.movement.x = this.target.movement.x;
-      this.movement.z = this.target.movement.z;
-    }
-  },
-
-  setPosition: function setPosition() {
-    // move and rotate player
-
-    // smooth motion
-    this.position.x += (this.target.position.x - this.position.x) * this.attributes.adjust.veryFast;
-    this.position.y += (this.target.position.y - this.position.y) * this.attributes.adjust.veryFast;
-    this.position.z += (this.target.position.z - this.position.z) * this.attributes.adjust.veryFast;
-
-    // rotate
-    var factor = this.autoMove.active && !this.mouse.active ? this.attributes.adjust.slow : this.attributes.adjust.veryFast;
-
-    this.rotation.y += Maths.minAngleDifference(this.rotation.y, this.target.rotation.y) * factor;
-    this.rotation.x += Maths.minAngleDifference(this.rotation.x, this.target.rotation.x) * this.attributes.adjust.normal;
-    this.offset.rotation.y += (this.target.offset.rotation.y - this.offset.rotation.y) * this.attributes.adjust.normal;
-    this.offset.rotation.x += (this.target.offset.rotation.x - this.offset.rotation.x) * this.attributes.adjust.fast;
-
-    // limit rotation
-    this.rotation.y += this.rotation.y < 0 ? Maths.twoPi : this.rotation.y > Maths.twoPi ? -Maths.twoPi : 0;
-
-    // set new camera position
-    var yaw = this.rotation.y + this.offset.rotation.y;
-    var pitch = this.rotation.x + this.offset.rotation.x;
-    var height = this.position.y + this.attributes.height;
-    var halfHeight = this.position.y + this.attributes.height * 0.5;
-
-    // move camera and world object
-    this.object.position.set(this.position.x, halfHeight, this.position.z);
-    this.camera.position.set(this.position.x, height, this.position.z);
-    this.camera.lookAt(new THREE.Vector3(this.position.x + Math.sin(yaw), height + Math.sin(pitch), this.position.z + Math.cos(yaw)));
-  },
-
-  handleKeyDown: function handleKeyDown(e) {
-    switch (e.keyCode) {
-      case 38:
-      case 87:
-        this.keys.up = true;
-        break;
-      case 37:
-      case 65:
-        this.keys.left = true;
-        break;
-      case 40:
-      case 83:
-        this.keys.down = true;
-        break;
-      case 39:
-      case 68:
-        this.keys.right = true;
-        break;
-      case 32:
-        this.keys.jump = true;
-        break;
-      default:
-        break;
-    }
-  },
-
-  handleKeyUp: function handleKeyUp(e) {
-    switch (e.keyCode) {
-      case 38:
-      case 87:
-        this.keys.up = false;
-        break;
-      case 37:
-      case 65:
-        this.keys.left = false;
-        break;
-      case 40:
-      case 83:
-        this.keys.down = false;
-        break;
-      case 39:
-      case 68:
-        this.keys.right = false;
-        break;
-    }
-  },
-
-  handleMouseClick: function handleMouseClick(e) {
-    var self = this;
-    var t = (new Date().getTime() - this.mouse.time) / 1000.;
-    var mag = Math.sqrt(Math.pow(this.mouse.x - this.mouse.start.x, 2) + Math.pow(this.mouse.y - this.mouse.start.y, 2));
-
-    if (t < this.mouse.clickTimeThreshold && (_config.Globals.isMobile || mag < this.mouse.clickMagnitudeThreshold)) {
-      this.keys.click = true;
-    }
-  },
-
-  handleMouseDown: function handleMouseDown(e) {
-    if (!this.mouse.locked) {
-      var self = this;
-      var bound = this.domElement.getBoundingClientRect();
-
-      this.mouse.active = true;
-      this.mouse.rotation.x = this.offset.rotation.x;
-      this.mouse.rotation.y = this.rotation.y;
-      this.mouse.time = new Date().getTime();
-      this.mouse.start.x = e.clientX / this.domElement.width * 2 - 1;
-      this.mouse.start.y = (e.clientY - bound.y) / this.domElement.height * 2 - 1;
-
-      // lock mouse (prevent double click)
-      this.mouse.locked = true;
-      setTimeout(function () {
-        self.mouse.locked = false;
-      }, self.mouse.lockTime);
-    }
-  },
-
-  handleMouseMove: function handleMouseMove(e) {
-    var bound = this.domElement.getBoundingClientRect();
-
-    this.mouse.x = e.clientX / this.domElement.width * 2 - 1;
-    this.mouse.y = (e.clientY - bound.y) / this.domElement.height * 2 - 1;
-
-    if (this.mouse.active) {
-      this.mouse.delta.x = this.mouse.x - this.mouse.start.x;
-      this.mouse.delta.y = this.mouse.y - this.mouse.start.y;
-
-      // target rotation yaw
-      this.target.rotation.y = this.mouse.rotation.y + this.mouse.delta.x * 1;
-
-      // pitch is dependent, so set it to offset.rotation
-      if (!_config.Globals.isMobile) {
-        var pitch = this.mouse.rotation.x + this.mouse.delta.y * 0.75;
-
-        // if limit reached, reset start point
-        if (pitch > this.attributes.maxRotationOffset) {
-          pitch = this.attributes.maxRotationOffset;
-          this.mouse.start.y = this.mouse.y;
-          this.mouse.rotation.x = pitch;
-        } else if (pitch < -this.attributes.maxRotationOffsetLower) {
-          pitch = -this.attributes.maxRotationOffsetLower;
-          this.mouse.start.y = this.mouse.y;
-          this.mouse.rotation.x = pitch;
-        }
-
-        this.target.offset.rotation.x = pitch;
-      }
-    }
-  },
-
-  handleMouseOut: function handleMouseOut(e) {
-    this.mouse.active = false;
-  },
-
-  handleMouseUp: function handleMouseUp(e) {
-    this.mouse.active = false;
+    _this._events();
+    _this._override();
+    return _this;
   }
-};
+
+  _createClass(Player, [{
+    key: '_events',
+    value: function _events() {
+      $(this.domElement).on('click', function (e) {
+        //console.log(e);
+      });
+    }
+  }, {
+    key: '_override',
+    value: function _override() {
+      // override inheritance
+
+      this.camera.far = 500000;
+      this.camera.updateProjectionMatrix();
+      this.position.z = this.target.position.z = -40;
+      this.position.x = this.target.position.x = -15;
+      this.rotation.yaw = this.target.rotation.yaw = Math.PI / 8;
+      this.rotation.pitch = this.target.rotation.pitch = Math.PI / 12;
+      this.config.adjust = {
+        verySlow: 0.01,
+        slow: 0.018,
+        normal: 0.035,
+        fast: 0.06,
+        rapid: 0.09,
+        veryFast: 0.18
+      };
+    }
+  }, {
+    key: 'updatePlayer',
+    value: function updatePlayer(delta, collider, artworks) {
+      this.update(delta, collider);
+    }
+  }]);
+
+  return Player;
+}(Collider.Player);
 
 exports.default = Player;
 
@@ -2615,120 +2119,7 @@ var Materials = {
 exports.Materials = Materials;
 
 /***/ }),
-/* 25 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _config = __webpack_require__(1);
-
-var _maths = __webpack_require__(0);
-
-var RayTracer = function RayTracer() {
-  this.position = new THREE.Vector3(0, 0, 0);
-  this.rotation = new THREE.Vector3(0, 0, 0);
-  this.smoothing = 0.25;
-  this.target = {
-    position: new THREE.Vector3(0, 0, 0),
-    rotation: new THREE.Vector3(0, 0, 0)
-  };
-  this.lastCollision = null;
-  this.precision = _config.Globals.raytracer.precision;
-  this.init();
-};
-
-RayTracer.prototype = {
-  init: function init() {
-    this.object = new THREE.Object3D();
-    this.object.add(new THREE.Mesh(new THREE.SphereBufferGeometry(0.25), new THREE.MeshPhongMaterial({})));
-  },
-
-  getRayVector: function getRayVector(camera, h, v) {
-    // h, v should be in the range [-1, 1]
-
-    var vec = camera.getWorldDirection();
-    var fovVertical = camera.fov * 0.5 * (Math.PI / 180.);
-    var fovHorizontal = camera.fov * camera.aspect * 0.5 * (Math.PI / 180.);
-    var yaw = Math.atan2(vec.x, vec.z) - h * fovHorizontal;
-    var pitch = vec.y - v * fovVertical;
-
-    vec.x = Math.sin(yaw);
-    vec.y = Math.sin(pitch);
-    vec.z = Math.cos(yaw);
-
-    return vec;
-  },
-
-  trace: function trace(point, vector, length, artworks) {
-    // check ray against artworks and geometry
-
-    var travelled = 0;
-    var collision = false;
-    var artwork = false;
-    var last = new THREE.Vector3();
-
-    vector = (0, _maths.scaleVector)((0, _maths.normalise)(vector), this.precision);
-
-    while (collision === false && artwork === false && travelled < length) {
-      travelled += this.precision;
-      last = (0, _maths.copyVector)(point);
-      point = (0, _maths.addVector)(point, vector);
-
-      for (var i = 0; i < artworks.focalPoints.length; i += 1) {
-        if (artworks.focalPoints[i].collision(point)) {
-          artwork = artworks.focalPoints[i];
-        }
-      }
-
-      /*
-      if (!artwork) {
-        collision = collider.collision(point);
-         if (collision) {
-          const intersect = collider.intersect(last, point);
-           if (intersect != null) {
-            point = intersect.intersect;
-            this.target.rotation = intersect.plane.normal;
-          }
-        }
-      }
-      */
-    }
-
-    // smooth motion
-    this.target.position.x = point.x;
-    this.target.position.y = point.y;
-    this.target.position.z = point.z;
-    this.position.x += (this.target.position.x - this.position.x) * this.smoothing;
-    this.position.y += (this.target.position.y - this.position.y) * this.smoothing;
-    this.position.z += (this.target.position.z - this.position.z) * this.smoothing;
-    this.object.position.set(this.position.x, this.position.y, this.position.z);
-
-    if (artwork) {
-      this.lastCollision = {
-        type: _config.Globals.type.TYPE_ARTWORK,
-        position: point,
-        artwork: artwork,
-        vector: vector
-      };
-    } else {
-      this.lastCollision = {
-        type: _config.Globals.type.TYPE_NONE,
-        position: point,
-        collision: collision,
-        vector: vector
-      };
-    }
-  }
-};
-
-exports.default = RayTracer;
-
-/***/ }),
+/* 25 */,
 /* 26 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -6527,7 +5918,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
 
 Object.defineProperty(exports, "__esModule", {
-  value: true
+    value: true
 });
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -6541,63 +5932,63 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var RoomLoader = function () {
-  function RoomLoader(scene, collider, isMonday) {
-    _classCallCheck(this, RoomLoader);
+    function RoomLoader(scene, collider, isMonday) {
+        _classCallCheck(this, RoomLoader);
 
-    // load room from file
+        // load room from file
 
-    this.scene = scene;
-    this.collider = collider;
-    this.isMonday = isMonday;
-    this.toLoad = 0;
-    this.loader = new _load_obj2.default(appRoot + 'assets/3d/');
-    this._load();
-  }
-
-  _createClass(RoomLoader, [{
-    key: 'isLoaded',
-    value: function isLoaded() {
-      // check if loaded
-
-      return this.toLoad <= 0;
+        this.scene = scene;
+        this.collider = collider;
+        this.isMonday = isMonday;
+        this.toLoad = 0;
+        this.loader = new _load_obj2.default(appRoot + 'assets/3d/');
+        this._load();
     }
-  }, {
-    key: '_load',
-    value: function _load() {
-      var _this = this;
 
-      // load room and collision map
+    _createClass(RoomLoader, [{
+        key: 'isLoaded',
+        value: function isLoaded() {
+            // check if loaded
 
-      var mapSource = this.isMonday ? 'hangar_monday' : 'hangar';
-      var collisionSource = this.isMonday ? 'hangar_collision_map_monday' : 'hangar_collision_map';
+            return this.toLoad <= 0;
+        }
+    }, {
+        key: '_load',
+        value: function _load() {
+            var _this = this;
 
-      // flag
+            // load room and collision map
 
-      this.toLoad = 2;
+            var mapSource = this.isMonday ? 'hangar_monday' : 'hangar';
+            var collisionSource = this.isMonday ? 'hangar_collision_map_monday' : 'hangar_collision_map';
 
-      // load collisions
+            // flag
 
-      this.loader.loadOBJ(collisionSource).then(function (map) {
-        map.children.forEach(function (child) {
-          _this.collider.add(new Collider.Mesh(child.geometry));
-        });
-        _this.toLoad -= 1;
-      }, function (err) {
-        console.log(err);
-      });
+            this.toLoad = 2;
 
-      // load map
+            // load collisions
 
-      this.loader.loadOBJ(mapSource).then(function (map) {
-        _this.scene.add(map);
-        _this.toLoad -= 1;
-      }, function (err) {
-        console.log(err);
-      });
-    }
-  }]);
+            this.loader.loadOBJ(collisionSource).then(function (map) {
+                map.children.forEach(function (child) {
+                    _this.collider.add(new Collider.Mesh(child));
+                });
+                _this.toLoad -= 1;
+            }, function (err) {
+                console.log(err);
+            });
 
-  return RoomLoader;
+            // load map
+
+            this.loader.loadOBJ(mapSource).then(function (map) {
+                _this.scene.add(map);
+                _this.toLoad -= 1;
+            }, function (err) {
+                console.log(err);
+            });
+        }
+    }]);
+
+    return RoomLoader;
 }();
 
 exports.default = RoomLoader;

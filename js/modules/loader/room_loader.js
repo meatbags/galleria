@@ -31,9 +31,7 @@ class RoomLoader {
     // load collisions
 
     this.loader.loadOBJ(collisionSource).then((map) => {
-      map.children.forEach((child) => {
-        this.collider.add(new Collider.Mesh(child.geometry));
-      });
+      map.children.forEach((child) => { this.collider.add(new Collider.Mesh(child)); });
       this.toLoad -= 1;
     }, (err) => { console.log(err); });
 
