@@ -2,17 +2,19 @@ import { Materials, Globals } from '../config';
 import { v3 } from '../maths';
 import { Focal } from './focal';
 
-const Artworks = function() {
-  this.sources = [];
-  this.focalPoints = [];
-  this.object = new THREE.Object3D();
-  this.toLoad = 0;
-  this.active = false;
-};
+class Artworks {
+  constructor() {
+    // artwork handler
 
-Artworks.prototype = {
-  add: function(title, description, url, image) {
-    // add an image source
+    this.sources = [];
+    this.focalPoints = [];
+    this.object = new THREE.Object3D();
+    this.toLoad = 0;
+    this.active = false;
+  }
+
+  add(title, description, url, image) {
+    // add an artwork
 
     this.toLoad += 1;
     this.sources.push({
@@ -21,9 +23,11 @@ Artworks.prototype = {
       url: url,
       image: image,
     });
-  },
+  }
 
-  activate: function(artwork) {
+  activate(artwork) {
+    // activate artwork (show description)
+
     if (!this.active) {
       this.active = true;
 
@@ -37,11 +41,13 @@ Artworks.prototype = {
         }
 
         // remove nav and show artwork information
+
         if (!$('#nav-default').hasClass('hidden')) {
           $('#nav-default').addClass('hidden');
         }
 
         // animate out and in
+
         let timeout = 1;
 
         if (!$('#nav-artwork').hasClass('hidden')) {
@@ -57,18 +63,22 @@ Artworks.prototype = {
         }, timeout);
       }
     }
-  },
+  }
 
-  deactivate: function() {
+  deactivate() {
+    // deactivate active artworks
+
     if (this.active) {
       this.active = false;
 
       // deactivate artworks
+
       for (let i=0; i<this.focalPoints.length; i+=1) {
         this.focalPoints[i].deactivate();
       }
 
       // show default nav
+
       if (!$('#nav-artwork').hasClass('hidden')) {
         $('#nav-artwork').addClass('hidden');
       }
@@ -76,10 +86,11 @@ Artworks.prototype = {
         $('#nav-default').removeClass('hidden');
       }
     }
-  },
+  }
 
-  placeImages: function() {
-    const self = this;
+  placeImages() {
+    // place images in 3D space
+
     const textureLoader = new THREE.TextureLoader();
 
     for (let i=0; i<this.sources.length; i+=1) {
@@ -88,32 +99,36 @@ Artworks.prototype = {
       const id = 'UID' + i;
 
       // create collision object
+
       const focal = new Focal(id, place.position, v3(1, 1, 1), place.eye, this.sources[i]);
-      self.focalPoints.push(focal);
+      this.focalPoints.push(focal);
 
       // create artwork mesh
+
       const mesh = new THREE.Mesh(
         new THREE.PlaneBufferGeometry(1, 1, 2, 2),
         Materials.canvas.clone()
       );
-      const texture = textureLoader.load(this.sources[i].image, function(){
-        self.toLoad -= 1;
+      const texture = textureLoader.load(this.sources[i].image, () => {
+        this.toLoad -= 1;
         mesh.scale.x = (texture.image.naturalWidth / 1000.) * place.scale;
         mesh.scale.y = (texture.image.naturalHeight / 1000.) * place.scale;
-        self.focalPoints[index].scale(mesh.scale.x, mesh.scale.y, mesh.scale.x);
+        this.focalPoints[index].scale(mesh.scale.x, mesh.scale.y, mesh.scale.x);
       });
 
       // apply texture
+
       mesh.material.map = texture;
       mesh.rotation.set(place.pitch, place.yaw, 0);
       mesh.position.set(place.position.x, place.position.y, place.position.z);
 
       // add to gallery
-      self.object.add(mesh);
+
+      this.object.add(mesh);
       // helper
-      //self.object.add(focal.object);
+      //this.object.add(focal.object);
     }
-  },
+  }
 }
 
 export default Artworks;

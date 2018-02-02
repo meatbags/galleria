@@ -1,83 +1,29 @@
 import { Globals } from '../config';
 
-const LoadOBJ = function(basePath) {
-  this.basePath = basePath;
-  this.init();
-};
+class LoadOBJ {
+  constructor(path) {
+    // load OBJ files
 
-LoadOBJ.prototype = {
-  init: function() {
+    this.path = path;
     this.materialLoader = new THREE.MTLLoader();
-    this.objectLoader = new THREE.OBJLoader();
-    this.materialLoader.setPath(this.basePath);
-    this.objectLoader.setPath(this.basePath);
-  },
+    this.objectLoader =  new THREE.OBJLoader();
 
-  process: function(obj, materials) {
-    // fix materials
-    const self = this;
+    // set root paths
 
-    for (let i=0; i<obj.children.length; i+=1) {
-      const child = obj.children[i];
-      const meta = materials.materialsInfo[child.material.name];
+    this.materialLoader.setPath(this.path);
+    this.objectLoader.setPath(this.path);
+  }
 
-      child.material = new THREE.MeshPhongMaterial({color: 0x888888});
-
-      /*
-      // set from material loader
-      child.material = materials.materials[child.material.name];
-
-      // load lightmaps
-      if (meta.map_ka) {
-        const uvs = child.geometry.attributes.uv.array;
-        const src = meta.map_ka;
-        const tex = new THREE.TextureLoader().load(self.basePath + src);
-
-        child.material.lightMap = tex;
-        child.material.lightMapIntensity = Globals.loader.lightMapIntensity;
-        child.geometry.addAttribute('uv2', new THREE.BufferAttribute(uvs, 2));
-      }
-
-      child.material.bumpScale = Globals.loader.bumpScale;
-
-      // make glass translucent
-
-      if (child.material.map) {
-        // if textured, set full colour
-        child.material.color = new THREE.Color(0xffffff);
-
-        // set transparent for .png
-
-        if (child.material.map.image.src.indexOf('.png') !== -1) {
-          child.material.transparent = true;
-          child.material.side = THREE.DoubleSide;
-        }
-
-        // for glass
-
-        if (child.material.map.image.src.indexOf('glass') != -1) {
-          child.material.transparent = true;
-          child.material.opacity = 0.4;
-        }
-      } else {
-        // no texture, set colour
-        child.material.emissive = child.material.color;
-      }
-      */
-    }
-  },
-
-  loadOBJ: function(filename) {
-    const self = this;
+  loadOBJ(file) {
+    // load OBJ from file
 
     return new Promise(
-      function(resolve, reject) {
+      (resolve, reject) => {
         try {
-          self.materialLoader.load(filename + '.mtl', function(materials) {
+          this.materialLoader.load(file + '.mtl', (materials) => {
             materials.preload();
-            //self.objectLoader.setMaterials(materials);
-            self.objectLoader.load(filename + '.obj', function(obj){
-              self.process(obj, materials);
+            this.objectLoader.load(file + '.obj', (obj) => {
+              this.process(obj, materials);
               resolve(obj);
             });
           });
@@ -87,6 +33,52 @@ LoadOBJ.prototype = {
       }
     );
   }
-};
+
+  process(obj, materials) {
+    // get object materials
+
+    obj.children.forEach((child) => {
+      // set material
+
+      const meta = materials.materialsInfo[child.material.name];
+      child.material = materials.materials[child.material.name];
+      child.material.bumpScale = Globals.loader.bumpScale;
+
+      // if light map exists, apply
+
+      if (meta.map_ka) {
+        const uvs = child.geometry.attributes.uv.array;
+        const src = meta.map_ka;
+        const texture = new THREE.TextureLoader().load(this.path + src);
+
+        child.material.lightMap = texture;
+        child.material.lightMapIntensity = Globals.loader.lightMapIntensity;
+        child.geometry.addAttribute('uv2', new THREE.BufferAttribute(uvs, 2));
+      }
+
+      // process texture
+
+      if (child.material.map) {
+        child.material.color = new THREE.Color(0xffffff);
+
+        // .png translucency
+
+        if (child.material.map.image && child.material.map.image.src.indexOf('.png') != -1) {
+          child.material.transparent = true;
+          child.material.side = THREE.DoubleSide;
+        }
+
+        // glass
+
+        if (child.material.map.image && child.material.map.image.src.indexOf('glass') != -1) {
+          child.material.transparent = true;
+          child.material.opacity = 0.4;
+        }
+      } else {
+        child.material.emissive = child.material.color;
+      }
+    });
+  }
+}
 
 export default LoadOBJ;

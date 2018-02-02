@@ -6,8 +6,12 @@ class App {
 		// main app
 
 		this.mode = (window.location.port === '8080') ? 'dev' : 'production';
+		this.setSize();
+
+		// set up scene
+
 		this.timer = new Timer();
-		this.scene = new Scene();
+		this.scene = new Scene(this.width, this.height);
 
 		// set up controls, events
 
@@ -47,6 +51,7 @@ class App {
 
 		$(window).on('focus', () => {
 			this.paused = false;
+			this.timer.reset();
 			this.loop();
 		});
 
@@ -55,14 +60,19 @@ class App {
 		});
 	}
 
+	setSize() {
+		// set size
+
+		this.width = Math.floor(window.innerWidth / 1.5);
+		this.height = 520;
+	}
+
 	resize() {
 		// resize canvas, nav
 
-		const width = Math.floor(window.innerWidth / 2);
-		const height = 520;
-
-		this.scene.resize(width, height);
-		$('.nav').css({top: `${window.innerHeight / 2 + height / 2}px`});
+		this.setSize();
+		this.scene.resize(this.width, this.height);
+		$('.nav').css({top: `${window.innerHeight / 2 + this.height / 2}px`});
 	}
 
 	loading() {

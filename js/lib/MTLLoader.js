@@ -30,8 +30,8 @@ THREE.MTLLoader.prototype = {
 	load: function ( url, onLoad, onProgress, onError ) {
 
 		var scope = this;
-
 		var loader = new THREE.FileLoader( this.manager );
+
 		loader.setPath( this.path );
 		loader.load( url, function ( text ) {
 

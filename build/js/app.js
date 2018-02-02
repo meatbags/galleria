@@ -216,85 +216,102 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
 var _config = __webpack_require__(1);
 
-var LoadOBJ = function LoadOBJ(basePath) {
-  this.basePath = basePath;
-  this.init();
-};
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-LoadOBJ.prototype = {
-  init: function init() {
+var LoadOBJ = function () {
+  function LoadOBJ(path) {
+    _classCallCheck(this, LoadOBJ);
+
+    // load OBJ files
+
+    this.path = path;
     this.materialLoader = new THREE.MTLLoader();
     this.objectLoader = new THREE.OBJLoader();
-    this.materialLoader.setPath(this.basePath);
-    this.objectLoader.setPath(this.basePath);
-  },
 
-  process: function process(obj, materials) {
-    // fix materials
-    var self = this;
+    // set root paths
 
-    for (var i = 0; i < obj.children.length; i += 1) {
-      var child = obj.children[i];
-      var meta = materials.materialsInfo[child.material.name];
-
-      child.material = new THREE.MeshPhongMaterial({ color: 0x888888 });
-
-      /*
-      // set from material loader
-      child.material = materials.materials[child.material.name];
-        // load lightmaps
-      if (meta.map_ka) {
-        const uvs = child.geometry.attributes.uv.array;
-        const src = meta.map_ka;
-        const tex = new THREE.TextureLoader().load(self.basePath + src);
-          child.material.lightMap = tex;
-        child.material.lightMapIntensity = Globals.loader.lightMapIntensity;
-        child.geometry.addAttribute('uv2', new THREE.BufferAttribute(uvs, 2));
-      }
-        child.material.bumpScale = Globals.loader.bumpScale;
-        // make glass translucent
-        if (child.material.map) {
-        // if textured, set full colour
-        child.material.color = new THREE.Color(0xffffff);
-          // set transparent for .png
-          if (child.material.map.image.src.indexOf('.png') !== -1) {
-          child.material.transparent = true;
-          child.material.side = THREE.DoubleSide;
-        }
-          // for glass
-          if (child.material.map.image.src.indexOf('glass') != -1) {
-          child.material.transparent = true;
-          child.material.opacity = 0.4;
-        }
-      } else {
-        // no texture, set colour
-        child.material.emissive = child.material.color;
-      }
-      */
-    }
-  },
-
-  loadOBJ: function loadOBJ(filename) {
-    var self = this;
-
-    return new Promise(function (resolve, reject) {
-      try {
-        self.materialLoader.load(filename + '.mtl', function (materials) {
-          materials.preload();
-          //self.objectLoader.setMaterials(materials);
-          self.objectLoader.load(filename + '.obj', function (obj) {
-            self.process(obj, materials);
-            resolve(obj);
-          });
-        });
-      } catch (error) {
-        reject(error);
-      }
-    });
+    this.materialLoader.setPath(this.path);
+    this.objectLoader.setPath(this.path);
   }
-};
+
+  _createClass(LoadOBJ, [{
+    key: 'loadOBJ',
+    value: function loadOBJ(file) {
+      var _this = this;
+
+      // load OBJ from file
+
+      return new Promise(function (resolve, reject) {
+        try {
+          _this.materialLoader.load(file + '.mtl', function (materials) {
+            materials.preload();
+            _this.objectLoader.load(file + '.obj', function (obj) {
+              _this.process(obj, materials);
+              resolve(obj);
+            });
+          });
+        } catch (error) {
+          reject(error);
+        }
+      });
+    }
+  }, {
+    key: 'process',
+    value: function process(obj, materials) {
+      var _this2 = this;
+
+      // get object materials
+
+      obj.children.forEach(function (child) {
+        // set material
+
+        var meta = materials.materialsInfo[child.material.name];
+        child.material = materials.materials[child.material.name];
+        child.material.bumpScale = _config.Globals.loader.bumpScale;
+
+        // if light map exists, apply
+
+        if (meta.map_ka) {
+          var uvs = child.geometry.attributes.uv.array;
+          var src = meta.map_ka;
+          var texture = new THREE.TextureLoader().load(_this2.path + src);
+
+          child.material.lightMap = texture;
+          child.material.lightMapIntensity = _config.Globals.loader.lightMapIntensity;
+          child.geometry.addAttribute('uv2', new THREE.BufferAttribute(uvs, 2));
+        }
+
+        // process texture
+
+        if (child.material.map) {
+          child.material.color = new THREE.Color(0xffffff);
+
+          // .png translucency
+
+          if (child.material.map.image && child.material.map.image.src.indexOf('.png') != -1) {
+            child.material.transparent = true;
+            child.material.side = THREE.DoubleSide;
+          }
+
+          // glass
+
+          if (child.material.map.image && child.material.map.image.src.indexOf('glass') != -1) {
+            child.material.transparent = true;
+            child.material.opacity = 0.4;
+          }
+        } else {
+          child.material.emissive = child.material.color;
+        }
+      });
+    }
+  }]);
+
+  return LoadOBJ;
+}();
 
 exports.default = LoadOBJ;
 
@@ -320,8 +337,12 @@ var App = function () {
 		// main app
 
 		this.mode = window.location.port === '8080' ? 'dev' : 'production';
+		this.setSize();
+
+		// set up scene
+
 		this.timer = new _performance.Timer();
-		this.scene = new _scene.Scene();
+		this.scene = new _scene.Scene(this.width, this.height);
 
 		// set up controls, events
 
@@ -367,6 +388,7 @@ var App = function () {
 
 			$(window).on('focus', function () {
 				_this.paused = false;
+				_this.timer.reset();
 				_this.loop();
 			});
 
@@ -375,15 +397,21 @@ var App = function () {
 			});
 		}
 	}, {
+		key: 'setSize',
+		value: function setSize() {
+			// set size
+
+			this.width = Math.floor(window.innerWidth / 1.5);
+			this.height = 520;
+		}
+	}, {
 		key: 'resize',
 		value: function resize() {
 			// resize canvas, nav
 
-			var width = Math.floor(window.innerWidth / 2);
-			var height = 520;
-
-			this.scene.resize(width, height);
-			$('.nav').css({ top: window.innerHeight / 2 + height / 2 + 'px' });
+			this.setSize();
+			this.scene.resize(this.width, this.height);
+			$('.nav').css({ top: window.innerHeight / 2 + this.height / 2 + 'px' });
 		}
 	}, {
 		key: 'loading',
@@ -542,8 +570,10 @@ exports.Scene = _scene2.default;
 
 
 Object.defineProperty(exports, "__esModule", {
-  value: true
+    value: true
 });
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 __webpack_require__(9);
 
@@ -561,113 +591,136 @@ var _loader = __webpack_require__(28);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var Scene = function Scene() {
-  this.init();
-};
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-Scene.prototype = {
-  init: function init() {
-    var self = this;
-    var isMonday = (new Date().getDay() == 1 || window.location.hash == '#monday') && window.location.hash != '#tuesday';
+var Scene = function () {
+    function Scene(width, height) {
+        _classCallCheck(this, Scene);
 
-    // threejs
+        // scene handler
 
-    this.renderer = new THREE.WebGLRenderer({ antialias: false });
-    this.renderer.setClearColor(0xf9e5a2, 1);
-    this.renderer.setPixelRatio(window.devicePixelRatio);
-    $('.wrapper .content').append(this.renderer.domElement);
+        this.isMonday = (new Date().getDay() == 1 || window.location.hash == '#monday') && window.location.hash != '#tuesday';
 
-    // player & scene
-    this.player = new _player2.default(this.renderer.domElement);
-    this.camera = this.player.camera;
+        // set up
 
-    // scene
-    this.scene = new THREE.Scene();
-    this.scene.fog = new THREE.FogExp2(0xCCCFFF, 0.008);
+        this._initRenderer();
+        this._initScene();
+        this.resize(width, height);
 
-    // collision map
-    this.collider = new Collider.System();
+        // set up post processing, load
 
-    // load !
-    this.roomLoader = new _loader.RoomLoader(this.scene, this.collider, isMonday);
+        this._initProcessing();
+        this._initLoaders();
+    }
 
-    // resize
-    this.resize();
+    _createClass(Scene, [{
+        key: 'resize',
+        value: function resize(width, height) {
+            // resize scene, element
 
-    // load gallery & lighting
-    this.lightHandler = new _loader.LightHandler(this.scene, this.player);
-    this.lightHandler.load(isMonday);
-    this.artworks = new _art.Artworks();
+            this.width = width;
+            this.height = height;
+            this.size = new THREE.Vector2(this.width, this.height);
+            this.camera.aspect = width / height;
+            this.camera.updateProjectionMatrix();
+            this.renderer.setSize(width, height);
+        }
+    }, {
+        key: '_initRenderer',
+        value: function _initRenderer() {
+            var _this = this;
 
-    if (!isMonday) {}
-    /*
-    $('.im').each(function(i, e){
-      self.artworks.add(
-        $(e).find('.im__title').html(),
-        $(e).find('.im__description').html(),
-        $(e).find('.im__url').html(),
-        $(e).find('.im__image').html()
-      );
-    });
-      this.artworks.placeImages();
-    this.scene.add(this.artworks.object);
-      // lighting
-    //this.player.raytracer.object
-    */
+            // render objects, methods
 
+            this.renderer = new THREE.WebGLRenderer({ antialias: false });
+            this.renderer.setClearColor(0xf9e5a2, 1);
+            this.renderer.setPixelRatio(window.devicePixelRatio);
+            $('.wrapper .content').append(this.renderer.domElement);
 
-    // skybox
-    //const sky = new THREE.Sky();
-    //this.scene.add(sky.mesh);
+            // main render func
 
-    // postprocessing
-    this.postprocessing();
-  },
+            this.render = function (delta) {
+                _this.composer.render();
+            };
+        }
+    }, {
+        key: '_initScene',
+        value: function _initScene() {
+            var _this2 = this;
 
-  isLoaded: function isLoaded() {
-    return this.roomLoader.isLoaded() && this.artworks.toLoad === 0;
-  },
+            // scene objects, methods
 
-  resize: function resize(width, height) {
-    // resize
+            this.player = new _player2.default(this.renderer.domElement);
+            this.camera = this.player.camera;
+            this.scene = new THREE.Scene();
+            this.scene.fog = new THREE.FogExp2(0xCCCFFF, 0.008);
+            this.collider = new Collider.System();
+            this.lightHandler = new _loader.LightHandler(this.scene, this.player);
+            this.lightHandler.load(this.isMonday);
+            this.artworks = new _art.Artworks();
+            this.sky = new THREE.Sky();
+            this.scene.add(this.sky.mesh);
 
-    this.camera.aspect = width / height;
-    this.camera.updateProjectionMatrix();
-    this.renderer.setSize(width, height);
-    this.width = width;
-    this.height = height;
-  },
+            // get artworks
 
-  postprocessing: function postprocessing() {
-    // post-processing passes
-    this.renderPass = new THREE.RenderPass(this.scene, this.camera);
-    this.mechanicsPass = new THREE.MechanicsPass(this.size);
-    this.bloomPass = new THREE.UnrealBloomPass(this.size, .75, 1.2, 0.9); // res, strength, radius, threshold
-    //this.ssaoPass = new THREE.SSAOPass(this.scene, this.camera);
-    this.bloomPass.renderToScreen = true;
+            if (!this.isMonday) {
+                $('.im').each(function (i, e) {
+                    _this2.artworks.add($(e).find('.im__title').html(), $(e).find('.im__description').html(), $(e).find('.im__url').html(), $(e).find('.im__image').html());
+                });
 
-    // set composer
-    this.composer = new THREE.EffectComposer(this.renderer);
-    this.composer.setSize(this.width, this.height);
-    this.composer.addPass(this.renderPass);
-    this.composer.addPass(this.mechanicsPass);
-    //this.composer.addPass(this.ssaoPass);
-    this.composer.addPass(this.bloomPass);
+                this.artworks.placeImages();
+                this.scene.add(this.artworks.object);
 
-    // gamma
-    //this.renderer.gammaInput = true;
-    //this.renderer.gammaOutput = true;
-  },
+                // lighting
+                //this.player.raytracer.object
+            }
 
-  update: function update(delta) {
-    this.player.update(delta, this.collider, this.artworks);
-  },
+            // main update func
 
-  render: function render(delta) {
-    this.composer.render(delta);
-    //this.renderer.render(this.scene, this.camera);
-  }
-};
+            this.update = function (delta) {
+                _this2.player.update(delta, _this2.collider, _this2.artworks);
+            };
+        }
+    }, {
+        key: '_initLoaders',
+        value: function _initLoaders() {
+            var _this3 = this;
+
+            // load the scene
+
+            this.roomLoader = new _loader.RoomLoader(this.scene, this.collider, this.isMonday);
+
+            // checks
+
+            this.isLoaded = function () {
+                _this3.roomLoader.isLoaded() && _this3.artworks.toLoad === 0;
+            };
+        }
+    }, {
+        key: '_initProcessing',
+        value: function _initProcessing() {
+            // post processing
+
+            this.renderPass = new THREE.RenderPass(this.scene, this.camera);
+            this.mechanicsPass = new THREE.MechanicsPass(this.size);
+            //this.bloomPass = new THREE.UnrealBloomPass(this.size, .75, 1.2, 0.9); // res, strength, radius, threshold
+            //this.ssaoPass = new THREE.SSAOPass(this.scene, this.camera);
+            //this.bloomPass.renderToScreen = true;
+            this.mechanicsPass.renderToScreen = true;
+
+            // add passes to composer
+
+            this.composer = new THREE.EffectComposer(this.renderer);
+            this.composer.setSize(this.width, this.height);
+            this.composer.addPass(this.renderPass);
+            this.composer.addPass(this.mechanicsPass);
+            //this.composer.addPass(this.ssaoPass);
+            //this.composer.addPass(this.bloomPass);
+        }
+    }]);
+
+    return Scene;
+}();
 
 exports.default = Scene;
 
@@ -2711,128 +2764,157 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
 var _config = __webpack_require__(1);
 
 var _maths = __webpack_require__(0);
 
 var _focal = __webpack_require__(2);
 
-var Artworks = function Artworks() {
-  this.sources = [];
-  this.focalPoints = [];
-  this.object = new THREE.Object3D();
-  this.toLoad = 0;
-  this.active = false;
-};
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-Artworks.prototype = {
-  add: function add(title, description, url, image) {
-    // add an image source
+var Artworks = function () {
+  function Artworks() {
+    _classCallCheck(this, Artworks);
 
-    this.toLoad += 1;
-    this.sources.push({
-      title: title,
-      description: description,
-      url: url,
-      image: image
-    });
-  },
+    // artwork handler
 
-  activate: function activate(artwork) {
-    if (!this.active) {
-      this.active = true;
+    this.sources = [];
+    this.focalPoints = [];
+    this.object = new THREE.Object3D();
+    this.toLoad = 0;
+    this.active = false;
+  }
 
-      if (!artwork.active) {
-        for (var i = 0; i < this.focalPoints.length; i += 1) {
-          if (this.focalPoints[i].id === artwork.id) {
-            this.focalPoints[i].activate();
-          } else {
-            this.focalPoints[i].deactivate();
+  _createClass(Artworks, [{
+    key: 'add',
+    value: function add(title, description, url, image) {
+      // add an artwork
+
+      this.toLoad += 1;
+      this.sources.push({
+        title: title,
+        description: description,
+        url: url,
+        image: image
+      });
+    }
+  }, {
+    key: 'activate',
+    value: function activate(artwork) {
+      // activate artwork (show description)
+
+      if (!this.active) {
+        this.active = true;
+
+        if (!artwork.active) {
+          for (var i = 0; i < this.focalPoints.length; i += 1) {
+            if (this.focalPoints[i].id === artwork.id) {
+              this.focalPoints[i].activate();
+            } else {
+              this.focalPoints[i].deactivate();
+            }
           }
+
+          // remove nav and show artwork information
+
+          if (!$('#nav-default').hasClass('hidden')) {
+            $('#nav-default').addClass('hidden');
+          }
+
+          // animate out and in
+
+          var timeout = 1;
+
+          if (!$('#nav-artwork').hasClass('hidden')) {
+            $('#nav-artwork').addClass('hidden');
+            timeout = 500;
+          }
+
+          setTimeout(function () {
+            $('#nav-artwork .nav__title').text(artwork.source.title);
+            $('#nav-artwork .nav__description').html(artwork.source.description);
+            $('#nav-artwork .nav__links').html('<a target="_blank" href="' + artwork.source.url + '">Order print</a>');
+            $('#nav-artwork').removeClass('hidden');
+          }, timeout);
+        }
+      }
+    }
+  }, {
+    key: 'deactivate',
+    value: function deactivate() {
+      // deactivate active artworks
+
+      if (this.active) {
+        this.active = false;
+
+        // deactivate artworks
+
+        for (var i = 0; i < this.focalPoints.length; i += 1) {
+          this.focalPoints[i].deactivate();
         }
 
-        // remove nav and show artwork information
-        if (!$('#nav-default').hasClass('hidden')) {
-          $('#nav-default').addClass('hidden');
-        }
-
-        // animate out and in
-        var timeout = 1;
+        // show default nav
 
         if (!$('#nav-artwork').hasClass('hidden')) {
           $('#nav-artwork').addClass('hidden');
-          timeout = 500;
         }
-
-        setTimeout(function () {
-          $('#nav-artwork .nav__title').text(artwork.source.title);
-          $('#nav-artwork .nav__description').html(artwork.source.description);
-          $('#nav-artwork .nav__links').html('<a target="_blank" href="' + artwork.source.url + '">Order print</a>');
-          $('#nav-artwork').removeClass('hidden');
-        }, timeout);
+        if ($('#nav-default').hasClass('hidden')) {
+          $('#nav-default').removeClass('hidden');
+        }
       }
     }
-  },
+  }, {
+    key: 'placeImages',
+    value: function placeImages() {
+      var _this = this;
 
-  deactivate: function deactivate() {
-    if (this.active) {
-      this.active = false;
+      // place images in 3D space
 
-      // deactivate artworks
-      for (var i = 0; i < this.focalPoints.length; i += 1) {
-        this.focalPoints[i].deactivate();
-      }
+      var textureLoader = new THREE.TextureLoader();
 
-      // show default nav
-      if (!$('#nav-artwork').hasClass('hidden')) {
-        $('#nav-artwork').addClass('hidden');
-      }
-      if ($('#nav-default').hasClass('hidden')) {
-        $('#nav-default').removeClass('hidden');
+      var _loop = function _loop(i) {
+        var index = i;
+        var place = _config.Globals.artworkPlacement[index];
+        var id = 'UID' + i;
+
+        // create collision object
+
+        var focal = new _focal.Focal(id, place.position, (0, _maths.v3)(1, 1, 1), place.eye, _this.sources[i]);
+        _this.focalPoints.push(focal);
+
+        // create artwork mesh
+
+        var mesh = new THREE.Mesh(new THREE.PlaneBufferGeometry(1, 1, 2, 2), _config.Materials.canvas.clone());
+        var texture = textureLoader.load(_this.sources[i].image, function () {
+          _this.toLoad -= 1;
+          mesh.scale.x = texture.image.naturalWidth / 1000. * place.scale;
+          mesh.scale.y = texture.image.naturalHeight / 1000. * place.scale;
+          _this.focalPoints[index].scale(mesh.scale.x, mesh.scale.y, mesh.scale.x);
+        });
+
+        // apply texture
+
+        mesh.material.map = texture;
+        mesh.rotation.set(place.pitch, place.yaw, 0);
+        mesh.position.set(place.position.x, place.position.y, place.position.z);
+
+        // add to gallery
+
+        _this.object.add(mesh);
+        // helper
+        //this.object.add(focal.object);
+      };
+
+      for (var i = 0; i < this.sources.length; i += 1) {
+        _loop(i);
       }
     }
-  },
+  }]);
 
-  placeImages: function placeImages() {
-    var _this = this;
-
-    var self = this;
-    var textureLoader = new THREE.TextureLoader();
-
-    var _loop = function _loop(i) {
-      var index = i;
-      var place = _config.Globals.artworkPlacement[index];
-      var id = 'UID' + i;
-
-      // create collision object
-      var focal = new _focal.Focal(id, place.position, (0, _maths.v3)(1, 1, 1), place.eye, _this.sources[i]);
-      self.focalPoints.push(focal);
-
-      // create artwork mesh
-      var mesh = new THREE.Mesh(new THREE.PlaneBufferGeometry(1, 1, 2, 2), _config.Materials.canvas.clone());
-      var texture = textureLoader.load(_this.sources[i].image, function () {
-        self.toLoad -= 1;
-        mesh.scale.x = texture.image.naturalWidth / 1000. * place.scale;
-        mesh.scale.y = texture.image.naturalHeight / 1000. * place.scale;
-        self.focalPoints[index].scale(mesh.scale.x, mesh.scale.y, mesh.scale.x);
-      });
-
-      // apply texture
-      mesh.material.map = texture;
-      mesh.rotation.set(place.pitch, place.yaw, 0);
-      mesh.position.set(place.position.x, place.position.y, place.position.z);
-
-      // add to gallery
-      self.object.add(mesh);
-      // helper
-      //self.object.add(focal.object);
-    };
-
-    for (var i = 0; i < this.sources.length; i += 1) {
-      _loop(i);
-    }
-  }
-};
+  return Artworks;
+}();
 
 exports.default = Artworks;
 
@@ -6458,11 +6540,11 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-// load rooms
-
 var RoomLoader = function () {
   function RoomLoader(scene, collider, isMonday) {
     _classCallCheck(this, RoomLoader);
+
+    // load room from file
 
     this.scene = scene;
     this.collider = collider;
@@ -6475,54 +6557,48 @@ var RoomLoader = function () {
   _createClass(RoomLoader, [{
     key: 'isLoaded',
     value: function isLoaded() {
-      return this.toLoad == 0;
+      // check if loaded
+
+      return this.toLoad <= 0;
     }
   }, {
     key: '_load',
     value: function _load() {
+      var _this = this;
+
+      // load room and collision map
+
       var mapSource = this.isMonday ? 'hangar_monday' : 'hangar';
       var collisionSource = this.isMonday ? 'hangar_collision_map_monday' : 'hangar_collision_map';
 
+      // flag
+
+      this.toLoad = 2;
+
       // load collisions
 
-      var floor = new THREE.Mesh(new THREE.BoxBufferGeometry(100, 0.5, 100), new THREE.MeshPhongMaterial({ color: 0x444444 }));
-
-      this.collider.add(new Collider.Mesh(floor.geometry));
-      this.scene.add(floor);
-
-      /*
-      this.loader.loadOBJ(collisionSource).then((map) => {
-        map.children.forEach((child) => {
-          this.collider.add(new Collider.Mesh(child.geometry));
+      this.loader.loadOBJ(collisionSource).then(function (map) {
+        map.children.forEach(function (child) {
+          _this.collider.add(new Collider.Mesh(child.geometry));
         });
-        this.toLoad -= 1;
-      }, (err) => { console.log(err); });
-        // load map
-        this.loader.loadOBJ(mapSource).then((map) => {
-        this.scene.add(map);
-        this.toLoad -= 1;
-      }, (err) => { console.log(err); });
-      */
+        _this.toLoad -= 1;
+      }, function (err) {
+        console.log(err);
+      });
+
+      // load map
+
+      this.loader.loadOBJ(mapSource).then(function (map) {
+        _this.scene.add(map);
+        _this.toLoad -= 1;
+      }, function (err) {
+        console.log(err);
+      });
     }
   }]);
 
   return RoomLoader;
 }();
-
-/*
-if (!isMonday) {
-  const path = appRoot + 'assets/3d/gallery.fbx';
-
-  console.log(path);
-
-  LoadFBX(path, new THREE.ShaderMaterial(THREE.DepthShader)).then((meshes) => {
-    this.toLoad -= 1;
-    meshes.forEach((mesh) => {
-      this.scene.add(mesh)
-    });
-  }, (err) => { throw(err); });
-}
-*/
 
 exports.default = RoomLoader;
 
