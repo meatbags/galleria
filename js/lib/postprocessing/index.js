@@ -6,7 +6,8 @@ import './MobileCheck.js';
 import './RenderPass.js';
 import './ShaderPass.js';
 import './UnrealBloomPass.js';
-import './Mechanics.js';
 import './SkyShader.js';
+import './Poster.js'
+//import './Mechanics.js';
 //import './SSAO.js';
 //import './SSAOShader.js';

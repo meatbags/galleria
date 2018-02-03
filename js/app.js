@@ -84,7 +84,7 @@ class App {
 			requestAnimationFrame(() => { this.loading(); });
 		} else {
 			$('#nav-default').removeClass('hidden');
-			$('.loading').fadeOut(1000);
+			$('.loading').fadeOut(500);
 			this.loop();
 		}
 	}

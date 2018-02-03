@@ -106,9 +106,8 @@ class Scene {
     // post processing
 
     this.renderPass = new THREE.RenderPass(this.scene, this.camera);
-    this.mechanicsPass = new THREE.MechanicsPass(this.size);
+    this.posterPass = new THREE.PosterPass(this.size);
     this.bloomPass = new THREE.UnrealBloomPass(this.size, .75, 1.2, 0.9); // res, strength, radius, threshold
-    //this.ssaoPass = new THREE.SSAOPass(this.scene, this.camera, this.width, this.height);
     this.bloomPass.renderToScreen = true;
 
     // add passes to composer
@@ -116,9 +115,7 @@ class Scene {
     this.composer = new THREE.EffectComposer(this.renderer);
     this.composer.setSize(this.width, this.height);
     this.composer.addPass(this.renderPass);
-
-    //this.composer.addPass(this.ssaoPass);
-    this.composer.addPass(this.mechanicsPass);
+    this.composer.addPass(this.posterPass);
     this.composer.addPass(this.bloomPass);
   }
 }

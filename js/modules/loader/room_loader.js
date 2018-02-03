@@ -21,7 +21,7 @@ class RoomLoader {
   _load() {
     // load room and collision map
 
-    const mapSource = (this.isMonday) ? 'hangar_monday' : 'hangar';
+    const mapSource = (this.isMonday) ? 'hangar_monday' : 'hangar_extended';
     const collisionSource = (this.isMonday) ? 'hangar_collision_map_monday' : 'hangar_collision_map';
 
     // flag

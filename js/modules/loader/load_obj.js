@@ -23,7 +23,14 @@ class LoadOBJ {
           this.materialLoader.load(file + '.mtl', (materials) => {
             materials.preload();
             this.objectLoader.load(file + '.obj', (obj) => {
-              this.process(obj, materials);
+              console.log(obj);
+              obj.children.forEach((child) => {
+                try {
+                  this.process(child, materials);
+                } catch(err) {
+                  console.warn('MTL Error', child);
+                }
+              })
               resolve(obj);
             });
           });
@@ -34,12 +41,10 @@ class LoadOBJ {
     );
   }
 
-  process(obj, materials) {
-    // get object materials
+  process(child, materials) {
+    // set child material
 
-    obj.children.forEach((child) => {
-      // set material
-
+    if (materials.materialsInfo[child.material.name]) {
       const meta = materials.materialsInfo[child.material.name];
       child.material = materials.materials[child.material.name];
       child.material.bumpScale = Globals.loader.bumpScale;
@@ -77,7 +82,12 @@ class LoadOBJ {
       } else {
         child.material.emissive = child.material.color;
       }
-    });
+    } else {
+      // no material
+
+      console.log('No material found:', child, child.material.name);
+      child.material = new THREE.MeshPhongMaterial({emissive: 0xff0000});
+    }
   }
 }
 
