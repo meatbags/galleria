@@ -29,13 +29,21 @@ $canvasOffsetY: 56px;
 
       .canvas-target {
         position: absolute;
-        top: $canvasOffsetY;
+				top: 0;
+				left: 0;
+				top: $canvasOffsetY;
         left: $canvasOffsetX;
 
         canvas {
         	z-index: $zCanvas;
         	cursor: crosshair;
         }
+
+				&.clickable {
+					canvas {
+						cursor: pointer;
+					}
+				}
       }
     }
 	}

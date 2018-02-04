@@ -23,18 +23,50 @@ class ArtworkHandler {
     this.root.add(this.object);
   }
 
+  getCollisionBoxes() {
+    // get artwork boxes
+
+    return this.artworks.map((obj) => { return obj.getBox(); });
+  }
+
+  parseCollisions(res) {
+    // handle collision data
+
+    if (res.length) {
+      this.activate(res[0].object.uuid);
+      $('.canvas-target').addClass('clickable');
+    } else {
+      this.deactivate();
+      $('.canvas-target').removeClass('clickable');
+    }
+  }
+
   activate(id) {
     // activate artwork with id
 
     for (let i=this.artworks.length-1; i>-1; i--) {
-      if (this.artworks[i].meshHasId(id)) {
+      if (this.artworks[i].boxHasId(id)) {
         this.artworks[i].activate();
+      } else {
+        this.artworks[i].deactivate();
       }
     }
   }
 
-  update() {
+  deactivate() {
+    // deactivate all
 
+    for (let i=this.artworks.length-1; i>-1; i--) {
+      this.artworks[i].deactivate();
+    }
+  }
+
+  update() {
+    // update artwork animations
+
+    for (let i=this.artworks.length-1; i>-1; i--) {
+      this.artworks[i].update();
+    }
   }
 }
 

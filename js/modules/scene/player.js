@@ -17,6 +17,9 @@ class Player extends Collider.Player {
     $(this.domElement).on('click', (e) => {
       this.rayTracer.handleClick(e.clientX, e.clientY);
     });
+    $(this.domElement).on('mousemove', (e) => {
+      this.rayTracer.handleMove(e.clientX, e.clientY);
+    });
   }
 
   _override() {

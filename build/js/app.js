@@ -580,7 +580,7 @@ var Scene = function () {
 
         // scene handler
 
-        this.isMonday = (new Date().getDay() == 1 || window.location.hash == '#monday') && window.location.hash != '#tuesday';
+        this.isMonday = false; //(((new Date()).getDay() == 1 || window.location.hash == '#monday') && (window.location.hash != '#tuesday'));
 
         // set up
 
@@ -646,15 +646,13 @@ var Scene = function () {
 
             this.artworkHandler = new _art.ArtworkHandler(this.scene);
 
-            this.onArtworkHover = function (res) {
+            this.onArtworkClick = function (res) {
                 console.log(res);
             };
-            this.onArtworkClick = function (res) {
-                _this2.artworkHandler.activate(res.object.uuid);
+            this.onArtworkHover = function (res) {
+                _this2.artworkHandler.parseCollisions(res);
             };
-            this.player.rayTracer.setTargets(this.artworkHandler.artworks.map(function (obj) {
-                return obj.mesh;
-            }), this.onArtworkHover, this.onArtworkClick);
+            this.player.rayTracer.setTargets(this.artworkHandler.getCollisionBoxes(), this.onArtworkHover, this.onArtworkClick);
 
             // main update func
 
@@ -1750,6 +1748,9 @@ var Player = function (_Collider$Player) {
       $(this.domElement).on('click', function (e) {
         _this2.rayTracer.handleClick(e.clientX, e.clientY);
       });
+      $(this.domElement).on('mousemove', function (e) {
+        _this2.rayTracer.handleMove(e.clientX, e.clientY);
+      });
     }
   }, {
     key: '_override',
@@ -1808,10 +1809,11 @@ var RayTracer = function () {
     this.domElement = domElement;
     this.camera = camera;
     this.raycaster = new THREE.Raycaster();
-    this.raycaster.far = 15;
     this.mouse = new THREE.Vector2();
     this.rect = this.domElement.getBoundingClientRect();
     this.objects = [];
+
+    console.log(this.raycaster);
   }
 
   _createClass(RayTracer, [{
@@ -1824,34 +1826,41 @@ var RayTracer = function () {
       this.onClick = onClick;
     }
   }, {
+    key: "setMouse",
+    value: function setMouse(x, y) {
+      // convert mouse to [-1, 1]
+
+      this.rect = this.domElement.getBoundingClientRect();
+      this.mouse.x = (x - this.rect.left) / this.rect.width * 2 - 1;
+      this.mouse.y = -((y - this.rect.top) / this.rect.height * 2 - 1);
+    }
+  }, {
     key: "handleMove",
     value: function handleMove(x, y) {
       // on mouse move
-      // this.rect = this.domElement.getBoundingClientRect();
+
+      this.setMouse(x, y);
+      this.hover();
     }
   }, {
     key: "handleClick",
     value: function handleClick(x, y) {
       // on mouse click
 
-      this.rect = this.domElement.getBoundingClientRect();
-      this.mouse.x = (x - this.rect.left) / this.rect.width * 2 - 1;
-      this.mouse.y = (y - this.rect.top) / this.rect.height * 2 - 1;
-      this.trace();
+      this.setMouse();
+      this.click();
     }
   }, {
-    key: "trace",
-    value: function trace() {
+    key: "click",
+    value: function click() {}
+  }, {
+    key: "hover",
+    value: function hover() {
       // raytrace, perform actions
 
       this.raycaster.setFromCamera(this.mouse, this.camera);
       var res = this.raycaster.intersectObjects(this.objects);
-
-      if (res.length) {
-        // perform first collision action
-
-        this.onClick(res[0]);
-      }
+      this.onHover(res);
     }
   }]);
 
@@ -2432,19 +2441,58 @@ var ArtworkHandler = function () {
   }
 
   _createClass(ArtworkHandler, [{
+    key: 'getCollisionBoxes',
+    value: function getCollisionBoxes() {
+      // get artwork boxes
+
+      return this.artworks.map(function (obj) {
+        return obj.getBox();
+      });
+    }
+  }, {
+    key: 'parseCollisions',
+    value: function parseCollisions(res) {
+      // handle collision data
+
+      if (res.length) {
+        this.activate(res[0].object.uuid);
+        $('.canvas-target').addClass('clickable');
+      } else {
+        this.deactivate();
+        $('.canvas-target').removeClass('clickable');
+      }
+    }
+  }, {
     key: 'activate',
     value: function activate(id) {
       // activate artwork with id
 
       for (var i = this.artworks.length - 1; i > -1; i--) {
-        if (this.artworks[i].meshHasId(id)) {
+        if (this.artworks[i].boxHasId(id)) {
           this.artworks[i].activate();
+        } else {
+          this.artworks[i].deactivate();
         }
       }
     }
   }, {
+    key: 'deactivate',
+    value: function deactivate() {
+      // deactivate all
+
+      for (var i = this.artworks.length - 1; i > -1; i--) {
+        this.artworks[i].deactivate();
+      }
+    }
+  }, {
     key: 'update',
-    value: function update() {}
+    value: function update() {
+      // update artwork animations
+
+      for (var i = this.artworks.length - 1; i > -1; i--) {
+        this.artworks[i].update();
+      }
+    }
   }]);
 
   return ArtworkHandler;
@@ -2479,16 +2527,16 @@ var Artwork = function () {
     this.element = element;
     this.object = new THREE.Object3D();
     this.active = false;
+    this.opacity = 0.4;
     this.scale = ops.scale;
     this.pitch = ops.pitch;
     this.yaw = ops.yaw;
     this.position = ops.position;
     this.eye = ops.eye;
 
-    // create
+    // build object
 
-    this.parseElement();
-    this.createObject();
+    this.build();
 
     // add to doc
 
@@ -2496,13 +2544,79 @@ var Artwork = function () {
   }
 
   _createClass(Artwork, [{
+    key: 'build',
+    value: function build() {
+      var _this = this;
+
+      // pull data from doc element
+
+      this.title = this.element.find('.im__title').html();
+      this.desc = this.element.find('.im__description').html();
+      this.url = this.element.find('.im__url').html();
+      this.image = this.element.find('.im__image').html();
+      this.alpha = this.element.find('.im__alpha').html();
+
+      // generate html tag
+
+      this.spiel = '' + this.title + this.desc + this.url;
+
+      // collision box
+
+      this.box = new THREE.Mesh(new THREE.BoxBufferGeometry(1, 1, 1), new THREE.MeshBasicMaterial({
+        color: 0xffffff,
+        visible: false,
+        transparent: true,
+        opacity: 0.1
+      }));
+      this.resizeBox = function () {
+        // set collision box dimensions
+
+        _this.box.position.set(_this.position.x, _this.position.y, _this.position.z);
+        _this.box.scale.set(_this.mesh.scale.x, _this.mesh.scale.y, _this.mesh.scale.x);
+      };
+      this.boxHasId = function (id) {
+        return id === _this.box.uuid;
+      };
+      this.getBox = function () {
+        return _this.box;
+      };
+      this.object.add(this.box);
+
+      // create 3D object
+
+      this.textureLoader = new THREE.TextureLoader();
+      this.mesh = new THREE.Mesh(new THREE.PlaneBufferGeometry(1, 1, 2, 2), _config.Materials.canvas.clone());
+      var map = this.textureLoader.load(this.image, function (tex) {
+        // set scale and append to scene
+
+        _this.mesh.scale.x = map.image.naturalWidth / 1000. * _this.scale;
+        _this.mesh.scale.y = map.image.naturalHeight / 1000. * _this.scale;
+
+        // resize box
+
+        _this.resizeBox();
+      });
+      var alphaMap = this.textureLoader.load(this.alpha, function (tex) {
+        // add alpha map
+
+        _this.mesh.material.transparent = true;
+      });
+      this.mesh.material.map = map;
+      this.mesh.material.alphaMap = alphaMap;
+
+      // rotate to spec, add to scene
+
+      this.mesh.rotation.set(this.pitch, this.yaw, 0);
+      this.mesh.position.set(this.position.x, this.position.y, this.position.z);
+      this.object.add(this.mesh);
+    }
+  }, {
     key: 'activate',
     value: function activate() {
       // turn on
 
       if (!this.active) {
         this.active = true;
-        this.mesh.material.color.setHex(0xffffff);
       }
     }
   }, {
@@ -2515,56 +2629,21 @@ var Artwork = function () {
       }
     }
   }, {
-    key: 'createObject',
-    value: function createObject() {
-      var _this = this;
+    key: 'update',
+    value: function update() {
+      // update animation
 
-      // create 3D object
-
-      this.textureLoader = new THREE.TextureLoader();
-      this.mesh = new THREE.Mesh(new THREE.PlaneBufferGeometry(1, 1, 2, 2), _config.Materials.canvas.clone());
-      var map = this.textureLoader.load(this.image, function (tex) {
-        // set scale and append to scene
-
-        _this.mesh.scale.x = map.image.naturalWidth / 1000. * _this.scale;
-        _this.mesh.scale.y = map.image.naturalHeight / 1000. * _this.scale;
-
-        // create collision box w new dimensions
-
-        _this.object.add(_this.mesh);
-      });
-      var alphaMap = this.textureLoader.load(this.alpha, function (tex) {
-        // add alpha map
-
-        _this.mesh.material.transparent = true;
-      });
-      this.mesh.material.map = map;
-      this.mesh.material.alphaMap = alphaMap;
-
-      // rotate to spec
-
-      this.mesh.rotation.set(this.pitch, this.yaw, 0);
-      this.mesh.position.set(this.position.x, this.position.y, this.position.z);
-    }
-  }, {
-    key: 'parseElement',
-    value: function parseElement() {
-      // pull data from doc element
-
-      this.title = this.element.find('.im__title').html();
-      this.desc = this.element.find('.im__description').html();
-      this.url = this.element.find('.im__url').html();
-      this.image = this.element.find('.im__image').html();
-      this.alpha = this.element.find('.im__alpha').html();
-
-      // generate spiel
-
-      this.spiel = '' + this.title + this.desc + this.url;
-    }
-  }, {
-    key: 'meshHasId',
-    value: function meshHasId(id) {
-      return id === this.mesh.uuid;
+      if (this.active) {
+        if (this.opacity < 1) {
+          this.opacity += (1 - this.opacity) * 0.05;
+          this.mesh.material.color.setScalar(this.opacity);
+        }
+      } else {
+        if (this.opacity > 0.25) {
+          this.opacity += (0.25 - this.opacity) * 0.05;
+          this.mesh.material.color.setScalar(this.opacity);
+        }
+      }
     }
   }]);
 

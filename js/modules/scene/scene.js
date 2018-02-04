@@ -9,7 +9,7 @@ class Scene {
   constructor(width, height, selector) {
     // scene handler
 
-    this.isMonday = (((new Date()).getDay() == 1 || window.location.hash == '#monday') && (window.location.hash != '#tuesday'));
+    this.isMonday = false;//(((new Date()).getDay() == 1 || window.location.hash == '#monday') && (window.location.hash != '#tuesday'));
 
     // set up
 
@@ -67,12 +67,12 @@ class Scene {
 
     this.artworkHandler = new ArtworkHandler(this.scene);
 
-    this.onArtworkHover = (res) => { console.log(res); };
-    this.onArtworkClick = (res) => {
-      this.artworkHandler.activate(res.object.uuid);
+    this.onArtworkClick = (res) => { console.log(res); };
+    this.onArtworkHover = (res) => {
+      this.artworkHandler.parseCollisions(res);
     };
     this.player.rayTracer.setTargets(
-      this.artworkHandler.artworks.map((obj) => { return obj.mesh; }),
+      this.artworkHandler.getCollisionBoxes(),
       this.onArtworkHover,
       this.onArtworkClick
     );
