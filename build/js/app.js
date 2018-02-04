@@ -128,84 +128,7 @@ exports.reverseVector = _vector.reverseVector;
 exports.normalise = _vector.normalise;
 
 /***/ }),
-/* 2 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.TYPE_FOCAL = exports.Focal = undefined;
-
-var _maths = __webpack_require__(1);
-
-var _config = __webpack_require__(0);
-
-var TYPE_FOCAL = 'TYPE_FOCAL';
-
-var Focal = function Focal(id, pos, dim, eye, source) {
-  this.id = id;
-  this.type = TYPE_FOCAL;
-  this.position = pos;
-  this.dimensions = dim;
-  this.eye = eye;
-  this.source = source;
-  this.active = false;
-  this.init();
-};
-
-Focal.prototype = {
-  init: function init() {
-    this.pitch = (0, _maths.getPitch)(this.eye, new THREE.Vector3(this.position.x, this.position.y - _config.Globals.player.height, this.position.z));
-    this.yaw = (0, _maths.getYaw)(this.eye, this.position);
-    this.direction = Math.abs(Math.sin(this.yaw)) < 0.5 ? 'z' : 'x';
-    this.object = new THREE.Mesh(new THREE.BoxBufferGeometry(this.dimensions.x, this.dimensions.y, this.dimensions.z), _config.Materials.dev2);
-    this.object.position.set(this.position.x, this.position.y, this.position.z);
-    this.box = new THREE.Box3();
-    this.setBox();
-  },
-
-  activate: function activate() {
-    this.active = true;
-  },
-
-  deactivate: function deactivate() {
-    this.active = false;
-  },
-
-  setBox: function setBox() {
-    // set collision box size
-    var min = (0, _maths.subtractVector)(this.object.position, (0, _maths.scaleVector)(this.dimensions, 0.5));
-    var max = (0, _maths.addVector)(this.object.position, (0, _maths.scaleVector)(this.dimensions, 0.5));
-    this.box.set(min, max);
-  },
-
-  collision: function collision(point) {
-    return this.box.containsPoint(point);
-  },
-
-  scale: function scale(x, y, z) {
-    var s = _config.Globals.artwork.clickBoxScale;
-    var zScale = this.direction == 'z' ? 0.25 : 1;
-    var xScale = this.direction == 'x' ? 0.25 : 1;
-
-    this.dimensions.x *= x * s * xScale;
-    this.dimensions.y *= y * s;
-    this.dimensions.z *= z * s * zScale;
-    this.object.scale.x = x * s * xScale;
-    this.object.scale.y = y * s;
-    this.object.scale.z = z * s * zScale;
-    this.object.position.set(this.position.x - Math.sin(this.yaw) * (x * xScale * 0.5), this.position.y, this.position.z - Math.cos(this.yaw) * (z * zScale * 0.5));
-    this.setBox();
-  }
-};
-
-exports.Focal = Focal;
-exports.TYPE_FOCAL = TYPE_FOCAL;
-
-/***/ }),
+/* 2 */,
 /* 3 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -270,8 +193,6 @@ var LoadOBJ = function () {
     key: 'preload',
     value: function preload(key, meta) {
       // load materials from meta
-
-      console.log(meta);
 
       this.materials[key] = {};
 
@@ -723,12 +644,23 @@ var Scene = function () {
 
             // load user-uploaded artworks
 
-            this.artworks = new _art.Artworks(this.scene);
+            this.artworkHandler = new _art.ArtworkHandler(this.scene);
+
+            this.onArtworkHover = function (res) {
+                console.log(res);
+            };
+            this.onArtworkClick = function (res) {
+                _this2.artworkHandler.activate(res.object.uuid);
+            };
+            this.player.rayTracer.setTargets(this.artworkHandler.artworks.map(function (obj) {
+                return obj.mesh;
+            }), this.onArtworkHover, this.onArtworkClick);
 
             // main update func
 
             this.update = function (delta) {
-                _this2.player.updatePlayer(delta, _this2.collider, _this2.artworks);
+                _this2.player.updatePlayer(delta, _this2.collider);
+                _this2.artworkHandler.update();
             };
         }
     }, {
@@ -743,7 +675,7 @@ var Scene = function () {
             // checks
 
             this.isLoaded = function () {
-                _this3.roomLoader.isLoaded() && _this3.artworks.toLoad == 0;
+                _this3.roomLoader.isLoaded();
             };
         }
     }, {
@@ -1842,7 +1774,7 @@ var Player = function (_Collider$Player) {
     }
   }, {
     key: 'updatePlayer',
-    value: function updatePlayer(delta, collider, artworks) {
+    value: function updatePlayer(delta, collider) {
       this.update(delta, collider);
     }
   }]);
@@ -1876,24 +1808,26 @@ var RayTracer = function () {
     this.domElement = domElement;
     this.camera = camera;
     this.raycaster = new THREE.Raycaster();
+    this.raycaster.far = 15;
     this.mouse = new THREE.Vector2();
     this.rect = this.domElement.getBoundingClientRect();
     this.objects = [];
   }
 
   _createClass(RayTracer, [{
-    key: "setTarget",
-    value: function setTarget(objects) {
+    key: "setTargets",
+    value: function setTargets(objects, onHover, onClick) {
       // set target objects
 
       this.objects = objects;
+      this.onHover = onHover;
+      this.onClick = onClick;
     }
   }, {
     key: "handleMove",
     value: function handleMove(x, y) {
       // on mouse move
-
-      this.rect = this.domElement.getBoundingClientRect();
+      // this.rect = this.domElement.getBoundingClientRect();
     }
   }, {
     key: "handleClick",
@@ -1916,7 +1850,7 @@ var RayTracer = function () {
       if (res.length) {
         // perform first collision action
 
-
+        this.onClick(res[0]);
       }
     }
   }]);
@@ -1951,11 +1885,6 @@ window.mobileAndTabletcheck = function () {
 
 var Globals = {
   isMobile: window.mobileAndTabletcheck(),
-  type: {
-    TYPE_ARTWORK: 'TYPE_ARTWORK',
-    TYPE_COLLISION: 'TYPE_COLLISION',
-    TYPE_NONE: 'TYPE_NONE'
-  },
   player: {
     position: {
       x: -15.75,
@@ -1984,9 +1913,6 @@ var Globals = {
   loader: {
     bumpScale: 0.02,
     lightMapIntensity: 0.6
-  },
-  artwork: {
-    clickBoxScale: 1.25
   },
   artworkPlacement: {
     // main hall
@@ -2224,7 +2150,7 @@ var Materials = {
     emissive: 0x888888
   }),
   canvas: new THREE.MeshBasicMaterial({
-    color: 0xffffff,
+    color: 0x444444,
     side: THREE.DoubleSide
   }),
   dev: new THREE.MeshLambertMaterial({
@@ -2257,11 +2183,7 @@ exports.Materials = Materials;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.ArtworkHandler = exports.Focal = undefined;
-
-var _focal = __webpack_require__(2);
-
-var _focal2 = _interopRequireDefault(_focal);
+exports.ArtworkHandler = undefined;
 
 var _artwork_handler = __webpack_require__(31);
 
@@ -2269,7 +2191,6 @@ var _artwork_handler2 = _interopRequireDefault(_artwork_handler);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-exports.Focal = _focal2.default;
 exports.ArtworkHandler = _artwork_handler2.default;
 
 /***/ }),
@@ -2478,172 +2399,179 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 var _config = __webpack_require__(0);
 
-var _maths = __webpack_require__(1);
+var _artwork = __webpack_require__(32);
 
-var _focal = __webpack_require__(2);
+var _artwork2 = _interopRequireDefault(_artwork);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var ArtworkHandler = function () {
-  function ArtworkHandler(scene) {
+  function ArtworkHandler(root) {
     var _this = this;
 
     _classCallCheck(this, ArtworkHandler);
 
     // artwork handler
 
-    this.sources = [];
-    this.focalPoints = [];
     this.object = new THREE.Object3D();
-    this.toLoad = 0;
-    this.active = false;
 
-    // get img tags from doc
+    // generate artworks
+
+    this.artworks = [];
 
     $('.im').each(function (i, e) {
-      var $e = $(e);
-      _this.add($e.find('.im__title').html(), $e.find('.im__description').html(), $e.find('.im__url').html(), $e.find('.im__image').html(), $e.find('.im__alpha').html());
+      _this.artworks.push(new _artwork2.default(_this.object, $(e), _config.Globals.artworkPlacement[i]));
     });
-    this.placeImages();
 
     // add to scene
 
-    scene.add(this.object);
+    this.root = root;
+    this.root.add(this.object);
   }
 
   _createClass(ArtworkHandler, [{
-    key: 'add',
-    value: function add(title, description, url, image, alpha) {
-      // add an artwork
-
-      this.toLoad += 1;
-      this.sources.push({
-        title: title,
-        description: description,
-        url: url,
-        image: image,
-        alpha: alpha
-      });
-    }
-  }, {
     key: 'activate',
-    value: function activate(artwork) {
-      // activate artwork (show description)
+    value: function activate(id) {
+      // activate artwork with id
 
-      if (!this.active) {
-        this.active = true;
-
-        if (!artwork.active) {
-          for (var i = 0; i < this.focalPoints.length; i += 1) {
-            if (this.focalPoints[i].id === artwork.id) {
-              this.focalPoints[i].activate();
-            } else {
-              this.focalPoints[i].deactivate();
-            }
-          }
-
-          // remove nav and show artwork information
-
-          if (!$('#nav-default').hasClass('hidden')) {
-            $('#nav-default').addClass('hidden');
-          }
-
-          // animate out and in
-
-          var timeout = 1;
-
-          if (!$('#nav-artwork').hasClass('hidden')) {
-            $('#nav-artwork').addClass('hidden');
-            timeout = 500;
-          }
-
-          setTimeout(function () {
-            $('#nav-artwork .nav__title').text(artwork.source.title);
-            $('#nav-artwork .nav__description').html(artwork.source.description);
-            $('#nav-artwork .nav__links').html('<a target="_blank" href="' + artwork.source.url + '">Order print</a>');
-            $('#nav-artwork').removeClass('hidden');
-          }, timeout);
+      for (var i = this.artworks.length - 1; i > -1; i--) {
+        if (this.artworks[i].meshHasId(id)) {
+          this.artworks[i].activate();
         }
       }
     }
   }, {
-    key: 'deactivate',
-    value: function deactivate() {
-      // deactivate active artworks
-
-      if (this.active) {
-        this.active = false;
-
-        // deactivate artworks
-
-        for (var i = 0; i < this.focalPoints.length; i += 1) {
-          this.focalPoints[i].deactivate();
-        }
-
-        // show default nav
-
-        if (!$('#nav-artwork').hasClass('hidden')) {
-          $('#nav-artwork').addClass('hidden');
-        }
-        if ($('#nav-default').hasClass('hidden')) {
-          $('#nav-default').removeClass('hidden');
-        }
-      }
-    }
-  }, {
-    key: 'placeImages',
-    value: function placeImages() {
-      var _this2 = this;
-
-      // place images in 3D space
-
-      var textureLoader = new THREE.TextureLoader();
-
-      var _loop = function _loop(i) {
-        var index = i;
-        var place = _config.Globals.artworkPlacement[index];
-        var id = 'UID' + i;
-
-        // create collision object
-
-        var focal = new _focal.Focal(id, place.position, (0, _maths.v3)(1, 1, 1), place.eye, _this2.sources[i]);
-        _this2.focalPoints.push(focal);
-
-        // create artwork mesh
-
-        var mesh = new THREE.Mesh(new THREE.PlaneBufferGeometry(1, 1, 2, 2), _config.Materials.canvas.clone());
-        var texture = textureLoader.load(_this2.sources[i].image, function () {
-          _this2.toLoad -= 1;
-          mesh.scale.x = texture.image.naturalWidth / 1000. * place.scale;
-          mesh.scale.y = texture.image.naturalHeight / 1000. * place.scale;
-          _this2.focalPoints[index].scale(mesh.scale.x, mesh.scale.y, mesh.scale.x);
-
-          // add to scene
-
-          _this2.object.add(mesh);
-        });
-        var alphaMap = textureLoader.load(_this2.sources[i].alpha, function () {
-          mesh.material.transparent = true;
-        });
-
-        // apply texture
-
-        mesh.material.map = texture;
-        mesh.material.alphaMap = alphaMap;
-        mesh.rotation.set(place.pitch, place.yaw, 0);
-        mesh.position.set(place.position.x, place.position.y, place.position.z);
-      };
-
-      for (var i = 0; i < this.sources.length; i += 1) {
-        _loop(i);
-      }
-    }
+    key: 'update',
+    value: function update() {}
   }]);
 
   return ArtworkHandler;
 }();
 
 exports.default = ArtworkHandler;
+
+/***/ }),
+/* 32 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _config = __webpack_require__(0);
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var Artwork = function () {
+  function Artwork(root, element, ops) {
+    _classCallCheck(this, Artwork);
+
+    // artwork
+
+    this.root = root;
+    this.element = element;
+    this.object = new THREE.Object3D();
+    this.active = false;
+    this.scale = ops.scale;
+    this.pitch = ops.pitch;
+    this.yaw = ops.yaw;
+    this.position = ops.position;
+    this.eye = ops.eye;
+
+    // create
+
+    this.parseElement();
+    this.createObject();
+
+    // add to doc
+
+    this.root.add(this.object);
+  }
+
+  _createClass(Artwork, [{
+    key: 'activate',
+    value: function activate() {
+      // turn on
+
+      if (!this.active) {
+        this.active = true;
+        this.mesh.material.color.setHex(0xffffff);
+      }
+    }
+  }, {
+    key: 'deactivate',
+    value: function deactivate() {
+      // turn off
+
+      if (this.active) {
+        this.active = false;
+      }
+    }
+  }, {
+    key: 'createObject',
+    value: function createObject() {
+      var _this = this;
+
+      // create 3D object
+
+      this.textureLoader = new THREE.TextureLoader();
+      this.mesh = new THREE.Mesh(new THREE.PlaneBufferGeometry(1, 1, 2, 2), _config.Materials.canvas.clone());
+      var map = this.textureLoader.load(this.image, function (tex) {
+        // set scale and append to scene
+
+        _this.mesh.scale.x = map.image.naturalWidth / 1000. * _this.scale;
+        _this.mesh.scale.y = map.image.naturalHeight / 1000. * _this.scale;
+
+        // create collision box w new dimensions
+
+        _this.object.add(_this.mesh);
+      });
+      var alphaMap = this.textureLoader.load(this.alpha, function (tex) {
+        // add alpha map
+
+        _this.mesh.material.transparent = true;
+      });
+      this.mesh.material.map = map;
+      this.mesh.material.alphaMap = alphaMap;
+
+      // rotate to spec
+
+      this.mesh.rotation.set(this.pitch, this.yaw, 0);
+      this.mesh.position.set(this.position.x, this.position.y, this.position.z);
+    }
+  }, {
+    key: 'parseElement',
+    value: function parseElement() {
+      // pull data from doc element
+
+      this.title = this.element.find('.im__title').html();
+      this.desc = this.element.find('.im__description').html();
+      this.url = this.element.find('.im__url').html();
+      this.image = this.element.find('.im__image').html();
+      this.alpha = this.element.find('.im__alpha').html();
+
+      // generate spiel
+
+      this.spiel = '' + this.title + this.desc + this.url;
+    }
+  }, {
+    key: 'meshHasId',
+    value: function meshHasId(id) {
+      return id === this.mesh.uuid;
+    }
+  }]);
+
+  return Artwork;
+}();
+
+exports.default = Artwork;
 
 /***/ })
 /******/ ]);

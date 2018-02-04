@@ -3,17 +3,21 @@ import { Materials, Globals } from '../config';
 
 const TYPE_FOCAL = 'TYPE_FOCAL';
 
-const Focal = function(id, pos, dim, eye, source) {
-  this.id = id;
-  this.type = TYPE_FOCAL;
-  this.position = pos;
-  this.dimensions = dim;
-  this.eye = eye;
-  this.source = source;
-  this.active = false;
-  this.init();
+const Box = (position, dimensions) => {
+  // create a box
+  
+  const b = new THREE.Box3();
+  const min = subtractVector(position, scaleVector(dimensions, 0.5));
+  const max = addVector(position, scaleVector(dimensions, 0.5));
+
+  b.set(min, max);
+
+  return b;
 };
 
+export default Box;
+
+/*
 Focal.prototype = {
   init: function() {
     this.pitch = getPitch(this.eye, new THREE.Vector3(this.position.x, this.position.y - Globals.player.height, this.position.z));
@@ -28,24 +32,6 @@ Focal.prototype = {
     this.setBox();
   },
 
-  activate: function() {
-    this.active = true;
-  },
-
-  deactivate: function() {
-    this.active = false;
-  },
-
-  setBox: function() {
-    // set collision box size
-    const min = subtractVector(this.object.position, scaleVector(this.dimensions, 0.5));
-    const max = addVector(this.object.position, scaleVector(this.dimensions, 0.5));
-    this.box.set(min, max);
-  },
-
-  collision: function(point) {
-    return this.box.containsPoint(point);
-  },
 
   scale: function(x, y, z) {
     const s = Globals.artwork.clickBoxScale;
@@ -68,3 +54,4 @@ Focal.prototype = {
 };
 
 export { Focal, TYPE_FOCAL };
+*/

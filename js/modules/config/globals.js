@@ -10,11 +10,6 @@ window.mobileAndTabletcheck = function() {
 
 const Globals = {
   isMobile: window.mobileAndTabletcheck(),
-  type: {
-    TYPE_ARTWORK: 'TYPE_ARTWORK',
-    TYPE_COLLISION: 'TYPE_COLLISION',
-    TYPE_NONE: 'TYPE_NONE'
-  },
   player: {
     position: {
       x: -15.75,
@@ -43,9 +38,6 @@ const Globals = {
   loader: {
     bumpScale: 0.02,
     lightMapIntensity: 0.6,
-  },
-  artwork: {
-    clickBoxScale: 1.25
   },
   artworkPlacement: {
     // main hall

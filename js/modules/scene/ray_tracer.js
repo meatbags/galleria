@@ -5,21 +5,23 @@ class RayTracer {
     this.domElement = domElement;
     this.camera = camera;
     this.raycaster = new THREE.Raycaster();
+    this.raycaster.far = 15;
     this.mouse = new THREE.Vector2();
     this.rect = this.domElement.getBoundingClientRect();
     this.objects = [];
   }
 
-  setTarget(objects) {
+  setTargets(objects, onHover, onClick) {
     // set target objects
 
     this.objects = objects;
+    this.onHover = onHover;
+    this.onClick = onClick;
   }
 
   handleMove(x, y) {
     // on mouse move
-
-    this.rect = this.domElement.getBoundingClientRect();
+    // this.rect = this.domElement.getBoundingClientRect();
   }
 
   handleClick(x, y) {
@@ -40,7 +42,7 @@ class RayTracer {
     if (res.length) {
       // perform first collision action
 
-
+      this.onClick(res[0]);
     }
   }
 }

@@ -39,7 +39,7 @@ class Player extends Collider.Player {
     }
   }
 
-  updatePlayer(delta, collider, artworks) {
+  updatePlayer(delta, collider) {
     this.update(delta, collider);
   }
 }

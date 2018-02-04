@@ -7,7 +7,7 @@ const Materials = {
     emissive: 0x888888
   }),
   canvas: new THREE.MeshBasicMaterial({
-    color: 0xffffff,
+    color: 0x444444,
     side: THREE.DoubleSide
   }),
   dev: new THREE.MeshLambertMaterial({

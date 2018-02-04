@@ -1,7 +1,7 @@
 import '../../lib/postprocessing';
 import Player from './player';
 import { Globals } from '../config';
-import { Artworks } from '../art';
+import { ArtworkHandler } from '../art';
 import { v3 } from '../maths';
 import { RoomLoader, LightHandler } from '../loader';
 
@@ -65,12 +65,23 @@ class Scene {
 
     // load user-uploaded artworks
 
-    this.artworks = new Artworks(this.scene);
+    this.artworkHandler = new ArtworkHandler(this.scene);
+
+    this.onArtworkHover = (res) => { console.log(res); };
+    this.onArtworkClick = (res) => {
+      this.artworkHandler.activate(res.object.uuid);
+    };
+    this.player.rayTracer.setTargets(
+      this.artworkHandler.artworks.map((obj) => { return obj.mesh; }),
+      this.onArtworkHover,
+      this.onArtworkClick
+    );
 
     // main update func
 
     this.update = (delta) => {
-      this.player.updatePlayer(delta, this.collider, this.artworks);
+      this.player.updatePlayer(delta, this.collider);
+      this.artworkHandler.update();
     }
   }
 
@@ -81,9 +92,7 @@ class Scene {
 
     // checks
 
-    this.isLoaded = () => {
-      this.roomLoader.isLoaded() && this.artworks.toLoad == 0
-    }
+    this.isLoaded = () => { this.roomLoader.isLoaded(); };
   }
 
   _initProcessing() {

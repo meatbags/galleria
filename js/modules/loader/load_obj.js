@@ -41,9 +41,7 @@ class LoadOBJ {
 
   preload(key, meta) {
     // load materials from meta
-
-    console.log(meta);
-
+    
     this.materials[key] = {};
 
     for (let prop in meta) {
