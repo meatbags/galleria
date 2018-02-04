@@ -98,7 +98,7 @@ class Scene {
     // checks
 
     this.isLoaded = () => {
-      this.roomLoader.isLoaded() && this.artworks.toLoad === 0
+      this.roomLoader.isLoaded() && this.artworks.toLoad == 0
     }
   }
 

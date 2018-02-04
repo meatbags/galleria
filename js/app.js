@@ -63,8 +63,8 @@ class App {
 	setSize() {
 		// set size
 
-		this.width = Math.floor(window.innerWidth / 1.5);
-		this.height = 520;
+		this.width = 1000;
+		this.height = 600;
 	}
 
 	resize() {

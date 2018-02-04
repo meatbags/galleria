@@ -13,15 +13,17 @@ class LightHandler {
       // load gallery open lights
 
       this.lights = {
-        ambient: new THREE.AmbientLight(0xffffff, .08),
-        hemisphere: new THREE.HemisphereLight(0xffaabb, 0x080820, 0.1),
-        point1: new THREE.PointLight(0xffffff, 0.5, 13, 1),
-        ball1: new THREE.PointLight(0xaaaaff, 0.7, 10, 1),
-        ball2: new THREE.PointLight(0xaaaaff, 0.7, 10, 1),
-        ball3: new THREE.PointLight(0xaaaaff, 0.9, 17, 1),
+        //ambient: new THREE.AmbientLight(0xffffff, 0.01),
+        hemisphere: new THREE.HemisphereLight(0xffaabb, 0x0f0f40, 0.08),
+        point1: new THREE.PointLight(0xaaaaff, 0.5, 13, 1),
+        point2: new THREE.PointLight(0xaaaaff, 0.4, 7, 1),
+        ball1: new THREE.PointLight(0xaaaaff, 0.7, 9, 1),
+        ball2: new THREE.PointLight(0xaaaaff, 0.7, 9, 1),
+        ball3: new THREE.PointLight(0xaaaaff, 0.9, 16, 1),
         neonSign: new THREE.PointLight(0xff0000, 0.8, 15, 1)
       };
       this.lights.point1.position.set(0, 5, -10);
+      this.lights.point2.position.set(-0.25, 11.75, 37);
       this.lights.ball1.position.set(19.75, 0.9, 28);
       this.lights.ball2.position.set(26, 0.9, 32.5);
       this.lights.ball3.position.set(37.25, 1.567, 30.75);

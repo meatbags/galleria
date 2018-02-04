@@ -31,16 +31,16 @@ class RoomLoader {
     // load collisions
 
     this.loader.loadOBJ(collisionSource).then((map) => {
-      map.children.forEach((child) => { this.collider.add(new Collider.Mesh(child)); });
+      //map.children.forEach((child) => { this.collider.add(new Collider.Mesh(child)); });
       this.toLoad -= 1;
-    }, (err) => { console.log(err); });
+    }, (err) => { console.warn('Collider load', err); });
 
     // load map
 
     this.loader.loadOBJ(mapSource).then((map) => {
       this.scene.add(map);
       this.toLoad -= 1;
-    }, (err) => { console.log(err); });
+    }, (err) => { console.warn('Model load', err); });
   }
 }
 

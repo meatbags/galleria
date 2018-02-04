@@ -23,7 +23,7 @@ class Timer {
 	getDelta() {
 		// get delta
 
-		return Math.min(this.delta, this.maxDelta);
+		return this.delta; // Math.min(this.delta, this.maxDelta);
 	}
 
 	reset() {

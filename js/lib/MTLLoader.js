@@ -36,7 +36,7 @@ THREE.MTLLoader.prototype = {
 		loader.load( url, function ( text ) {
 
 			onLoad( scope.parse( text ) );
-
+			
 		}, onProgress, onError );
 
 	},
