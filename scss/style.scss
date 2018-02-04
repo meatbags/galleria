@@ -1,7 +1,9 @@
 @import 'utils/index';
 
 // modules
+
 @import "modules/global";
+@import "modules/content";
 @import "modules/canvas";
 @import "modules/loading";
 @import "modules/menu";

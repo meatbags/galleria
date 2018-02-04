@@ -2,8 +2,8 @@ import { Materials, Globals } from '../config';
 import { v3 } from '../maths';
 import { Focal } from './focal';
 
-class Artworks {
-  constructor() {
+class ArtworkHandler {
+  constructor(scene) {
     // artwork handler
 
     this.sources = [];
@@ -11,9 +11,27 @@ class Artworks {
     this.object = new THREE.Object3D();
     this.toLoad = 0;
     this.active = false;
+
+    // get img tags from doc
+
+    $('.im').each((i, e) => {
+      const $e = $(e);
+      this.add(
+        $e.find('.im__title').html(),
+        $e.find('.im__description').html(),
+        $e.find('.im__url').html(),
+        $e.find('.im__image').html(),
+        $e.find('.im__alpha').html()
+      );
+    });
+    this.placeImages();
+
+    // add to scene
+
+    scene.add(this.object)
   }
 
-  add(title, description, url, image) {
+  add(title, description, url, image, alpha) {
     // add an artwork
 
     this.toLoad += 1;
@@ -22,6 +40,7 @@ class Artworks {
       description: description,
       url: url,
       image: image,
+      alpha: alpha,
     });
   }
 
@@ -114,21 +133,23 @@ class Artworks {
         mesh.scale.x = (texture.image.naturalWidth / 1000.) * place.scale;
         mesh.scale.y = (texture.image.naturalHeight / 1000.) * place.scale;
         this.focalPoints[index].scale(mesh.scale.x, mesh.scale.y, mesh.scale.x);
+
+        // add to scene
+
+        this.object.add(mesh);
+      });
+      const alphaMap = textureLoader.load(this.sources[i].alpha, () => {
+        mesh.material.transparent = true;
       });
 
       // apply texture
 
       mesh.material.map = texture;
+      mesh.material.alphaMap = alphaMap;
       mesh.rotation.set(place.pitch, place.yaw, 0);
       mesh.position.set(place.position.x, place.position.y, place.position.z);
-
-      // add to gallery
-
-      this.object.add(mesh);
-      // helper
-      //this.object.add(focal.object);
     }
   }
 }
 
-export default Artworks;
+export default ArtworkHandler;

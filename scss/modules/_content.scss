@@ -1,0 +1,42 @@
+$canvasOffsetX: 56px;
+$canvasOffsetY: 56px;
+
+.wrapper {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100vh;
+  background: $black;
+
+	.content {
+		position: fixed;
+    top: 0;
+    left: 0;
+    @extend .noselect;
+
+    .content__inner {
+      position: relative;
+
+      .frame {
+        position: absolute;
+        top: 0;
+        left: 0;
+        pointer-events: none;
+        opacity: 1;
+        z-index: $zCanvas + 1;
+      }
+
+      .canvas-target {
+        position: absolute;
+        top: $canvasOffsetY;
+        left: $canvasOffsetX;
+
+        canvas {
+        	z-index: $zCanvas;
+        	cursor: crosshair;
+        }
+      }
+    }
+	}
+}

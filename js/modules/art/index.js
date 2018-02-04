@@ -1,4 +1,4 @@
 import Focal from './focal';
-import Artworks from './artworks';
+import ArtworkHandler from './artwork_handler';
 
-export { Focal, Artworks };
+export { Focal, ArtworkHandler };

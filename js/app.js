@@ -11,7 +11,7 @@ class App {
 		// set up scene
 
 		this.timer = new Timer();
-		this.scene = new Scene(this.width, this.height);
+		this.scene = new Scene(this.width, this.height, '.canvas-target');
 
 		// set up controls, events
 
@@ -22,6 +22,24 @@ class App {
 		this.resize();
 		$('.pre-loading').fadeOut(1000);
 		this.loading();
+	}
+
+	setSize() {
+		// set size
+
+		this.width = (window.innerWidth > 900) ? Math.max(900, window.innerWidth - 256) : window.innerWidth;
+		this.height = (window.innerHeight > 450) ? Math.max(450, window.innerHeight - 256) : window.innerHeight;
+	}
+
+	resize() {
+		// resize canvas, nav
+
+		this.setSize();
+		this.scene.resize(this.width, this.height);
+		$('.nav').css({top: `${window.innerHeight / 2 + this.height / 2}px`});
+		const top = window.innerHeight / 2 - this.height / 2 - 56;
+		const left = window.innerWidth / 2 - this.width / 2 - 56;
+		$('.content').css({top: `${top}px`, left: `${left}px`});
 	}
 
 	events() {
@@ -58,21 +76,6 @@ class App {
 		$(window).on('blur', () => {
 			this.paused = true;
 		});
-	}
-
-	setSize() {
-		// set size
-
-		this.width = 1000;
-		this.height = 600;
-	}
-
-	resize() {
-		// resize canvas, nav
-
-		this.setSize();
-		this.scene.resize(this.width, this.height);
-		$('.nav').css({top: `${window.innerHeight / 2 + this.height / 2}px`});
 	}
 
 	loading() {

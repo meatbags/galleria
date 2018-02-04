@@ -42,6 +42,8 @@ class LoadOBJ {
   preload(key, meta) {
     // load materials from meta
 
+    console.log(meta);
+
     this.materials[key] = {};
 
     for (let prop in meta) {
@@ -60,7 +62,8 @@ class LoadOBJ {
     if (prop.map_kd) {
       // diffuse map
 
-      this.textureLoader.load(prop.map_kd, (tex) => {
+      const tl_kd = new THREE.TextureLoader();
+      tl_kd.load(this.path + prop.map_kd, (tex) => {
         mat.color = new THREE.Color(1, 1, 1);
         mat.map = tex;
 
@@ -116,57 +119,6 @@ class LoadOBJ {
       }
     }
   }
-
-  /*
-  process(child, materials) {
-    // set child material
-
-    if (materials.materialsInfo[child.material.name]) {
-      const meta = materials.materialsInfo[child.material.name];
-      child.material = materials.materials[child.material.name];
-      child.material.bumpScale = Globals.loader.bumpScale;
-
-      // if light map exists, apply
-
-      if (meta.map_ka) {
-        const uvs = child.geometry.attributes.uv.array;
-        const src = meta.map_ka;
-        const texture = new THREE.TextureLoader().load(this.path + src);
-
-        child.material.lightMap = texture;
-        child.material.lightMapIntensity = Globals.loader.lightMapIntensity;
-        child.geometry.addAttribute('uv2', new THREE.BufferAttribute(uvs, 2));
-      }
-
-      // process texture
-
-      if (child.material.map) {
-        child.material.color = new THREE.Color(0xffffff);
-
-        // .png translucency
-
-        if (child.material.map.image && child.material.map.image.src.indexOf('.png') != -1) {
-          child.material.transparent = true;
-          child.material.side = THREE.DoubleSide;
-        }
-
-        // glass
-
-        if (child.material.map.image && child.material.map.image.src.indexOf('glass') != -1) {
-          child.material.transparent = true;
-          child.material.opacity = 0.4;
-        }
-      } else {
-        child.material.emissive = child.material.color;
-      }
-    } else {
-      // no material
-
-      console.log('No material found:', child, child.material.name);
-      child.material = new THREE.MeshPhongMaterial({emissive: 0xff0000});
-    }
-  }
-  */
 
   testLoad() {
     // test new loading funcs

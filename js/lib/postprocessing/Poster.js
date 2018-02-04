@@ -26,6 +26,10 @@ THREE.PosterShader = {
       return floor(val * amount) / amount;
     }
 
+    float posteriseCeil(float val, float amount) {
+      return ceil(val * amount) / amount;
+    }
+
     void main() {
       vec4 frag = texture2D(tDiffuse, vUv);
       frag.r = posterise(frag.r, 12.0);

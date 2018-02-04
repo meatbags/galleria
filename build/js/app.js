@@ -271,6 +271,8 @@ var LoadOBJ = function () {
     value: function preload(key, meta) {
       // load materials from meta
 
+      console.log(meta);
+
       this.materials[key] = {};
 
       for (var prop in meta) {
@@ -290,7 +292,8 @@ var LoadOBJ = function () {
       if (prop.map_kd) {
         // diffuse map
 
-        this.textureLoader.load(prop.map_kd, function (tex) {
+        var tl_kd = new THREE.TextureLoader();
+        tl_kd.load(this.path + prop.map_kd, function (tex) {
           mat.color = new THREE.Color(1, 1, 1);
           mat.map = tex;
 
@@ -347,47 +350,6 @@ var LoadOBJ = function () {
         }
       }
     }
-
-    /*
-    process(child, materials) {
-      // set child material
-        if (materials.materialsInfo[child.material.name]) {
-        const meta = materials.materialsInfo[child.material.name];
-        child.material = materials.materials[child.material.name];
-        child.material.bumpScale = Globals.loader.bumpScale;
-          // if light map exists, apply
-          if (meta.map_ka) {
-          const uvs = child.geometry.attributes.uv.array;
-          const src = meta.map_ka;
-          const texture = new THREE.TextureLoader().load(this.path + src);
-            child.material.lightMap = texture;
-          child.material.lightMapIntensity = Globals.loader.lightMapIntensity;
-          child.geometry.addAttribute('uv2', new THREE.BufferAttribute(uvs, 2));
-        }
-          // process texture
-          if (child.material.map) {
-          child.material.color = new THREE.Color(0xffffff);
-            // .png translucency
-            if (child.material.map.image && child.material.map.image.src.indexOf('.png') != -1) {
-            child.material.transparent = true;
-            child.material.side = THREE.DoubleSide;
-          }
-            // glass
-            if (child.material.map.image && child.material.map.image.src.indexOf('glass') != -1) {
-            child.material.transparent = true;
-            child.material.opacity = 0.4;
-          }
-        } else {
-          child.material.emissive = child.material.color;
-        }
-      } else {
-        // no material
-          console.log('No material found:', child, child.material.name);
-        child.material = new THREE.MeshPhongMaterial({emissive: 0xff0000});
-      }
-    }
-    */
-
   }, {
     key: 'testLoad',
     value: function testLoad() {
@@ -437,7 +399,7 @@ var App = function () {
 		// set up scene
 
 		this.timer = new _performance.Timer();
-		this.scene = new _scene.Scene(this.width, this.height);
+		this.scene = new _scene.Scene(this.width, this.height, '.canvas-target');
 
 		// set up controls, events
 
@@ -451,6 +413,26 @@ var App = function () {
 	}
 
 	_createClass(App, [{
+		key: 'setSize',
+		value: function setSize() {
+			// set size
+
+			this.width = window.innerWidth > 900 ? Math.max(900, window.innerWidth - 256) : window.innerWidth;
+			this.height = window.innerHeight > 450 ? Math.max(450, window.innerHeight - 256) : window.innerHeight;
+		}
+	}, {
+		key: 'resize',
+		value: function resize() {
+			// resize canvas, nav
+
+			this.setSize();
+			this.scene.resize(this.width, this.height);
+			$('.nav').css({ top: window.innerHeight / 2 + this.height / 2 + 'px' });
+			var top = window.innerHeight / 2 - this.height / 2 - 56;
+			var left = window.innerWidth / 2 - this.width / 2 - 56;
+			$('.content').css({ top: top + 'px', left: left + 'px' });
+		}
+	}, {
 		key: 'events',
 		value: function events() {
 			var _this = this;
@@ -490,23 +472,6 @@ var App = function () {
 			$(window).on('blur', function () {
 				_this.paused = true;
 			});
-		}
-	}, {
-		key: 'setSize',
-		value: function setSize() {
-			// set size
-
-			this.width = 1000;
-			this.height = 600;
-		}
-	}, {
-		key: 'resize',
-		value: function resize() {
-			// resize canvas, nav
-
-			this.setSize();
-			this.scene.resize(this.width, this.height);
-			$('.nav').css({ top: window.innerHeight / 2 + this.height / 2 + 'px' });
 		}
 	}, {
 		key: 'loading',
@@ -689,7 +654,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var Scene = function () {
-    function Scene(width, height) {
+    function Scene(width, height, selector) {
         _classCallCheck(this, Scene);
 
         // scene handler
@@ -698,7 +663,7 @@ var Scene = function () {
 
         // set up
 
-        this._initRenderer();
+        this._initRenderer(selector);
         this._initScene();
         this.resize(width, height);
 
@@ -718,11 +683,12 @@ var Scene = function () {
             this.size = new THREE.Vector2(this.width, this.height);
             this.camera.aspect = width / height;
             this.camera.updateProjectionMatrix();
+            this.player.resizeCamera();
             this.renderer.setSize(width, height);
         }
     }, {
         key: '_initRenderer',
-        value: function _initRenderer() {
+        value: function _initRenderer(selector) {
             var _this = this;
 
             // render objects, methods
@@ -730,7 +696,7 @@ var Scene = function () {
             this.renderer = new THREE.WebGLRenderer({ antialias: false });
             this.renderer.setClearColor(0xf9e5a2, 1);
             this.renderer.setPixelRatio(window.devicePixelRatio);
-            $('.wrapper .content').append(this.renderer.domElement);
+            $(selector).append(this.renderer.domElement);
 
             // main render func
 
@@ -748,32 +714,16 @@ var Scene = function () {
             this.player = new _player2.default(this.renderer.domElement);
             this.camera = this.player.camera;
             this.scene = new THREE.Scene();
-            this.scene.fog = new THREE.FogExp2(0xCCCFFF, 0.008);
-
+            this.scene.fog = new THREE.FogExp2(0x333555, 0.008);
             this.collider = new Collider.System();
-
             this.lightHandler = new _loader.LightHandler(this.scene, this.player);
             this.lightHandler.load(this.isMonday);
-            this.artworks = new _art.Artworks();
             this.sky = new THREE.Sky();
             this.scene.add(this.sky.mesh);
 
-            // get artworks
+            // load user-uploaded artworks
 
-            if (!this.isMonday) {}
-            /*
-            $('.im').each((i, e) => {
-              this.artworks.add(
-                $(e).find('.im__title').html(),
-                $(e).find('.im__description').html(),
-                $(e).find('.im__url').html(),
-                $(e).find('.im__image').html()
-              );
-            });
-              this.artworks.placeImages();
-            this.scene.add(this.artworks.object);
-            */
-
+            this.artworks = new _art.Artworks(this.scene);
 
             // main update func
 
@@ -803,7 +753,7 @@ var Scene = function () {
 
             this.renderPass = new THREE.RenderPass(this.scene, this.camera);
             this.posterPass = new THREE.PosterPass(this.size);
-            this.bloomPass = new THREE.UnrealBloomPass(this.size, .75, 1.2, 0.9); // res, strength, radius, threshold
+            this.bloomPass = new THREE.UnrealBloomPass(this.size, .75, 1.0, 0.85); // res, strength, radius, threshold
             this.bloomPass.renderToScreen = true;
 
             // add passes to composer
@@ -1786,7 +1736,7 @@ THREE.PosterShader = {
     'tDiffuse': { value: null }
   },
   vertexShader: '\n    varying vec2 vUv;\n\n    void main() {\n      vUv = uv;\n      gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);\n    }\n  ',
-  fragmentShader: '\n    #define PI 3.14159\n    #define UV_SCALE 0.02\n    #define MAX_HEIGHT 0.5\n\n    varying vec2 vUv;\n    uniform sampler2D tDiffuse;\n\n    float posterise(float val, float amount) {\n      return floor(val * amount) / amount;\n    }\n\n    void main() {\n      vec4 frag = texture2D(tDiffuse, vUv);\n      frag.r = posterise(frag.r, 12.0);\n\n      gl_FragColor = frag;\n    }\n  '
+  fragmentShader: '\n    #define PI 3.14159\n    #define UV_SCALE 0.02\n    #define MAX_HEIGHT 0.5\n\n    varying vec2 vUv;\n    uniform sampler2D tDiffuse;\n\n    float posterise(float val, float amount) {\n      return floor(val * amount) / amount;\n    }\n\n    float posteriseCeil(float val, float amount) {\n      return ceil(val * amount) / amount;\n    }\n\n    void main() {\n      vec4 frag = texture2D(tDiffuse, vUv);\n      frag.r = posterise(frag.r, 12.0);\n\n      gl_FragColor = frag;\n    }\n  '
 };
 
 // render pass
@@ -1965,7 +1915,8 @@ var RayTracer = function () {
 
       if (res.length) {
         // perform first collision action
-        //res[0]
+
+
       }
     }
   }]);
@@ -2038,20 +1989,23 @@ var Globals = {
     clickBoxScale: 1.25
   },
   artworkPlacement: {
-    '0': { scale: 5, pitch: 0, yaw: halfPI, position: (0, _maths.v3)(8.8, 6, -10), eye: (0, _maths.v3)(0, 0, -10) },
-    '1': { scale: 4, pitch: 0, yaw: halfPI, position: (0, _maths.v3)(-9.1, 4, -15), eye: (0, _maths.v3)(-2, 0, -15) },
+    // main hall
+    '0': { scale: 3, pitch: 0, yaw: 0, position: (0, _maths.v3)(23.75, 4, 38.75), eye: (0, _maths.v3)(23.75, 0, 35) },
+    '1': { scale: 4, pitch: 0, yaw: 0, position: (0, _maths.v3)(33.25, 4, 38.75), eye: (0, _maths.v3)(33.25, 0, 35) },
+    '12': { scale: 3, pitch: 0, yaw: 0, position: (0, _maths.v3)(23.75, 3.5, 19.75), eye: (0, _maths.v3)(23.75, 0, 24) },
+    '13': { scale: 2, pitch: 0, yaw: 0, position: (0, _maths.v3)(33.25, 3.5, 19.75), eye: (0, _maths.v3)(33.25, 0, 24) },
+    // entrance
     '2': { scale: 2.5, pitch: 0, yaw: halfPI, position: (0, _maths.v3)(9.1, 3.25, 4.75), eye: (0, _maths.v3)(5.5, 0, 4.75) },
     '3': { scale: 2.75, pitch: 0, yaw: halfPI, position: (0, _maths.v3)(9.1, 3.25, 15), eye: (0, _maths.v3)(5.5, 0, 15) },
     '4': { scale: 2, pitch: 0, yaw: halfPI, position: (0, _maths.v3)(-9.1, 3.5, 4.75), eye: (0, _maths.v3)(-5.5, 0, 4.75) },
     '5': { scale: 2, pitch: 0, yaw: halfPI, position: (0, _maths.v3)(-9.1, 3.5, 15), eye: (0, _maths.v3)(-5.5, 0, 15) },
-    '6': { scale: 2, pitch: 0, yaw: 0, position: (0, _maths.v3)(0, 3, 9.75), eye: (0, _maths.v3)(0, 0, 4.5) },
-    '7': { scale: 2, pitch: 0, yaw: 0, position: (0, _maths.v3)(0, 3, 10.25), eye: (0, _maths.v3)(0, 0, 14.5) },
+    '6': { scale: 2, pitch: 0, yaw: halfPI, position: (0, _maths.v3)(-9.1, 3.5, 24.75), eye: (0, _maths.v3)(-5.5, 0, 24.75) },
+    // top floor
+    '7': { scale: 2, pitch: 0, yaw: halfPI, position: (0, _maths.v3)(-9.1, 11, 24.75), eye: (0, _maths.v3)(0, 8, 14.5) },
     '8': { scale: 2.5, pitch: 0, yaw: halfPI, position: (0, _maths.v3)(9.1, 11, 5), eye: (0, _maths.v3)(5.5, 8, 5) },
     '9': { scale: 2.5, pitch: 0, yaw: halfPI, position: (0, _maths.v3)(9.1, 11, 15), eye: (0, _maths.v3)(5.5, 8, 15) },
     '10': { scale: 2, pitch: 0, yaw: halfPI, position: (0, _maths.v3)(-9.1, 11, 5), eye: (0, _maths.v3)(-5.5, 8, 5) },
-    '11': { scale: 2, pitch: 0, yaw: halfPI, position: (0, _maths.v3)(-9.1, 11, 15), eye: (0, _maths.v3)(-5.5, 8, 15) },
-    '12': { scale: 3, pitch: 0, yaw: 0, position: (0, _maths.v3)(0, 11, 9.75), eye: (0, _maths.v3)(0, 8, 5.5) },
-    '13': { scale: 2, pitch: 0, yaw: 0, position: (0, _maths.v3)(0, 11, 10.25), eye: (0, _maths.v3)(0, 8, 14.5) }
+    '11': { scale: 2, pitch: 0, yaw: halfPI, position: (0, _maths.v3)(-9.1, 11, 15), eye: (0, _maths.v3)(-5.5, 8, 15) }
   }
 };
 
@@ -2303,187 +2257,23 @@ exports.Materials = Materials;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.Artworks = exports.Focal = undefined;
+exports.ArtworkHandler = exports.Focal = undefined;
 
 var _focal = __webpack_require__(2);
 
 var _focal2 = _interopRequireDefault(_focal);
 
-var _artworks = __webpack_require__(27);
+var _artwork_handler = __webpack_require__(31);
 
-var _artworks2 = _interopRequireDefault(_artworks);
+var _artwork_handler2 = _interopRequireDefault(_artwork_handler);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 exports.Focal = _focal2.default;
-exports.Artworks = _artworks2.default;
+exports.ArtworkHandler = _artwork_handler2.default;
 
 /***/ }),
-/* 27 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _config = __webpack_require__(0);
-
-var _maths = __webpack_require__(1);
-
-var _focal = __webpack_require__(2);
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var Artworks = function () {
-  function Artworks() {
-    _classCallCheck(this, Artworks);
-
-    // artwork handler
-
-    this.sources = [];
-    this.focalPoints = [];
-    this.object = new THREE.Object3D();
-    this.toLoad = 0;
-    this.active = false;
-  }
-
-  _createClass(Artworks, [{
-    key: 'add',
-    value: function add(title, description, url, image) {
-      // add an artwork
-
-      this.toLoad += 1;
-      this.sources.push({
-        title: title,
-        description: description,
-        url: url,
-        image: image
-      });
-    }
-  }, {
-    key: 'activate',
-    value: function activate(artwork) {
-      // activate artwork (show description)
-
-      if (!this.active) {
-        this.active = true;
-
-        if (!artwork.active) {
-          for (var i = 0; i < this.focalPoints.length; i += 1) {
-            if (this.focalPoints[i].id === artwork.id) {
-              this.focalPoints[i].activate();
-            } else {
-              this.focalPoints[i].deactivate();
-            }
-          }
-
-          // remove nav and show artwork information
-
-          if (!$('#nav-default').hasClass('hidden')) {
-            $('#nav-default').addClass('hidden');
-          }
-
-          // animate out and in
-
-          var timeout = 1;
-
-          if (!$('#nav-artwork').hasClass('hidden')) {
-            $('#nav-artwork').addClass('hidden');
-            timeout = 500;
-          }
-
-          setTimeout(function () {
-            $('#nav-artwork .nav__title').text(artwork.source.title);
-            $('#nav-artwork .nav__description').html(artwork.source.description);
-            $('#nav-artwork .nav__links').html('<a target="_blank" href="' + artwork.source.url + '">Order print</a>');
-            $('#nav-artwork').removeClass('hidden');
-          }, timeout);
-        }
-      }
-    }
-  }, {
-    key: 'deactivate',
-    value: function deactivate() {
-      // deactivate active artworks
-
-      if (this.active) {
-        this.active = false;
-
-        // deactivate artworks
-
-        for (var i = 0; i < this.focalPoints.length; i += 1) {
-          this.focalPoints[i].deactivate();
-        }
-
-        // show default nav
-
-        if (!$('#nav-artwork').hasClass('hidden')) {
-          $('#nav-artwork').addClass('hidden');
-        }
-        if ($('#nav-default').hasClass('hidden')) {
-          $('#nav-default').removeClass('hidden');
-        }
-      }
-    }
-  }, {
-    key: 'placeImages',
-    value: function placeImages() {
-      var _this = this;
-
-      // place images in 3D space
-
-      var textureLoader = new THREE.TextureLoader();
-
-      var _loop = function _loop(i) {
-        var index = i;
-        var place = _config.Globals.artworkPlacement[index];
-        var id = 'UID' + i;
-
-        // create collision object
-
-        var focal = new _focal.Focal(id, place.position, (0, _maths.v3)(1, 1, 1), place.eye, _this.sources[i]);
-        _this.focalPoints.push(focal);
-
-        // create artwork mesh
-
-        var mesh = new THREE.Mesh(new THREE.PlaneBufferGeometry(1, 1, 2, 2), _config.Materials.canvas.clone());
-        var texture = textureLoader.load(_this.sources[i].image, function () {
-          _this.toLoad -= 1;
-          mesh.scale.x = texture.image.naturalWidth / 1000. * place.scale;
-          mesh.scale.y = texture.image.naturalHeight / 1000. * place.scale;
-          _this.focalPoints[index].scale(mesh.scale.x, mesh.scale.y, mesh.scale.x);
-        });
-
-        // apply texture
-
-        mesh.material.map = texture;
-        mesh.rotation.set(place.pitch, place.yaw, 0);
-        mesh.position.set(place.position.x, place.position.y, place.position.z);
-
-        // add to gallery
-
-        _this.object.add(mesh);
-        // helper
-        //this.object.add(focal.object);
-      };
-
-      for (var i = 0; i < this.sources.length; i += 1) {
-        _loop(i);
-      }
-    }
-  }]);
-
-  return Artworks;
-}();
-
-exports.default = Artworks;
-
-/***/ }),
+/* 27 */,
 /* 28 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -2628,20 +2418,22 @@ var LightHandler = function () {
         // load gallery open lights
 
         this.lights = {
-          //ambient: new THREE.AmbientLight(0xffffff, 0.01),
-          hemisphere: new THREE.HemisphereLight(0xffaabb, 0x0f0f40, 0.08),
+          //ambient: new THREE.AmbientLight(0xffffff, 0.1),
+          hemisphere: new THREE.HemisphereLight(0xffbbcc, 0x0f0f40, 0.09),
           point1: new THREE.PointLight(0xaaaaff, 0.5, 13, 1),
           point2: new THREE.PointLight(0xaaaaff, 0.4, 7, 1),
           ball1: new THREE.PointLight(0xaaaaff, 0.7, 9, 1),
           ball2: new THREE.PointLight(0xaaaaff, 0.7, 9, 1),
           ball3: new THREE.PointLight(0xaaaaff, 0.9, 16, 1),
-          neonSign: new THREE.PointLight(0xff0000, 0.8, 15, 1)
+          billboard: new THREE.PointLight(0xffffff, 0.2, 25, 1),
+          neonSign: new THREE.PointLight(0xff0000, 0.9, 20, 1)
         };
         this.lights.point1.position.set(0, 5, -10);
         this.lights.point2.position.set(-0.25, 11.75, 37);
         this.lights.ball1.position.set(19.75, 0.9, 28);
         this.lights.ball2.position.set(26, 0.9, 32.5);
         this.lights.ball3.position.set(37.25, 1.567, 30.75);
+        this.lights.billboard.position.set(-30.5, 23, 42);
         this.lights.neonSign.position.set(0, 14, -32);
 
         // add player object/ light
@@ -2670,6 +2462,188 @@ var LightHandler = function () {
 }();
 
 exports.default = LightHandler;
+
+/***/ }),
+/* 31 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _config = __webpack_require__(0);
+
+var _maths = __webpack_require__(1);
+
+var _focal = __webpack_require__(2);
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var ArtworkHandler = function () {
+  function ArtworkHandler(scene) {
+    var _this = this;
+
+    _classCallCheck(this, ArtworkHandler);
+
+    // artwork handler
+
+    this.sources = [];
+    this.focalPoints = [];
+    this.object = new THREE.Object3D();
+    this.toLoad = 0;
+    this.active = false;
+
+    // get img tags from doc
+
+    $('.im').each(function (i, e) {
+      var $e = $(e);
+      _this.add($e.find('.im__title').html(), $e.find('.im__description').html(), $e.find('.im__url').html(), $e.find('.im__image').html(), $e.find('.im__alpha').html());
+    });
+    this.placeImages();
+
+    // add to scene
+
+    scene.add(this.object);
+  }
+
+  _createClass(ArtworkHandler, [{
+    key: 'add',
+    value: function add(title, description, url, image, alpha) {
+      // add an artwork
+
+      this.toLoad += 1;
+      this.sources.push({
+        title: title,
+        description: description,
+        url: url,
+        image: image,
+        alpha: alpha
+      });
+    }
+  }, {
+    key: 'activate',
+    value: function activate(artwork) {
+      // activate artwork (show description)
+
+      if (!this.active) {
+        this.active = true;
+
+        if (!artwork.active) {
+          for (var i = 0; i < this.focalPoints.length; i += 1) {
+            if (this.focalPoints[i].id === artwork.id) {
+              this.focalPoints[i].activate();
+            } else {
+              this.focalPoints[i].deactivate();
+            }
+          }
+
+          // remove nav and show artwork information
+
+          if (!$('#nav-default').hasClass('hidden')) {
+            $('#nav-default').addClass('hidden');
+          }
+
+          // animate out and in
+
+          var timeout = 1;
+
+          if (!$('#nav-artwork').hasClass('hidden')) {
+            $('#nav-artwork').addClass('hidden');
+            timeout = 500;
+          }
+
+          setTimeout(function () {
+            $('#nav-artwork .nav__title').text(artwork.source.title);
+            $('#nav-artwork .nav__description').html(artwork.source.description);
+            $('#nav-artwork .nav__links').html('<a target="_blank" href="' + artwork.source.url + '">Order print</a>');
+            $('#nav-artwork').removeClass('hidden');
+          }, timeout);
+        }
+      }
+    }
+  }, {
+    key: 'deactivate',
+    value: function deactivate() {
+      // deactivate active artworks
+
+      if (this.active) {
+        this.active = false;
+
+        // deactivate artworks
+
+        for (var i = 0; i < this.focalPoints.length; i += 1) {
+          this.focalPoints[i].deactivate();
+        }
+
+        // show default nav
+
+        if (!$('#nav-artwork').hasClass('hidden')) {
+          $('#nav-artwork').addClass('hidden');
+        }
+        if ($('#nav-default').hasClass('hidden')) {
+          $('#nav-default').removeClass('hidden');
+        }
+      }
+    }
+  }, {
+    key: 'placeImages',
+    value: function placeImages() {
+      var _this2 = this;
+
+      // place images in 3D space
+
+      var textureLoader = new THREE.TextureLoader();
+
+      var _loop = function _loop(i) {
+        var index = i;
+        var place = _config.Globals.artworkPlacement[index];
+        var id = 'UID' + i;
+
+        // create collision object
+
+        var focal = new _focal.Focal(id, place.position, (0, _maths.v3)(1, 1, 1), place.eye, _this2.sources[i]);
+        _this2.focalPoints.push(focal);
+
+        // create artwork mesh
+
+        var mesh = new THREE.Mesh(new THREE.PlaneBufferGeometry(1, 1, 2, 2), _config.Materials.canvas.clone());
+        var texture = textureLoader.load(_this2.sources[i].image, function () {
+          _this2.toLoad -= 1;
+          mesh.scale.x = texture.image.naturalWidth / 1000. * place.scale;
+          mesh.scale.y = texture.image.naturalHeight / 1000. * place.scale;
+          _this2.focalPoints[index].scale(mesh.scale.x, mesh.scale.y, mesh.scale.x);
+
+          // add to scene
+
+          _this2.object.add(mesh);
+        });
+        var alphaMap = textureLoader.load(_this2.sources[i].alpha, function () {
+          mesh.material.transparent = true;
+        });
+
+        // apply texture
+
+        mesh.material.map = texture;
+        mesh.material.alphaMap = alphaMap;
+        mesh.rotation.set(place.pitch, place.yaw, 0);
+        mesh.position.set(place.position.x, place.position.y, place.position.z);
+      };
+
+      for (var i = 0; i < this.sources.length; i += 1) {
+        _loop(i);
+      }
+    }
+  }]);
+
+  return ArtworkHandler;
+}();
+
+exports.default = ArtworkHandler;
 
 /***/ })
 /******/ ]);

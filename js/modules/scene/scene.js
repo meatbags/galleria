@@ -6,14 +6,14 @@ import { v3 } from '../maths';
 import { RoomLoader, LightHandler } from '../loader';
 
 class Scene {
-  constructor(width, height) {
+  constructor(width, height, selector) {
     // scene handler
 
     this.isMonday = (((new Date()).getDay() == 1 || window.location.hash == '#monday') && (window.location.hash != '#tuesday'));
 
     // set up
 
-    this._initRenderer();
+    this._initRenderer(selector);
     this._initScene();
     this.resize(width, height);
 
@@ -31,16 +31,17 @@ class Scene {
     this.size = new THREE.Vector2(this.width, this.height);
     this.camera.aspect = width / height;
     this.camera.updateProjectionMatrix();
+    this.player.resizeCamera();
     this.renderer.setSize(width, height);
   }
 
-  _initRenderer() {
+  _initRenderer(selector) {
     // render objects, methods
 
     this.renderer = new THREE.WebGLRenderer({antialias: false});
     this.renderer.setClearColor(0xf9e5a2, 1);
     this.renderer.setPixelRatio(window.devicePixelRatio);
-    $('.wrapper .content').append(this.renderer.domElement);
+    $(selector).append(this.renderer.domElement);
 
     // main render func
 
@@ -55,33 +56,16 @@ class Scene {
     this.player = new Player(this.renderer.domElement);
     this.camera = this.player.camera;
     this.scene = new THREE.Scene();
-    this.scene.fog = new THREE.FogExp2(0xCCCFFF, 0.008);
-
+    this.scene.fog = new THREE.FogExp2(0x333555, 0.008);
     this.collider = new Collider.System();
-
     this.lightHandler = new LightHandler(this.scene, this.player);
     this.lightHandler.load(this.isMonday);
-    this.artworks = new Artworks();
     this.sky = new THREE.Sky();
     this.scene.add(this.sky.mesh);
 
-    // get artworks
+    // load user-uploaded artworks
 
-    if (!this.isMonday) {
-      /*
-      $('.im').each((i, e) => {
-        this.artworks.add(
-          $(e).find('.im__title').html(),
-          $(e).find('.im__description').html(),
-          $(e).find('.im__url').html(),
-          $(e).find('.im__image').html()
-        );
-      });
-
-      this.artworks.placeImages();
-      this.scene.add(this.artworks.object);
-      */
-    }
+    this.artworks = new Artworks(this.scene);
 
     // main update func
 
@@ -107,7 +91,7 @@ class Scene {
 
     this.renderPass = new THREE.RenderPass(this.scene, this.camera);
     this.posterPass = new THREE.PosterPass(this.size);
-    this.bloomPass = new THREE.UnrealBloomPass(this.size, .75, 1.2, 0.9); // res, strength, radius, threshold
+    this.bloomPass = new THREE.UnrealBloomPass(this.size, .75, 1.0, 0.85); // res, strength, radius, threshold
     this.bloomPass.renderToScreen = true;
 
     // add passes to composer

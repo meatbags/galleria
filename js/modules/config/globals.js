@@ -48,20 +48,23 @@ const Globals = {
     clickBoxScale: 1.25
   },
   artworkPlacement: {
-    '0': {scale: 5, pitch: 0, yaw: halfPI, position: v3(8.8, 6, -10), eye: v3(0, 0, -10)},
-    '1': {scale: 4, pitch: 0, yaw: halfPI, position: v3(-9.1, 4, -15), eye: v3(-2, 0, -15)},
+    // main hall
+    '0': {scale: 3, pitch: 0, yaw: 0, position: v3(23.75, 4, 38.75), eye: v3(23.75, 0, 35)},
+    '1': {scale: 4, pitch: 0, yaw: 0, position: v3(33.25, 4, 38.75), eye: v3(33.25, 0, 35)},
+    '12': {scale: 3, pitch: 0, yaw: 0, position: v3(23.75, 3.5, 19.75), eye: v3(23.75, 0, 24)},
+    '13': {scale: 2, pitch: 0, yaw: 0, position: v3(33.25, 3.5, 19.75), eye: v3(33.25, 0, 24)},
+    // entrance
     '2': {scale: 2.5, pitch: 0, yaw: halfPI, position: v3(9.1, 3.25, 4.75), eye: v3(5.5, 0, 4.75)},
     '3': {scale: 2.75, pitch: 0, yaw: halfPI, position: v3(9.1, 3.25, 15), eye: v3(5.5, 0, 15)},
     '4': {scale: 2, pitch: 0, yaw: halfPI, position: v3(-9.1, 3.5, 4.75), eye: v3(-5.5, 0, 4.75)},
     '5': {scale: 2, pitch: 0, yaw: halfPI, position: v3(-9.1, 3.5, 15), eye: v3(-5.5, 0, 15)},
-    '6': {scale: 2, pitch: 0, yaw: 0, position: v3(0, 3, 9.75), eye: v3(0, 0, 4.5)},
-    '7': {scale: 2, pitch: 0, yaw: 0, position: v3(0, 3, 10.25), eye: v3(0, 0, 14.5)},
+    '6': {scale: 2, pitch: 0, yaw: halfPI, position: v3(-9.1, 3.5, 24.75), eye: v3(-5.5, 0, 24.75)},
+    // top floor
+    '7': {scale: 2, pitch: 0, yaw: halfPI, position: v3(-9.1, 11, 24.75), eye: v3(0, 8, 14.5)},
     '8': {scale: 2.5, pitch: 0, yaw: halfPI, position: v3(9.1, 11, 5), eye: v3(5.5, 8, 5)},
     '9': {scale: 2.5, pitch: 0, yaw: halfPI, position: v3(9.1, 11, 15), eye: v3(5.5, 8, 15)},
     '10': {scale: 2, pitch: 0, yaw: halfPI, position: v3(-9.1, 11, 5), eye: v3(-5.5, 8, 5)},
     '11': {scale: 2, pitch: 0, yaw: halfPI, position: v3(-9.1, 11, 15), eye: v3(-5.5, 8, 15)},
-    '12': {scale: 3, pitch: 0, yaw: 0, position: v3(0, 11, 9.75), eye: v3(0, 8, 5.5)},
-    '13': {scale: 2, pitch: 0, yaw: 0, position: v3(0, 11, 10.25), eye: v3(0, 8, 14.5)},
   }
 };
 

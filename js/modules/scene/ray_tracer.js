@@ -39,7 +39,8 @@ class RayTracer {
 
     if (res.length) {
       // perform first collision action
-      //res[0]
+
+
     }
   }
 }
