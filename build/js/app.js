@@ -505,7 +505,7 @@ var Timer = function () {
 		value: function getDelta() {
 			// get delta
 
-			return this.delta; // Math.min(this.delta, this.maxDelta);
+			return Math.min(this.delta, this.maxDelta);
 		}
 	}, {
 		key: "reset",
@@ -1842,7 +1842,7 @@ var Player = function (_Collider$Player) {
       // set target
 
       this.target.position.x = target.position.x;
-      this.target.position.y = target.position.y;
+      //this.target.position.y = target.position.y;
       this.target.position.z = target.position.z;
       this.target.rotation.pitch = target.pitch;
       this.target.rotation.yaw = target.yaw;
@@ -2037,8 +2037,8 @@ var Globals = {
     '5': { scale: 2, pitch: 0, yaw: halfPI, position: (0, _maths.v3)(-9.1, 3.5, 15), eye: (0, _maths.v3)(-5.5, 0, 15) },
     '6': { scale: 2, pitch: 0, yaw: halfPI, position: (0, _maths.v3)(-9.1, 3.5, 24.75), eye: (0, _maths.v3)(-5.5, 0, 24.75) },
     // top floor
-    '7': { scale: 2, pitch: 0, yaw: halfPI, position: (0, _maths.v3)(-9.1, 11, 24.75), eye: (0, _maths.v3)(0, 8, 14.5) },
-    '8': { scale: 2.5, pitch: 0, yaw: halfPI, position: (0, _maths.v3)(9.1, 11, 5), eye: (0, _maths.v3)(5.5, 8, 5) },
+    '7': { scale: 2, pitch: 0, yaw: halfPI, position: (0, _maths.v3)(-9.1, 11, 24.75), eye: (0, _maths.v3)(-5.5, 8, 24.75) },
+    '8': { scale: 3, pitch: 0, yaw: halfPI, position: (0, _maths.v3)(9.1, 11, 5), eye: (0, _maths.v3)(5.5, 8, 5) },
     '9': { scale: 2.5, pitch: 0, yaw: halfPI, position: (0, _maths.v3)(9.1, 11, 15), eye: (0, _maths.v3)(5.5, 8, 15) },
     '10': { scale: 2, pitch: 0, yaw: halfPI, position: (0, _maths.v3)(-9.1, 11, 5), eye: (0, _maths.v3)(-5.5, 8, 5) },
     '11': { scale: 2, pitch: 0, yaw: halfPI, position: (0, _maths.v3)(-9.1, 11, 15), eye: (0, _maths.v3)(-5.5, 8, 15) }

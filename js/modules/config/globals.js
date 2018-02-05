@@ -52,8 +52,8 @@ const Globals = {
     '5': {scale: 2, pitch: 0, yaw: halfPI, position: v3(-9.1, 3.5, 15), eye: v3(-5.5, 0, 15)},
     '6': {scale: 2, pitch: 0, yaw: halfPI, position: v3(-9.1, 3.5, 24.75), eye: v3(-5.5, 0, 24.75)},
     // top floor
-    '7': {scale: 2, pitch: 0, yaw: halfPI, position: v3(-9.1, 11, 24.75), eye: v3(0, 8, 14.5)},
-    '8': {scale: 2.5, pitch: 0, yaw: halfPI, position: v3(9.1, 11, 5), eye: v3(5.5, 8, 5)},
+    '7': {scale: 2, pitch: 0, yaw: halfPI, position: v3(-9.1, 11, 24.75), eye: v3(-5.5, 8, 24.75)},
+    '8': {scale: 3, pitch: 0, yaw: halfPI, position: v3(9.1, 11, 5), eye: v3(5.5, 8, 5)},
     '9': {scale: 2.5, pitch: 0, yaw: halfPI, position: v3(9.1, 11, 15), eye: v3(5.5, 8, 15)},
     '10': {scale: 2, pitch: 0, yaw: halfPI, position: v3(-9.1, 11, 5), eye: v3(-5.5, 8, 5)},
     '11': {scale: 2, pitch: 0, yaw: halfPI, position: v3(-9.1, 11, 15), eye: v3(-5.5, 8, 15)},

@@ -96,7 +96,7 @@ class Player extends Collider.Player {
     // set target
 
     this.target.position.x = target.position.x;
-    this.target.position.y = target.position.y;
+    //this.target.position.y = target.position.y;
     this.target.position.z = target.position.z;
     this.target.rotation.pitch = target.pitch;
     this.target.rotation.yaw = target.yaw;
