@@ -4,6 +4,7 @@ import { Globals } from '../config';
 import { ArtworkHandler } from '../art';
 import { v3 } from '../maths';
 import { RoomLoader, LightHandler } from '../loader';
+import RayTracer from './ray_tracer';
 
 class Scene {
   constructor(width, height, selector) {
@@ -63,26 +64,30 @@ class Scene {
     this.sky = new THREE.Sky();
     this.scene.add(this.sky.mesh);
 
-    // load user-uploaded artworks
+    // artwork interaction
 
     this.artworkHandler = new ArtworkHandler(this.scene);
+    this.rayTracer = new RayTracer(this.renderer.domElement, this.camera);
+    this.rayTracer.setTargets(this.artworkHandler.getCollisionBoxes());
+    this.onRayClick = (res) => { console.log(res); };
+    this.onRayHover = (res) => { this.artworkHandler.parseCollisions(res); };
+    this.rayTracer.setEvents(this.onRayHover, this.onRayClick);
 
-    this.onArtworkClick = (res) => { console.log(res); };
-    this.onArtworkHover = (res) => {
-      this.artworkHandler.parseCollisions(res);
-    };
-    this.player.rayTracer.setTargets(
-      this.artworkHandler.getCollisionBoxes(),
-      this.onArtworkHover,
-      this.onArtworkClick
-    );
+    // hook up
+
+    $(this.renderer.domElement).on('click touchend', (e) => {
+      this.rayTracer.handleClick(e.clientX, e.clientY);
+    });
+    $(this.renderer.domElement).on('mousemove touchmove', (e) => {
+      this.rayTracer.handleMove(e.clientX, e.clientY);
+    });
 
     // main update func
 
     this.update = (delta) => {
       this.player.updatePlayer(delta, this.collider);
       this.artworkHandler.update();
-    }
+    };
   }
 
   _initLoaders() {

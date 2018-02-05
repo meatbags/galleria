@@ -1,25 +1,10 @@
-import RayTracer from './ray_tracer';
-
 class Player extends Collider.Player {
   constructor(domElement) {
     super(domElement);
 
     // player props
 
-    this._events();
     this._override();
-    this.rayTracer = new RayTracer(this.domElement, this.camera);
-  }
-
-  _events() {
-    // doc events
-
-    $(this.domElement).on('click', (e) => {
-      this.rayTracer.handleClick(e.clientX, e.clientY);
-    });
-    $(this.domElement).on('mousemove', (e) => {
-      this.rayTracer.handleMove(e.clientX, e.clientY);
-    });
   }
 
   _override() {
@@ -43,6 +28,8 @@ class Player extends Collider.Player {
   }
 
   updatePlayer(delta, collider) {
+    // update collider player
+
     this.update(delta, collider);
   }
 }

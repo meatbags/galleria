@@ -5,19 +5,25 @@ class RayTracer {
     this.domElement = domElement;
     this.camera = camera;
     this.raycaster = new THREE.Raycaster();
+    this.raycaster.far = 25; // metre range
     this.mouse = new THREE.Vector2();
     this.rect = this.domElement.getBoundingClientRect();
     this.objects = [];
-
-    console.log(this.raycaster);
   }
 
-  setTargets(objects, onHover, onClick) {
+  setTargets(objects) {
     // set target objects
 
     this.objects = objects;
+  }
+
+  setEvents(onHover, onClick) {
+    // set desktop & mobile events
+
     this.onHover = onHover;
     this.onClick = onClick;
+    this.onTouchMove = onHover;
+    this.onTap = onClick;
   }
 
   setMouse(x, y) {
@@ -42,16 +48,25 @@ class RayTracer {
     this.click();
   }
 
-  click() {
+  intersectObjects() {
+    // raytrace and check objects
 
+    this.raycaster.setFromCamera(this.mouse, this.camera);
+    const res = this.raycaster.intersectObjects(this.objects);
+
+    return res;
+  }
+
+  click() {
+    // raytrace, perform click
+
+    this.onClick(this.intersectObjects());
   }
 
   hover() {
     // raytrace, perform actions
 
-    this.raycaster.setFromCamera(this.mouse, this.camera);
-    const res = this.raycaster.intersectObjects(this.objects);
-    this.onHover(res);
+    this.onHover(this.intersectObjects());
   }
 }
 
