@@ -44,7 +44,7 @@ class RayTracer {
   handleClick(x, y) {
     // on mouse click
 
-    this.setMouse();
+    this.setMouse(x, y);
     this.click();
   }
 

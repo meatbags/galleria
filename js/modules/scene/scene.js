@@ -69,14 +69,27 @@ class Scene {
     this.artworkHandler = new ArtworkHandler(this.scene);
     this.rayTracer = new RayTracer(this.renderer.domElement, this.camera);
     this.rayTracer.setTargets(this.artworkHandler.getCollisionBoxes());
-    this.onRayClick = (res) => { console.log(res); };
+    this.onRayClick = (res) => {
+      if (res.length) {
+        const eye = this.artworkHandler.getEyeTarget(res[0].object.uuid);
+        if (eye) {
+          this.player.setEyeTarget(eye);
+        }
+      }
+    };
     this.onRayHover = (res) => { this.artworkHandler.parseCollisions(res); };
     this.rayTracer.setEvents(this.onRayHover, this.onRayClick);
 
     // hook up
 
-    $(this.renderer.domElement).on('click touchend', (e) => {
-      this.rayTracer.handleClick(e.clientX, e.clientY);
+    this.clickInterval = 150;
+    $(this.renderer.domElement).on('mousedown', (e) => {
+      this.mouseTimestamp = (new Date()).getTime();
+    });
+    $(this.renderer.domElement).on('mouseup touchend', (e) => {
+      if (this.mouseTimestamp && (new Date()).getTime() - this.mouseTimestamp < this.clickInterval) {
+        this.rayTracer.handleClick(e.clientX, e.clientY);
+      }
     });
     $(this.renderer.domElement).on('mousemove touchmove', (e) => {
       this.rayTracer.handleMove(e.clientX, e.clientY);
@@ -86,7 +99,7 @@ class Scene {
 
     this.update = (delta) => {
       this.player.updatePlayer(delta, this.collider);
-      this.artworkHandler.update();
+      this.artworkHandler.update(this.player.position);
     };
   }
 

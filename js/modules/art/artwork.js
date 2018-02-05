@@ -1,4 +1,6 @@
 import { Materials } from '../config';
+import { getPitch, getYaw } from '../maths';
+import { Globals } from '../config';
 
 class Artwork {
   constructor(root, element, ops) {
@@ -13,7 +15,14 @@ class Artwork {
     this.pitch = ops.pitch;
     this.yaw = ops.yaw;
     this.position = ops.position;
-    this.eye = ops.eye;
+
+    // eye target
+
+    this.eyeTarget = {
+      position: ops.eye,
+      pitch: getPitch(ops.eye, new THREE.Vector3(this.position.x, this.position.y - Globals.player.height, this.position.z)),
+      yaw: getYaw(ops.eye, this.position)
+    };
 
     // build object
 
@@ -22,6 +31,12 @@ class Artwork {
     // add to doc
 
     this.root.add(this.object);
+  }
+
+  getEyeTarget() {
+    // get viewing target
+
+    return this.eyeTarget;
   }
 
   build() {
@@ -52,7 +67,10 @@ class Artwork {
       // set collision box dimensions
 
       this.box.position.set(this.position.x, this.position.y, this.position.z);
-      this.box.scale.set(this.mesh.scale.x, this.mesh.scale.y, this.mesh.scale.x);
+
+      const sx = (this.yaw == 0) ? this.mesh.scale.x : this.mesh.scale.x / 2;
+      const sz = (this.yaw == 0) ? this.mesh.scale.x / 2 : this.mesh.scale.x;
+      this.box.scale.set(sx, this.mesh.scale.y, sz);
     };
     this.boxHasId = (id) => {
       return (id === this.box.uuid);
@@ -105,8 +123,14 @@ class Artwork {
     }
   }
 
-  update() {
-    // update animation
+  update(playerPosition) {
+    // update
+
+    if (playerPosition.distanceTo(this.position) < 10) {
+      this.activate();
+    }
+
+    // animate brightness
 
     if (this.active) {
       if (this.opacity < 1) {

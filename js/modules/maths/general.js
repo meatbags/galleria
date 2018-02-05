@@ -48,4 +48,6 @@ const getDistanceVec2 = function(a, b) {
   return dist;
 }
 
+const twoPi = Math.PI * 2;
+
 export { v3, minAngleDifference, getNormalisedVec3, getPitch, getYaw, getMagnitudeVec3, getDistanceVec2, getDistanceVec3 };

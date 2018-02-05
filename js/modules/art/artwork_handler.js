@@ -41,6 +41,18 @@ class ArtworkHandler {
     }
   }
 
+  getEyeTarget(id) {
+    // activate artwork with id
+
+    for (let i=this.artworks.length-1; i>-1; i--) {
+      if (this.artworks[i].boxHasId(id)) {
+        return this.artworks[i].getEyeTarget();
+      }
+    }
+
+    return null;
+  }
+
   activate(id) {
     // activate artwork with id
 
@@ -61,11 +73,11 @@ class ArtworkHandler {
     }
   }
 
-  update() {
+  update(playerPosition) {
     // update artwork animations
 
     for (let i=this.artworks.length-1; i>-1; i--) {
-      this.artworks[i].update();
+      this.artworks[i].update(playerPosition);
     }
   }
 }

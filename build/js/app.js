@@ -651,7 +651,12 @@ var Scene = function () {
             this.rayTracer = new _ray_tracer2.default(this.renderer.domElement, this.camera);
             this.rayTracer.setTargets(this.artworkHandler.getCollisionBoxes());
             this.onRayClick = function (res) {
-                console.log(res);
+                if (res.length) {
+                    var eye = _this2.artworkHandler.getEyeTarget(res[0].object.uuid);
+                    if (eye) {
+                        _this2.player.setEyeTarget(eye);
+                    }
+                }
             };
             this.onRayHover = function (res) {
                 _this2.artworkHandler.parseCollisions(res);
@@ -660,8 +665,14 @@ var Scene = function () {
 
             // hook up
 
-            $(this.renderer.domElement).on('click touchend', function (e) {
-                _this2.rayTracer.handleClick(e.clientX, e.clientY);
+            this.clickInterval = 150;
+            $(this.renderer.domElement).on('mousedown', function (e) {
+                _this2.mouseTimestamp = new Date().getTime();
+            });
+            $(this.renderer.domElement).on('mouseup touchend', function (e) {
+                if (_this2.mouseTimestamp && new Date().getTime() - _this2.mouseTimestamp < _this2.clickInterval) {
+                    _this2.rayTracer.handleClick(e.clientX, e.clientY);
+                }
             });
             $(this.renderer.domElement).on('mousemove touchmove', function (e) {
                 _this2.rayTracer.handleMove(e.clientX, e.clientY);
@@ -671,7 +682,7 @@ var Scene = function () {
 
             this.update = function (delta) {
                 _this2.player.updatePlayer(delta, _this2.collider);
-                _this2.artworkHandler.update();
+                _this2.artworkHandler.update(_this2.player.position);
             };
         }
     }, {
@@ -1723,6 +1734,10 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
+var _config = __webpack_require__(0);
+
+var _maths = __webpack_require__(1);
+
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
@@ -1744,11 +1759,13 @@ var Player = function (_Collider$Player) {
   }
 
   _createClass(Player, [{
-    key: "_override",
+    key: '_override',
     value: function _override() {
+      var _this2 = this;
+
       // override inheritance
 
-      this.config.height = 3;
+      this.config.height = _config.Globals.player.height;
       this.camera.far = 500000;
       this.camera.updateProjectionMatrix();
       this.position.z = this.target.position.z = -40;
@@ -1763,9 +1780,81 @@ var Player = function (_Collider$Player) {
         rapid: 0.09,
         veryFast: 0.18
       };
+      this.moveAdjust = this.config.adjust.veryFast;
+      this.moveAdjustTarget = this.moveAdjust;
+      this.rotateAdjust = this.config.adjust.fast;
+      this.rotateAdjustTarget = this.rotateAdjust;
+
+      // override move function
+
+      this.move = function () {
+        // move
+
+        _this2.moveAdjust += (_this2.moveAdjustTarget - _this2.moveAdjust) * _this2.config.adjust.verySlow;
+        _this2.position.x += (_this2.target.position.x - _this2.position.x) * _this2.moveAdjust;
+        _this2.position.y += (_this2.target.position.y - _this2.position.y) * _this2.moveAdjust;
+        _this2.position.z += (_this2.target.position.z - _this2.position.z) * _this2.moveAdjust;
+
+        // look
+
+        _this2.rotateAdjust += (_this2.rotateAdjustTarget - _this2.rotateAdjust) * _this2.config.adjust.slow;
+        _this2.rotation.yaw += (0, _maths.minAngleDifference)(_this2.rotation.yaw, _this2.target.rotation.yaw) * _this2.rotateAdjust;
+        _this2.offset.rotation.yaw += (_this2.target.offset.rotation.yaw - _this2.offset.rotation.yaw) * _this2.config.adjust.normal;
+        _this2.rotation.yaw += _this2.rotation.yaw < 0 ? _maths.twoPi : _this2.rotation.yaw > _maths.twoPi ? -_maths.twoPi : 0;
+
+        _this2.rotation.pitch += (_this2.target.rotation.pitch - _this2.rotation.pitch) * _this2.rotateAdjust;
+        _this2.offset.rotation.pitch += (_this2.target.offset.rotation.pitch - _this2.offset.rotation.pitch) * _this2.config.adjust.normal;
+        _this2.rotation.roll += (_this2.target.rotation.roll - _this2.rotation.roll) * _this2.rotateAdjust;
+
+        // set camera
+
+        var pitch = _this2.rotation.pitch + _this2.offset.rotation.pitch;
+        var yaw = _this2.rotation.yaw + _this2.offset.rotation.yaw;
+        var height = _this2.position.y + _this2.config.height;
+        var offxz = 1 - Math.abs(Math.sin(pitch));
+        var offy = 1;
+
+        // fix camera roll
+
+        _this2.camera.up.z = -Math.sin(_this2.rotation.yaw) * _this2.rotation.roll;
+        _this2.camera.up.x = Math.cos(_this2.rotation.yaw) * _this2.rotation.roll;
+
+        // set position, camera target
+
+        _this2.camera.position.set(_this2.position.x - Math.sin(yaw) * offxz / 4, height - Math.sin(pitch) * offy / 4, _this2.position.z - Math.cos(yaw) * offxz / 4);
+        _this2.camera.lookAt(new THREE.Vector3(_this2.position.x + Math.sin(yaw) * offxz, height + Math.sin(pitch) * offy, _this2.position.z + Math.cos(yaw) * offxz));
+
+        // set world object
+
+        _this2.object.position.set(_this2.position.x, _this2.position.y, _this2.position.z);
+      };
     }
   }, {
-    key: "updatePlayer",
+    key: 'mobileMove',
+    value: function mobileMove() {
+      // move forward on tap
+
+
+    }
+  }, {
+    key: 'setEyeTarget',
+    value: function setEyeTarget(target) {
+      // set target
+
+      this.target.position.x = target.position.x;
+      this.target.position.y = target.position.y;
+      this.target.position.z = target.position.z;
+      this.target.rotation.pitch = target.pitch;
+      this.target.rotation.yaw = target.yaw;
+
+      // set to slow position adjust
+
+      this.moveAdjust = 0;
+      this.rotateAdjust = 0;
+      //this.moveAdjustTarget = this.config.adjust.veryFast;
+    }
+  }, {
+    key: 'updatePlayer',
     value: function updatePlayer(delta, collider) {
       // update collider player
 
@@ -1847,7 +1936,7 @@ var RayTracer = function () {
     value: function handleClick(x, y) {
       // on mouse click
 
-      this.setMouse();
+      this.setMouse(x, y);
       this.click();
     }
   }, {
@@ -1917,7 +2006,7 @@ var Globals = {
       y: 0.3086,
       z: 0
     },
-    height: 2.5,
+    height: 3,
     speed: 8,
     rotationSpeed: Math.PI * 0.75,
     autowalkDistance: 10
@@ -2017,6 +2106,8 @@ var getDistanceVec2 = function getDistanceVec2(a, b) {
 
   return dist;
 };
+
+var twoPi = Math.PI * 2;
 
 exports.v3 = v3;
 exports.minAngleDifference = minAngleDifference;
@@ -2284,6 +2375,19 @@ var ArtworkHandler = function () {
       }
     }
   }, {
+    key: 'getEyeTarget',
+    value: function getEyeTarget(id) {
+      // activate artwork with id
+
+      for (var i = this.artworks.length - 1; i > -1; i--) {
+        if (this.artworks[i].boxHasId(id)) {
+          return this.artworks[i].getEyeTarget();
+        }
+      }
+
+      return null;
+    }
+  }, {
     key: 'activate',
     value: function activate(id) {
       // activate artwork with id
@@ -2307,11 +2411,11 @@ var ArtworkHandler = function () {
     }
   }, {
     key: 'update',
-    value: function update() {
+    value: function update(playerPosition) {
       // update artwork animations
 
       for (var i = this.artworks.length - 1; i > -1; i--) {
-        this.artworks[i].update();
+        this.artworks[i].update(playerPosition);
       }
     }
   }]);
@@ -2336,6 +2440,8 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 var _config = __webpack_require__(0);
 
+var _maths = __webpack_require__(1);
+
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var Artwork = function () {
@@ -2353,7 +2459,14 @@ var Artwork = function () {
     this.pitch = ops.pitch;
     this.yaw = ops.yaw;
     this.position = ops.position;
-    this.eye = ops.eye;
+
+    // eye target
+
+    this.eyeTarget = {
+      position: ops.eye,
+      pitch: (0, _maths.getPitch)(ops.eye, new THREE.Vector3(this.position.x, this.position.y - _config.Globals.player.height, this.position.z)),
+      yaw: (0, _maths.getYaw)(ops.eye, this.position)
+    };
 
     // build object
 
@@ -2365,6 +2478,13 @@ var Artwork = function () {
   }
 
   _createClass(Artwork, [{
+    key: 'getEyeTarget',
+    value: function getEyeTarget() {
+      // get viewing target
+
+      return this.eyeTarget;
+    }
+  }, {
     key: 'build',
     value: function build() {
       var _this = this;
@@ -2393,7 +2513,10 @@ var Artwork = function () {
         // set collision box dimensions
 
         _this.box.position.set(_this.position.x, _this.position.y, _this.position.z);
-        _this.box.scale.set(_this.mesh.scale.x, _this.mesh.scale.y, _this.mesh.scale.x);
+
+        var sx = _this.yaw == 0 ? _this.mesh.scale.x : _this.mesh.scale.x / 2;
+        var sz = _this.yaw == 0 ? _this.mesh.scale.x / 2 : _this.mesh.scale.x;
+        _this.box.scale.set(sx, _this.mesh.scale.y, sz);
       };
       this.boxHasId = function (id) {
         return id === _this.box.uuid;
@@ -2451,8 +2574,14 @@ var Artwork = function () {
     }
   }, {
     key: 'update',
-    value: function update() {
-      // update animation
+    value: function update(playerPosition) {
+      // update
+
+      if (playerPosition.distanceTo(this.position) < 10) {
+        this.activate();
+      }
+
+      // animate brightness
 
       if (this.active) {
         if (this.opacity < 1) {

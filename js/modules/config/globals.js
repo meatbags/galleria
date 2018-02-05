@@ -21,7 +21,7 @@ const Globals = {
       y: 0.3086,
       z: 0
     },
-    height: 2.5,
+    height: 3,
     speed: 8,
     rotationSpeed: Math.PI * 0.75,
     autowalkDistance: 10,
