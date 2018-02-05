@@ -50,7 +50,16 @@ class Artwork {
 
     // generate html tag
 
-    this.spiel = `${this.title}${this.desc}${this.url}`;
+    this.spiel = `
+      <div class="label-title">
+        ${this.title}
+      </div>
+      <div class="label-desc">
+        ${this.desc}
+      </div>
+      <div class="label-link">
+        <a href='${this.url}' target='_blank'>Order print.</a>
+      </div>`;
 
     // collision box
 
@@ -121,6 +130,13 @@ class Artwork {
     if (this.active) {
       this.active = false;
     }
+  }
+
+  activateText() {
+    // set text to doc
+
+    this.textActive = true;
+    $('.label__inner').html(this.spiel);
   }
 
   update(playerPosition) {

@@ -12,26 +12,21 @@ class RoomLoader {
     this._load();
   }
 
-  isLoaded() {
-    // check if loaded
-
-    return (this.toLoad <= 0);
-  }
-
   _load() {
     // load room and collision map
 
-    const mapSource = (this.isMonday) ? 'hangar_monday' : 'hangar_extended';
-    const collisionSource = (this.isMonday) ? 'hangar_collision_map_monday' : 'hangar_collision_map';
+    const mapSource = 'hangar_extended';//(this.isMonday) ? 'hangar_monday' : 'hangar_extended';
+    const collisionSource = 'hangar_extended_collision';//(this.isMonday) ? 'hangar_collision_map_monday' : 'hangar_collision_map';
 
     // flag
 
     this.toLoad = 2;
+    this.isLoaded = () => { return this.toLoad <= 0; };
 
     // load collisions
 
     this.loader.loadOBJ(collisionSource).then((map) => {
-      //map.children.forEach((child) => { this.collider.add(new Collider.Mesh(child)); });
+      map.children.forEach((child) => { this.collider.add(new Collider.Mesh(child)); });
       this.toLoad -= 1;
     }, (err) => { console.warn('Collider load', err); });
 

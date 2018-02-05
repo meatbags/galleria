@@ -6,6 +6,7 @@ class LoadOBJ {
 
     this.path = path;
     this.materials = {};
+    this.images = {};
     this.materialLoader = new THREE.MTLLoader();
     this.objectLoader =  new THREE.OBJLoader();
     this.textureLoader = new THREE.TextureLoader();
@@ -41,7 +42,7 @@ class LoadOBJ {
 
   preload(key, meta) {
     // load materials from meta
-    
+
     this.materials[key] = {};
 
     for (let prop in meta) {
@@ -49,6 +50,10 @@ class LoadOBJ {
         this.newMaterial(key, prop, meta[prop]);
       }
     }
+  }
+
+  newImage(url) {
+
   }
 
   newMaterial(key, target, prop) {
@@ -60,18 +65,14 @@ class LoadOBJ {
     if (prop.map_kd) {
       // diffuse map
 
-      const tl_kd = new THREE.TextureLoader();
-      tl_kd.load(this.path + prop.map_kd, (tex) => {
-        mat.color = new THREE.Color(1, 1, 1);
-        mat.map = tex;
+      const tex_kd = this.textureLoader.load(prop.map_kd);
+      mat.color = new THREE.Color(1, 1, 1);
+      mat.map = tex_kd;
 
-        // transparent textures
-
-        if (prop.map_kd.indexOf('.png') != -1) {
-          mat.transparent = true;
-          mat.side = THREE.DoubleSide;
-        }
-      });
+      if (prop.map_kd.indexOf('.png') != -1) {
+        mat.transparent = true;
+        mat.side = THREE.DoubleSide;
+      }
     } else {
       // no diffuse map, set emissive -> colour
 
@@ -83,11 +84,9 @@ class LoadOBJ {
 
       try {
         const opts = prop.bump.split(' ');
-
+        const tex_bump = this.textureLoader.load(opts[0]);
         mat.bumpScale = parseFloat(opts[2]) * Globals.loader.bumpScale;
-        this.textureLoader.load(opts[0], (tex) => {
-          mat.bumpMap = tex;
-        });
+        mat.bumpMap = tex_bump;
       } catch(err) {
         console.log('Bump map', err);
       }
@@ -97,10 +96,9 @@ class LoadOBJ {
       // ambient map
 
       mat.requireSecondUVSet = true;
-      this.textureLoader.load(prop.map_ka, (tex) => {
-        mat.lightMap = tex;
-        mat.lightMapIntensity = Globals.loader.lightMapIntensity;
-      });
+      const tex_ka = this.textureLoader.load(prop.map_ka);
+      mat.lightMap = tex_ka;
+      mat.lightMapIntensity = Globals.loader.lightMapIntensity;
     }
   }
 

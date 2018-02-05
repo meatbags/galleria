@@ -20,7 +20,6 @@ class App {
 		// set, go to loading screen
 
 		this.resize();
-		$('.pre-loading').fadeOut(1000);
 		this.loading();
 	}
 
@@ -35,42 +34,45 @@ class App {
 		// resize canvas, nav
 
 		this.setSize();
-		this.scene.resize(this.width, this.height);
-		$('.nav').css({top: `${window.innerHeight / 2 + this.height / 2}px`});
-		const top = window.innerHeight / 2 - this.height / 2 - 56;
-		const left = window.innerWidth / 2 - this.width / 2 - 56;
+		const top = window.innerHeight / 2 - this.height / 2;
+		const left = window.innerWidth / 2 - this.width / 2;
+
+		// reposition doc
+
 		$('.content').css({top: `${top}px`, left: `${left}px`});
+		$('.menu').css({top:`${top}px`, right: `${left}px`});
+		$('.label').css({bottom: `${top}px`, right: `${left}px`})
+
+		// resize scene
+
+		this.scene.resize(this.width, this.height);
 	}
 
 	events() {
-		// doc events
-		// open, close menu
+		// menu events
 
-		$('.nav-menu').on('click', (e) => {
-			const $target = $($(e.currentTarget).data('menu'));
-
-			if ($target.hasClass('hidden')) {
-				$('.menu').removeClass('active').addClass('hidden');
-				$target.addClass('active').removeClass('hidden');
-			} else {
-				$('.menu').removeClass('active').addClass('hidden');
-			}
+		$('.close-menu').on('click', () => {
+			$('.menu-about').addClass('hidden');
+			$('.menu, .label').removeClass('hidden');
 		});
 
-		$('.menu-close').on('click', () => {
-			$('.menu').removeClass('active').addClass('hidden');
+		$('.open-menu').on('click', () => {
+			$('.menu-about').removeClass('hidden');
+			$('.menu, .label').addClass('hidden');
 		});
 
 		// on resize
 
 		$(window).on('resize', () => { this.resize(); });
 
-		// pause, resume
+		// pause, resume on blur
 
 		$(window).on('focus', () => {
-			this.paused = false;
-			this.timer.reset();
-			this.loop();
+			if (this.paused) {
+				this.paused = false;
+				this.timer.reset();
+				this.loop();
+			}
 		});
 
 		$(window).on('blur', () => {
@@ -80,14 +82,12 @@ class App {
 
 	loading() {
 		// wait while loading
-
-		this.timer.update();
-
-		if (!this.scene.isLoaded() && this.mode != 'dev') {
+ 		//this.mode != 'dev'
+		if (!this.scene.isLoaded()) {
 			requestAnimationFrame(() => { this.loading(); });
 		} else {
-			$('#nav-default').removeClass('hidden');
-			$('.loading').fadeOut(500);
+			$('.loading').addClass('hidden');
+			this.timer.reset();
 			this.loop();
 		}
 	}
@@ -98,9 +98,9 @@ class App {
 		if (!this.paused) {
 			requestAnimationFrame(() => { this.loop(); });
 
+			this.timer.update();
 			const delta = this.timer.getDelta();
 
-			this.timer.update();
 			this.scene.update(delta);
 			this.scene.render(delta);
 		}

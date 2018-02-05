@@ -14,7 +14,7 @@ class Timer {
 
 	update() {
 		// update timer
-
+		
 		this.then = this.now;
 		this.now = (new Date()).getTime();
 		this.delta = (this.now - this.then) / 1000.;
@@ -23,7 +23,7 @@ class Timer {
 	getDelta() {
 		// get delta
 
-		return Math.min(this.delta, this.maxDelta);
+		return this.delta;
 	}
 
 	reset() {

@@ -17,8 +17,8 @@ class Player extends Collider.Player {
     this.camera.far = 500000;
     this.camera.updateProjectionMatrix();
     this.position.z = this.target.position.z = -40;
-    this.position.x = this.target.position.x = -15;
-    this.rotation.yaw = this.target.rotation.yaw = Math.PI / 8;
+    this.position.x = this.target.position.x = -15.5;
+    this.rotation.yaw = this.target.rotation.yaw = Math.PI / 10;
     this.rotation.pitch = this.target.rotation.pitch = Math.PI / 12;
     this.config.adjust = {
       verySlow: 0.01,
@@ -89,23 +89,24 @@ class Player extends Collider.Player {
   mobileMove() {
     // move forward on tap
 
-
   }
 
   setEyeTarget(target) {
-    // set target
+    // move to view position
 
-    this.target.position.x = target.position.x;
-    //this.target.position.y = target.position.y;
-    this.target.position.z = target.position.z;
-    this.target.rotation.pitch = target.pitch;
-    this.target.rotation.yaw = target.yaw;
+    if (!(this.target.position.x == target.position.x && this.target.position.z == target.position.z)) {
+      // set target position, rotation
 
-    // set to slow position adjust
+      this.target.position.x = target.position.x;
+      this.target.position.z = target.position.z;
+      this.target.rotation.pitch = target.pitch;
+      this.target.rotation.yaw = target.yaw;
 
-    this.moveAdjust = 0;
-    this.rotateAdjust = 0;
-    //this.moveAdjustTarget = this.config.adjust.veryFast;
+      // reset position adjust factor
+
+      this.moveAdjust = 0;
+      this.rotateAdjust = 0;
+    }
   }
 
   updatePlayer(delta, collider) {

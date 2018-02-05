@@ -76,11 +76,11 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.Materials = exports.Globals = undefined;
 
-var _globals = __webpack_require__(21);
+var _globals = __webpack_require__(20);
 
 var _globals2 = _interopRequireDefault(_globals);
 
-var _materials = __webpack_require__(24);
+var _materials = __webpack_require__(23);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -99,9 +99,9 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.normalise = exports.reverseVector = exports.crossProduct = exports.scaleVector = exports.subtractVector = exports.addVector = exports.dotProduct = exports.distanceBetween2D = exports.distanceBetween = exports.twoPi = exports.pitchBetween = exports.isVectorEqual = exports.copyVector = exports.getMagnitude2D = exports.getMagnitude = exports.getDistanceVec3 = exports.getDistanceVec2 = exports.getMagnitudeVec3 = exports.getYaw = exports.getPitch = exports.getNormalisedVec3 = exports.minAngleDifference = exports.v3 = undefined;
 
-var _general = __webpack_require__(22);
+var _general = __webpack_require__(21);
 
-var _vector = __webpack_require__(23);
+var _vector = __webpack_require__(22);
 
 exports.v3 = _general.v3;
 exports.minAngleDifference = _general.minAngleDifference;
@@ -152,6 +152,7 @@ var LoadOBJ = function () {
 
     this.path = path;
     this.materials = {};
+    this.images = {};
     this.materialLoader = new THREE.MTLLoader();
     this.objectLoader = new THREE.OBJLoader();
     this.textureLoader = new THREE.TextureLoader();
@@ -202,6 +203,9 @@ var LoadOBJ = function () {
       }
     }
   }, {
+    key: 'newImage',
+    value: function newImage(url) {}
+  }, {
     key: 'newMaterial',
     value: function newMaterial(key, target, prop) {
       // make new material from props
@@ -212,18 +216,14 @@ var LoadOBJ = function () {
       if (prop.map_kd) {
         // diffuse map
 
-        var tl_kd = new THREE.TextureLoader();
-        tl_kd.load(this.path + prop.map_kd, function (tex) {
-          mat.color = new THREE.Color(1, 1, 1);
-          mat.map = tex;
+        var tex_kd = this.textureLoader.load(prop.map_kd);
+        mat.color = new THREE.Color(1, 1, 1);
+        mat.map = tex_kd;
 
-          // transparent textures
-
-          if (prop.map_kd.indexOf('.png') != -1) {
-            mat.transparent = true;
-            mat.side = THREE.DoubleSide;
-          }
-        });
+        if (prop.map_kd.indexOf('.png') != -1) {
+          mat.transparent = true;
+          mat.side = THREE.DoubleSide;
+        }
       } else {
         // no diffuse map, set emissive -> colour
 
@@ -235,11 +235,9 @@ var LoadOBJ = function () {
 
         try {
           var opts = prop.bump.split(' ');
-
+          var tex_bump = this.textureLoader.load(opts[0]);
           mat.bumpScale = parseFloat(opts[2]) * _config.Globals.loader.bumpScale;
-          this.textureLoader.load(opts[0], function (tex) {
-            mat.bumpMap = tex;
-          });
+          mat.bumpMap = tex_bump;
         } catch (err) {
           console.log('Bump map', err);
         }
@@ -249,10 +247,9 @@ var LoadOBJ = function () {
         // ambient map
 
         mat.requireSecondUVSet = true;
-        this.textureLoader.load(prop.map_ka, function (tex) {
-          mat.lightMap = tex;
-          mat.lightMapIntensity = _config.Globals.loader.lightMapIntensity;
-        });
+        var tex_ka = this.textureLoader.load(prop.map_ka);
+        mat.lightMap = tex_ka;
+        mat.lightMapIntensity = _config.Globals.loader.lightMapIntensity;
       }
     }
   }, {
@@ -328,7 +325,6 @@ var App = function () {
 		// set, go to loading screen
 
 		this.resize();
-		$('.pre-loading').fadeOut(1000);
 		this.loading();
 	}
 
@@ -346,33 +342,34 @@ var App = function () {
 			// resize canvas, nav
 
 			this.setSize();
-			this.scene.resize(this.width, this.height);
-			$('.nav').css({ top: window.innerHeight / 2 + this.height / 2 + 'px' });
-			var top = window.innerHeight / 2 - this.height / 2 - 56;
-			var left = window.innerWidth / 2 - this.width / 2 - 56;
+			var top = window.innerHeight / 2 - this.height / 2;
+			var left = window.innerWidth / 2 - this.width / 2;
+
+			// reposition doc
+
 			$('.content').css({ top: top + 'px', left: left + 'px' });
+			$('.menu').css({ top: top + 'px', right: left + 'px' });
+			$('.label').css({ bottom: top + 'px', right: left + 'px' });
+
+			// resize scene
+
+			this.scene.resize(this.width, this.height);
 		}
 	}, {
 		key: 'events',
 		value: function events() {
 			var _this = this;
 
-			// doc events
-			// open, close menu
+			// menu events
 
-			$('.nav-menu').on('click', function (e) {
-				var $target = $($(e.currentTarget).data('menu'));
-
-				if ($target.hasClass('hidden')) {
-					$('.menu').removeClass('active').addClass('hidden');
-					$target.addClass('active').removeClass('hidden');
-				} else {
-					$('.menu').removeClass('active').addClass('hidden');
-				}
+			$('.close-menu').on('click', function () {
+				$('.menu-about').addClass('hidden');
+				$('.menu, .label').removeClass('hidden');
 			});
 
-			$('.menu-close').on('click', function () {
-				$('.menu').removeClass('active').addClass('hidden');
+			$('.open-menu').on('click', function () {
+				$('.menu-about').removeClass('hidden');
+				$('.menu, .label').addClass('hidden');
 			});
 
 			// on resize
@@ -381,12 +378,14 @@ var App = function () {
 				_this.resize();
 			});
 
-			// pause, resume
+			// pause, resume on blur
 
 			$(window).on('focus', function () {
-				_this.paused = false;
-				_this.timer.reset();
-				_this.loop();
+				if (_this.paused) {
+					_this.paused = false;
+					_this.timer.reset();
+					_this.loop();
+				}
 			});
 
 			$(window).on('blur', function () {
@@ -399,16 +398,14 @@ var App = function () {
 			var _this2 = this;
 
 			// wait while loading
-
-			this.timer.update();
-
-			if (!this.scene.isLoaded() && this.mode != 'dev') {
+			//this.mode != 'dev'
+			if (!this.scene.isLoaded()) {
 				requestAnimationFrame(function () {
 					_this2.loading();
 				});
 			} else {
-				$('#nav-default').removeClass('hidden');
-				$('.loading').fadeOut(500);
+				$('.loading').addClass('hidden');
+				this.timer.reset();
 				this.loop();
 			}
 		}
@@ -424,9 +421,9 @@ var App = function () {
 					_this3.loop();
 				});
 
+				this.timer.update();
 				var delta = this.timer.getDelta();
 
-				this.timer.update();
 				this.scene.update(delta);
 				this.scene.render(delta);
 			}
@@ -505,7 +502,7 @@ var Timer = function () {
 		value: function getDelta() {
 			// get delta
 
-			return Math.min(this.delta, this.maxDelta);
+			return this.delta;
 		}
 	}, {
 		key: "reset",
@@ -550,7 +547,7 @@ exports.Scene = _scene2.default;
 
 
 Object.defineProperty(exports, "__esModule", {
-    value: true
+  value: true
 });
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -563,13 +560,13 @@ var _player2 = _interopRequireDefault(_player);
 
 var _config = __webpack_require__(0);
 
-var _art = __webpack_require__(25);
+var _art = __webpack_require__(24);
 
 var _maths = __webpack_require__(1);
 
-var _loader = __webpack_require__(28);
+var _loader = __webpack_require__(27);
 
-var _ray_tracer = __webpack_require__(20);
+var _ray_tracer = __webpack_require__(30);
 
 var _ray_tracer2 = _interopRequireDefault(_ray_tracer);
 
@@ -578,149 +575,149 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var Scene = function () {
-    function Scene(width, height, selector) {
-        _classCallCheck(this, Scene);
+  function Scene(width, height, selector) {
+    _classCallCheck(this, Scene);
 
-        // scene handler
+    // scene handler
 
-        this.isMonday = false; //(((new Date()).getDay() == 1 || window.location.hash == '#monday') && (window.location.hash != '#tuesday'));
+    this.isMonday = false;
 
-        // set up
+    // set up
 
-        this._initRenderer(selector);
-        this._initScene();
-        this.resize(width, height);
+    this._initRenderer(selector);
+    this._initScene();
+    this.resize(width, height);
 
-        // set up post processing, load
+    // set up post processing, load
 
-        this._initProcessing();
-        this._initLoaders();
+    this._initProcessing();
+    this._initLoaders();
+  }
+
+  _createClass(Scene, [{
+    key: 'resize',
+    value: function resize(width, height) {
+      // resize scene, element
+
+      this.width = width;
+      this.height = height;
+      this.size = new THREE.Vector2(this.width, this.height);
+      this.camera.aspect = width / height;
+      this.camera.updateProjectionMatrix();
+      this.player.resizeCamera();
+      this.renderer.setSize(width, height);
     }
+  }, {
+    key: '_initRenderer',
+    value: function _initRenderer(selector) {
+      var _this = this;
 
-    _createClass(Scene, [{
-        key: 'resize',
-        value: function resize(width, height) {
-            // resize scene, element
+      // render objects, methods
 
-            this.width = width;
-            this.height = height;
-            this.size = new THREE.Vector2(this.width, this.height);
-            this.camera.aspect = width / height;
-            this.camera.updateProjectionMatrix();
-            this.player.resizeCamera();
-            this.renderer.setSize(width, height);
+      this.renderer = new THREE.WebGLRenderer({ antialias: false });
+      this.renderer.setClearColor(0xf9e5a2, 1);
+      this.renderer.setPixelRatio(window.devicePixelRatio);
+      $(selector).append(this.renderer.domElement);
+
+      // main render func
+
+      this.render = function (delta) {
+        _this.composer.render();
+      };
+    }
+  }, {
+    key: '_initScene',
+    value: function _initScene() {
+      var _this2 = this;
+
+      // scene objects, methods
+
+      this.player = new _player2.default(this.renderer.domElement);
+      this.camera = this.player.camera;
+      this.scene = new THREE.Scene();
+      this.scene.fog = new THREE.FogExp2(0x333555, 0.008);
+      this.collider = new Collider.System();
+      this.lightHandler = new _loader.LightHandler(this.scene, this.player);
+      this.lightHandler.load(this.isMonday);
+      this.sky = new THREE.Sky();
+      this.scene.add(this.sky.mesh);
+
+      // artwork interaction
+
+      this.artworkHandler = new _art.ArtworkHandler(this.scene);
+      this.rayTracer = new _ray_tracer2.default(this.renderer.domElement, this.camera);
+      this.rayTracer.setTargets(this.artworkHandler.getCollisionBoxes());
+      this.onRayClick = function (res) {
+        if (res.length) {
+          var eye = _this2.artworkHandler.getEyeTarget(res[0].object.uuid);
+          if (eye) {
+            _this2.player.setEyeTarget(eye);
+          }
         }
-    }, {
-        key: '_initRenderer',
-        value: function _initRenderer(selector) {
-            var _this = this;
+      };
+      this.onRayHover = function (res) {
+        _this2.artworkHandler.parseCollisions(res);
+      };
+      this.rayTracer.setEvents(this.onRayHover, this.onRayClick);
 
-            // render objects, methods
+      // hook up
 
-            this.renderer = new THREE.WebGLRenderer({ antialias: false });
-            this.renderer.setClearColor(0xf9e5a2, 1);
-            this.renderer.setPixelRatio(window.devicePixelRatio);
-            $(selector).append(this.renderer.domElement);
-
-            // main render func
-
-            this.render = function (delta) {
-                _this.composer.render();
-            };
+      this.clickInterval = 150;
+      $(this.renderer.domElement).on('mousedown', function (e) {
+        _this2.mouseTimestamp = new Date().getTime();
+      });
+      $(this.renderer.domElement).on('mouseup touchend', function (e) {
+        if (_this2.mouseTimestamp && new Date().getTime() - _this2.mouseTimestamp < _this2.clickInterval) {
+          _this2.rayTracer.handleClick(e.clientX, e.clientY);
         }
-    }, {
-        key: '_initScene',
-        value: function _initScene() {
-            var _this2 = this;
+      });
+      $(this.renderer.domElement).on('mousemove touchmove', function (e) {
+        _this2.rayTracer.handleMove(e.clientX, e.clientY);
+      });
 
-            // scene objects, methods
+      // main update func
 
-            this.player = new _player2.default(this.renderer.domElement);
-            this.camera = this.player.camera;
-            this.scene = new THREE.Scene();
-            this.scene.fog = new THREE.FogExp2(0x333555, 0.008);
-            this.collider = new Collider.System();
-            this.lightHandler = new _loader.LightHandler(this.scene, this.player);
-            this.lightHandler.load(this.isMonday);
-            this.sky = new THREE.Sky();
-            this.scene.add(this.sky.mesh);
+      this.update = function (delta) {
+        _this2.player.updatePlayer(delta, _this2.collider);
+        _this2.artworkHandler.update(_this2.player.position);
+      };
+    }
+  }, {
+    key: '_initLoaders',
+    value: function _initLoaders() {
+      var _this3 = this;
 
-            // artwork interaction
+      // load the scene
 
-            this.artworkHandler = new _art.ArtworkHandler(this.scene);
-            this.rayTracer = new _ray_tracer2.default(this.renderer.domElement, this.camera);
-            this.rayTracer.setTargets(this.artworkHandler.getCollisionBoxes());
-            this.onRayClick = function (res) {
-                if (res.length) {
-                    var eye = _this2.artworkHandler.getEyeTarget(res[0].object.uuid);
-                    if (eye) {
-                        _this2.player.setEyeTarget(eye);
-                    }
-                }
-            };
-            this.onRayHover = function (res) {
-                _this2.artworkHandler.parseCollisions(res);
-            };
-            this.rayTracer.setEvents(this.onRayHover, this.onRayClick);
+      this.roomLoader = new _loader.RoomLoader(this.scene, this.collider, this.isMonday);
 
-            // hook up
+      // checks
 
-            this.clickInterval = 150;
-            $(this.renderer.domElement).on('mousedown', function (e) {
-                _this2.mouseTimestamp = new Date().getTime();
-            });
-            $(this.renderer.domElement).on('mouseup touchend', function (e) {
-                if (_this2.mouseTimestamp && new Date().getTime() - _this2.mouseTimestamp < _this2.clickInterval) {
-                    _this2.rayTracer.handleClick(e.clientX, e.clientY);
-                }
-            });
-            $(this.renderer.domElement).on('mousemove touchmove', function (e) {
-                _this2.rayTracer.handleMove(e.clientX, e.clientY);
-            });
+      this.isLoaded = function () {
+        return _this3.roomLoader.isLoaded();
+      };
+    }
+  }, {
+    key: '_initProcessing',
+    value: function _initProcessing() {
+      // post processing
 
-            // main update func
+      this.renderPass = new THREE.RenderPass(this.scene, this.camera);
+      this.posterPass = new THREE.PosterPass(this.size);
+      this.bloomPass = new THREE.UnrealBloomPass(this.size, .75, 1.0, 0.85); // res, strength, radius, threshold
+      this.bloomPass.renderToScreen = true;
 
-            this.update = function (delta) {
-                _this2.player.updatePlayer(delta, _this2.collider);
-                _this2.artworkHandler.update(_this2.player.position);
-            };
-        }
-    }, {
-        key: '_initLoaders',
-        value: function _initLoaders() {
-            var _this3 = this;
+      // add passes to composer
 
-            // load the scene
+      this.composer = new THREE.EffectComposer(this.renderer);
+      this.composer.setSize(this.width, this.height);
+      this.composer.addPass(this.renderPass);
+      this.composer.addPass(this.posterPass);
+      this.composer.addPass(this.bloomPass);
+    }
+  }]);
 
-            this.roomLoader = new _loader.RoomLoader(this.scene, this.collider, this.isMonday);
-
-            // checks
-
-            this.isLoaded = function () {
-                _this3.roomLoader.isLoaded();
-            };
-        }
-    }, {
-        key: '_initProcessing',
-        value: function _initProcessing() {
-            // post processing
-
-            this.renderPass = new THREE.RenderPass(this.scene, this.camera);
-            this.posterPass = new THREE.PosterPass(this.size);
-            this.bloomPass = new THREE.UnrealBloomPass(this.size, .75, 1.0, 0.85); // res, strength, radius, threshold
-            this.bloomPass.renderToScreen = true;
-
-            // add passes to composer
-
-            this.composer = new THREE.EffectComposer(this.renderer);
-            this.composer.setSize(this.width, this.height);
-            this.composer.addPass(this.renderPass);
-            this.composer.addPass(this.posterPass);
-            this.composer.addPass(this.bloomPass);
-        }
-    }]);
-
-    return Scene;
+  return Scene;
 }();
 
 exports.default = Scene;
@@ -1769,8 +1766,8 @@ var Player = function (_Collider$Player) {
       this.camera.far = 500000;
       this.camera.updateProjectionMatrix();
       this.position.z = this.target.position.z = -40;
-      this.position.x = this.target.position.x = -15;
-      this.rotation.yaw = this.target.rotation.yaw = Math.PI / 8;
+      this.position.x = this.target.position.x = -15.5;
+      this.rotation.yaw = this.target.rotation.yaw = Math.PI / 10;
       this.rotation.pitch = this.target.rotation.pitch = Math.PI / 12;
       this.config.adjust = {
         verySlow: 0.01,
@@ -1834,24 +1831,25 @@ var Player = function (_Collider$Player) {
     value: function mobileMove() {
       // move forward on tap
 
-
     }
   }, {
     key: 'setEyeTarget',
     value: function setEyeTarget(target) {
-      // set target
+      // move to view position
 
-      this.target.position.x = target.position.x;
-      //this.target.position.y = target.position.y;
-      this.target.position.z = target.position.z;
-      this.target.rotation.pitch = target.pitch;
-      this.target.rotation.yaw = target.yaw;
+      if (!(this.target.position.x == target.position.x && this.target.position.z == target.position.z)) {
+        // set target position, rotation
 
-      // set to slow position adjust
+        this.target.position.x = target.position.x;
+        this.target.position.z = target.position.z;
+        this.target.rotation.pitch = target.pitch;
+        this.target.rotation.yaw = target.yaw;
 
-      this.moveAdjust = 0;
-      this.rotateAdjust = 0;
-      //this.moveAdjustTarget = this.config.adjust.veryFast;
+        // reset position adjust factor
+
+        this.moveAdjust = 0;
+        this.rotateAdjust = 0;
+      }
     }
   }, {
     key: 'updatePlayer',
@@ -1878,109 +1876,6 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var RayTracer = function () {
-  function RayTracer(domElement, camera) {
-    _classCallCheck(this, RayTracer);
-
-    // ray tracing functions
-
-    this.domElement = domElement;
-    this.camera = camera;
-    this.raycaster = new THREE.Raycaster();
-    this.raycaster.far = 25; // metre range
-    this.mouse = new THREE.Vector2();
-    this.rect = this.domElement.getBoundingClientRect();
-    this.objects = [];
-  }
-
-  _createClass(RayTracer, [{
-    key: "setTargets",
-    value: function setTargets(objects) {
-      // set target objects
-
-      this.objects = objects;
-    }
-  }, {
-    key: "setEvents",
-    value: function setEvents(onHover, onClick) {
-      // set desktop & mobile events
-
-      this.onHover = onHover;
-      this.onClick = onClick;
-      this.onTouchMove = onHover;
-      this.onTap = onClick;
-    }
-  }, {
-    key: "setMouse",
-    value: function setMouse(x, y) {
-      // convert mouse to [-1, 1]
-
-      this.rect = this.domElement.getBoundingClientRect();
-      this.mouse.x = (x - this.rect.left) / this.rect.width * 2 - 1;
-      this.mouse.y = -((y - this.rect.top) / this.rect.height * 2 - 1);
-    }
-  }, {
-    key: "handleMove",
-    value: function handleMove(x, y) {
-      // on mouse move
-
-      this.setMouse(x, y);
-      this.hover();
-    }
-  }, {
-    key: "handleClick",
-    value: function handleClick(x, y) {
-      // on mouse click
-
-      this.setMouse(x, y);
-      this.click();
-    }
-  }, {
-    key: "intersectObjects",
-    value: function intersectObjects() {
-      // raytrace and check objects
-
-      this.raycaster.setFromCamera(this.mouse, this.camera);
-      var res = this.raycaster.intersectObjects(this.objects);
-
-      return res;
-    }
-  }, {
-    key: "click",
-    value: function click() {
-      // raytrace, perform click
-
-      this.onClick(this.intersectObjects());
-    }
-  }, {
-    key: "hover",
-    value: function hover() {
-      // raytrace, perform actions
-
-      this.onHover(this.intersectObjects());
-    }
-  }]);
-
-  return RayTracer;
-}();
-
-exports.default = RayTracer;
-
-/***/ }),
-/* 21 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
 var _maths = __webpack_require__(1);
 
 var halfPI = Math.PI / 2;
@@ -1996,16 +1891,6 @@ window.mobileAndTabletcheck = function () {
 var Globals = {
   isMobile: window.mobileAndTabletcheck(),
   player: {
-    position: {
-      x: -15.75,
-      y: 0,
-      z: -40
-    },
-    rotation: {
-      x: Math.PI * 0.12,
-      y: 0.3086,
-      z: 0
-    },
     height: 3,
     speed: 8,
     rotationSpeed: Math.PI * 0.75,
@@ -2026,16 +1911,16 @@ var Globals = {
   },
   artworkPlacement: {
     // main hall
-    '0': { scale: 3, pitch: 0, yaw: 0, position: (0, _maths.v3)(23.75, 4, 38.75), eye: (0, _maths.v3)(23.75, 0, 35) },
-    '1': { scale: 4, pitch: 0, yaw: 0, position: (0, _maths.v3)(33.25, 4, 38.75), eye: (0, _maths.v3)(33.25, 0, 35) },
-    '12': { scale: 3, pitch: 0, yaw: 0, position: (0, _maths.v3)(23.75, 3.5, 19.75), eye: (0, _maths.v3)(23.75, 0, 24) },
-    '13': { scale: 2, pitch: 0, yaw: 0, position: (0, _maths.v3)(33.25, 3.5, 19.75), eye: (0, _maths.v3)(33.25, 0, 24) },
+    '0': { scale: 3, pitch: 0, yaw: 0, position: (0, _maths.v3)(23.75, 4, 38.75), eye: (0, _maths.v3)(23.75, 0.5, 35) },
+    '1': { scale: 4, pitch: 0, yaw: 0, position: (0, _maths.v3)(33.25, 4, 38.75), eye: (0, _maths.v3)(33.25, 0.5, 35) },
+    '12': { scale: 3, pitch: 0, yaw: 0, position: (0, _maths.v3)(23.75, 3.5, 19.75), eye: (0, _maths.v3)(23.75, 0.5, 24) },
+    '13': { scale: 2, pitch: 0, yaw: 0, position: (0, _maths.v3)(33.25, 3.5, 19.75), eye: (0, _maths.v3)(33.25, 0.5, 24) },
     // entrance
-    '2': { scale: 2.5, pitch: 0, yaw: halfPI, position: (0, _maths.v3)(9.1, 3.25, 4.75), eye: (0, _maths.v3)(5.5, 0, 4.75) },
-    '3': { scale: 2.75, pitch: 0, yaw: halfPI, position: (0, _maths.v3)(9.1, 3.25, 15), eye: (0, _maths.v3)(5.5, 0, 15) },
+    '2': { scale: 3, pitch: 0, yaw: halfPI, position: (0, _maths.v3)(9.1, 3.25, 4.75), eye: (0, _maths.v3)(5.5, 0, 4.75) },
+    '3': { scale: 3, pitch: 0, yaw: halfPI, position: (0, _maths.v3)(9.1, 3.25, 15), eye: (0, _maths.v3)(5.5, 0, 15) },
     '4': { scale: 2, pitch: 0, yaw: halfPI, position: (0, _maths.v3)(-9.1, 3.5, 4.75), eye: (0, _maths.v3)(-5.5, 0, 4.75) },
-    '5': { scale: 2, pitch: 0, yaw: halfPI, position: (0, _maths.v3)(-9.1, 3.5, 15), eye: (0, _maths.v3)(-5.5, 0, 15) },
-    '6': { scale: 2, pitch: 0, yaw: halfPI, position: (0, _maths.v3)(-9.1, 3.5, 24.75), eye: (0, _maths.v3)(-5.5, 0, 24.75) },
+    '5': { scale: 2.5, pitch: 0, yaw: halfPI, position: (0, _maths.v3)(-9.1, 3.5, 15), eye: (0, _maths.v3)(-5.5, 0, 15) },
+    '6': { scale: 2, pitch: 0, yaw: halfPI, position: (0, _maths.v3)(-9.1, 3.5, 24.75), eye: (0, _maths.v3)(-5.5, 0.5, 24.75) },
     // top floor
     '7': { scale: 2, pitch: 0, yaw: halfPI, position: (0, _maths.v3)(-9.1, 11, 24.75), eye: (0, _maths.v3)(-5.5, 8, 24.75) },
     '8': { scale: 3, pitch: 0, yaw: halfPI, position: (0, _maths.v3)(9.1, 11, 5), eye: (0, _maths.v3)(5.5, 8, 5) },
@@ -2048,7 +1933,7 @@ var Globals = {
 exports.default = Globals;
 
 /***/ }),
-/* 22 */
+/* 21 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2119,7 +2004,7 @@ exports.getDistanceVec2 = getDistanceVec2;
 exports.getDistanceVec3 = getDistanceVec3;
 
 /***/ }),
-/* 23 */
+/* 22 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2244,7 +2129,7 @@ exports.reverseVector = reverseVector;
 exports.normalise = normalise;
 
 /***/ }),
-/* 24 */
+/* 23 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2286,7 +2171,7 @@ var Materials = {
 exports.Materials = Materials;
 
 /***/ }),
-/* 25 */
+/* 24 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2297,7 +2182,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.ArtworkHandler = undefined;
 
-var _artwork_handler = __webpack_require__(26);
+var _artwork_handler = __webpack_require__(25);
 
 var _artwork_handler2 = _interopRequireDefault(_artwork_handler);
 
@@ -2306,7 +2191,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 exports.ArtworkHandler = _artwork_handler2.default;
 
 /***/ }),
-/* 26 */
+/* 25 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2320,7 +2205,7 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 var _config = __webpack_require__(0);
 
-var _artwork = __webpack_require__(27);
+var _artwork = __webpack_require__(26);
 
 var _artwork2 = _interopRequireDefault(_artwork);
 
@@ -2367,7 +2252,7 @@ var ArtworkHandler = function () {
       // handle collision data
 
       if (res.length) {
-        this.activate(res[0].object.uuid);
+        this.hoverOver(res[0].object.uuid);
         $('.canvas-target').addClass('clickable');
       } else {
         this.deactivate();
@@ -2377,7 +2262,7 @@ var ArtworkHandler = function () {
   }, {
     key: 'getEyeTarget',
     value: function getEyeTarget(id) {
-      // activate artwork with id
+      // get eye target for player
 
       for (var i = this.artworks.length - 1; i > -1; i--) {
         if (this.artworks[i].boxHasId(id)) {
@@ -2388,13 +2273,14 @@ var ArtworkHandler = function () {
       return null;
     }
   }, {
-    key: 'activate',
-    value: function activate(id) {
+    key: 'hoverOver',
+    value: function hoverOver(id) {
       // activate artwork with id
 
       for (var i = this.artworks.length - 1; i > -1; i--) {
         if (this.artworks[i].boxHasId(id)) {
           this.artworks[i].activate();
+          this.artworks[i].activateText();
         } else {
           this.artworks[i].deactivate();
         }
@@ -2426,7 +2312,7 @@ var ArtworkHandler = function () {
 exports.default = ArtworkHandler;
 
 /***/ }),
-/* 27 */
+/* 26 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2499,7 +2385,7 @@ var Artwork = function () {
 
       // generate html tag
 
-      this.spiel = '' + this.title + this.desc + this.url;
+      this.spiel = '\n      <div class="label-title">\n        ' + this.title + '\n      </div>\n      <div class="label-desc">\n        ' + this.desc + '\n      </div>\n      <div class="label-link">\n        <a href=\'' + this.url + '\' target=\'_blank\'>Order print.</a>\n      </div>';
 
       // collision box
 
@@ -2573,6 +2459,14 @@ var Artwork = function () {
       }
     }
   }, {
+    key: 'activateText',
+    value: function activateText() {
+      // set text to doc
+
+      this.textActive = true;
+      $('.label__inner').html(this.spiel);
+    }
+  }, {
     key: 'update',
     value: function update(playerPosition) {
       // update
@@ -2603,7 +2497,7 @@ var Artwork = function () {
 exports.default = Artwork;
 
 /***/ }),
-/* 28 */
+/* 27 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2618,11 +2512,11 @@ var _load_obj = __webpack_require__(2);
 
 var _load_obj2 = _interopRequireDefault(_load_obj);
 
-var _room_loader = __webpack_require__(29);
+var _room_loader = __webpack_require__(28);
 
 var _room_loader2 = _interopRequireDefault(_room_loader);
 
-var _light_handler = __webpack_require__(30);
+var _light_handler = __webpack_require__(29);
 
 var _light_handler2 = _interopRequireDefault(_light_handler);
 
@@ -2633,7 +2527,7 @@ exports.RoomLoader = _room_loader2.default;
 exports.LightHandler = _light_handler2.default;
 
 /***/ }),
-/* 29 */
+/* 28 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2668,30 +2562,28 @@ var RoomLoader = function () {
     }
 
     _createClass(RoomLoader, [{
-        key: 'isLoaded',
-        value: function isLoaded() {
-            // check if loaded
-
-            return this.toLoad <= 0;
-        }
-    }, {
         key: '_load',
         value: function _load() {
             var _this = this;
 
             // load room and collision map
 
-            var mapSource = this.isMonday ? 'hangar_monday' : 'hangar_extended';
-            var collisionSource = this.isMonday ? 'hangar_collision_map_monday' : 'hangar_collision_map';
+            var mapSource = 'hangar_extended'; //(this.isMonday) ? 'hangar_monday' : 'hangar_extended';
+            var collisionSource = 'hangar_extended_collision'; //(this.isMonday) ? 'hangar_collision_map_monday' : 'hangar_collision_map';
 
             // flag
 
             this.toLoad = 2;
+            this.isLoaded = function () {
+                return _this.toLoad <= 0;
+            };
 
             // load collisions
 
             this.loader.loadOBJ(collisionSource).then(function (map) {
-                //map.children.forEach((child) => { this.collider.add(new Collider.Mesh(child)); });
+                map.children.forEach(function (child) {
+                    _this.collider.add(new Collider.Mesh(child));
+                });
                 _this.toLoad -= 1;
             }, function (err) {
                 console.warn('Collider load', err);
@@ -2714,7 +2606,7 @@ var RoomLoader = function () {
 exports.default = RoomLoader;
 
 /***/ }),
-/* 30 */
+/* 29 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2791,6 +2683,109 @@ var LightHandler = function () {
 }();
 
 exports.default = LightHandler;
+
+/***/ }),
+/* 30 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var RayTracer = function () {
+  function RayTracer(domElement, camera) {
+    _classCallCheck(this, RayTracer);
+
+    // ray tracing functions
+
+    this.domElement = domElement;
+    this.camera = camera;
+    this.raycaster = new THREE.Raycaster();
+    this.raycaster.far = 25; // metre range
+    this.mouse = new THREE.Vector2();
+    this.rect = this.domElement.getBoundingClientRect();
+    this.objects = [];
+  }
+
+  _createClass(RayTracer, [{
+    key: "setTargets",
+    value: function setTargets(objects) {
+      // set target objects
+
+      this.objects = objects;
+    }
+  }, {
+    key: "setEvents",
+    value: function setEvents(onHover, onClick) {
+      // set desktop & mobile events
+
+      this.onHover = onHover;
+      this.onClick = onClick;
+      this.onTouchMove = onHover;
+      this.onTap = onClick;
+    }
+  }, {
+    key: "setMouse",
+    value: function setMouse(x, y) {
+      // convert mouse to [-1, 1]
+
+      this.rect = this.domElement.getBoundingClientRect();
+      this.mouse.x = (x - this.rect.left) / this.rect.width * 2 - 1;
+      this.mouse.y = -((y - this.rect.top) / this.rect.height * 2 - 1);
+    }
+  }, {
+    key: "handleMove",
+    value: function handleMove(x, y) {
+      // on mouse move
+
+      this.setMouse(x, y);
+      this.hover();
+    }
+  }, {
+    key: "handleClick",
+    value: function handleClick(x, y) {
+      // on mouse click
+
+      this.setMouse(x, y);
+      this.click();
+    }
+  }, {
+    key: "intersectObjects",
+    value: function intersectObjects() {
+      // raytrace and check objects
+
+      this.raycaster.setFromCamera(this.mouse, this.camera);
+      var res = this.raycaster.intersectObjects(this.objects);
+
+      return res;
+    }
+  }, {
+    key: "click",
+    value: function click() {
+      // raytrace, perform click
+
+      this.onClick(this.intersectObjects());
+    }
+  }, {
+    key: "hover",
+    value: function hover() {
+      // raytrace, perform actions
+
+      this.onHover(this.intersectObjects());
+    }
+  }]);
+
+  return RayTracer;
+}();
+
+exports.default = RayTracer;
 
 /***/ })
 /******/ ]);

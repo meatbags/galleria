@@ -10,7 +10,7 @@ class Scene {
   constructor(width, height, selector) {
     // scene handler
 
-    this.isMonday = false;//(((new Date()).getDay() == 1 || window.location.hash == '#monday') && (window.location.hash != '#tuesday'));
+    this.isMonday = false;
 
     // set up
 
@@ -77,7 +77,9 @@ class Scene {
         }
       }
     };
-    this.onRayHover = (res) => { this.artworkHandler.parseCollisions(res); };
+    this.onRayHover = (res) => {
+      this.artworkHandler.parseCollisions(res);
+    };
     this.rayTracer.setEvents(this.onRayHover, this.onRayClick);
 
     // hook up
@@ -110,7 +112,7 @@ class Scene {
 
     // checks
 
-    this.isLoaded = () => { this.roomLoader.isLoaded(); };
+    this.isLoaded = () => { return this.roomLoader.isLoaded(); };
   }
 
   _initProcessing() {

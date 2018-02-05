@@ -33,7 +33,7 @@ class ArtworkHandler {
     // handle collision data
 
     if (res.length) {
-      this.activate(res[0].object.uuid);
+      this.hoverOver(res[0].object.uuid);
       $('.canvas-target').addClass('clickable');
     } else {
       this.deactivate();
@@ -42,7 +42,7 @@ class ArtworkHandler {
   }
 
   getEyeTarget(id) {
-    // activate artwork with id
+    // get eye target for player
 
     for (let i=this.artworks.length-1; i>-1; i--) {
       if (this.artworks[i].boxHasId(id)) {
@@ -53,12 +53,13 @@ class ArtworkHandler {
     return null;
   }
 
-  activate(id) {
+  hoverOver(id) {
     // activate artwork with id
 
     for (let i=this.artworks.length-1; i>-1; i--) {
       if (this.artworks[i].boxHasId(id)) {
         this.artworks[i].activate();
+        this.artworks[i].activateText();
       } else {
         this.artworks[i].deactivate();
       }
