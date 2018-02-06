@@ -29,7 +29,7 @@ class App {
 		this.width = (window.innerWidth > 900) ? Math.max(900, window.innerWidth - 256) : window.innerWidth;
 		this.height = (window.innerHeight > 450) ? Math.max(450, window.innerHeight - 256) : window.innerHeight;
 	}
-
+	
 	resize() {
 		// resize canvas, nav
 

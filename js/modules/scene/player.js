@@ -1,9 +1,16 @@
 import { Globals } from '../config';
 import { minAngleDifference, twoPi } from '../maths';
+import RayTracer from './ray_tracer';
 
 class Player extends Collider.Player {
   constructor(domElement) {
     super(domElement);
+
+    // create raytracer
+
+    this.mobileWalkDistance = 11;
+    this.rayTracer = new RayTracer(domElement, this.camera);
+    this.rayTracer.setFar(this.mobileWalkDistance);
 
     // player props
 
@@ -86,9 +93,34 @@ class Player extends Collider.Player {
     }
   }
 
-  mobileMove() {
-    // move forward on tap
+  mobileMove(collider) {
+    // check for collisions, else move
 
+    this.rayTracer.setTargets(collider.getMeshes());
+    const res = this.rayTracer.intersectObjects();
+
+    if (res.length == 0) {
+      // move forward on tap
+
+      this.target.position.x = this.position.x + Math.sin(this.rotation.yaw) * this.mobileWalkDistance;
+      this.target.position.z = this.position.z + Math.cos(this.rotation.yaw) * this.mobileWalkDistance;
+
+      // reset position adjust factor
+
+      this.moveAdjust = 0.02;
+      this.rotateAdjust = 0.02;
+    } else {
+      // move as close to wall as possible
+
+      const dist = res[0].distance < 0.5 ? 0 : res[0].distance;
+      this.target.position.x = this.position.x + Math.sin(this.rotation.yaw) * dist;
+      this.target.position.z = this.position.z + Math.cos(this.rotation.yaw) * dist;
+
+      // reset position adjust factor
+
+      this.moveAdjust = 0.02;
+      this.rotateAdjust = 0.02;
+    }
   }
 
   setEyeTarget(target) {

@@ -77,25 +77,62 @@ class Scene {
         }
       }
     };
-    this.onRayHover = (res) => {
-      this.artworkHandler.parseCollisions(res);
-    };
+    this.onRayHover = (res) => { this.artworkHandler.parseCollisions(res); };
     this.rayTracer.setEvents(this.onRayHover, this.onRayClick);
 
     // hook up
 
     this.clickInterval = 150;
-    $(this.renderer.domElement).on('mousedown', (e) => {
+    this.onMouseDown = () => {
       this.mouseTimestamp = (new Date()).getTime();
-    });
-    $(this.renderer.domElement).on('mouseup touchend', (e) => {
+    };
+    this.onMouseUp = (e) => {
       if (this.mouseTimestamp && (new Date()).getTime() - this.mouseTimestamp < this.clickInterval) {
         this.rayTracer.handleClick(e.clientX, e.clientY);
       }
-    });
-    $(this.renderer.domElement).on('mousemove touchmove', (e) => {
+    };
+    this.onMouseMove = (e) => {
       this.rayTracer.handleMove(e.clientX, e.clientY);
-    });
+    };
+    this.onTouchStart = () => {
+      // mobile touchstart
+
+      this.mouseTimestamp = (new Date()).getTime();
+    };
+    this.onTouchEnd = (e) => {
+      // mobile touchend
+
+      if (this.mouseTimestamp && (new Date()).getTime() - this.mouseTimestamp < this.clickInterval) {
+        if (e.originalEvent.changedTouches && e.originalEvent.changedTouches.length) {
+          const target = e.originalEvent.changedTouches[0];
+          this.rayTracer.setMouse(target.clientX, target.clientY);
+          const res = this.rayTracer.intersectObjects();
+
+          // zoom to picture or just move forward
+
+          if (res.length) {
+            this.rayTracer.handleClick();
+          } else {
+            this.player.mobileMove(this.collider);
+          }
+        }
+      }
+    };
+    this.onTouchMove = (e) => {
+      // mobile touchmove
+
+      if (e.originalEvent.changedTouches && e.originalEvent.changedTouches.length) {
+        const target = e.originalEvent.changedTouches[0];
+        this.onMouseUp(target);
+      }
+    };
+
+    $(this.renderer.domElement).on('mousedown', this.onMouseDown);
+    $(this.renderer.domElement).on('mouseup', this.onMouseUp);
+    $(this.renderer.domElement).on('mousemove', this.onMouseMove);
+    $(this.renderer.domElement).on('touchstart', this.onTouchStart);
+    $(this.renderer.domElement).on('touchend', this.onTouchEnd);
+    $(this.renderer.domElement).on('touchmove', this.onTouchMove);
 
     // main update func
 

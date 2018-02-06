@@ -6,9 +6,13 @@ class RayTracer {
     this.camera = camera;
     this.raycaster = new THREE.Raycaster();
     this.raycaster.far = 25; // metre range
-    this.mouse = new THREE.Vector2();
+    this.mouse = new THREE.Vector2(0, 0);
     this.rect = this.domElement.getBoundingClientRect();
     this.objects = [];
+  }
+
+  setFar(far) {
+    this.raycaster.far = far;
   }
 
   setTargets(objects) {

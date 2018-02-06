@@ -305,136 +305,136 @@ var _scene = __webpack_require__(6);
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var App = function () {
-	function App() {
-		_classCallCheck(this, App);
+		function App() {
+				_classCallCheck(this, App);
 
-		// main app
+				// main app
 
-		this.mode = window.location.port === '8080' ? 'dev' : 'production';
-		this.setSize();
+				this.mode = window.location.port === '8080' ? 'dev' : 'production';
+				this.setSize();
 
-		// set up scene
+				// set up scene
 
-		this.timer = new _performance.Timer();
-		this.scene = new _scene.Scene(this.width, this.height, '.canvas-target');
+				this.timer = new _performance.Timer();
+				this.scene = new _scene.Scene(this.width, this.height, '.canvas-target');
 
-		// set up controls, events
+				// set up controls, events
 
-		this.events();
+				this.events();
 
-		// set, go to loading screen
+				// set, go to loading screen
 
-		this.resize();
-		this.loading();
-	}
-
-	_createClass(App, [{
-		key: 'setSize',
-		value: function setSize() {
-			// set size
-
-			this.width = window.innerWidth > 900 ? Math.max(900, window.innerWidth - 256) : window.innerWidth;
-			this.height = window.innerHeight > 450 ? Math.max(450, window.innerHeight - 256) : window.innerHeight;
+				this.resize();
+				this.loading();
 		}
-	}, {
-		key: 'resize',
-		value: function resize() {
-			// resize canvas, nav
 
-			this.setSize();
-			var top = window.innerHeight / 2 - this.height / 2;
-			var left = window.innerWidth / 2 - this.width / 2;
+		_createClass(App, [{
+				key: 'setSize',
+				value: function setSize() {
+						// set size
 
-			// reposition doc
-
-			$('.content').css({ top: top + 'px', left: left + 'px' });
-			$('.menu').css({ top: top + 'px', right: left + 'px' });
-			$('.label').css({ bottom: top + 'px', right: left + 'px' });
-
-			// resize scene
-
-			this.scene.resize(this.width, this.height);
-		}
-	}, {
-		key: 'events',
-		value: function events() {
-			var _this = this;
-
-			// menu events
-
-			$('.close-menu').on('click', function () {
-				$('.menu-about').addClass('hidden');
-				$('.menu, .label').removeClass('hidden');
-			});
-
-			$('.open-menu').on('click', function () {
-				$('.menu-about').removeClass('hidden');
-				$('.menu, .label').addClass('hidden');
-			});
-
-			// on resize
-
-			$(window).on('resize', function () {
-				_this.resize();
-			});
-
-			// pause, resume on blur
-
-			$(window).on('focus', function () {
-				if (_this.paused) {
-					_this.paused = false;
-					_this.timer.reset();
-					_this.loop();
+						this.width = window.innerWidth > 900 ? Math.max(900, window.innerWidth - 256) : window.innerWidth;
+						this.height = window.innerHeight > 450 ? Math.max(450, window.innerHeight - 256) : window.innerHeight;
 				}
-			});
+		}, {
+				key: 'resize',
+				value: function resize() {
+						// resize canvas, nav
 
-			$(window).on('blur', function () {
-				_this.paused = true;
-			});
-		}
-	}, {
-		key: 'loading',
-		value: function loading() {
-			var _this2 = this;
+						this.setSize();
+						var top = window.innerHeight / 2 - this.height / 2;
+						var left = window.innerWidth / 2 - this.width / 2;
 
-			// wait while loading
-			//this.mode != 'dev'
-			if (!this.scene.isLoaded()) {
-				requestAnimationFrame(function () {
-					_this2.loading();
-				});
-			} else {
-				$('.loading').addClass('hidden');
-				this.timer.reset();
-				this.loop();
-			}
-		}
-	}, {
-		key: 'loop',
-		value: function loop() {
-			var _this3 = this;
+						// reposition doc
 
-			// main loop
+						$('.content').css({ top: top + 'px', left: left + 'px' });
+						$('.menu').css({ top: top + 'px', right: left + 'px' });
+						$('.label').css({ bottom: top + 'px', right: left + 'px' });
 
-			if (!this.paused) {
-				requestAnimationFrame(function () {
-					_this3.loop();
-				});
+						// resize scene
 
-				this.timer.update();
-				var delta = this.timer.getDelta();
+						this.scene.resize(this.width, this.height);
+				}
+		}, {
+				key: 'events',
+				value: function events() {
+						var _this = this;
 
-				this.scene.update(delta);
-				this.scene.render(delta);
-			}
-		}
-	}]);
+						// menu events
 
-	return App;
+						$('.close-menu').on('click', function () {
+								$('.menu-about').addClass('hidden');
+								$('.menu, .label').removeClass('hidden');
+						});
+
+						$('.open-menu').on('click', function () {
+								$('.menu-about').removeClass('hidden');
+								$('.menu, .label').addClass('hidden');
+						});
+
+						// on resize
+
+						$(window).on('resize', function () {
+								_this.resize();
+						});
+
+						// pause, resume on blur
+
+						$(window).on('focus', function () {
+								if (_this.paused) {
+										_this.paused = false;
+										_this.timer.reset();
+										_this.loop();
+								}
+						});
+
+						$(window).on('blur', function () {
+								_this.paused = true;
+						});
+				}
+		}, {
+				key: 'loading',
+				value: function loading() {
+						var _this2 = this;
+
+						// wait while loading
+						//this.mode != 'dev'
+						if (!this.scene.isLoaded()) {
+								requestAnimationFrame(function () {
+										_this2.loading();
+								});
+						} else {
+								$('.loading').addClass('hidden');
+								this.timer.reset();
+								this.loop();
+						}
+				}
+		}, {
+				key: 'loop',
+				value: function loop() {
+						var _this3 = this;
+
+						// main loop
+
+						if (!this.paused) {
+								requestAnimationFrame(function () {
+										_this3.loop();
+								});
+
+								this.timer.update();
+								var delta = this.timer.getDelta();
+
+								this.scene.update(delta);
+								this.scene.render(delta);
+						}
+				}
+		}]);
+
+		return App;
 }();
 
 window.onload = function () {
-	var app = new App();
+		var app = new App();
 };
 
 /***/ }),
@@ -663,17 +663,56 @@ var Scene = function () {
       // hook up
 
       this.clickInterval = 150;
-      $(this.renderer.domElement).on('mousedown', function (e) {
+      this.onMouseDown = function () {
         _this2.mouseTimestamp = new Date().getTime();
-      });
-      $(this.renderer.domElement).on('mouseup touchend', function (e) {
+      };
+      this.onMouseUp = function (e) {
         if (_this2.mouseTimestamp && new Date().getTime() - _this2.mouseTimestamp < _this2.clickInterval) {
           _this2.rayTracer.handleClick(e.clientX, e.clientY);
         }
-      });
-      $(this.renderer.domElement).on('mousemove touchmove', function (e) {
+      };
+      this.onMouseMove = function (e) {
         _this2.rayTracer.handleMove(e.clientX, e.clientY);
-      });
+      };
+      this.onTouchStart = function () {
+        // mobile touchstart
+
+        _this2.mouseTimestamp = new Date().getTime();
+      };
+      this.onTouchEnd = function (e) {
+        // mobile touchend
+
+        if (_this2.mouseTimestamp && new Date().getTime() - _this2.mouseTimestamp < _this2.clickInterval) {
+          if (e.originalEvent.changedTouches && e.originalEvent.changedTouches.length) {
+            var target = e.originalEvent.changedTouches[0];
+            _this2.rayTracer.setMouse(target.clientX, target.clientY);
+            var res = _this2.rayTracer.intersectObjects();
+
+            // zoom to picture or just move forward
+
+            if (res.length) {
+              _this2.rayTracer.handleClick();
+            } else {
+              _this2.player.mobileMove(_this2.collider);
+            }
+          }
+        }
+      };
+      this.onTouchMove = function (e) {
+        // mobile touchmove
+
+        if (e.originalEvent.changedTouches && e.originalEvent.changedTouches.length) {
+          var target = e.originalEvent.changedTouches[0];
+          _this2.onMouseUp(target);
+        }
+      };
+
+      $(this.renderer.domElement).on('mousedown', this.onMouseDown);
+      $(this.renderer.domElement).on('mouseup', this.onMouseUp);
+      $(this.renderer.domElement).on('mousemove', this.onMouseMove);
+      $(this.renderer.domElement).on('touchstart', this.onTouchStart);
+      $(this.renderer.domElement).on('touchend', this.onTouchEnd);
+      $(this.renderer.domElement).on('touchmove', this.onTouchMove);
 
       // main update func
 
@@ -1735,6 +1774,12 @@ var _config = __webpack_require__(0);
 
 var _maths = __webpack_require__(1);
 
+var _ray_tracer = __webpack_require__(30);
+
+var _ray_tracer2 = _interopRequireDefault(_ray_tracer);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
@@ -1747,9 +1792,15 @@ var Player = function (_Collider$Player) {
   function Player(domElement) {
     _classCallCheck(this, Player);
 
-    // player props
+    // create raytracer
 
     var _this = _possibleConstructorReturn(this, (Player.__proto__ || Object.getPrototypeOf(Player)).call(this, domElement));
+
+    _this.mobileWalkDistance = 11;
+    _this.rayTracer = new _ray_tracer2.default(domElement, _this.camera);
+    _this.rayTracer.setFar(_this.mobileWalkDistance);
+
+    // player props
 
     _this._override();
     return _this;
@@ -1828,9 +1879,34 @@ var Player = function (_Collider$Player) {
     }
   }, {
     key: 'mobileMove',
-    value: function mobileMove() {
-      // move forward on tap
+    value: function mobileMove(collider) {
+      // check for collisions, else move
 
+      this.rayTracer.setTargets(collider.getMeshes());
+      var res = this.rayTracer.intersectObjects();
+
+      if (res.length == 0) {
+        // move forward on tap
+
+        this.target.position.x = this.position.x + Math.sin(this.rotation.yaw) * this.mobileWalkDistance;
+        this.target.position.z = this.position.z + Math.cos(this.rotation.yaw) * this.mobileWalkDistance;
+
+        // reset position adjust factor
+
+        this.moveAdjust = 0.02;
+        this.rotateAdjust = 0.02;
+      } else {
+        // move as close to wall as possible
+
+        var dist = res[0].distance < 0.5 ? 0 : res[0].distance;
+        this.target.position.x = this.position.x + Math.sin(this.rotation.yaw) * dist;
+        this.target.position.z = this.position.z + Math.cos(this.rotation.yaw) * dist;
+
+        // reset position adjust factor
+
+        this.moveAdjust = 0.02;
+        this.rotateAdjust = 0.02;
+      }
     }
   }, {
     key: 'setEyeTarget',
@@ -2709,12 +2785,17 @@ var RayTracer = function () {
     this.camera = camera;
     this.raycaster = new THREE.Raycaster();
     this.raycaster.far = 25; // metre range
-    this.mouse = new THREE.Vector2();
+    this.mouse = new THREE.Vector2(0, 0);
     this.rect = this.domElement.getBoundingClientRect();
     this.objects = [];
   }
 
   _createClass(RayTracer, [{
+    key: "setFar",
+    value: function setFar(far) {
+      this.raycaster.far = far;
+    }
+  }, {
     key: "setTargets",
     value: function setTargets(objects) {
       // set target objects
