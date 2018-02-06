@@ -8,7 +8,7 @@ class Player extends Collider.Player {
 
     // create raytracer
 
-    this.mobileWalkDistance = 11;
+    this.mobileWalkDistance = 8;
     this.rayTracer = new RayTracer(domElement, this.camera);
     this.rayTracer.setFar(this.mobileWalkDistance);
 
@@ -112,7 +112,7 @@ class Player extends Collider.Player {
     } else {
       // move as close to wall as possible
 
-      const dist = res[0].distance < 0.5 ? 0 : res[0].distance;
+      const dist = res[0].distance < 1 ? 0 : res[0].distance;
       this.target.position.x = this.position.x + Math.sin(this.rotation.yaw) * dist;
       this.target.position.z = this.position.z + Math.cos(this.rotation.yaw) * dist;
 

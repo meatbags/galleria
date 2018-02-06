@@ -1796,7 +1796,7 @@ var Player = function (_Collider$Player) {
 
     var _this = _possibleConstructorReturn(this, (Player.__proto__ || Object.getPrototypeOf(Player)).call(this, domElement));
 
-    _this.mobileWalkDistance = 11;
+    _this.mobileWalkDistance = 8;
     _this.rayTracer = new _ray_tracer2.default(domElement, _this.camera);
     _this.rayTracer.setFar(_this.mobileWalkDistance);
 
@@ -1898,7 +1898,7 @@ var Player = function (_Collider$Player) {
       } else {
         // move as close to wall as possible
 
-        var dist = res[0].distance < 0.5 ? 0 : res[0].distance;
+        var dist = res[0].distance < 1 ? 0 : res[0].distance;
         this.target.position.x = this.position.x + Math.sin(this.rotation.yaw) * dist;
         this.target.position.z = this.position.z + Math.cos(this.rotation.yaw) * dist;
 
