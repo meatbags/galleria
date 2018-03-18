@@ -2444,7 +2444,7 @@ var ArtworkHandler = function () {
       for (var i = this.artworks.length - 1; i > -1; i--) {
         this.artworks[i].update(playerPosition);
         if (this.artworks[i].isTextActive() && !this.artworks[i].isActive()) {
-          this.$label.html('_');
+          this.$label.html('&nbsp;');
           this.$label.data('id', 'id-none');
         }
       }
