@@ -430,7 +430,7 @@ var App = function () {
 		key: 'setSize',
 		value: function setSize() {
 			// set size
-			this.width = window.innerWidth; //(window.innerWidth > 900) ? Math.max(900, window.innerWidth - 256) : window.innerWidth;
+			this.width = window.innerWidth;
 			this.height = window.innerHeight > 450 ? Math.max(450, window.innerHeight - 256) : window.innerHeight;
 			this.top = window.innerHeight / 2 - this.height / 2;
 			this.left = window.innerWidth / 2 - this.width / 2;
@@ -1857,7 +1857,7 @@ THREE.PosterPass.prototype = Object.assign(Object.create(THREE.Pass.prototype), 
 
 
 Object.defineProperty(exports, "__esModule", {
-      value: true
+  value: true
 });
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -1879,156 +1879,136 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 var Player = function (_Collider$Player) {
-      _inherits(Player, _Collider$Player);
+  _inherits(Player, _Collider$Player);
 
-      function Player(domElement) {
-            _classCallCheck(this, Player);
+  function Player(domElement) {
+    _classCallCheck(this, Player);
 
-            // create raytracer
+    // create raytracer
+    var _this = _possibleConstructorReturn(this, (Player.__proto__ || Object.getPrototypeOf(Player)).call(this, domElement));
 
-            var _this = _possibleConstructorReturn(this, (Player.__proto__ || Object.getPrototypeOf(Player)).call(this, domElement));
+    _this.mobileWalkDistance = 8;
+    _this.rayTracer = new _ray_tracer2.default(domElement, _this.camera);
+    _this.rayTracer.setFar(_this.mobileWalkDistance);
 
-            _this.mobileWalkDistance = 8;
-            _this.rayTracer = new _ray_tracer2.default(domElement, _this.camera);
-            _this.rayTracer.setFar(_this.mobileWalkDistance);
+    // player props
+    _this._override();
+    return _this;
+  }
 
-            // player props
+  _createClass(Player, [{
+    key: '_override',
+    value: function _override() {
+      var _this2 = this;
 
-            _this._override();
-            return _this;
+      // override inheritance
+      this.config.height = _config.Globals.player.height;
+      this.camera.far = 500000;
+      this.camera.updateProjectionMatrix();
+      this.position.z = this.target.position.z = -40;
+      this.position.x = this.target.position.x = -15.5;
+      this.rotation.yaw = this.target.rotation.yaw = Math.PI / 10;
+      this.rotation.pitch = this.target.rotation.pitch = Math.PI / 12;
+      this.config.adjust = {
+        verySlow: 0.01,
+        slow: 0.018,
+        normal: 0.035,
+        fast: 0.06,
+        rapid: 0.09,
+        veryFast: 0.18
+      };
+      this.moveAdjust = this.config.adjust.veryFast;
+      this.moveAdjustTarget = this.moveAdjust;
+      this.rotateAdjust = this.config.adjust.fast;
+      this.rotateAdjustTarget = this.rotateAdjust;
+
+      // override move function
+      this.move = function () {
+        // move
+        _this2.moveAdjust += (_this2.moveAdjustTarget - _this2.moveAdjust) * _this2.config.adjust.verySlow;
+        _this2.position.x += (_this2.target.position.x - _this2.position.x) * _this2.moveAdjust;
+        _this2.position.y += (_this2.target.position.y - _this2.position.y) * _this2.moveAdjust;
+        _this2.position.z += (_this2.target.position.z - _this2.position.z) * _this2.moveAdjust;
+
+        // look
+        _this2.rotateAdjust += (_this2.rotateAdjustTarget - _this2.rotateAdjust) * _this2.config.adjust.slow;
+        _this2.rotation.yaw += (0, _maths.minAngleDifference)(_this2.rotation.yaw, _this2.target.rotation.yaw) * _this2.rotateAdjust;
+        _this2.offset.rotation.yaw += (_this2.target.offset.rotation.yaw - _this2.offset.rotation.yaw) * _this2.config.adjust.normal;
+        _this2.rotation.yaw += _this2.rotation.yaw < 0 ? _maths.twoPi : _this2.rotation.yaw > _maths.twoPi ? -_maths.twoPi : 0;
+        _this2.rotation.pitch += (_this2.target.rotation.pitch - _this2.rotation.pitch) * _this2.rotateAdjust;
+        _this2.offset.rotation.pitch += (_this2.target.offset.rotation.pitch - _this2.offset.rotation.pitch) * _this2.config.adjust.normal;
+        _this2.rotation.roll += (_this2.target.rotation.roll - _this2.rotation.roll) * _this2.rotateAdjust;
+
+        // set camera
+        var pitch = _this2.rotation.pitch + _this2.offset.rotation.pitch;
+        var yaw = _this2.rotation.yaw + _this2.offset.rotation.yaw;
+        var height = _this2.position.y + _this2.config.height;
+        var offxz = 1 - Math.abs(Math.sin(pitch));
+        var offy = 1;
+
+        // fix camera roll
+        _this2.camera.up.z = -Math.sin(_this2.rotation.yaw) * _this2.rotation.roll;
+        _this2.camera.up.x = Math.cos(_this2.rotation.yaw) * _this2.rotation.roll;
+
+        // set position, camera target
+        _this2.camera.position.set(_this2.position.x - Math.sin(yaw) * offxz / 4, height - Math.sin(pitch) * offy / 4, _this2.position.z - Math.cos(yaw) * offxz / 4);
+        _this2.camera.lookAt(new THREE.Vector3(_this2.position.x + Math.sin(yaw) * offxz, height + Math.sin(pitch) * offy, _this2.position.z + Math.cos(yaw) * offxz));
+
+        // set world object
+        _this2.object.position.set(_this2.position.x, _this2.position.y, _this2.position.z);
+      };
+    }
+  }, {
+    key: 'mobileMove',
+    value: function mobileMove(collider) {
+      // check for collisions, else move
+      this.rayTracer.setTargets(collider.getMeshes());
+      var res = this.rayTracer.intersectObjects();
+
+      if (res.length == 0) {
+        // move forward on tap
+        this.target.position.x = this.position.x + Math.sin(this.rotation.yaw) * this.mobileWalkDistance;
+        this.target.position.z = this.position.z + Math.cos(this.rotation.yaw) * this.mobileWalkDistance;
+
+        // reset position adjust factor
+        this.moveAdjust = 0.02;
+        this.rotateAdjust = 0.02;
+      } else {
+        // move as close to wall as possible
+        var dist = res[0].distance < 1 ? 0 : res[0].distance;
+        this.target.position.x = this.position.x + Math.sin(this.rotation.yaw) * dist;
+        this.target.position.z = this.position.z + Math.cos(this.rotation.yaw) * dist;
+
+        // reset position adjust factor
+        this.moveAdjust = 0.02;
+        this.rotateAdjust = 0.02;
       }
+    }
+  }, {
+    key: 'setEyeTarget',
+    value: function setEyeTarget(target) {
+      // move to view position
+      if (!(this.target.position.x == target.position.x && this.target.position.z == target.position.z)) {
+        // set target position, rotation
+        this.target.position.x = target.position.x;
+        this.target.position.z = target.position.z;
+        this.target.rotation.pitch = target.pitch;
+        this.target.rotation.yaw = target.yaw;
 
-      _createClass(Player, [{
-            key: '_override',
-            value: function _override() {
-                  var _this2 = this;
+        // reset position adjust factor
+        this.moveAdjust = 0;
+        this.rotateAdjust = 0;
+      }
+    }
+  }, {
+    key: 'updatePlayer',
+    value: function updatePlayer(delta, collider) {
+      // update collider player
+      this.update(delta, collider);
+    }
+  }]);
 
-                  // override inheritance
-
-                  this.config.height = _config.Globals.player.height;
-                  this.camera.far = 500000;
-                  this.camera.updateProjectionMatrix();
-                  this.position.z = this.target.position.z = -40;
-                  this.position.x = this.target.position.x = -15.5;
-                  this.rotation.yaw = this.target.rotation.yaw = Math.PI / 10;
-                  this.rotation.pitch = this.target.rotation.pitch = Math.PI / 12;
-                  this.config.adjust = {
-                        verySlow: 0.01,
-                        slow: 0.018,
-                        normal: 0.035,
-                        fast: 0.06,
-                        rapid: 0.09,
-                        veryFast: 0.18
-                  };
-                  this.moveAdjust = this.config.adjust.veryFast;
-                  this.moveAdjustTarget = this.moveAdjust;
-                  this.rotateAdjust = this.config.adjust.fast;
-                  this.rotateAdjustTarget = this.rotateAdjust;
-
-                  // override move function
-
-                  this.move = function () {
-                        // move
-
-                        _this2.moveAdjust += (_this2.moveAdjustTarget - _this2.moveAdjust) * _this2.config.adjust.verySlow;
-                        _this2.position.x += (_this2.target.position.x - _this2.position.x) * _this2.moveAdjust;
-                        _this2.position.y += (_this2.target.position.y - _this2.position.y) * _this2.moveAdjust;
-                        _this2.position.z += (_this2.target.position.z - _this2.position.z) * _this2.moveAdjust;
-
-                        // look
-
-                        _this2.rotateAdjust += (_this2.rotateAdjustTarget - _this2.rotateAdjust) * _this2.config.adjust.slow;
-                        _this2.rotation.yaw += (0, _maths.minAngleDifference)(_this2.rotation.yaw, _this2.target.rotation.yaw) * _this2.rotateAdjust;
-                        _this2.offset.rotation.yaw += (_this2.target.offset.rotation.yaw - _this2.offset.rotation.yaw) * _this2.config.adjust.normal;
-                        _this2.rotation.yaw += _this2.rotation.yaw < 0 ? _maths.twoPi : _this2.rotation.yaw > _maths.twoPi ? -_maths.twoPi : 0;
-
-                        _this2.rotation.pitch += (_this2.target.rotation.pitch - _this2.rotation.pitch) * _this2.rotateAdjust;
-                        _this2.offset.rotation.pitch += (_this2.target.offset.rotation.pitch - _this2.offset.rotation.pitch) * _this2.config.adjust.normal;
-                        _this2.rotation.roll += (_this2.target.rotation.roll - _this2.rotation.roll) * _this2.rotateAdjust;
-
-                        // set camera
-
-                        var pitch = _this2.rotation.pitch + _this2.offset.rotation.pitch;
-                        var yaw = _this2.rotation.yaw + _this2.offset.rotation.yaw;
-                        var height = _this2.position.y + _this2.config.height;
-                        var offxz = 1 - Math.abs(Math.sin(pitch));
-                        var offy = 1;
-
-                        // fix camera roll
-
-                        _this2.camera.up.z = -Math.sin(_this2.rotation.yaw) * _this2.rotation.roll;
-                        _this2.camera.up.x = Math.cos(_this2.rotation.yaw) * _this2.rotation.roll;
-
-                        // set position, camera target
-
-                        _this2.camera.position.set(_this2.position.x - Math.sin(yaw) * offxz / 4, height - Math.sin(pitch) * offy / 4, _this2.position.z - Math.cos(yaw) * offxz / 4);
-                        _this2.camera.lookAt(new THREE.Vector3(_this2.position.x + Math.sin(yaw) * offxz, height + Math.sin(pitch) * offy, _this2.position.z + Math.cos(yaw) * offxz));
-
-                        // set world object
-
-                        _this2.object.position.set(_this2.position.x, _this2.position.y, _this2.position.z);
-                  };
-            }
-      }, {
-            key: 'mobileMove',
-            value: function mobileMove(collider) {
-                  // check for collisions, else move
-
-                  this.rayTracer.setTargets(collider.getMeshes());
-                  var res = this.rayTracer.intersectObjects();
-
-                  if (res.length == 0) {
-                        // move forward on tap
-
-                        this.target.position.x = this.position.x + Math.sin(this.rotation.yaw) * this.mobileWalkDistance;
-                        this.target.position.z = this.position.z + Math.cos(this.rotation.yaw) * this.mobileWalkDistance;
-
-                        // reset position adjust factor
-
-                        this.moveAdjust = 0.02;
-                        this.rotateAdjust = 0.02;
-                  } else {
-                        // move as close to wall as possible
-
-                        var dist = res[0].distance < 1 ? 0 : res[0].distance;
-                        this.target.position.x = this.position.x + Math.sin(this.rotation.yaw) * dist;
-                        this.target.position.z = this.position.z + Math.cos(this.rotation.yaw) * dist;
-
-                        // reset position adjust factor
-
-                        this.moveAdjust = 0.02;
-                        this.rotateAdjust = 0.02;
-                  }
-            }
-      }, {
-            key: 'setEyeTarget',
-            value: function setEyeTarget(target) {
-                  // move to view position
-
-                  if (!(this.target.position.x == target.position.x && this.target.position.z == target.position.z)) {
-                        // set target position, rotation
-
-                        this.target.position.x = target.position.x;
-                        this.target.position.z = target.position.z;
-                        this.target.rotation.pitch = target.pitch;
-                        this.target.rotation.yaw = target.yaw;
-
-                        // reset position adjust factor
-
-                        this.moveAdjust = 0;
-                        this.rotateAdjust = 0;
-                  }
-            }
-      }, {
-            key: 'updatePlayer',
-            value: function updatePlayer(delta, collider) {
-                  // update collider player
-
-                  this.update(delta, collider);
-            }
-      }]);
-
-      return Player;
+  return Player;
 }(Collider.Player);
 
 exports.default = Player;
@@ -2388,20 +2368,18 @@ var ArtworkHandler = function () {
     _classCallCheck(this, ArtworkHandler);
 
     // artwork handler
-
     this.object = new THREE.Object3D();
 
     // generate artworks
-
     this.artworks = [];
-
     $('.im').each(function (i, e) {
-      _this.artworks.push(new _artwork2.default(_this.object, $(e), _config.Globals.artworkPlacement[i]));
+      _this.artworks.push(new _artwork2.default(_this.object, _this.uid(), $(e), _config.Globals.artworkPlacement[i]));
     });
 
     // add to scene
-
     this.root = root;
+    this.$label = $('.label__inner');
+    this.$label.data('id', 'id-none');
     this.root.add(this.object);
   }
 
@@ -2409,7 +2387,6 @@ var ArtworkHandler = function () {
     key: 'getCollisionBoxes',
     value: function getCollisionBoxes() {
       // get artwork boxes
-
       return this.artworks.map(function (obj) {
         return obj.getBox();
       });
@@ -2418,7 +2395,6 @@ var ArtworkHandler = function () {
     key: 'parseCollisions',
     value: function parseCollisions(res) {
       // handle collision data
-
       if (res.length) {
         this.hoverOver(res[0].object.uuid);
         $('.canvas-target').addClass('clickable');
@@ -2431,7 +2407,6 @@ var ArtworkHandler = function () {
     key: 'getEyeTarget',
     value: function getEyeTarget(id) {
       // get eye target for player
-
       for (var i = this.artworks.length - 1; i > -1; i--) {
         if (this.artworks[i].boxHasId(id)) {
           return this.artworks[i].getEyeTarget();
@@ -2443,8 +2418,7 @@ var ArtworkHandler = function () {
   }, {
     key: 'hoverOver',
     value: function hoverOver(id) {
-      // activate artwork with id
-
+      // activate artwork
       for (var i = this.artworks.length - 1; i > -1; i--) {
         if (this.artworks[i].boxHasId(id)) {
           this.artworks[i].activate();
@@ -2458,7 +2432,6 @@ var ArtworkHandler = function () {
     key: 'deactivate',
     value: function deactivate() {
       // deactivate all
-
       for (var i = this.artworks.length - 1; i > -1; i--) {
         this.artworks[i].deactivate();
       }
@@ -2467,10 +2440,20 @@ var ArtworkHandler = function () {
     key: 'update',
     value: function update(playerPosition) {
       // update artwork animations
-
+      var active = false;
       for (var i = this.artworks.length - 1; i > -1; i--) {
         this.artworks[i].update(playerPosition);
+        if (this.artworks[i].isTextActive() && !this.artworks[i].isActive()) {
+          this.$label.html('_');
+          this.$label.data('id', 'id-none');
+        }
       }
+    }
+  }, {
+    key: 'uid',
+    value: function uid() {
+      this.uid = this.uid ? this.uid + 1 : 1;
+      return 'artwork-id-' + this.uid;
     }
   }]);
 
@@ -2499,15 +2482,16 @@ var _maths = __webpack_require__(1);
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var Artwork = function () {
-  function Artwork(root, element, ops) {
+  function Artwork(root, id, element, ops) {
     _classCallCheck(this, Artwork);
 
     // artwork
-
+    this.id = id;
     this.root = root;
     this.element = element;
     this.object = new THREE.Object3D();
     this.active = false;
+    this.textActive = false;
     this.opacity = 0.4;
     this.scale = ops.scale;
     this.pitch = ops.pitch;
@@ -2515,7 +2499,6 @@ var Artwork = function () {
     this.position = ops.position;
 
     // eye target
-
     this.eyeTarget = {
       position: ops.eye,
       pitch: (0, _maths.getPitch)(ops.eye, new THREE.Vector3(this.position.x, this.position.y - _config.Globals.player.height, this.position.z)),
@@ -2523,11 +2506,10 @@ var Artwork = function () {
     };
 
     // build object
-
     this.build();
 
     // add to doc
-
+    this.$label = $('.label__inner');
     this.root.add(this.object);
   }
 
@@ -2544,7 +2526,6 @@ var Artwork = function () {
       var _this = this;
 
       // pull data from doc element
-
       this.title = this.element.find('.im__title').html();
       this.desc = this.element.find('.im__description').html();
       this.url = this.element.find('.im__url').html();
@@ -2552,11 +2533,9 @@ var Artwork = function () {
       this.alpha = this.element.find('.im__alpha').html();
 
       // generate html tag
-
       this.spiel = '\n      <div class="label-title">\n        ' + this.title + '\n      </div>\n      <div class="label-desc">\n        ' + this.desc + '\n      </div>\n      <div class="label-link">\n        <a href=\'' + this.url + '\' target=\'_blank\'>Order print.</a>\n      </div>';
 
       // collision box
-
       this.box = new THREE.Mesh(new THREE.BoxBufferGeometry(1, 1, 1), new THREE.MeshBasicMaterial({
         color: 0xffffff,
         visible: false,
@@ -2565,9 +2544,7 @@ var Artwork = function () {
       }));
       this.resizeBox = function () {
         // set collision box dimensions
-
         _this.box.position.set(_this.position.x, _this.position.y, _this.position.z);
-
         var sx = _this.yaw == 0 ? _this.mesh.scale.x : _this.mesh.scale.x / 2;
         var sz = _this.yaw == 0 ? _this.mesh.scale.x / 2 : _this.mesh.scale.x;
         _this.box.scale.set(sx, _this.mesh.scale.y, sz);
@@ -2581,29 +2558,24 @@ var Artwork = function () {
       this.object.add(this.box);
 
       // create 3D object
-
       this.textureLoader = new THREE.TextureLoader();
       this.mesh = new THREE.Mesh(new THREE.PlaneBufferGeometry(1, 1, 2, 2), _config.Materials.canvas.clone());
       var map = this.textureLoader.load(this.image, function (tex) {
         // set scale and append to scene
-
         _this.mesh.scale.x = map.image.naturalWidth / 1000. * _this.scale;
         _this.mesh.scale.y = map.image.naturalHeight / 1000. * _this.scale;
 
         // resize box
-
         _this.resizeBox();
       });
       var alphaMap = this.textureLoader.load(this.alpha, function (tex) {
         // add alpha map
-
         _this.mesh.material.transparent = true;
       });
       this.mesh.material.map = map;
       this.mesh.material.alphaMap = alphaMap;
 
       // rotate to spec, add to scene
-
       this.mesh.rotation.set(this.pitch, this.yaw, 0);
       this.mesh.position.set(this.position.x, this.position.y, this.position.z);
       this.object.add(this.mesh);
@@ -2611,40 +2583,45 @@ var Artwork = function () {
   }, {
     key: 'activate',
     value: function activate() {
-      // turn on
-
-      if (!this.active) {
-        this.active = true;
-      }
+      this.active = true;
     }
   }, {
     key: 'deactivate',
     value: function deactivate() {
-      // turn off
-
-      if (this.active) {
-        this.active = false;
-      }
+      this.active = false;
+    }
+  }, {
+    key: 'isActive',
+    value: function isActive() {
+      return this.active;
+    }
+  }, {
+    key: 'isTextActive',
+    value: function isTextActive() {
+      return this.textActive;
     }
   }, {
     key: 'activateText',
     value: function activateText() {
       // set text to doc
-
+      this.$label.html(this.spiel);
+      this.$label.data('id', this.id);
       this.textActive = true;
-      $('.label__inner').html(this.spiel);
     }
   }, {
     key: 'update',
     value: function update(playerPosition) {
       // update
-
       if (playerPosition.distanceTo(this.position) < 10) {
         this.activate();
       }
 
-      // animate brightness
+      // check text id
+      if (this.textActive) {
+        this.textActive = this.$label.data('id') == this.id;
+      }
 
+      // animate brightness
       if (this.active) {
         if (this.opacity < 1) {
           this.opacity += (1 - this.opacity) * 0.05;

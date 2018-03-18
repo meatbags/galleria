@@ -4,34 +4,30 @@ import Artwork from './artwork';
 class ArtworkHandler {
   constructor(root) {
     // artwork handler
-
     this.object = new THREE.Object3D();
 
     // generate artworks
-
     this.artworks = [];
-
     $('.im').each((i, e) => {
       this.artworks.push(
-        new Artwork(this.object, $(e), Globals.artworkPlacement[i])
+        new Artwork(this.object, this.uid(), $(e), Globals.artworkPlacement[i])
       );
     });
 
     // add to scene
-
     this.root = root;
+    this.$label = $('.label__inner');
+    this.$label.data('id', 'id-none');
     this.root.add(this.object);
   }
 
   getCollisionBoxes() {
     // get artwork boxes
-
     return this.artworks.map((obj) => { return obj.getBox(); });
   }
 
   parseCollisions(res) {
     // handle collision data
-
     if (res.length) {
       this.hoverOver(res[0].object.uuid);
       $('.canvas-target').addClass('clickable');
@@ -43,8 +39,7 @@ class ArtworkHandler {
 
   getEyeTarget(id) {
     // get eye target for player
-
-    for (let i=this.artworks.length-1; i>-1; i--) {
+    for (var i=this.artworks.length-1; i>-1; i--) {
       if (this.artworks[i].boxHasId(id)) {
         return this.artworks[i].getEyeTarget();
       }
@@ -54,9 +49,8 @@ class ArtworkHandler {
   }
 
   hoverOver(id) {
-    // activate artwork with id
-
-    for (let i=this.artworks.length-1; i>-1; i--) {
+    // activate artwork
+    for (var i=this.artworks.length-1; i>-1; i--) {
       if (this.artworks[i].boxHasId(id)) {
         this.artworks[i].activate();
         this.artworks[i].activateText();
@@ -68,18 +62,26 @@ class ArtworkHandler {
 
   deactivate() {
     // deactivate all
-
-    for (let i=this.artworks.length-1; i>-1; i--) {
+    for (var i=this.artworks.length-1; i>-1; i--) {
       this.artworks[i].deactivate();
     }
   }
 
   update(playerPosition) {
     // update artwork animations
-
-    for (let i=this.artworks.length-1; i>-1; i--) {
+    var active = false;
+    for (var i=this.artworks.length-1; i>-1; i--) {
       this.artworks[i].update(playerPosition);
+      if (this.artworks[i].isTextActive() && !this.artworks[i].isActive()) {
+        this.$label.html('_');
+        this.$label.data('id', 'id-none');
+      }
     }
+  }
+
+  uid() {
+    this.uid = this.uid ? this.uid + 1 : 1;
+    return 'artwork-id-' + this.uid;
   }
 }
 

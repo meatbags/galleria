@@ -15,7 +15,7 @@ class App {
 
 	setSize() {
 		// set size
-		this.width = window.innerWidth; //(window.innerWidth > 900) ? Math.max(900, window.innerWidth - 256) : window.innerWidth;
+		this.width = window.innerWidth;
 		this.height = (window.innerHeight > 450) ? Math.max(450, window.innerHeight - 256) : window.innerHeight;
 		this.top = window.innerHeight / 2 - this.height / 2;
 		this.left = window.innerWidth / 2 - this.width / 2;
