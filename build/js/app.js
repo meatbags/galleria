@@ -413,138 +413,120 @@ var _scene = __webpack_require__(7);
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var App = function () {
-		function App() {
-				_classCallCheck(this, App);
+	function App() {
+		_classCallCheck(this, App);
 
-				// main app
+		// main app
+		this.mode = window.location.port === '8080' ? 'dev' : 'production';
+		this.setSize();
+		this.timer = new _performance.Timer();
+		this.scene = new _scene.Scene(this.width, this.height, '.canvas-target');
+		this.events();
+		this.resize();
+		this.loading();
+	}
 
-				this.mode = window.location.port === '8080' ? 'dev' : 'production';
-				this.setSize();
-
-				// set up scene
-
-				this.timer = new _performance.Timer();
-				this.scene = new _scene.Scene(this.width, this.height, '.canvas-target');
-
-				// set up controls, events
-
-				this.events();
-
-				// set, go to loading screen
-
-				this.resize();
-				this.loading();
+	_createClass(App, [{
+		key: 'setSize',
+		value: function setSize() {
+			// set size
+			this.width = window.innerWidth; //(window.innerWidth > 900) ? Math.max(900, window.innerWidth - 256) : window.innerWidth;
+			this.height = window.innerHeight > 450 ? Math.max(450, window.innerHeight - 256) : window.innerHeight;
+			this.top = window.innerHeight / 2 - this.height / 2;
+			this.left = window.innerWidth / 2 - this.width / 2;
 		}
+	}, {
+		key: 'resize',
+		value: function resize() {
+			// resize canvas, nav
+			this.setSize();
 
-		_createClass(App, [{
-				key: 'setSize',
-				value: function setSize() {
-						// set size
+			// set doc
+			$('.content').css({ top: this.top + 'px', left: this.left + 'px' });
+			$('.menu').css({ top: this.top + 'px', right: this.left + 'px' });
+			$('.label').css({ bottom: this.top + 'px', right: this.left + 'px' });
 
-						this.width = window.innerWidth > 900 ? Math.max(900, window.innerWidth - 256) : window.innerWidth;
-						this.height = window.innerHeight > 450 ? Math.max(450, window.innerHeight - 256) : window.innerHeight;
+			// resize sce
+			this.scene.resize(this.width, this.height);
+		}
+	}, {
+		key: 'events',
+		value: function events() {
+			var _this = this;
+
+			// menu
+			$('.close-menu').on('click', function () {
+				$('.menu-about').addClass('hidden');
+				$('.menu, .label').removeClass('hidden');
+			});
+
+			$('.open-menu').on('click', function () {
+				$('.menu-about').removeClass('hidden');
+				$('.menu, .label').addClass('hidden');
+			});
+
+			// resize
+			$(window).on('resize', function () {
+				_this.resize();
+			});
+
+			// pause, resume on blur
+			$(window).on('focus', function () {
+				if (_this.paused) {
+					_this.paused = false;
+					_this.timer.reset();
+					_this.loop();
 				}
-		}, {
-				key: 'resize',
-				value: function resize() {
-						// resize canvas, nav
+			});
 
-						this.setSize();
-						var top = window.innerHeight / 2 - this.height / 2;
-						var left = window.innerWidth / 2 - this.width / 2;
+			$(window).on('blur', function () {
+				_this.paused = true;
+			});
+		}
+	}, {
+		key: 'loading',
+		value: function loading() {
+			var _this2 = this;
 
-						// reposition doc
+			// wait while loading, this.mode != 'dev'
+			if (!this.scene.isLoaded()) {
+				requestAnimationFrame(function () {
+					_this2.loading();
+				});
+			} else {
+				$('.loading').addClass('hidden');
+				this.timer.reset();
+				this.loop();
+			}
+		}
+	}, {
+		key: 'loop',
+		value: function loop() {
+			var _this3 = this;
 
-						$('.content').css({ top: top + 'px', left: left + 'px' });
-						$('.menu').css({ top: top + 'px', right: left + 'px' });
-						$('.label').css({ bottom: top + 'px', right: left + 'px' });
-
-						// resize scene
-
-						this.scene.resize(this.width, this.height);
+			// main app loop
+			if (!this.paused) {
+				if (!this.loopGuard) {
+					// prevent async looping
+					this.loopGuard = true;
+					requestAnimationFrame(function () {
+						_this3.loopGuard = false;
+						_this3.loop();
+					});
 				}
-		}, {
-				key: 'events',
-				value: function events() {
-						var _this = this;
+				this.timer.update();
+				var delta = this.timer.getDelta();
+				this.scene.update(delta);
+				this.scene.render(delta);
+			}
+		}
+	}]);
 
-						// menu events
-
-						$('.close-menu').on('click', function () {
-								$('.menu-about').addClass('hidden');
-								$('.menu, .label').removeClass('hidden');
-						});
-
-						$('.open-menu').on('click', function () {
-								$('.menu-about').removeClass('hidden');
-								$('.menu, .label').addClass('hidden');
-						});
-
-						// on resize
-
-						$(window).on('resize', function () {
-								_this.resize();
-						});
-
-						// pause, resume on blur
-
-						$(window).on('focus', function () {
-								if (_this.paused) {
-										_this.paused = false;
-										_this.timer.reset();
-										_this.loop();
-								}
-						});
-
-						$(window).on('blur', function () {
-								_this.paused = true;
-						});
-				}
-		}, {
-				key: 'loading',
-				value: function loading() {
-						var _this2 = this;
-
-						// wait while loading, this.mode != 'dev'
-						if (!this.scene.isLoaded()) {
-								requestAnimationFrame(function () {
-										_this2.loading();
-								});
-						} else {
-								$('.loading').addClass('hidden');
-								this.timer.reset();
-								this.loop();
-						}
-				}
-		}, {
-				key: 'loop',
-				value: function loop() {
-						var _this3 = this;
-
-						// main loop
-
-						if (!this.paused) {
-								if (!this.loopGuard) {
-										// restrict async looping
-										this.loopGuard = true;
-										requestAnimationFrame(function () {
-												_this3.loopGuard = false;
-												_this3.loop();
-										});
-								}
-								this.timer.update();
-								var delta = this.timer.getDelta();
-								this.scene.update(delta);
-								this.scene.render(delta);
-						}
-				}
-		}]);
-
-		return App;
+	return App;
 }();
 
 window.onload = function () {
-		var app = new App();
+	var app = new App();
 };
 
 /***/ }),
