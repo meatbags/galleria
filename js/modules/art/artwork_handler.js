@@ -10,7 +10,7 @@ class ArtworkHandler {
     this.artworks = [];
     $('.im').each((i, e) => {
       this.artworks.push(
-        new Artwork(this.object, this.uid(), $(e), Globals.artworkPlacement[i])
+        new Artwork(this.object, this.newUid(), $(e), Globals.artworkPlacement[i])
       );
     });
 
@@ -79,7 +79,7 @@ class ArtworkHandler {
     }
   }
 
-  uid() {
+  newUid() {
     this.uid = this.uid ? this.uid + 1 : 1;
     return 'artwork-id-' + this.uid;
   }

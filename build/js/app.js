@@ -2373,7 +2373,7 @@ var ArtworkHandler = function () {
     // generate artworks
     this.artworks = [];
     $('.im').each(function (i, e) {
-      _this.artworks.push(new _artwork2.default(_this.object, _this.uid(), $(e), _config.Globals.artworkPlacement[i]));
+      _this.artworks.push(new _artwork2.default(_this.object, _this.newUid(), $(e), _config.Globals.artworkPlacement[i]));
     });
 
     // add to scene
@@ -2450,8 +2450,8 @@ var ArtworkHandler = function () {
       }
     }
   }, {
-    key: 'uid',
-    value: function uid() {
+    key: 'newUid',
+    value: function newUid() {
       this.uid = this.uid ? this.uid + 1 : 1;
       return 'artwork-id-' + this.uid;
     }
