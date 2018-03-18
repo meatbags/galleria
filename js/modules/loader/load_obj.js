@@ -68,7 +68,7 @@ class LoadOBJ {
       const tex_kd = this.textureLoader.load(prop.map_kd);
       mat.color = new THREE.Color(1, 1, 1);
       mat.map = tex_kd;
-
+      
       if (prop.map_kd.indexOf('.png') != -1) {
         mat.transparent = true;
         mat.side = THREE.DoubleSide;

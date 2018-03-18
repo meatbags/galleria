@@ -29,7 +29,7 @@ class App {
 		this.width = (window.innerWidth > 900) ? Math.max(900, window.innerWidth - 256) : window.innerWidth;
 		this.height = (window.innerHeight > 450) ? Math.max(450, window.innerHeight - 256) : window.innerHeight;
 	}
-	
+
 	resize() {
 		// resize canvas, nav
 
@@ -81,8 +81,7 @@ class App {
 	}
 
 	loading() {
-		// wait while loading
- 		//this.mode != 'dev'
+		// wait while loading, this.mode != 'dev'
 		if (!this.scene.isLoaded()) {
 			requestAnimationFrame(() => { this.loading(); });
 		} else {
@@ -96,11 +95,16 @@ class App {
 		// main loop
 
 		if (!this.paused) {
-			requestAnimationFrame(() => { this.loop(); });
-
+			if (!this.loopGuard) {
+        // restrict async looping
+        this.loopGuard = true;
+        requestAnimationFrame(() => {
+          this.loopGuard = false;
+          this.loop();
+        });
+      }
 			this.timer.update();
 			const delta = this.timer.getDelta();
-
 			this.scene.update(delta);
 			this.scene.render(delta);
 		}

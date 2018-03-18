@@ -1,0 +1,64 @@
+Arguments: 
+  F:\Program Files (x86)\node\node.exe C:\Users\JamesBurrow\AppData\Roaming\npm\node_modules\yarn\bin\yarn.js add
+
+PATH: 
+  F:\Program Files (x86)\ffmpeg\bin;C:\Program Files (x86)\NVIDIA Corporation\PhysX\Common;C:\Program Files (x86)\CodeBlocks\MinGW\bin;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Users\Python27;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Program Files\Lucidlogix Technologies\VIRTU;C:\MinGW\bin;C:\Program Files\Common Files\Autodesk Shared\;C:\Apache24;C:\Apache24\bin;C:\php;C:\MinGW\bin;C:\Program Files (x86)\premake-4.3-windows;C:\Program Files (x86)\CodeBlocks\MinGW\bin;C:\cl_path;C:\Program Files (x86)\QuickTime\QTSystem\;C:\FFMPEG\bin;C:\Program Files (x86)\Intel\OpenCL SDK\2.0\bin\x86;C:\Program Files (x86)\Intel\OpenCL SDK\2.0\bin\x64;F:\Program Files (x86)\node\;C:\Users\JamesBurrow\AppData\Local\atom\bin;C:\Users\JamesBurrow\AppData\Local\GitHubDesktop\bin;C:\Users\JamesBurrow\AppData\Roaming\npm;C:\Program Files\PuTTY\;F:\Programs\Git\cmd;F:\Programs\Cmake\bin;C:\MinGW;C:\MinGW\bin;C:\Program Files\CMake\bin;F:\Programs\themekit;C:\Users\JamesBurrow\AppData\Local\Programs\Python\Python36-32\Scripts\;C:\Users\JamesBurrow\AppData\Local\Programs\Python\Python36-32\;F:\xampp\php;.;
+
+Yarn version: 
+  1.5.1
+
+Node version: 
+  9.5.0
+
+Platform: 
+  win32 x64
+
+npm manifest: 
+  {
+    "name": "galleria",
+    "version": "1.0.0",
+    "description": "",
+    "main": "src/js/app.js",
+    "scripts": {
+      "webpack": "webpack",
+      "watch": "webpack --watch"
+    },
+    "repository": {
+      "type": "git",
+      "url": "git+https://github.com/meatbags/galleria.git"
+    },
+    "author": "meatbags",
+    "license": "ISC",
+    "bugs": {
+      "url": "https://github.com/meatbags/galleria/issues"
+    },
+    "homepage": "https://github.com/meatbags/galleria#readme",
+    "devDependencies": {
+      "babel-core": "^6.26.0",
+      "babel-loader": "^7.1.2",
+      "babel-preset-env": "^1.6.0",
+      "node-normalize-scss": "^3.0.0",
+      "webpack": "^3.6.0",
+      "webpack-preset": "^0.2.0",
+      "webpack-preset-babel": "^0.2.0"
+    }
+  }
+
+yarn manifest: 
+  No manifest
+
+Lockfile: 
+  No lockfile
+
+Trace: 
+  Error: Missing list of packages to add to your project.
+      at new MessageError (C:\Users\JamesBurrow\AppData\Roaming\npm\node_modules\yarn\lib\cli.js:186:110)
+      at Object.<anonymous> (C:\Users\JamesBurrow\AppData\Roaming\npm\node_modules\yarn\lib\cli.js:40587:13)
+      at Generator.next (<anonymous>)
+      at step (C:\Users\JamesBurrow\AppData\Roaming\npm\node_modules\yarn\lib\cli.js:98:30)
+      at C:\Users\JamesBurrow\AppData\Roaming\npm\node_modules\yarn\lib\cli.js:116:14
+      at new Promise (<anonymous>)
+      at new F (C:\Users\JamesBurrow\AppData\Roaming\npm\node_modules\yarn\lib\cli.js:23451:28)
+      at Object.<anonymous> (C:\Users\JamesBurrow\AppData\Roaming\npm\node_modules\yarn\lib\cli.js:95:12)
+      at Object.run (C:\Users\JamesBurrow\AppData\Roaming\npm\node_modules\yarn\lib\cli.js:40599:19)
+      at run (C:\Users\JamesBurrow\AppData\Roaming\npm\node_modules\yarn\lib\cli.js:89113:20)
