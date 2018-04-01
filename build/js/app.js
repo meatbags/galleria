@@ -1905,8 +1905,10 @@ var Player = function (_Collider$Player) {
       this.config.height = _config.Globals.player.height;
       this.camera.far = 500000;
       this.camera.updateProjectionMatrix();
-      this.position.z = this.target.position.z = -40;
-      this.position.x = this.target.position.x = -15.5;
+      this.position.z = -40;
+      this.target.position.z = -40;
+      this.position.x = -15.5;
+      this.target.position.x = -15.5;
       this.rotation.yaw = this.target.rotation.yaw = Math.PI / 10;
       this.rotation.pitch = this.target.rotation.pitch = Math.PI / 12;
       this.config.adjust = {
@@ -1951,7 +1953,7 @@ var Player = function (_Collider$Player) {
         _this2.camera.up.x = Math.cos(_this2.rotation.yaw) * _this2.rotation.roll;
 
         // set position, camera target
-        _this2.camera.position.set(_this2.position.x - Math.sin(yaw) * offxz / 4, height - Math.sin(pitch) * offy / 4, _this2.position.z - Math.cos(yaw) * offxz / 4);
+        _this2.camera.position.set(_this2.position.x - Math.sin(yaw) * offxz * 0.25, height - Math.sin(pitch) * offy * 0.25, _this2.position.z - Math.cos(yaw) * offxz * 0.25);
         _this2.camera.lookAt(new THREE.Vector3(_this2.position.x + Math.sin(yaw) * offxz, height + Math.sin(pitch) * offy, _this2.position.z + Math.cos(yaw) * offxz));
 
         // set world object

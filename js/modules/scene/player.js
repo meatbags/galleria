@@ -20,8 +20,10 @@ class Player extends Collider.Player {
     this.config.height = Globals.player.height;
     this.camera.far = 500000;
     this.camera.updateProjectionMatrix();
-    this.position.z = this.target.position.z = -40;
-    this.position.x = this.target.position.x = -15.5;
+    this.position.z = -40;
+    this.target.position.z = -40;
+    this.position.x = -15.5;
+    this.target.position.x = -15.5;
     this.rotation.yaw = this.target.rotation.yaw = Math.PI / 10;
     this.rotation.pitch = this.target.rotation.pitch = Math.PI / 12;
     this.config.adjust = {
@@ -67,9 +69,9 @@ class Player extends Collider.Player {
 
       // set position, camera target
       this.camera.position.set(
-        this.position.x - Math.sin(yaw) * offxz / 4,
-        height - Math.sin(pitch) * offy / 4,
-        this.position.z - Math.cos(yaw) * offxz / 4
+        this.position.x - Math.sin(yaw) * offxz * 0.25,
+        height - Math.sin(pitch) * offy * 0.25,
+        this.position.z - Math.cos(yaw) * offxz * 0.25
       );
       this.camera.lookAt(new THREE.Vector3(
         this.position.x + Math.sin(yaw) * offxz,
