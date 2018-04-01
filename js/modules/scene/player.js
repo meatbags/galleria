@@ -55,6 +55,7 @@ class Player extends Collider.Player {
       this.rotation.pitch += (this.target.rotation.pitch - this.rotation.pitch) * this.rotateAdjust;
       this.offset.rotation.pitch += (this.target.offset.rotation.pitch - this.offset.rotation.pitch) * this.config.adjust.normal;
       this.rotation.roll += (this.target.rotation.roll - this.rotation.roll) * this.rotateAdjust;
+
       // set camera
       const pitch = this.rotation.pitch + this.offset.rotation.pitch;
       const yaw = this.rotation.yaw + this.offset.rotation.yaw;

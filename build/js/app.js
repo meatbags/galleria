@@ -1940,6 +1940,7 @@ var Player = function (_Collider$Player) {
         _this2.rotation.pitch += (_this2.target.rotation.pitch - _this2.rotation.pitch) * _this2.rotateAdjust;
         _this2.offset.rotation.pitch += (_this2.target.offset.rotation.pitch - _this2.offset.rotation.pitch) * _this2.config.adjust.normal;
         _this2.rotation.roll += (_this2.target.rotation.roll - _this2.rotation.roll) * _this2.rotateAdjust;
+
         // set camera
         var pitch = _this2.rotation.pitch + _this2.offset.rotation.pitch;
         var yaw = _this2.rotation.yaw + _this2.offset.rotation.yaw;
