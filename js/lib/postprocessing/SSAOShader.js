@@ -148,7 +148,7 @@ THREE.SSAOShader = {
 			"}",
 
 			"float dd = diff - gDisplace;",
-			"float gauss = pow( EULER, -2.0 * ( dd * dd ) / ( garea * garea ) );",
+			"float gauss = pow(EULER, -2.0 * ( dd * dd ) / ( garea * garea ) );",
 			"return gauss;",
 
 		"}",
