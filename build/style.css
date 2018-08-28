@@ -1,0 +1,17 @@
+div, * {
+  box-sizing: border-box; }
+
+html, body {
+  padding: 0;
+  margin: 0; }
+
+body {
+  font-family: "Karla", sans-serif;
+  font-size: 18px;
+  line-height: 1.25;
+  letter-spacing: 1px;
+  color: #eee; }
+
+a {
+  color: inherit; }
+

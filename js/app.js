@@ -4,6 +4,9 @@ import { Scene } from './modules/scene';
 class App {
 	constructor() {
 		// main app
+
+		console.log('hello world???')
+
 		this.mode = (window.location.port === '8080') ? 'dev' : 'production';
 		this.setSize();
 		this.timer = new Timer();
@@ -32,35 +35,6 @@ class App {
 
 		// resize sce
 		this.scene.resize(this.width, this.height);
-	}
-
-	events() {
-		// menu
-		$('.close-menu').on('click', () => {
-			$('.menu-about').addClass('hidden');
-			$('.menu, .label').removeClass('hidden');
-		});
-
-		$('.open-menu').on('click', () => {
-			$('.menu-about').removeClass('hidden');
-			$('.menu, .label').addClass('hidden');
-		});
-
-		// resize
-		$(window).on('resize', () => { this.resize(); });
-
-		// pause, resume on blur
-		$(window).on('focus', () => {
-			if (this.paused) {
-				this.paused = false;
-				this.timer.reset();
-				this.loop();
-			}
-		});
-
-		$(window).on('blur', () => {
-			this.paused = true;
-		});
 	}
 
 	loading() {

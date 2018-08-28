@@ -2,7 +2,7 @@ var path = require('path');
 var webpack = require('webpack');
 var Uglify = require('uglifyjs-webpack-plugin');
 var MiniCssExtractPlugin = require("mini-css-extract-plugin");
-var appName = 'IOTD';
+var appName = 'CLM';
 var pathJS = './js/main.js';
 var pathSCSS = './scss/main.js';
 var pathOutput = 'build';
@@ -59,6 +59,6 @@ module.exports = [{
         ]
       }]
     },
-    plugins: [new MiniCssExtractPlugin({filename: "./style.css", allChunks: true})]
+    plugins: [new MiniCssExtractPlugin({filename: './style.css', allChunks: true})]
   }
 ];

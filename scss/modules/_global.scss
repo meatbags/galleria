@@ -3,16 +3,18 @@ div, * {
 }
 
 html, body {
+	padding: 0;
+	margin: 0;
+}
+
+body {
 	font-family: $fontStack;
 	font-size: $fontSize;
 	line-height: $lineHeight;
 	letter-spacing: $letterSpacing;
-	margin: 0;
-	padding: 0;
-	color: $white;
+	color: $colourPrimary;
 }
 
 a {
-	text-decoration: none;
 	color: inherit;
 }

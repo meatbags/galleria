@@ -1,9 +1,2 @@
-@import 'utils/index';
-
-// modules
-
-@import 'modules/global';
-@import 'modules/content';
-@import 'modules/loading';
-@import 'modules/menu';
-@import 'modules/label';
+@import './utils/index';
+@import './modules/index';

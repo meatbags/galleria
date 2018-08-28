@@ -1,40 +1,6 @@
-.underline {
-	text-decoration: underline;
-}
-
-.text-large {
-	font-size: $fontSizeLarge;
-}
-
-.text-medium {
-	font-size: $fontSizeMedium;
-}
-
-.text-huge {
-	font-size: $fontSizeHuge;
-}
-
-.text-bold {
-	font-weight: bold;
-}
-
-.text-small {
-	font-size: $fontSizeSmall;
-}
-
-.text-underline {
-	text-decoration: underline;
-}
-
-.text-em {
-	font-style: italic;
-}
-
-.noselect {
-  -webkit-touch-callout: none;
-    -webkit-user-select: none;
-     -khtml-user-select: none;
-       -moz-user-select: none;
-        -ms-user-select: none;
-            user-select: none;
+@mixin pad($x, $y) {
+	padding-left: $x * $space;
+	padding-right: $x * $space;
+	padding-top: $y * $space;
+	padding-bottom: $y * $space;
 }

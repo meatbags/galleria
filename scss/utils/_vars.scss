@@ -1,20 +1,5 @@
-// spacing
-$space: 12px;
-
-// z-index
-$zCanvas: 10;
-$zLoading: 15;
-$zMenu: 14;
-
-// colours
-$black: #060606;
-$white: #fff;
-$translucent: rgba(255,255,255,0.75);
-
-// animation
+$space: 8px;
+$colourPrimary: #eee;
+$colourSeconday: #aaa;
+$colourBackground: #080808;
 $transition: 0.5s;
-$transitionFast: 0.25s;
-$transitionSlow: 0.75s;
-
-// borders
-$border: 1px black solid;
