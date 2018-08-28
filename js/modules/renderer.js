@@ -32,7 +32,7 @@ class Renderer {
     // events, doc
     this.resize();
     window.addEventListener('resize', () => { this.resize(); });
-    document.querySelector('.wrapper').append(this.renderer.domElement);
+    document.querySelector('.canvas-wrapper').append(this.renderer.domElement);
   }
 
   resize() {

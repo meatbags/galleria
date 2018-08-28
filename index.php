@@ -1,6 +1,15 @@
 <?php
   get_header();
 ?>
+
+<div class='nav'>
+  Nav...
+</div>
+<div class='canvas-wrapper'></div>
+
+
+
+
 <div class="content">
   <div class='wrapper'>
     <div class='content'>

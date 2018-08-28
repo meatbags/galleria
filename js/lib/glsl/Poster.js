@@ -18,7 +18,6 @@ THREE.PosterShader = {
     #define PI 3.14159
     #define UV_SCALE 0.02
     #define MAX_HEIGHT 0.5
-
     varying vec2 vUv;
     uniform sampler2D tDiffuse;
 
@@ -33,7 +32,6 @@ THREE.PosterShader = {
     void main() {
       vec4 frag = texture2D(tDiffuse, vUv);
       frag.r = posterise(frag.r, 12.0);
-
       gl_FragColor = frag;
     }
   `

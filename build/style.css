@@ -11,8 +11,23 @@ body {
   line-height: 1.25;
   letter-spacing: 1px;
   color: #eee;
-  background: #080808; }
+  background: #080808;
+  overflow: hidden; }
 
 a {
   color: inherit; }
+
+.canvas-wrapper {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  cursor: crosshair; }
+  .canvas-wrapper canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    margin: 0;
+    padding: 0; }
 

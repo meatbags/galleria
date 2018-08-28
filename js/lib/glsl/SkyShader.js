@@ -202,11 +202,9 @@ THREE.Sky.SkyShader = {
 
 		'	vec3 curr = Uncharted2Tonemap( ( log2( 2.0 / pow( luminance, 4.0 ) ) ) * texColor );',
 		'	vec3 color = curr * whiteScale;',
-
 		'	vec3 retColor = pow( color, vec3( 1.0 / ( 1.2 + ( 1.2 * vSunfade ) ) ) );',
-
-		//'	gl_FragColor = vec4( retColor, 1.0 );',
-		'	gl_FragColor = vec4( retColor.b * 1.25, retColor.g, retColor.r * 1.05 + 0.1, 1.0 );',
+		
+		'	gl_FragColor = vec4( retColor, 1.0 );',
 		'}'
 	].join( '\n' )
 
