@@ -1,0 +1,17 @@
+.nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  background: $transparent;
+  z-index: $indexNav;
+
+  .nav__inner {
+    @include pad(2, 1);
+    width: 100%;
+
+    .nav-title {
+      text-transform: uppercase;
+    }
+  }
+}

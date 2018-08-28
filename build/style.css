@@ -7,9 +7,9 @@ html, body {
 
 body {
   font-family: "Karla", sans-serif;
-  font-size: 18px;
+  font-size: 14px;
   line-height: 1.25;
-  letter-spacing: 1px;
+  letter-spacing: 1.2px;
   color: #eee;
   background: #080808;
   overflow: hidden; }
@@ -23,11 +23,31 @@ a {
   left: 0;
   width: 100vw;
   height: 100vh;
-  cursor: crosshair; }
+  cursor: crosshair;
+  -webkit-user-select: none;
+     -moz-user-select: none;
+      -ms-user-select: none;
+          user-select: none; }
   .canvas-wrapper canvas {
     position: absolute;
     top: 0;
     left: 0;
     margin: 0;
     padding: 0; }
+
+.nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  background: rgba(0, 0, 0, 0.25);
+  z-index: 100; }
+  .nav .nav__inner {
+    padding-left: 16px;
+    padding-right: 16px;
+    padding-top: 8px;
+    padding-bottom: 8px;
+    width: 100%; }
+    .nav .nav__inner .nav-title {
+      text-transform: uppercase; }
 

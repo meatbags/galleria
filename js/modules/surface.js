@@ -32,7 +32,7 @@
      // record player rotation
      this.rotation.pitch = this.player.rotation.pitch;
      this.rotation.yaw = this.player.rotation.yaw;
-     this.timestamp = (new Date()).getTime();
+     this.timestamp = Date.now();
      this.mouse.start(e);
    }
 
@@ -101,14 +101,15 @@
        this.nodes[i].update(delta, this.player, this.camera, this.worldVector, this.centre);
      }
 
-     // release buttons
+     // release one-tap buttons
      if (this.player.keys.noclip) {
        this.keyboard.release('x');
      }
    }
 
    draw() {
-     this.canvas.draw(this.nodes, this.mouse.active);
+     this.canvas.draw(this.nodes);
+     this.canvas.promptTouchMove(this.mouse.active && (Date.now() - this.timestamp > 100));
    }
  }
 

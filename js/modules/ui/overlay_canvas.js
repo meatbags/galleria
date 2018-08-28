@@ -34,7 +34,17 @@ class OverlayCanvas {
     this.cvs.height = rect.height;
   }
 
-  promptTouchMove() {
+  promptTouchMove(active) {
+    // animate touch/move prompt
+    if (active) {
+      this.prompt.alpha.current += (this.prompt.alpha.max - this.prompt.alpha.current) * 0.2;
+      this.prompt.size.current += (this.prompt.size.max - this.prompt.size.current) * 0.2;
+    } else {
+      this.prompt.alpha.current += (this.prompt.alpha.min - this.prompt.alpha.current) * 0.2;
+      this.prompt.size.current += (this.prompt.size.min - this.prompt.size.current) * 0.2;
+    }
+
+    // draw
     if (this.prompt.alpha.current > 0) {
       const s1 = this.prompt.size.current;
       const s2 = s1 * 2;
@@ -46,7 +56,7 @@ class OverlayCanvas {
     }
   }
 
-  draw(objects, active) {
+  draw(objects) {
     this.clear();
     for (var i=0, len=objects.length; i<len; ++i) {
       objects[i].draw(this.ctx);
@@ -55,18 +65,7 @@ class OverlayCanvas {
     const x = Math.round(this.root.player.position.x * 10) / 10;
     const y = Math.round(this.root.player.position.y * 10) / 10;
     const z = Math.round(this.root.player.position.z * 10) / 10;
-    this.ctx.fillText(`${x}, ${y}, ${z}`, 20, 30);
-
-    // draw mouse prompt
-    if (active) {
-      this.prompt.alpha.current += (this.prompt.alpha.max - this.prompt.alpha.current) * 0.2;
-      this.prompt.size.current += (this.prompt.size.max - this.prompt.size.current) * 0.2;
-      this.promptTouchMove();
-    } else {
-      this.prompt.alpha.current += (this.prompt.alpha.min - this.prompt.alpha.current) * 0.2;
-      this.prompt.size.current += (this.prompt.size.min - this.prompt.size.current) * 0.2;
-      this.promptTouchMove();
-    }
+    this.ctx.fillText(`${x}, ${y}, ${z}`, 20, window.innerHeight - 20);
   }
 }
 

@@ -5,6 +5,7 @@
   width: 100vw;
   height: 100vh;
   cursor: crosshair;
+  user-select: none;
 
   canvas {
     position: absolute;

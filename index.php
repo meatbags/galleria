@@ -2,14 +2,16 @@
   get_header();
 ?>
 
-<div class='nav'>
-  Nav...
+<div class='canvas-wrapper'>
+  <!-- canvas loads here -->
 </div>
-<div class='canvas-wrapper'></div>
+<div class='nav'>
+  <div class='nav__inner'>
+    <div class='nav-title'>Closed On Mondays</div>
+  </div>
+</div>
 
-
-
-
+<!--
 <div class="content">
   <div class='wrapper'>
     <div class='content'>
@@ -52,4 +54,6 @@
   </div>
 </div>
 <?php wp_footer(); ?>
+-->
+
 </body></html>
