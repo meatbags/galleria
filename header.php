@@ -3,6 +3,7 @@
 <html lang="en">
 <head>
 	<title>Closed On Mondays</title>
+	<?php wp_head(); ?>
 	<meta charset="utf-8">
 	<meta name="description" content="A virtual webgl gallery packed with exciting art!">
   <meta name="keywords" content="virtual gallery, online gallery, webgl, 3D">
@@ -18,7 +19,6 @@
 		var themeRoot = '<?php echo get_template_directory_uri(); ?>/';
 		var appRoot = '<?php echo get_template_directory_uri(); ?>/';
 	//]]></script>
-	<?php wp_head(); ?>
 	<link rel="icon" type="image/png" href="<?php echo get_template_directory_uri(); ?>/favicon.png">
 </head>
 <body <?php body_class(); ?>>

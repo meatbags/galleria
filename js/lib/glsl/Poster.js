@@ -42,7 +42,6 @@ THREE.PosterShader = {
 // render pass
 THREE.PosterPass = function(size) {
   THREE.Pass.call(this);
-
   this.size = size;
   this.shader = THREE.PosterShader;
   this.material = new THREE.ShaderMaterial(this.shader);
@@ -55,14 +54,13 @@ THREE.PosterPass = function(size) {
 };
 
 THREE.PosterPass.prototype = Object.assign(Object.create(THREE.Pass.prototype), {
-  constructor: THREE.PosterPass,
-  render: function(renderer, writeBuffer, readBuffer, delta, maskActive) {
-    this.shader.uniforms['tDiffuse'].value = readBuffer.texture;
-
-    if (this.renderToScreen) {
-      renderer.render(this.scene, this.camera);
-    } else {
-      renderer.render(this.scene, this.camera, writeBuffer, this.clear);
-    }
+    constructor: THREE.PosterPass,
+    render: function(renderer, writeBuffer, readBuffer, delta, maskActive) {
+      this.shader.uniforms['tDiffuse'].value = readBuffer.texture;
+      if (this.renderToScreen) {
+        renderer.render(this.scene, this.camera);
+      } else {
+        renderer.render(this.scene, this.camera, writeBuffer, this.clear);
+      }
   }
 });

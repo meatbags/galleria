@@ -4,9 +4,6 @@ import { Scene } from './modules/scene';
 class App {
 	constructor() {
 		// main app
-
-		console.log('hello world???')
-
 		this.mode = (window.location.port === '8080') ? 'dev' : 'production';
 		this.setSize();
 		this.timer = new Timer();

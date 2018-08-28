@@ -10,7 +10,8 @@ body {
   font-size: 18px;
   line-height: 1.25;
   letter-spacing: 1px;
-  color: #eee; }
+  color: #eee;
+  background: #080808; }
 
 a {
   color: inherit; }
