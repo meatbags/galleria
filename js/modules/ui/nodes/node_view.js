@@ -16,19 +16,16 @@ class NodeView extends NodeBase {
       width: 18,
       height: 9,
       bez: 6,
-      radius: {
-        current: 7,
-        min: 5,
-        max: 7
-      }
+      radius: {current: 7, min: 5, max: 7}
     };
     this.bez = {};
     this.bez.p1 = {x: this.eye.width, y: 2};
     this.bez.cp1 = {x: this.eye.width - this.eye.bez, y: 2 + this.eye.bez * 0.75};
     this.bez.cp2 = {x: this.eye.bez, y: this.eye.height};
     this.bez.p2 = {x: 0, y: this.eye.height};
-    this.bez.offset = {current: 0, min: 0, max: 1.5};
+    this.bez.offset = {current: 0, min: -2, max: 1.5};
     this.distance = -1;
+    this.maxVerticalDifference = 2;
     this.opacity = 1;
   }
 
@@ -46,12 +43,17 @@ class NodeView extends NodeBase {
     return this.hover;
   }
 
+  isHover() {
+    return this.hover && this.active;
+  }
+
   update(delta, player, camera, worldVec, centre) {
     this.calculateNodePosition(camera, worldVec, centre);
 
     // fade out and deactivate
     this.distance = player.position.distanceTo(this.position);
-    if (this.distance < this.radius.min || this.distance > this.radius.max) {
+    this.height = Math.abs((player.position.y + player.height) - this.position.y);
+    if (this.distance < this.radius.min || this.distance > this.radius.max || this.height > this.maxVerticalDifference) {
       this.active = false;
     } else {
       this.active = true;

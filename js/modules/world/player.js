@@ -7,7 +7,7 @@ import { Blend, MinAngleBetween, TwoPI } from '../maths';
 class Player {
   constructor(root) {
     this.root = root;
-    this.position = new THREE.Vector3(0, 0, 0);
+    this.position = new THREE.Vector3(-18, 0, 0);
     this.rotation = {pitch: Math.PI * 0.025, roll: 0, yaw: Math.PI};
     this.motion = new THREE.Vector3();
     this.target = {
@@ -23,12 +23,14 @@ class Player {
     this.rotationSpeed = Math.PI * 0.8;
     this.jump = 8;
     this.jumpSpeedMultiplier = 0.25;
+    this.height = 1.8;
     this.falling = false;
     this.fallTime = 0;
     this.fallTimeThreshold = 0.2;
     this.noclip = false;
-    this.noclipSpeed = 40;
-    this.minPitch = Math.PI * -0.15;
+    this.noclipSpeed = 36;
+    this.toggleNoclip = () => { this.noclip = (this.noclip == false); };
+    this.minPitch = Math.PI * -0.125;
     this.maxPitch = Math.PI * 0.15;
     this.adjust = {slow: 0.05, normal: 0.1, fast: 0.15, maximum: 0.3};
 
@@ -72,11 +74,6 @@ class Player {
     this.fallTime = (this.falling) ? this.fallTime + delta : 0;
 
     // noclip
-    if (this.keys.noclip) {
-      this.keys.noclip = false;
-      this.noclip = (this.noclip == false);
-    }
-
     if (this.noclip) {
       this.falling = false;
       if (this.keys.up || this.keys.down) {

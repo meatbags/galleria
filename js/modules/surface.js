@@ -15,10 +15,11 @@
      this.centre = {x: window.innerWidth / 2, y: window.innerHeight / 2};
      this.rotation = {};
      this.timestamp = null;
+     this.clickThreshold = 150;
 
      // interactive nodes
      this.nodes = [];
-     this.nodes.push(new NodeView(new THREE.Vector3(0, 5, 0), null));
+     this.nodes.push(new NodeView(new THREE.Vector3(0, 3, 0), null));
 
      // dom stuff
      this.domElement = document.querySelector('.canvas-wrapper');
@@ -60,6 +61,9 @@
 
    onMouseUp(e) {
      this.mouse.stop();
+     if (Date.now() - this.timestamp < this.clickThreshold) {
+       // apply clickw
+     }
    }
 
    onKeyboard(key) {
@@ -80,7 +84,14 @@
          this.player.keys.jump = this.keyboard.keys[key];
          break;
        case 'x': case 'X':
-         this.player.keys.noclip = this.keyboard.keys[key];
+         // toggle noclip on ctrl+x
+         if (this.keyboard.keys['x'] || this.keyboard.keys['X']) {
+           if (this.keyboard.isControl()) {
+             this.player.toggleNoclip();
+           }
+           this.keyboard.release('x');
+           this.keyboard.release('X');
+         }
          break;
        default:
          break;
@@ -97,19 +108,22 @@
    update(delta) {
      // update nodes
      this.camera.getWorldDirection(this.worldVector);
+     this.activeNode = false;
      for (var i=0, len=this.nodes.length; i<len; ++i) {
        this.nodes[i].update(delta, this.player, this.camera, this.worldVector, this.centre);
-     }
-
-     // release one-tap buttons
-     if (this.player.keys.noclip) {
-       this.keyboard.release('x');
+       if (this.nodes[i].isHover()) {
+         this.activeNode = true;
+       }
      }
    }
 
    draw() {
      this.canvas.draw(this.nodes);
-     this.canvas.promptTouchMove(this.mouse.active && (Date.now() - this.timestamp > 100));
+     this.canvas.promptTouchMove((this.mouse.active && (Date.now() - this.timestamp > 100)));
+     this.canvas.promptClick((!this.mouse.active && this.activeNode), this.mouse.x, this.mouse.y);
+     if (this.player.noclip) {
+       this.canvas.promptGodMode();
+     }
    }
  }
 

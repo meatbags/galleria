@@ -7,11 +7,11 @@ class Camera {
     this.root = root;
     this.position = this.root.player.position;
     this.rotation = this.root.player.rotation;
+    this.height = this.root.player.height;
     this.target = new THREE.Vector3();
     this.fov = 65;
     this.aspectRatio = this.root.width / this.root.height;
     this.offset = 1;
-    this.height = 1.8;
     this.camera = new THREE.PerspectiveCamera(this.fov, this.aspectRatio, 0.1, 2000000);
     this.camera.up = new THREE.Vector3(0, 1, 0);
   }

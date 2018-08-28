@@ -13,10 +13,12 @@ class OverlayCanvas {
     this.domElement.append(this.cvs);
 
     // draw settings
-    this.prompt = {
-      alpha: {current: 0, max: 0.5, min: 0},
-      size: {current: 32, max: 64, min: 32}
+    this.prompt = {};
+    this.prompt.touchMove = {
+      alpha: {current: 0, min: 0, max: 1},
+      size: {current: 32, min: 32, max: 64}
     };
+    this.prompt.click = {alpha: {current: 0, min: 0, max: 1}};
   }
 
   clear() {
@@ -34,26 +36,46 @@ class OverlayCanvas {
     this.cvs.height = rect.height;
   }
 
-  promptTouchMove(active) {
-    // animate touch/move prompt
+  promptClick(active, x, y) {
+    // animate click prompt
     if (active) {
-      this.prompt.alpha.current += (this.prompt.alpha.max - this.prompt.alpha.current) * 0.2;
-      this.prompt.size.current += (this.prompt.size.max - this.prompt.size.current) * 0.2;
+      this.prompt.click.alpha.current += (this.prompt.click.alpha.max - this.prompt.click.alpha.current) * 0.2;
     } else {
-      this.prompt.alpha.current += (this.prompt.alpha.min - this.prompt.alpha.current) * 0.2;
-      this.prompt.size.current += (this.prompt.size.min - this.prompt.size.current) * 0.2;
+      this.prompt.click.alpha.current += (this.prompt.click.alpha.min - this.prompt.click.alpha.current) * 0.2;
     }
 
     // draw
-    if (this.prompt.alpha.current > 0) {
-      const s1 = this.prompt.size.current;
+    if (this.prompt.click.alpha.current > 0) {
+      this.ctx.globalAlpha = this.prompt.click.alpha.current;
+      this.ctx.fillText('view artwork', x + 12, y + 12);
+    }
+  }
+
+  promptTouchMove(active) {
+    // animate touch/move prompt
+    if (active) {
+      this.prompt.touchMove.alpha.current += (this.prompt.touchMove.alpha.max - this.prompt.touchMove.alpha.current) * 0.2;
+      this.prompt.touchMove.size.current += (this.prompt.touchMove.size.max - this.prompt.touchMove.size.current) * 0.2;
+    } else {
+      this.prompt.touchMove.alpha.current += (this.prompt.touchMove.alpha.min - this.prompt.touchMove.alpha.current) * 0.2;
+      this.prompt.touchMove.size.current += (this.prompt.touchMove.size.min - this.prompt.touchMove.size.current) * 0.2;
+    }
+
+    // draw
+    if (this.prompt.touchMove.alpha.current > 0) {
+      const s1 = this.prompt.touchMove.size.current;
       const s2 = s1 * 2;
-      this.ctx.globalAlpha = this.prompt.alpha.current;
+      this.ctx.globalAlpha = this.prompt.touchMove.alpha.current;
       this.ctx.setLineDash([5, 5]);
       this.ctx.strokeRect(s1, s1, this.cvs.width - s2, this.cvs.height - s2);
       this.ctx.setLineDash([]);
-      this.ctx.fillText('view', s1 + 7, s1 + 16);
+      this.ctx.fillText('pan', s1 + 7, s1 + 16);
     }
+  }
+
+  promptGodMode() {
+    this.ctx.globalAlpha = 1;
+    this.ctx.fillText('fly mode', 20, window.innerHeight - 40);
   }
 
   draw(objects) {
