@@ -13,9 +13,12 @@
      this.camera = this.scene.camera.camera;
      this.worldVector = new THREE.Vector3();
      this.centre = {x: window.innerWidth / 2, y: window.innerHeight / 2};
-     this.rotation = {};
+     this.rotation = new THREE.Vector2();
      this.timestamp = null;
-     this.clickThreshold = 150;
+     this.threshold = {
+       click: 150,
+       pan: 200
+     };
 
      // interactive nodes
      this.nodes = [];
@@ -31,8 +34,8 @@
 
    onMouseDown(e) {
      // record player rotation
-     this.rotation.pitch = this.player.rotation.pitch;
-     this.rotation.yaw = this.player.rotation.yaw;
+     this.rotation.y = this.player.rotation.y;
+     this.rotation.x = this.player.rotation.x;
      this.timestamp = Date.now();
      this.mouse.start(e);
    }
@@ -43,11 +46,11 @@
      if (this.mouse.active) {
        // update player rotation
        if (!(this.player.keys.left || this.player.keys.right)) {
-         const yaw = this.rotation.yaw + this.mouse.delta.x / this.centre.x;
-         const pitch = Clamp(this.rotation.pitch + this.mouse.delta.y / this.centre.y, this.player.minPitch, this.player.maxPitch);
+         const yaw = this.rotation.x + this.mouse.delta.x / this.centre.x;
+         const pitch = Clamp(this.rotation.y + this.mouse.delta.y / this.centre.y, this.player.minPitch, this.player.maxPitch);
          if (pitch == this.player.minPitch || pitch == this.player.maxPitch) {
            this.mouse.origin.y = e.clientY;
-           this.rotation.pitch = pitch;
+           this.rotation.y = pitch;
          }
          this.player.setRotation(pitch, yaw);
        }
@@ -61,7 +64,7 @@
 
    onMouseUp(e) {
      this.mouse.stop();
-     if (Date.now() - this.timestamp < this.clickThreshold) {
+     if (Date.now() - this.timestamp < this.threshold.click) {
        // apply clickw
      }
    }
@@ -119,7 +122,7 @@
 
    draw() {
      this.canvas.draw(this.nodes);
-     this.canvas.promptTouchMove((this.mouse.active && (Date.now() - this.timestamp > 100)));
+     this.canvas.promptTouchMove((this.mouse.active && (Date.now() - this.timestamp > this.threshold.pan)));
      this.canvas.promptClick((!this.mouse.active && this.activeNode), this.mouse.x, this.mouse.y);
      if (this.player.noclip) {
        this.canvas.promptGodMode();

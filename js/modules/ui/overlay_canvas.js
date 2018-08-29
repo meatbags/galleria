@@ -87,7 +87,8 @@ class OverlayCanvas {
     const x = Math.round(this.root.player.position.x * 10) / 10;
     const y = Math.round(this.root.player.position.y * 10) / 10;
     const z = Math.round(this.root.player.position.z * 10) / 10;
-    this.ctx.fillText(`${x}, ${y}, ${z}`, 20, window.innerHeight - 20);
+    const rx = Math.round(this.root.player.rotation.x * 100) / 100;
+    this.ctx.fillText(`${x}, ${y}, ${z}, ${rx}`, 20, window.innerHeight - 20);
   }
 }
 

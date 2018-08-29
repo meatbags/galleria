@@ -8,6 +8,10 @@
 <div class='nav'>
   <div class='nav__inner'>
     <div class='nav-title'>Closed On Mondays</div>
+    <div class='nav-menu'>
+      <div class='item'>artworks</div>
+      <div class='item'>about</div>
+    </div>
   </div>
 </div>
 

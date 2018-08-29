@@ -7,16 +7,28 @@ import { Blend, MinAngleBetween, TwoPI } from '../maths';
 class Player {
   constructor(root) {
     this.root = root;
-    this.position = new THREE.Vector3(-18, 0, 0);
-    this.rotation = {pitch: Math.PI * 0.025, roll: 0, yaw: Math.PI};
+    this.position = new THREE.Vector3(0, 0, 20);
+    this.rotation = new THREE.Vector2(Math.PI, Math.PI * 0.125);
     this.motion = new THREE.Vector3();
     this.target = {
       position: this.position.clone(),
-      rotation: {pitch: this.rotation.pitch, roll: this.rotation.roll, yaw: this.rotation.yaw},
+      rotation: this.rotation.clone(),
       motion: this.motion.clone()
     };
     this.collider = new Collider.Collider(this.target.position, this.motion);
     this.collider.setPhysics({gravity: 20});
+
+    // automatic motion and panning
+    this.automove = {
+      active: {position: true, rotation: true},
+      speed: {current: 0, max: 5},
+      position: new THREE.Vector3(0, 0, 10),
+      rotation: new THREE.Vector2(Math.PI, Math.PI * 0.025),
+      threshold: {
+        position: {outer: 2, inner: 0.02},
+        rotation: 0.02
+      }
+    };
 
     // physical attributes
     this.speed = 3;
@@ -34,8 +46,8 @@ class Player {
     this.maxPitch = Math.PI * 0.15;
     this.adjust = {slow: 0.05, normal: 0.1, fast: 0.15, maximum: 0.3};
 
-    // events
-    this.keys = {};
+    // input
+    this.keys = {disabled: true};
 
     // add to scene
     this.group = new THREE.Group();
@@ -49,14 +61,16 @@ class Player {
     // key input to motion
     if (this.keys.left || this.keys.right) {
       const d = ((this.keys.left) ? 1 : 0) + ((this.keys.right) ? -1 : 0);
-      this.target.rotation.yaw += d * this.rotationSpeed * delta;
+      this.target.rotation.x += d * this.rotationSpeed * delta;
+      this.automove.active.rotation = false;
     }
 
     if (this.keys.up || this.keys.down) {
-      const speed = (this.noclip) ? this.noclipSpeed * (1 - Math.abs(Math.sin(this.target.rotation.pitch))) : this.speed;
+      const speed = (this.noclip) ? this.noclipSpeed * (1 - Math.abs(Math.sin(this.target.rotation.y))) : this.speed;
       const dir = ((this.keys.up) ? 1 : 0) + ((this.keys.down) ? -1 : 0);
-      this.target.motion.x = Math.sin(this.rotation.yaw) * speed * dir;
-      this.target.motion.z = Math.cos(this.rotation.yaw) * speed * dir;
+      this.target.motion.x = Math.sin(this.rotation.x) * speed * dir;
+      this.target.motion.z = Math.cos(this.rotation.x) * speed * dir;
+      this.automove.active.position = false;
     } else {
       this.target.motion.x = 0;
       this.target.motion.z = 0;
@@ -78,7 +92,7 @@ class Player {
       this.falling = false;
       if (this.keys.up || this.keys.down) {
         const d = ((this.keys.up) ? 1 : 0) + ((this.keys.down) ? -1 : 0);
-        this.target.motion.y = Math.sin(this.target.rotation.pitch) * d * this.noclipSpeed;
+        this.target.motion.y = Math.sin(this.target.rotation.y) * d * this.noclipSpeed;
       } else {
         this.target.motion.y = 0;
       }
@@ -95,26 +109,81 @@ class Player {
     }
   }
 
-  update(delta) {
-    this.move(delta);
-    if (!this.noclip) {
-      this.collider.move(delta, this.root.colliderSystem);
+  applyAutomove(delta) {
+    // position
+    if (this.automove.active.position) {
+      const p = this.automove.position.clone();
+      p.sub(this.position);
+      const mag = p.length();
+      p.normalize();
+
+      // increase speed, reduce speed, or stop
+      if (mag > this.automove.threshold.position.outer) {
+        this.automove.speed.current += (this.automove.speed.max - this.automove.speed.current) * 0.1;
+        p.multiplyScalar(this.automove.speed.current * delta);
+        this.position.add(p);
+      } else {
+        if (mag > this.automove.threshold.position.inner) {
+          const speed = this.automove.speed.max * (mag / this.automove.threshold.position.outer);
+          this.automove.speed.current += (speed - this.automove.speed.current) * 0.1;
+          p.multiplyScalar(this.automove.speed.current * delta);
+          this.position.add(p);
+        } else {
+          this.target.position.copy(this.automove.position);
+          this.automove.active.position = false;
+          this.keys.disabled = false;
+        }
+      }
     } else {
-      this.target.position.x += this.motion.x * delta;
-      this.target.position.y += this.motion.y * delta;
-      this.target.position.z += this.motion.z * delta;
+      this.automove.speed.current = 0;
     }
-    this.position.x = Blend(this.position.x, this.target.position.x, this.adjust.maximum);
-    this.position.y = Blend(this.position.y, this.target.position.y, this.adjust.maximum);
-    this.position.z = Blend(this.position.z, this.target.position.z, this.adjust.maximum);
-    this.rotation.yaw += MinAngleBetween(this.rotation.yaw, this.target.rotation.yaw) * this.adjust.maximum;
-    this.rotation.pitch = Blend(this.rotation.pitch, this.target.rotation.pitch, this.adjust.fast);
+
+    // rotation
+    if (this.automove.active.rotation) {
+      const rx = MinAngleBetween(this.rotation.x, this.automove.rotation.x);
+      const ry = MinAngleBetween(this.rotation.y, this.automove.rotation.y);
+      const mag = Math.hypot(rx, ry);
+      this.rotation.x += rx * 0.02;
+      this.rotation.y += ry * 0.02;
+
+      if (mag < this.automove.threshold.rotation) {
+        this.automove.active.rotation = false;
+        this.target.rotation.copy(this.automove.rotation);
+      }
+    }
+  }
+
+  update(delta) {
+    this.applyAutomove(delta);
+
+    // move
+    if (!this.keys.disabled && !this.automove.active.position) {
+      this.move(delta);
+      if (!this.noclip) {
+        this.collider.move(delta, this.root.colliderSystem);
+      } else {
+        this.target.position.x += this.motion.x * delta;
+        this.target.position.y += this.motion.y * delta;
+        this.target.position.z += this.motion.z * delta;
+      }
+      this.position.x = Blend(this.position.x, this.target.position.x, this.adjust.maximum);
+      this.position.y = Blend(this.position.y, this.target.position.y, this.adjust.maximum);
+      this.position.z = Blend(this.position.z, this.target.position.z, this.adjust.maximum);
+    }
+
+    // rotate
+    if (!this.automove.active.rotation) {
+      this.rotation.x += MinAngleBetween(this.rotation.x, this.target.rotation.x) * this.adjust.maximum;
+      this.rotation.y = Blend(this.rotation.y, this.target.rotation.y, this.adjust.fast);
+    }
+
     this.group.position.set(this.position.x, this.position.y, this.position.z);
 	}
 
   setRotation(pitch, yaw) {
-    this.target.rotation.pitch = pitch;
-    this.target.rotation.yaw = yaw;
+    this.target.rotation.y = pitch;
+    this.target.rotation.x = yaw;
+    this.automove.active.rotation = false;
   }
 
   getTargetPosition() {
