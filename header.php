@@ -14,6 +14,7 @@
 	<meta property="og:image" content="<?php echo get_template_directory_uri(); ?>/img/og-image.jpg"/>
 	<meta property="og:site_name" content="Closed On Mondays"/>
 	<link href="https://fonts.googleapis.com/css?family=Karla" rel="stylesheet">
+	<link href="https://fonts.googleapis.com/css?family=Playfair+Display" rel="stylesheet">
 	<script type="text/javascript">//<![CDATA[
 		var siteUrl = '<?php echo get_site_url(); ?>';
 		var themeRoot = '<?php echo get_template_directory_uri(); ?>/';

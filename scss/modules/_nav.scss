@@ -8,12 +8,13 @@
   user-select: none;
 
   .nav__inner {
-    @include pad(2, 1);
+    @include pad(2, 0);
     width: 100%;
     display: flex;
 
     .nav-title {
-      text-transform: uppercase;
+      @include pad(1, 1);
+      //text-transform: uppercase;
     }
 
     .nav-menu {
@@ -22,11 +23,10 @@
       justify-content: flex-end;
 
       .item {
-        @include pad(1, 0);
+        @include pad(1, 1);
         cursor: pointer;
-        transition: $transition;
 
-        &:hover {
+        &:hover, &.active {
           opacity: 0.5;
         }
       }

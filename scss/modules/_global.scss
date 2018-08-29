@@ -8,13 +8,14 @@ html, body {
 }
 
 body {
-	font-family: $fontStack;
+	font-family: $fontStackAlt;
 	font-size: $fontSize;
 	line-height: $lineHeight;
 	letter-spacing: $letterSpacing;
 	color: $colourPrimary;
 	background: $colourBackground;
 	overflow: hidden;
+	user-select: none;
 }
 
 a {

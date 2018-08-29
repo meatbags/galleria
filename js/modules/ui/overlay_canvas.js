@@ -16,7 +16,7 @@ class OverlayCanvas {
     this.prompt = {};
     this.prompt.touchMove = {
       alpha: {current: 0, min: 0, max: 1},
-      size: {current: 32, min: 32, max: 64}
+      size: {current: 24, min: 24, max: 48}
     };
     this.prompt.click = {alpha: {current: 0, min: 0, max: 1}};
   }
@@ -65,11 +65,20 @@ class OverlayCanvas {
     if (this.prompt.touchMove.alpha.current > 0) {
       const s1 = this.prompt.touchMove.size.current;
       const s2 = s1 * 2;
+      const cx = this.cvs.width / 2;
+      const cy = this.cvs.height / 2;
       this.ctx.globalAlpha = this.prompt.touchMove.alpha.current;
-      this.ctx.setLineDash([5, 5]);
+      //this.ctx.setLineDash([5, 3]);
       this.ctx.strokeRect(s1, s1, this.cvs.width - s2, this.cvs.height - s2);
-      this.ctx.setLineDash([]);
+      //this.ctx.setLineDash([]);
       this.ctx.fillText('pan', s1 + 7, s1 + 16);
+      this.ctx.beginPath();
+      this.ctx.arc(cx, cy, s1, 0, Math.PI * 2, false);
+      this.ctx.moveTo(cx - s1, cy);
+      this.ctx.lineTo(cx + s1, cy);
+      this.ctx.moveTo(cx, cy - 4);
+      this.ctx.lineTo(cx, cy + 4);
+      this.ctx.stroke();
     }
   }
 

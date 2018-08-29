@@ -3,7 +3,7 @@
  **/
 
 import { Scene, Renderer, Surface } from './modules';
-import { detectMobileTablet } from './utils';
+import { detectMobileTablet, Menu } from './utils';
 
 class App {
   constructor() {
@@ -11,6 +11,7 @@ class App {
     this.scene = new Scene();
     this.renderer = new Renderer(this.scene);
     this.surface = new Surface(this.scene, this.isMobile);
+    this.menu = new Menu();
     this.now = performance.now();
     this.loop();
   }

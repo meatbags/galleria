@@ -22,11 +22,11 @@ class Player {
     this.automove = {
       active: {position: true, rotation: true},
       speed: {current: 0, max: 5},
-      position: new THREE.Vector3(0, 0, 10),
+      position: new THREE.Vector3(0, 0, 20),
       rotation: new THREE.Vector2(Math.PI, Math.PI * 0.025),
       threshold: {
         position: {outer: 2, inner: 0.02},
-        rotation: 0.02
+        rotation: Math.PI / 1000 // ~0.006
       }
     };
 
@@ -43,8 +43,8 @@ class Player {
     this.noclipSpeed = 36;
     this.toggleNoclip = () => { this.noclip = (this.noclip == false); };
     this.minPitch = Math.PI * -0.125;
-    this.maxPitch = Math.PI * 0.15;
-    this.adjust = {slow: 0.05, normal: 0.1, fast: 0.15, maximum: 0.3};
+    this.maxPitch = Math.PI * 0.125;
+    this.adjust = {slow: 0.05, normal: 0.1, fast: 0.125, maximum: 0.3};
 
     // input
     this.keys = {disabled: true};
@@ -60,17 +60,23 @@ class Player {
   move(delta) {
     // key input to motion
     if (this.keys.left || this.keys.right) {
+      if (this.automove.active.rotation) {
+        this.target.rotation.copy(this.rotation);
+        this.automove.active.rotation = false;
+      }
       const d = ((this.keys.left) ? 1 : 0) + ((this.keys.right) ? -1 : 0);
       this.target.rotation.x += d * this.rotationSpeed * delta;
-      this.automove.active.rotation = false;
     }
 
     if (this.keys.up || this.keys.down) {
+      if (this.automove.active.position) {
+        this.automove.active.position = false;
+        this.target.position.copy(this.position);
+      }
       const speed = (this.noclip) ? this.noclipSpeed * (1 - Math.abs(Math.sin(this.target.rotation.y))) : this.speed;
       const dir = ((this.keys.up) ? 1 : 0) + ((this.keys.down) ? -1 : 0);
       this.target.motion.x = Math.sin(this.rotation.x) * speed * dir;
       this.target.motion.z = Math.cos(this.rotation.x) * speed * dir;
-      this.automove.active.position = false;
     } else {
       this.target.motion.x = 0;
       this.target.motion.z = 0;
@@ -143,8 +149,8 @@ class Player {
       const rx = MinAngleBetween(this.rotation.x, this.automove.rotation.x);
       const ry = MinAngleBetween(this.rotation.y, this.automove.rotation.y);
       const mag = Math.hypot(rx, ry);
-      this.rotation.x += rx * 0.02;
-      this.rotation.y += ry * 0.02;
+      this.rotation.x += rx * 0.025;
+      this.rotation.y += ry * 0.025;
 
       if (mag < this.automove.threshold.rotation) {
         this.automove.active.rotation = false;
@@ -174,7 +180,7 @@ class Player {
     // rotate
     if (!this.automove.active.rotation) {
       this.rotation.x += MinAngleBetween(this.rotation.x, this.target.rotation.x) * this.adjust.maximum;
-      this.rotation.y = Blend(this.rotation.y, this.target.rotation.y, this.adjust.fast);
+      this.rotation.y = Blend(this.rotation.y, this.target.rotation.y, this.adjust.normal);
     }
 
     this.group.position.set(this.position.x, this.position.y, this.position.z);

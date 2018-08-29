@@ -3,15 +3,42 @@
 ?>
 
 <div class='canvas-wrapper'>
-  <!-- canvas loads here -->
+  <!-- canvas -->
 </div>
+
 <div class='nav'>
   <div class='nav__inner'>
     <div class='nav-title'>Closed On Mondays</div>
     <div class='nav-menu'>
-      <div class='item'>artworks</div>
-      <div class='item'>about</div>
+      <div data-selector='.menu-art' class='item'>artworks</div>
+      <div data-selector='.menu-about' class='item'>about</div>
+      <div data-selector='.menu-controls' class='item'>controls</div>
     </div>
+  </div>
+</div>
+
+<div class='menu menu-art'>
+  <div class='menu__inner'>
+    <div data-selector='.menu-art' class='close-menu'>CLOSE !</div>
+  </div>
+</div>
+<div class='menu menu-about'>
+  <div class='menu__inner'>about?</div>
+</div>
+<div class='menu menu-controls'>
+  <div class='menu__inner'>
+    <div class='controls'>
+      <div class='control-pane'>
+        <div class='img'><img src='<?php echo get_template_directory_uri(); ?>/img/arrows.png' /></div>
+        <div class='desc'>move</div>
+      </div>
+      <div class='divider'>/</div>
+      <div class='control-pane'>
+        <div class='img'><img src='<?php echo get_template_directory_uri(); ?>/img/mouse.png' /></div>
+        <div class='desc'>look</div>
+      </div>
+    </div>
+  <!--<div data-selector='.menu-controls' class='close-menu'>OK</div>-->
   </div>
 </div>
 
