@@ -3,7 +3,8 @@
   top: 0;
   left: 0;
   width: 100%;
-  background: $transparent;
+  height: $navHeight;
+  background: $colourBackground;
   z-index: $indexNav;
   user-select: none;
 
@@ -11,10 +12,12 @@
     @include pad(2, 0);
     width: 100%;
     display: flex;
+    position: absolute;
+    bottom: 0;
 
     .nav-title {
       @include pad(1, 1);
-      //text-transform: uppercase;
+      text-transform: uppercase;
     }
 
     .nav-menu {
@@ -25,9 +28,10 @@
       .item {
         @include pad(1, 1);
         cursor: pointer;
+        text-transform: uppercase;
 
         &:hover, &.active {
-          opacity: 0.5;
+          color: $colourSecondary;
         }
       }
     }

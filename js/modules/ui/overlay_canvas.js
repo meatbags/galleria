@@ -69,9 +69,9 @@ class OverlayCanvas {
       const cy = this.cvs.height / 2;
       this.ctx.globalAlpha = this.prompt.touchMove.alpha.current;
       //this.ctx.setLineDash([5, 3]);
-      this.ctx.strokeRect(s1, s1, this.cvs.width - s2, this.cvs.height - s2);
+      this.ctx.strokeRect(s1, s1 * 1.25, this.cvs.width - s2, this.cvs.height - s2 - s1 / 2);
       //this.ctx.setLineDash([]);
-      this.ctx.fillText('pan', s1 + 7, s1 + 16);
+      //this.ctx.fillText('pan', s1 + 7, s1 + 16);
       this.ctx.beginPath();
       this.ctx.arc(cx, cy, s1, 0, Math.PI * 2, false);
       this.ctx.moveTo(cx - s1, cy);

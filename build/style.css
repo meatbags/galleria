@@ -6,12 +6,12 @@ html, body {
   margin: 0; }
 
 body {
-  font-family: "Playfair Display", serif;
-  font-size: 14px;
+  font-family: "Karla", sans-serif;
+  font-size: 16px;
   line-height: 1.25;
-  letter-spacing: 1.2px;
+  letter-spacing: initial;
   color: #eee;
-  background: #080808;
+  background: #222;
   overflow: hidden;
   -webkit-user-select: none;
      -moz-user-select: none;
@@ -44,7 +44,8 @@ a {
   top: 0;
   left: 0;
   width: 100%;
-  background: rgba(0, 0, 0, 0.5);
+  height: 48px;
+  background: #222;
   z-index: 100;
   -webkit-user-select: none;
      -moz-user-select: none;
@@ -57,12 +58,15 @@ a {
     padding-bottom: 0px;
     width: 100%;
     display: -ms-flexbox;
-    display: flex; }
+    display: flex;
+    position: absolute;
+    bottom: 0; }
     .nav .nav__inner .nav-title {
       padding-left: 8px;
       padding-right: 8px;
       padding-top: 8px;
-      padding-bottom: 8px; }
+      padding-bottom: 8px;
+      text-transform: uppercase; }
     .nav .nav__inner .nav-menu {
       -ms-flex: 1;
           flex: 1;
@@ -75,9 +79,10 @@ a {
         padding-right: 8px;
         padding-top: 8px;
         padding-bottom: 8px;
-        cursor: pointer; }
+        cursor: pointer;
+        text-transform: uppercase; }
         .nav .nav__inner .nav-menu .item:hover, .nav .nav__inner .nav-menu .item.active {
-          opacity: 0.5; }
+          color: #888; }
 
 .menu {
   position: fixed;
@@ -88,7 +93,7 @@ a {
   height: 100vh;
   opacity: 0;
   pointer-events: none;
-  background: rgba(0, 0, 0, 0.5);
+  background: rgba(34, 34, 34, 0.5);
   transition: opacity 0.5s; }
   .menu.active {
     opacity: 1;
@@ -104,37 +109,122 @@ a {
         align-items: center;
     -ms-flex-direction: column;
         flex-direction: column; }
-    .menu .menu__inner .controls {
+
+.menu-art {
+  padding-top: 48px; }
+  .menu-art .artworks {
+    padding: 16px;
+    width: 100%;
+    height: 100%;
+    display: -ms-flexbox;
+    display: flex;
+    -ms-flex-wrap: wrap;
+        flex-wrap: wrap; }
+    .menu-art .artworks .item {
       display: -ms-flexbox;
       display: flex;
+      -ms-flex-direction: column;
+          flex-direction: column;
       -ms-flex-align: center;
           align-items: center;
-      width: 512px; }
-      .menu .menu__inner .controls .divider {
-        font-size: 28px; }
-      .menu .menu__inner .controls .control-pane {
+      padding: 8px;
+      width: 20%;
+      cursor: pointer; }
+      .menu-art .artworks .item .item-thumbnail {
+        width: 80px;
+        height: 80px;
+        overflow: hidden;
+        position: relative; }
+        .menu-art .artworks .item .item-thumbnail img {
+          min-width: 100%;
+          height: auto;
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%); }
+      .menu-art .artworks .item .item-title {
+        padding: 8px; }
+
+.menu-controls {
+  transition: opacity 0.5s;
+  background: linear-gradient(0deg, #222, #888); }
+  .menu-controls .menu__inner {
+    opacity: 0;
+    transition: opacity 1s;
+    background: linear-gradient(0deg, #888, #222, #eee); }
+  .menu-controls .controls {
+    display: -ms-flexbox;
+    display: flex;
+    -ms-flex-align: center;
+        align-items: center;
+    -ms-flex-direction: column;
+        flex-direction: column;
+    opacity: 0;
+    transition: 0.5s;
+    transform: translateX(-50px); }
+    .menu-controls .controls .divider {
+      font-size: 24px; }
+    .menu-controls .controls .control-header {
+      display: -ms-flexbox;
+      display: flex;
+      -ms-flex-pack: start;
+          justify-content: flex-start;
+      margin-bottom: 32px;
+      width: 100%; }
+      .menu-controls .controls .control-header .control-title {
+        padding-left: 32px;
+        padding-right: 32px;
+        padding-top: 8px;
+        padding-bottom: 8px;
+        text-transform: uppercase;
+        box-shadow: -4px -4px 50px #888;
+        background: #222; }
+    .menu-controls .controls .control-content {
+      display: -ms-flexbox;
+      display: flex;
+      -ms-flex-direction: column;
+          flex-direction: column;
+      min-width: 720px;
+      padding-left: 32px;
+      padding-right: 32px;
+      padding-top: 24px;
+      padding-bottom: 24px;
+      box-shadow: -4px -4px 50px #888; }
+      .menu-controls .controls .control-content .row {
+        padding-left: 0px;
+        padding-right: 0px;
+        padding-top: 8px;
+        padding-bottom: 8px;
         display: -ms-flexbox;
         display: flex;
-        -ms-flex-direction: column;
-            flex-direction: column;
-        -ms-flex-align: center;
-            align-items: center;
-        width: 50%; }
-        .menu .menu__inner .controls .control-pane .img, .menu .menu__inner .controls .control-pane .desc {
-          width: 50%;
-          display: -ms-flexbox;
-          display: flex;
-          -ms-flex-pack: center;
-              justify-content: center;
-          -ms-flex-align: center;
-              align-items: center; }
-          .menu .menu__inner .controls .control-pane .img img, .menu .menu__inner .controls .control-pane .desc img {
-            width: 100%;
-            height: auto; }
-    .menu .menu__inner .close-menu {
-      cursor: pointer;
-      padding: 8px;
-      border: 1px solid white; }
-      .menu .menu__inner .close-menu:hover {
-        opacity: 0.5; }
+        width: 100%;
+        border-bottom: 2px solid #eee; }
+        .menu-controls .controls .control-content .row:last-child {
+          border-bottom: none; }
+        .menu-controls .controls .control-content .row div {
+          width: 50%; }
+    .menu-controls .controls .control-footer {
+      width: 100%;
+      display: -ms-flexbox;
+      display: flex;
+      -ms-flex-pack: end;
+          justify-content: flex-end;
+      margin-top: 32px; }
+      .menu-controls .controls .control-footer .close-menu {
+        padding-left: 24px;
+        padding-right: 24px;
+        padding-top: 8px;
+        padding-bottom: 8px;
+        cursor: pointer;
+        background: #888;
+        box-shadow: -4px -4px 50px #888;
+        border-radius: 24px;
+        font-size: 16px; }
+        .menu-controls .controls .control-footer .close-menu:hover {
+          background: none; }
+  .menu-controls.active .menu__inner {
+    opacity: 1; }
+  .menu-controls.active .controls {
+    opacity: 1;
+    transform: translateX(0px); }
 

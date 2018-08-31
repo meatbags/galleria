@@ -1,10 +1,15 @@
 <?php
   get_header();
+  $query = new wp_Query(array("post_type" => "gallery", "order_by" => "menu_order", "order" => "DESC"));
+  // title, description, url || https://printsbylily.com/, image.url, alpha.url
+  if ($query->have_posts()):
+    while ($query->have_posts()):
+      $query->the_post();
+      $images = get_field('images');
+      $dir = get_template_directory_uri();
 ?>
 
-<div class='canvas-wrapper'>
-  <!-- canvas -->
-</div>
+<div class='canvas-wrapper'><!-- canvas --></div>
 
 <div class='nav'>
   <div class='nav__inner'>
@@ -19,7 +24,18 @@
 
 <div class='menu menu-art'>
   <div class='menu__inner'>
-    <div data-selector='.menu-art' class='close-menu'>CLOSE !</div>
+    <div class='artworks'>
+      <?php foreach ($images as $img): ?>
+        <div class='item'>
+          <div class='item-thumbnail'>
+            <img src='<?php echo $img['image']['sizes']['thumbnail']; ?>' />
+          </div>
+          <div class='item-title'><?php echo $img['title']; ?></div>
+        </div>
+      <?php endforeach; ?>
+    </div>
+    <div data-selector='.menu-art' class='close-menu'>
+    </div>
   </div>
 </div>
 <div class='menu menu-about'>
@@ -28,63 +44,21 @@
 <div class='menu menu-controls'>
   <div class='menu__inner'>
     <div class='controls'>
-      <div class='control-pane'>
-        <div class='img'><img src='<?php echo get_template_directory_uri(); ?>/img/arrows.png' /></div>
-        <div class='desc'>move</div>
+      <div class='control-header'>
+        <div class='control-title'>Controls</div>
       </div>
-      <div class='divider'>/</div>
-      <div class='control-pane'>
-        <div class='img'><img src='<?php echo get_template_directory_uri(); ?>/img/mouse.png' /></div>
-        <div class='desc'>look</div>
+      <div class='control-content'>
+        <div class='row'><div>MOVE &rarr;</div><div>Arrow Keys or WSAD</div></div>
+        <div class='row'><div>CAMERA CONTROL</div><div>Click & Drag Viewport</div></div>
+        <div class='row'><div>INTERACT</div><div>Left Mouse Button</div></div>
+      </div>
+      <div class='control-footer'>
+        <div data-selector='.menu-controls' class='close-menu'>
+          <div class='msg'>CLOSE MENU</div>
+          <div class='anim'></div>
+        </div>
       </div>
     </div>
-  <!--<div data-selector='.menu-controls' class='close-menu'>OK</div>-->
   </div>
 </div>
-
-<!--
-<div class="content">
-  <div class='wrapper'>
-    <div class='content'>
-      <div class='content__inner'>
-        <div class='canvas-target'></div>
-      </div>
-    </div>
-  </div>
-  <div class='menu hidden'>
-    <div class='menu__inner'>
-      <div class='menu-button open-menu'>menu</div>
-    </div>
-  </div>
-  <div class='menu-about'>
-    <div class='menu-about__inner'>
-      <div class='menu-about__inner__p'>
-        CLOSED on MONDAY
-      </div>
-    </div>
-  </div>
-  <div class='label hidden'>
-    <div class='label__inner'></div>
-  </div>
-  <div class='images'><?php
-    $query = new wp_Query(array("post_type" => "gallery", "order_by" => "menu_order", "order" => "DESC"));
-    if ($query->have_posts()):
-      while ($query->have_posts()):
-        $query->the_post();
-        $images = get_field('images');
-        foreach ($images as $img): ?>
-          <div class='im'>
-            <div class="im__title"><?php echo $img['title']; ?></div>
-      		  <div class="im__description"><?php echo $img['description']; ?></div>
-      		  <div class="im__url"><?php echo (($img['url'] != '') ? $img['url'] : 'https://printsbylily.com/'); ?></div>
-      		  <div class="im__image"><?php echo $img['image']['url']; ?></div>
-            <div class="im__alpha"><?php echo $img['alpha']['url']; ?></div>
-          </div>
-    <?php endforeach;
-  endwhile; endif; ?>
-  </div>
-</div>
-<?php wp_footer(); ?>
--->
-
-</body></html>
+<?php endwhile; endif; wp_footer(); ?></body></html>

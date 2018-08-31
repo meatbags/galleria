@@ -20,6 +20,6 @@
 		var themeRoot = '<?php echo get_template_directory_uri(); ?>/';
 		var appRoot = '<?php echo get_template_directory_uri(); ?>/';
 	//]]></script>
-	<link rel="icon" type="image/png" href="<?php echo get_template_directory_uri(); ?>/favicon.png">
+	<link rel="icon" type="image/png" href="<?php echo get_template_directory_uri(); ?>/img/favicon.png">
 </head>
 <body <?php body_class(); ?>>

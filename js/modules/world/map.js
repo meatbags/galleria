@@ -15,7 +15,7 @@ class Map {
   loadScene() {
     this.floor = new THREE.Mesh(new THREE.BoxBufferGeometry(10, 1, 10), new THREE.MeshPhongMaterial({}));
     this.floor.position.y = 1;
-    this.scene.add(this.floor);
+    //this.scene.add(this.floor);
     this.colliderSystem.add(this.floor);
   }
 

@@ -1,10 +1,13 @@
-$space: 8px;
-$colourPrimary: #eee;
-$colourSeconday: #aaa;
-$colourBackground: #080808;
-$transparent: rgba(#000, 0.5);
+$colourPrimary: #eee;//#75c9ff;
+$colourSecondary: #888;//#833be5;
+$colourBackground: #222;//#0d0b8e;
+$transparent: rgba($colourBackground, 0.5);
 $transition: 0.5s;
 
-// height
+// sizing
+$space: 8px;
+$navHeight: $space * 6;
+
+// z
 $indexNav: 100;
 $indexMenu: 99;
