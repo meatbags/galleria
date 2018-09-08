@@ -8,15 +8,15 @@ add_action('after_setup_theme', 'gallery_setup');
 
 function add_admin_post_types() {
 	register_post_type('gallery', array(
-		'label' => 'Gallery',
+		'label' => 'Galleries',
 		'public' => true,
 		'capability_type' => 'post',
 		'hierarchical' => true,
 		'rewrite' => array('slug' => 'gallery'),
 		'query_var' => true,
 		'menu_icon' => 'dashicons-format-gallery',
-		'taxonomies' => array('category', 'post_tag'),
-		'supports' => array('title', 'editor', 'revisions', 'thumbnail')
+		'taxonomies' => array('category'),
+		'supports' => array('title')
 	));
 	remove_post_type_support('gallery', 'editor');
 }

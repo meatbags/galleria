@@ -48,9 +48,9 @@
         <div class='control-title'>Controls</div>
       </div>
       <div class='control-content'>
-        <div class='row'><div>MOVE &rarr;</div><div>Arrow Keys or WSAD</div></div>
+        <div class='row'><div>MOVEMENT</div><div>Arrow Keys or WSAD</div></div>
         <div class='row'><div>CAMERA CONTROL</div><div>Click & Drag Viewport</div></div>
-        <div class='row'><div>INTERACT</div><div>Left Mouse Button</div></div>
+        <div class='row'><div>INTERACTION</div><div>Left Mouse Button</div></div>
       </div>
       <div class='control-footer'>
         <div data-selector='.menu-controls' class='close-menu'>
