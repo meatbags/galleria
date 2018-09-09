@@ -7,8 +7,8 @@ import { Blend, MinAngleBetween, TwoPI } from '../maths';
 class Player {
   constructor(root) {
     this.root = root;
-    this.position = new THREE.Vector3(0, 0, 20);
-    this.rotation = new THREE.Vector2(Math.PI, Math.PI * 0.125);
+    this.position = new THREE.Vector3(-24, 1, 16);
+    this.rotation = new THREE.Vector2(Math.PI * 0.55, Math.PI * 0.03);
     this.motion = new THREE.Vector3();
     this.target = {
       position: this.position.clone(),
@@ -22,8 +22,8 @@ class Player {
     this.automove = {
       active: {position: true, rotation: true},
       speed: {current: 0, max: 5},
-      position: new THREE.Vector3(0, 0, 20),
-      rotation: new THREE.Vector2(Math.PI, Math.PI * 0.025),
+      position: this.position.clone(),
+      rotation: this.rotation.clone(),
       threshold: {
         position: {outer: 2, inner: 0.02},
         rotation: Math.PI / 1000 // ~0.006
@@ -31,11 +31,11 @@ class Player {
     };
 
     // physical attributes
-    this.speed = 3;
-    this.rotationSpeed = Math.PI * 0.8;
+    this.speed = 8; //4
+    this.rotationSpeed = Math.PI * 0.8; //0.5
     this.jump = 8;
     this.jumpSpeedMultiplier = 0.25;
-    this.height = 1.8;
+    this.height = 2;
     this.falling = false;
     this.fallTime = 0;
     this.fallTimeThreshold = 0.2;
@@ -51,8 +51,8 @@ class Player {
 
     // add to scene
     this.group = new THREE.Group();
-    this.light = new THREE.PointLight(0xffffff, 0.25, 4, 2);
-    this.light.position.y = 1.8;
+    this.light = new THREE.PointLight(0xffffff, 1.0, 10, 2);
+    this.light.position.y = this.height + 0.25;
     this.group.add(this.light);
     this.root.scene.add(this.group);
   }

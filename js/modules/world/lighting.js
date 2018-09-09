@@ -8,6 +8,9 @@ class Lighting {
   constructor(root) {
     this.scene = root.scene;
 
+    // fog
+    this.scene.fog = new THREE.FogExp2(0x0, 0.02);
+
     // skybox
     this.sky = new THREE.Sky();
     this.sky.scale.setScalar(450000);
@@ -19,6 +22,26 @@ class Lighting {
     const sunPos = new THREE.Vector3(d * Math.cos(phi), d * Math.sin(phi) * Math.sin(theta), d * Math.sin(phi) * Math.cos(theta));
     this.sky.material.uniforms.sunPosition.value.copy(sunPos);
     this.scene.add(this.sky);
+
+    // lighting
+    this.lights = {point: {}, ambient: {}, directional: {}, hemisphere: {}};
+    this.lights.point.a = new THREE.PointLight(0xff0000, 1, 20, 2);
+    this.lights.point.b = new THREE.PointLight(0xffffff, 1, 32, 2);
+    this.lights.ambient.a = new THREE.AmbientLight(0xffffff, 0.25);
+    this.lights.directional.a = new THREE.DirectionalLight(0xffffff, 0.5);
+    this.lights.hemisphere.a = new THREE.HemisphereLight(0x0, 0x0000ff, 0.25);
+
+    // light placement
+    this.lights.point.a.position.set(-8, 10, 22);
+    this.lights.point.b.position.set(0, 10, -4)
+    this.lights.directional.a.position.set(-1, 1.5, -1);
+
+    // add to scene
+    Object.keys(this.lights).forEach(type => {
+      Object.keys(this.lights[type]).forEach(light => {
+        this.scene.add(this.lights[type][light]);
+      });
+    });
   }
 }
 

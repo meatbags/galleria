@@ -7,9 +7,8 @@ class OverlayCanvas {
     this.root = root;
     this.cvs = document.createElement('canvas');
     this.ctx = this.cvs.getContext('2d');
-    this.cvs.width = window.innerWidth;
-    this.cvs.height = window.innerHeight;
     this.domElement = domElement;
+    this.resize();
     this.domElement.append(this.cvs);
 
     // draw settings
@@ -68,10 +67,7 @@ class OverlayCanvas {
       const cx = this.cvs.width / 2;
       const cy = this.cvs.height / 2;
       this.ctx.globalAlpha = this.prompt.touchMove.alpha.current;
-      //this.ctx.setLineDash([5, 3]);
       this.ctx.strokeRect(s1, s1 * 1.25, this.cvs.width - s2, this.cvs.height - s2 - s1 / 2);
-      //this.ctx.setLineDash([]);
-      //this.ctx.fillText('pan', s1 + 7, s1 + 16);
       this.ctx.beginPath();
       this.ctx.arc(cx, cy, s1, 0, Math.PI * 2, false);
       this.ctx.moveTo(cx - s1, cy);
@@ -84,7 +80,7 @@ class OverlayCanvas {
 
   promptGodMode() {
     this.ctx.globalAlpha = 1;
-    this.ctx.fillText('fly mode', 20, window.innerHeight - 40);
+    this.ctx.fillText('fly mode', 20, this.cvs.height - 40);
   }
 
   draw(objects) {
@@ -97,7 +93,7 @@ class OverlayCanvas {
     const y = Math.round(this.root.player.position.y * 10) / 10;
     const z = Math.round(this.root.player.position.z * 10) / 10;
     const rx = Math.round(this.root.player.rotation.x * 100) / 100;
-    this.ctx.fillText(`${x}, ${y}, ${z}, ${rx}`, 20, window.innerHeight - 20);
+    this.ctx.fillText(`${x}, ${y}, ${z}, ${rx}`, 20, this.cvs.height - 20);
   }
 }
 

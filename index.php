@@ -9,7 +9,11 @@
       $dir = get_template_directory_uri();
 ?>
 
-<div class='canvas-wrapper'><!-- canvas --></div>
+<div class='wrapper'>
+  <div class='canvas-wrapper'>
+    <!-- canvas -->
+  </div>
+</div>
 
 <div class='nav'>
   <div class='nav__inner'>

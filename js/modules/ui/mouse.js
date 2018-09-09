@@ -20,13 +20,13 @@ class Mouse {
 
   start(e) {
     this.active = true;
-    this.origin.x = e.clientX;
-    this.origin.y = e.clientY;
+    this.origin.x = e.offsetX;
+    this.origin.y = e.offsetY;
   }
 
   move(e) {
-    this.x = e.clientX;
-    this.y = e.clientY;
+    this.x = e.offsetX;
+    this.y = e.offsetY;
     this.delta.x = this.x - this.origin.x;
     this.delta.y = this.y - this.origin.y;
   }

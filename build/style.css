@@ -21,23 +21,29 @@ body {
 a {
   color: inherit; }
 
-.canvas-wrapper {
-  position: absolute;
-  top: 0;
-  left: 0;
+.wrapper {
   width: 100vw;
   height: 100vh;
-  cursor: crosshair;
   -webkit-user-select: none;
      -moz-user-select: none;
       -ms-user-select: none;
-          user-select: none; }
-  .canvas-wrapper canvas {
-    position: absolute;
-    top: 0;
-    left: 0;
-    margin: 0;
-    padding: 0; }
+          user-select: none;
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-align: center;
+      align-items: center;
+  -ms-flex-pack: center;
+      justify-content: center; }
+  .wrapper .canvas-wrapper {
+    position: relative;
+    cursor: crosshair; }
+    .wrapper .canvas-wrapper canvas {
+      margin: 0;
+      padding: 0; }
+      .wrapper .canvas-wrapper canvas:nth-child(2) {
+        position: absolute;
+        top: 0;
+        left: 0; }
 
 .nav {
   position: fixed;
@@ -45,7 +51,6 @@ a {
   left: 0;
   width: 100%;
   height: 48px;
-  background: #222;
   z-index: 100;
   -webkit-user-select: none;
      -moz-user-select: none;

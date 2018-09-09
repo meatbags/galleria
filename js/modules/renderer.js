@@ -12,14 +12,13 @@ class Renderer {
     this.renderer.setClearColor(0x444444, 1);
     this.renderer.gammaInput = true;
     this.renderer.gammaOutput = true;
+    this.padding = {x: 100, y: 200};
+    this.setSize();
 
     // render passes
-    const strength = 0.5;
-    const radius = 0.25;
+    const strength = 0.6;
+    const radius = 0.125;
     const threshold = 0.95;
-    this.width = window.innerWidth;
-    this.height = window.innerHeight;
-    this.size = new THREE.Vector2(this.width, this.height);
     this.passRender = new THREE.RenderPass(this.scene, this.camera);
     this.passPoster = new THREE.PosterPass(this.size);
     this.passBloom = new THREE.UnrealBloomPass(this.size, strength, radius, threshold);
@@ -35,11 +34,19 @@ class Renderer {
     document.querySelector('.canvas-wrapper').append(this.renderer.domElement);
   }
 
+  setSize() {
+    this.width = window.innerWidth - this.padding.x;
+    this.height = window.innerHeight - this.padding.y;
+    if (!this.size) {
+      this.size = new THREE.Vector2(this.width, this.height);
+    } else {
+      this.size.x = this.width;
+      this.size.y = this.height;
+    }
+  }
+
   resize() {
-    this.width = window.innerWidth;
-    this.height = window.innerHeight;
-    this.size.x = this.width;
-    this.size.y = this.height;
+    this.setSize();
     this.renderer.setSize(this.width, this.height);
     this.composer.setSize(this.width, this.height);
     this.passBloom.setSize(this.width, this.height);

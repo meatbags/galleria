@@ -12,7 +12,9 @@
      this.player = this.scene.player;
      this.camera = this.scene.camera.camera;
      this.worldVector = new THREE.Vector3();
-     this.centre = {x: window.innerWidth / 2, y: window.innerHeight / 2};
+     this.domElement = document.querySelector('.canvas-wrapper');
+     this.centre = {x:0, y:0};
+     this.setSize();
      this.rotation = new THREE.Vector2();
      this.timestamp = null;
      this.threshold = {
@@ -24,8 +26,7 @@
      this.nodes = [];
      this.nodes.push(new NodeView(new THREE.Vector3(0, 3, 0), null));
 
-     // dom stuff
-     this.domElement = document.querySelector('.canvas-wrapper');
+     // events
      this.keyboard = new Keyboard((key) => { this.onKeyboard(key); });
      this.mouse = new Mouse(this.domElement, (e) => { this.onMouseDown(e); }, (e) => { this.onMouseMove(e); }, (e) => { this.onMouseUp(e); });
      this.canvas = new OverlayCanvas(this, this.domElement);
@@ -49,7 +50,7 @@
          const yaw = this.rotation.x + this.mouse.delta.x / this.centre.x;
          const pitch = Clamp(this.rotation.y + this.mouse.delta.y / this.centre.y, this.player.minPitch, this.player.maxPitch);
          if (pitch == this.player.minPitch || pitch == this.player.maxPitch) {
-           this.mouse.origin.y = e.clientY;
+           this.mouse.origin.y = e.offsetY;
            this.rotation.y = pitch;
          }
          this.player.setRotation(pitch, yaw);
@@ -101,10 +102,16 @@
      }
    }
 
+   setSize() {
+     // get centre of canvas
+     const rect = this.domElement.getBoundingClientRect();
+     this.centre.x = rect.width / 2;
+     this.centre.y = rect.height / 2;
+   }
+
    resize() {
      //this.raycaster.resize();
-     this.centre.x = window.innerWidth / 2;
-     this.centre.y = window.innerHeight / 2;
+     this.setSize();
      this.canvas.resize();
    }
 
