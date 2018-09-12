@@ -9,7 +9,7 @@ class Lighting {
     this.scene = root.scene;
 
     // fog
-    this.scene.fog = new THREE.FogExp2(0x0, 0.02);
+    //this.scene.fog = new THREE.FogExp2(0x0, 0.01);
 
     // skybox
     this.sky = new THREE.Sky();
@@ -27,13 +27,15 @@ class Lighting {
     this.lights = {point: {}, ambient: {}, directional: {}, hemisphere: {}};
     this.lights.point.a = new THREE.PointLight(0xff0000, 1, 20, 2);
     this.lights.point.b = new THREE.PointLight(0xffffff, 1, 32, 2);
+    this.lights.point.c = new THREE.PointLight(0xffffff, 1, 20, 2);
     this.lights.ambient.a = new THREE.AmbientLight(0xffffff, 0.25);
     this.lights.directional.a = new THREE.DirectionalLight(0xffffff, 0.5);
     this.lights.hemisphere.a = new THREE.HemisphereLight(0x0, 0x0000ff, 0.25);
 
     // light placement
     this.lights.point.a.position.set(-8, 10, 22);
-    this.lights.point.b.position.set(0, 10, -4)
+    this.lights.point.b.position.set(0, 10, -4);
+    this.lights.point.c.position.set(26, 10, 6);
     this.lights.directional.a.position.set(-1, 1.5, -1);
 
     // add to scene

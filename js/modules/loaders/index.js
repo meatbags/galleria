@@ -1,1 +1,1 @@
-export * from './load_fbx';
+export * from './loader';

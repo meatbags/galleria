@@ -3,14 +3,14 @@
  **/
 
 import { Materials } from './materials';
-import { LoadFBX } from '../loaders';
+import { Loader } from '../loaders';
 
 class Map {
   constructor(root) {
     this.scene = root.scene;
     this.colliderSystem = root.colliderSystem;
     this.materials = new Materials('assets');
-    this.loaderFBX = new LoadFBX('assets');
+    this.loader = new Loader('assets');
     this.loadScene();
   }
 
@@ -20,12 +20,12 @@ class Map {
     this.floor.position.y = -0.25;
     this.colliderSystem.add(this.floor);
 
-    this.loaderFBX.load('map').then((map) => {
+    this.loader.loadFBX('map').then((map) => {
       this.scene.add(map);
       this.conformGroups(map);
     }, (err) => { console.log(err); });
 
-    this.loaderFBX.load('collision').then((map) => {
+    this.loader.loadOBJ('collision').then((map) => {
       this.addCollisionMap(map);
     }, (err) => { console.log(err); });
   }
