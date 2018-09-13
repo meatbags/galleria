@@ -13,11 +13,9 @@ class OverlayCanvas {
 
     // draw settings
     this.prompt = {};
-    this.prompt.touchMove = {
-      alpha: {current: 0, min: 0, max: 1},
-      size: {current: 24, min: 24, max: 48}
-    };
+    this.prompt.touchMove = {alpha: {current: 0, min: 0, max: 1}, size: {current: 12, min: 12, max: 24}};
     this.prompt.click = {alpha: {current: 0, min: 0, max: 1}};
+    this.transition = {fill: '#4b474a', nodes: []};
   }
 
   clear() {
@@ -51,7 +49,7 @@ class OverlayCanvas {
   }
 
   promptTouchMove(active) {
-    // animate touch/move prompt
+    // animate in/out prompt
     if (active) {
       this.prompt.touchMove.alpha.current += (this.prompt.touchMove.alpha.max - this.prompt.touchMove.alpha.current) * 0.2;
       this.prompt.touchMove.size.current += (this.prompt.touchMove.size.max - this.prompt.touchMove.size.current) * 0.2;
@@ -67,13 +65,16 @@ class OverlayCanvas {
       const cx = this.cvs.width / 2;
       const cy = this.cvs.height / 2;
       this.ctx.globalAlpha = this.prompt.touchMove.alpha.current;
-      this.ctx.strokeRect(s1, s1 * 1.25, this.cvs.width - s2, this.cvs.height - s2 - s1 / 2);
+      this.ctx.strokeRect(s1, s1, this.cvs.width - s2, this.cvs.height - s2);
       this.ctx.beginPath();
       this.ctx.arc(cx, cy, s1, 0, Math.PI * 2, false);
       this.ctx.moveTo(cx - s1, cy);
       this.ctx.lineTo(cx + s1, cy);
       this.ctx.moveTo(cx, cy - 4);
       this.ctx.lineTo(cx, cy + 4);
+      // border
+      this.ctx.moveTo(0, 0);
+      this.ctx.lineTo(s1, s1);
       this.ctx.stroke();
     }
   }
@@ -83,17 +84,21 @@ class OverlayCanvas {
     this.ctx.fillText('fly mode', 20, this.cvs.height - 40);
   }
 
-  draw(objects) {
-    this.clear();
-    for (var i=0, len=objects.length; i<len; ++i) {
-      objects[i].draw(this.ctx);
-    }
+  drawDevOverlay() {
     this.ctx.globalAlpha = 1;
     const x = Math.round(this.root.player.position.x * 10) / 10;
     const y = Math.round(this.root.player.position.y * 10) / 10;
     const z = Math.round(this.root.player.position.z * 10) / 10;
     const rx = Math.round(this.root.player.rotation.x * 100) / 100;
     this.ctx.fillText(`${x}, ${y}, ${z}, ${rx}`, 20, this.cvs.height - 20);
+  }
+
+  draw(objects) {
+    this.clear();
+    for (var i=0, len=objects.length; i<len; ++i) {
+      objects[i].draw(this.ctx);
+    }
+    this.drawDevOverlay();
   }
 }
 

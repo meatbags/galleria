@@ -11,20 +11,28 @@ class App {
     this.scene = new Scene();
     this.renderer = new Renderer(this.scene);
     this.surface = new Surface(this.scene, this.isMobile);
-    this.menu = new Menu();
-    this.now = performance.now();
+    this.menu = new Menu(this);
+    this.active = false;
     this.loop();
+  }
+
+  activate() {
+    this.active = true;
+    this.now = performance.now();
+    this.scene.camera.fadeIn();
   }
 
   loop() {
     requestAnimationFrame(() => { this.loop(); });
-    const t = performance.now();
-    const delta = (t - this.now) / 1000;
-    this.now = t;
-    this.scene.update(delta);
-    this.surface.update(delta);
-    this.renderer.draw(delta);
-    this.surface.draw();
+    if (this.active) {
+      const t = performance.now();
+      const delta = (t - this.now) / 1000;
+      this.now = t;
+      this.scene.update(delta);
+      this.surface.update(delta);
+      this.renderer.draw(delta);
+      this.surface.draw();
+    }
   }
 }
 

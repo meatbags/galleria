@@ -8,9 +8,6 @@ class Lighting {
   constructor(root) {
     this.scene = root.scene;
 
-    // fog
-    //this.scene.fog = new THREE.FogExp2(0x0, 0.01);
-
     // skybox
     this.sky = new THREE.Sky();
     this.sky.scale.setScalar(450000);

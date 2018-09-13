@@ -7,6 +7,7 @@ import { Loader } from '../loaders';
 
 class Map {
   constructor(root) {
+    this.root = root;
     this.scene = root.scene;
     this.colliderSystem = root.colliderSystem;
     this.materials = new Materials('assets');
@@ -20,14 +21,30 @@ class Map {
     this.floor.position.y = -0.25;
     this.colliderSystem.add(this.floor);
 
+    // load main maps
     this.loader.loadFBX('map').then((map) => {
       this.scene.add(map);
       this.conformGroups(map);
+      console.log(this.materials.loaded);
     }, (err) => { console.log(err); });
 
     this.loader.loadOBJ('collision').then((map) => {
       this.addCollisionMap(map);
     }, (err) => { console.log(err); });
+
+    // load props
+    /*
+    //const mat = this.materials.getCustomMaterial('warp');
+    //const mat = this.materials.mat.metal.clone();
+    mat.roughness = 0.3;
+    this.group = [];
+    for (var x=-15; x<16; ++x) {
+      const mesh = new THREE.Mesh(new THREE.BoxBufferGeometry(0.125, 5, 1), mat);
+      mesh.position.set(x, 6, 6);
+      this.scene.add(mesh);
+      this.group.push(mesh);
+    }
+    */
   }
 
   addCollisionMap(obj) {
@@ -49,7 +66,21 @@ class Map {
   }
 
   update(delta) {
-    // ..
+    this.materials.update(delta);
+    if (this.group) {
+      /*
+      if (this.root.player.position.y > 4) {
+        const x = this.root.player.position.x;
+        this.group.forEach(child => {
+          const dist = 1.0 - Math.min(1.0, Math.abs(child.position.x - x) / 12.0);
+          const target = 5 + dist * 6;
+          const rot = (1 - dist) * Math.PI / 2;
+          child.position.y += (target - child.position.y) * 0.04;
+          child.rotation.y += (rot - child.rotation.y) * 0.03;
+        });
+      }
+      */
+    }
   }
 }
 

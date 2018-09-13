@@ -1,13 +1,31 @@
-$colourPrimary: #eee;//#75c9ff;
-$colourSecondary: #888;//#833be5;
-$colourBackground: #222;//#0d0b8e;
+// colours
+$colourPrimary: #eee; //eee
+$colourSecondary: #888;
+$colourBackground: #4b474a;//#444;
+$colourBackgroundAlt: lighten($colourBackground, 5%);
+$colourAlt: #b888fa;//#9446ff;
 $transparent: rgba($colourBackground, 0.5);
-$transition: 0.5s;
+$black: #000;
+$white: #fff;
 
-// sizing
+// style
+$colourGrid: rgba($white, 0.025);
+$border: 1px solid $white;
+$boxShadow: 5px 5px 20px rgba($white, 0.25);
+
+// sizesa
 $space: 8px;
+$gridSize: $space * 2;
 $navHeight: $space * 6;
 
-// z
-$indexNav: 100;
-$indexMenu: 99;
+// index
+$indexBody: 1;
+$indexGrid: 2;
+$indexLogo: 3;
+$indexCanvas: 4;
+$indexPage: 5;
+$indexNav: 6;
+
+// animation
+$transition: 0.5s;
+$transitionSlow: 1s;

@@ -1,0 +1,70 @@
+.main-title {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 50%;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  pointer-events: none;
+  z-index: $indexLogo;
+  user-select: none;
+
+  .main-title__inner {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-end;
+    padding: $space * 4;
+    pointer-events: all;
+    transition: $transition;
+
+    .logo {
+      width: 240px;
+      height: 240px;
+      //border: $border;
+      padding: $space;
+      //box-shadow: $boxShadow;
+      position: relative;
+      overflow: hidden;
+
+      .logo-image {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        img {
+          width: 384px;
+          height: 384px;
+        }
+      }
+
+      .logo-text {
+        position: absolute;
+        top: 0;
+        left: 0;
+        padding: $space;
+        font-size: $fontSmall;
+        text-align: right;
+        width: 100%;
+        height: 100%;
+        @extend .ext-grid;
+      }
+    }
+
+    #open-gallery {
+      margin-top: $gridSize;
+      @include pad(2, 1);
+      border: $border;
+      box-shadow: $boxShadow;
+      text-transform: uppercase;
+      cursor: pointer;
+    }
+  }
+}

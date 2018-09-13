@@ -1,10 +1,14 @@
 div, * {
+	//outline: 1px solid rgba(black, 0.5);
 	box-sizing: border-box;
 }
 
-html, body {
-	padding: 0;
-	margin: 0;
+html {
+	&.freeze {
+		position: fixed;
+		overflow-y: scroll;
+    width: 100%;
+	}
 }
 
 body {
@@ -14,8 +18,8 @@ body {
 	letter-spacing: $letterSpacing;
 	color: $colourPrimary;
 	background: $colourBackground;
-	overflow: hidden;
-	user-select: none;
+	z-index: $indexBody;
+	overflow-x: hidden;
 }
 
 a {

@@ -1,0 +1,41 @@
+.page {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 50%;
+  display: flex;
+  justify-content: flex-end;
+  z-index: $indexPage;
+  transition: $transitionSlow;
+  transition-timing-function: linear;
+
+  &.hidden {
+    transform: translateX(50vw);
+    pointer-events: none;
+  }
+
+  .page__inner {
+    @include pad(4, 4);
+    width: 100%;
+
+    .label {
+      @include pad(2, 0.5);
+      display: inline-block;
+      box-shadow: $boxShadow;
+      border: $border;
+      text-transform: uppercase;
+    }
+
+    .section {
+      width: 100%;
+      padding-top: $gridSize;
+      margin-top: $gridSize * 8;
+      border-top: $border;
+
+      &:nth-child(1) {
+        margin-top: $gridSize * 4;
+        border-top: none;
+      }
+    }
+  }
+}

@@ -22,31 +22,69 @@ class Materials {
       }
     });
 
+    // custom shader uniforms
+    this.uniforms = {time: {value: 0}};
+
     // reference file-loaded materials
     this.loaded = {};
   }
 
   conform(mat) {
-    this.loaded[mat.name] = mat;
-    mat.envMap = this.envMap;
-    mat.envMapIntensity = 0.5;
+    if (!this.loaded[mat.name]) {
+      this.loaded[mat.name] = mat;
+      mat.envMap = this.envMap;
+      mat.envMapIntensity = 0.5;
 
-    // mat specific
-    switch (mat.name) {
-      case 'concrete':
-        mat.normalScale.x = 0.25;
-        mat.normalScale.y = 0.25;
-        break;
-      case 'gold':
-        break;
-      case 'neon':
-        mat.emissive = new THREE.Color(1, 1, 1);
-        mat.emissiveIntensity = 1.0;
-        mat.fog = false;
-        break;
-      default:
-        break;
+      // mat specific
+      switch (mat.name) {
+        case 'concrete':
+          mat.normalScale.x = 0.25;
+          mat.normalScale.y = 0.25;
+          break;
+        case 'gold':
+          break;
+        case 'neon':
+          mat.emissive = new THREE.Color(1, 1, 1);
+          mat.emissiveIntensity = 1.0;
+          mat.fog = false;
+          break;
+        default:
+          break;
+      }
     }
+  }
+
+  getCustomMaterial(type) {
+    //if (type == 'warp') {
+    const mat = this.mat.metal.clone();
+    mat.onBeforeCompile = (shader) => {
+      shader.vertexShader = `uniform float time;\n${shader.vertexShader}`;
+      const beginVertex = `
+        vec4 mvp = modelMatrix * vec4(position, 1.0);
+        float theta = sin(time * 0.1 + mvp.x / 2.0);
+        float c = cos(theta);
+        float s = sin(theta);
+        float off = 1.0;// + 0.2 * sin(time + position.x * 200.0);
+        mat3 roty = mat3(c, 0, s, 0, 1, 0, -s, 0, c);
+        //mat3 sy = mat3(s, 0, 0, 0, 1, 0, 0, 0, 1);
+        mat4 m = mat4(1, 0, 0, 0, 0, 1, 0, s * off * 2.0, 0, 0, 1, s * off, 0, 0, 0, 1);
+        vec4 t = vec4(position, 1.0) * m;
+        vec3 transformed = vec3(t.x, t.y, t.z);
+        vNormal = vNormal * roty;
+      `;
+      shader.vertexShader = shader.vertexShader.replace('#include <begin_vertex>', beginVertex);
+
+      // hook uniforms
+      shader.uniforms.time = this.uniforms.time;
+    };
+    mat.roughness = 0.5;
+    return mat;
+    //const index = shader.vertexShader.indexOf('#include <common>')''
+    //shader.vertexShader = shader.vertexShader.slice(0, index) + '//funcs here' + shader.vertexShader.slice(index);
+  }
+
+  update(delta) {
+    this.uniforms.time.value += delta;
   }
 }
 

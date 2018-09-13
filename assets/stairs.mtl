@@ -16,6 +16,24 @@ Kd 0.00 0.00 0.00
 Ka 0.00 0.00 0.00
 Tf 1.00 1.00 1.00
 Ni 0.00
+newmtl StingrayPBS4SG
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+Ni 0.00
+newmtl StingrayPBS5SG
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+Ni 0.00
+newmtl StingrayPBS6SG
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+Ni 0.00
 newmtl StingrayPBS7SG
 illum 4
 Kd 0.00 0.00 0.00
@@ -23,12 +41,6 @@ Ka 0.00 0.00 0.00
 Tf 1.00 1.00 1.00
 Ni 0.00
 newmtl StingrayPBS8SG
-illum 4
-Kd 0.00 0.00 0.00
-Ka 0.00 0.00 0.00
-Tf 1.00 1.00 1.00
-Ni 0.00
-newmtl StingrayPBS9SG
 illum 4
 Kd 0.00 0.00 0.00
 Ka 0.00 0.00 0.00

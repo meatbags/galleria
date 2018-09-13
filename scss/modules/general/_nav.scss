@@ -1,0 +1,39 @@
+.nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  user-select: none;
+  display: flex;
+  justify-content: flex-end;
+  z-index: $indexNav;
+
+  .nav__inner {
+    @include pad(4, 4);
+    padding-bottom: 0;
+    background-color: $colourBackground;
+    @extend .ext-grid;
+    width: 50%;
+    display: flex;
+
+    .list {
+      border-bottom: $border;
+      display: flex;
+      align-items: flex-end;
+      height: 100%;
+      width: 100%;
+      height: $gridSize * 3;
+
+      .item {
+        @include pad(2, 1);
+        padding-left: 0;
+        //text-transform: uppercase;
+        cursor: pointer;
+
+        &:hover {
+          color: $colourAlt;
+        }
+      }
+    }
+  }
+}

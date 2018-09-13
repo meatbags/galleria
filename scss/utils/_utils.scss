@@ -4,3 +4,15 @@
 	padding-top: $y * $space;
 	padding-bottom: $y * $space;
 }
+
+@mixin margin($x, $y) {
+	margin-left: $x * $space;
+	margin-right: $x * $space;
+	margin-top: $y * $space;
+	margin-bottom: $y * $space;
+}
+
+.ext-grid {
+	background-size: $gridSize $gridSize;
+  background-image: linear-gradient(to right, $colourGrid 1px, transparent 1px), linear-gradient(to bottom, $colourGrid 1px, transparent 1px);
+}

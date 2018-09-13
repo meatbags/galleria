@@ -12,7 +12,7 @@ class Renderer {
     this.renderer.setClearColor(0x444444, 1);
     this.renderer.gammaInput = true;
     this.renderer.gammaOutput = true;
-    this.padding = {x: 100, y: 200};
+    this.padding = {x: 80, y: 192};
     this.setSize();
 
     // render passes
@@ -29,9 +29,10 @@ class Renderer {
     this.composer.addPass(this.passBloom);
 
     // events, doc
-    this.resize();
     window.addEventListener('resize', () => { this.resize(); });
     document.querySelector('.canvas-wrapper').append(this.renderer.domElement);
+    this.resize();
+    scene.resize();
   }
 
   setSize() {

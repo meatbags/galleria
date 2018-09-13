@@ -14,6 +14,26 @@ class Camera {
     this.offset = 1;
     this.camera = new THREE.PerspectiveCamera(this.fov, this.aspectRatio, 0.1, 2000000);
     this.camera.up = new THREE.Vector3(0, 1, 0);
+
+    // fade in/out box
+    this.fade = {
+      value: 1,
+      active: true,
+      speed: 0.5,
+      box: new THREE.Mesh(
+        new THREE.BoxBufferGeometry(1, 1, 1),
+        new THREE.MeshBasicMaterial({color: 0x0b070a, opacity: 1, transparent: true, side: THREE.DoubleSide})
+      )
+    };
+    this.root.scene.add(this.fade.box);
+  }
+
+  fadeIn() {
+    this.fade.active = false;
+  }
+
+  fadeOut() {
+    this.fade.active = true;
   }
 
   resize(w, h) {
@@ -34,6 +54,16 @@ class Camera {
     this.target.y = y + Math.sin(this.rotation.y) * offsetY;
     this.target.z = this.position.z + Math.cos(this.rotation.x) * offsetXZ;
     this.camera.lookAt(this.target);
+
+    // fade in/ out
+    this.fade.value = (this.fade.active) ? Math.min(1, this.fade.value + this.fade.speed * delta) : Math.max(0, this.fade.value - this.fade.speed * delta);
+    if (this.fade.value == 0) {
+      this.fade.box.visible = false;
+    } else {
+      this.fade.box.visible = true;
+      this.fade.box.material.opacity = this.fade.value;
+      //this.fade.box.position.set(this.camera.position.x, this.camera.position.y, this.camera.position.z);
+    }
   }
 }
 

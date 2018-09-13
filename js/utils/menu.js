@@ -3,14 +3,33 @@
  **/
 
 class Menu {
-  constructor() {
-    // hook up menus
+  constructor(root) {
+    this.root = root;
+    document.querySelector('#open-gallery').onclick = () => { this.openGallery(); };
+
+    // menus
     document.querySelectorAll('.nav-menu .item').forEach(item => {
       item.onclick = () => { this.toggleMenu(item); };
     });
     document.querySelectorAll('.close-menu').forEach(item => {
       item.onclick = () => { this.closeMenu(item); };
     });
+
+    //this.openGallery();
+  }
+
+  openGallery() {
+    // adjust dom
+    const active = ['.wrapper'];
+    const hidden = ['.page'];
+    hidden.forEach(sel => { document.querySelector(sel).classList.add('hidden'); });
+
+    // start app
+    setTimeout(() => {
+      this.root.activate();
+      active.forEach(sel => { document.querySelector(sel).classList.add('active'); });
+      document.documentElement.classList.add('freeze');
+    }, 500);
   }
 
   closeMenu(item) {

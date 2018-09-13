@@ -1,13 +1,30 @@
 <?php
   get_header();
-  $query = new wp_Query(array("post_type" => "gallery", "order_by" => "menu_order", "order" => "DESC"));
-  // title, description, url || https://printsbylily.com/, image.url, alpha.url
-  if ($query->have_posts()):
-    while ($query->have_posts()):
+  $query = new wp_Query(array("post_type" => "gallery", "posts_per_page" => -1, "order_by" => "menu_order"));
+  $now = time();
+  $gallery = array();
+  $active = false;
+  if ($query->have_posts()) {
+    while ($query->have_posts()) {
       $query->the_post();
-      $images = get_field('images');
-      $dir = get_template_directory_uri();
+      $fields = get_fields();
+      if ($fields['start_date'] && $fields['end_date']) {
+        $from = strtotime($fields['start_date']);
+        $to = strtotime($fields['end_date']);
+        if ($from < $now && $to > $now) {
+          $active = $fields;
+        } else if ($from > $now) {
+          $gallery[get_the_title()] = $fields;
+        }
+      }
+    }
+  }
+  // artist_name exhibition_title artist_description start_date end_date
+  // artist_social_media_links -> link_label url
+  // images -> title image_file sub_title description link horizontal_offset vertical_offset width
 ?>
+
+<div class='grid'></div>
 
 <div class='wrapper'>
   <div class='canvas-wrapper'>
@@ -15,54 +32,99 @@
   </div>
 </div>
 
-<div class='nav'>
-  <div class='nav__inner'>
-    <div class='nav-title'>Closed On Mondays</div>
-    <div class='nav-menu'>
-      <div data-selector='.menu-art' class='item'>artworks</div>
-      <div data-selector='.menu-about' class='item'>about</div>
-      <div data-selector='.menu-controls' class='item'>controls</div>
+<div class='main-title'>
+  <div class='main-title__inner'>
+    <div class='logo'>
+      <div class='logo-image'>
+        <img src='<?php echo get_template_directory_uri() . '/img/logo.jpg'; ?>'/>
+      </div>
+      <div class='logo-text'></div>
+    </div>
+    <div id='open-gallery' class='loading'>
+      Loading Gallery <span class='percent'>0%</span>
     </div>
   </div>
 </div>
 
-<div class='menu menu-art'>
-  <div class='menu__inner'>
-    <div class='artworks'>
-      <?php foreach ($images as $img): ?>
-        <div class='item'>
-          <div class='item-thumbnail'>
-            <img src='<?php echo $img['image']['sizes']['thumbnail']; ?>' />
+<div class='nav'>
+  <div class='nav__inner'>
+    <div class='list'>
+      <div class='item'>About</div>
+      <div class='item'>Featured Artist</div>
+      <div class='item'>Upcoming</div>
+      <div class='item'>Archive</div>
+      <div class='item'>Guest Book</div>
+    </div>
+  </div>
+</div>
+
+<div class='page'>
+  <div class='page__inner'>
+
+    <?php if ($active): ?>
+      <div class='section featured'>
+        <div class='label'>Featured Artist</div>
+        <br /><br />
+        <div class='artist-name'><?php echo $active['artist_name']; ?></div>
+        <?php if ($active['exhibition_title']): ?>
+          <div class='exhibition-title'><?php echo $active['exhibition_title']; ?></div>
+        <?php endif; ?>
+        <div class='dates'>
+          <?php echo $active['start_date']; ?> &rarr; <?php echo $active['end_date']; ?>
+        </div>
+        <div class='artist-description'><?php echo $active['artist_description']; ?></div>
+        <?php if ($active['artist_social_media_links']): ?>
+          <div class='artist-social-media-links'>
+            <div class='title'>Connect</div>
+            <div class='links'>
+              <?php foreach ($active['artist_social_media_links'] as $link): ?>
+                <div class='item'>
+                  <a href='<?php echo $link['url']; ?>' target='_blank'><?php echo $link['link_label']; ?></a>
+                </div>
+              <?php endforeach; ?>
+            </div>
           </div>
-          <div class='item-title'><?php echo $img['title']; ?></div>
-        </div>
-      <?php endforeach; ?>
+        <?php endif; ?>
+      </div>
+    <?php endif; ?>
+
+    <div class='section upcoming'>
+      <div class='label'>Upcoming</div>
+      <br /><br />
+      <div class='list'>
+        <?php foreach ($gallery as $g): ?>
+          <div class='item'>
+            <div class='dates'><?php echo $g['start_date']; ?> &rarr; <?php echo $g['end_date']; ?></div>
+            <div class='title'><?php echo $g['artist_name']; ?></div>
+            <div class='desc'>
+              <?php if ($g['exhibition_title']) : ?>
+                <span class='heading'><?php echo $g['exhibition_title']; ?></span>
+              <?php endif; ?>
+              <?php echo $g['artist_short_description']; ?>
+            </div>
+          </div>
+        <?php endforeach; ?>
+      </div>
     </div>
-    <div data-selector='.menu-art' class='close-menu'>
+
+    <div class='section about'>
+      <div class='label'>About</div>
+      <br /><br />
+      <div class='about-title'>COM is WTF</div>
+      <?php
+        $q = new WP_Query('pagename=about');
+        if ($q->have_posts()):
+          while($q->have_posts()):
+            $q->the_post();
+            $content = wpautop(get_the_content(), true);
+            ?>
+            <div class='about-text'>
+              <?php echo $content; ?>
+            </div>
+        <?php endwhile; ?>
+      <?php endif; ?>
     </div>
   </div>
 </div>
-<div class='menu menu-about'>
-  <div class='menu__inner'>about?</div>
-</div>
-<div class='menu menu-controls'>
-  <div class='menu__inner'>
-    <div class='controls'>
-      <div class='control-header'>
-        <div class='control-title'>Controls</div>
-      </div>
-      <div class='control-content'>
-        <div class='row'><div>MOVEMENT</div><div>Arrow Keys or WSAD</div></div>
-        <div class='row'><div>CAMERA CONTROL</div><div>Click & Drag Viewport</div></div>
-        <div class='row'><div>INTERACTION</div><div>Left Mouse Button</div></div>
-      </div>
-      <div class='control-footer'>
-        <div data-selector='.menu-controls' class='close-menu'>
-          <div class='msg'>CLOSE MENU</div>
-          <div class='anim'></div>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-<?php endwhile; endif; wp_footer(); ?></body></html>
+
+<?php wp_footer(); ?></body></html>
