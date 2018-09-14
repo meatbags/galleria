@@ -32,16 +32,24 @@
   </div>
 </div>
 
-<div class='main-title'>
-  <div class='main-title__inner'>
-    <div class='logo'>
-      <div class='logo-image'>
-        <img src='<?php echo get_template_directory_uri() . '/img/logo.jpg'; ?>'/>
-      </div>
-      <div class='logo-text'></div>
-    </div>
-    <div id='open-gallery' class='loading'>
+<div class='controls'>
+  <div id='close-gallery' class='logo'>
+    C-O-M
+  </div>
+</div>
+
+<div class='loading'>
+  <div class='loading__inner'>
+    <div id='open-gallery' class='loading-button'>
       Loading Gallery <span class='percent'>0%</span>
+    </div>
+  </div>
+</div>
+
+<div class='logo-wrapper'>
+  <div class='logo'>
+    <div class='logo-image'>
+      <img src='<?php echo get_template_directory_uri() . '/img/logo-1.jpg'; ?>'/>
     </div>
   </div>
 </div>
@@ -110,7 +118,7 @@
     <div class='section about'>
       <div class='label'>About</div>
       <br /><br />
-      <div class='about-title'>COM is WTF</div>
+      <div class='about-title'>WTF is COM</div>
       <?php
         $q = new WP_Query('pagename=about');
         if ($q->have_posts()):

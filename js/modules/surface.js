@@ -7,7 +7,7 @@ import { Mouse, Keyboard, NodeView, OverlayCanvas } from './ui';
 import { Clamp } from './maths';
 
 class Surface {
-  constructor(scene, isMobile) {
+  constructor(scene, renderer, isMobile) {
     this.scene = scene;
     this.isMobile = isMobile;
     this.player = this.scene.player;
@@ -19,7 +19,7 @@ class Surface {
     this.rotation = new THREE.Vector2();
     this.timestamp = null;
     this.threshold = {click: 150, pan: 200};
-    
+
     // ...?
     this.floorPlan = new FloorPlan(scene);
 
@@ -30,7 +30,7 @@ class Surface {
     // events
     this.keyboard = new Keyboard((key) => { this.onKeyboard(key); });
     this.mouse = new Mouse(this.domElement, (e) => { this.onMouseDown(e); }, (e) => { this.onMouseMove(e); }, (e) => { this.onMouseUp(e); });
-    this.canvas = new OverlayCanvas(this, this.domElement);
+    this.canvas = new OverlayCanvas(this, this.domElement, renderer.renderer.domElement);
     window.addEventListener('resize', () => { this.resize(); });
   }
 

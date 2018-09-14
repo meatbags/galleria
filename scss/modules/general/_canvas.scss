@@ -12,7 +12,8 @@
   z-index: $indexCanvas;
   opacity: 0;
   pointer-events: none;
-  transition: opacity $transitionSlow;
+  transition: opacity $transition;
+  overflow: hidden;
 
   &.active {
     opacity: 1;
@@ -22,6 +23,10 @@
   .canvas-wrapper {
     position: relative;
     cursor: crosshair;
+    border: $border;
+    margin: 0;
+    padding: 0;
+    display: flex;
 
     canvas {
       margin: 0;

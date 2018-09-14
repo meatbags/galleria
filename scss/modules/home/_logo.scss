@@ -1,0 +1,34 @@
+.logo-wrapper {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 50%;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  pointer-events: none;
+  z-index: $indexLogo;
+  user-select: none;
+  transition: $transitionSlow;
+
+  .logo {
+    width: 512px;
+    height: 512px;
+    padding: $space;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    img {
+      width: 512px;
+      height: auto;
+    }
+  }
+
+  &.active {
+    width: 100%;
+  }
+}

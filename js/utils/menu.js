@@ -20,14 +20,15 @@ class Menu {
 
   openGallery() {
     // adjust dom
-    const active = ['.wrapper'];
+    const active = ['.logo-wrapper'];
     const hidden = ['.page'];
     hidden.forEach(sel => { document.querySelector(sel).classList.add('hidden'); });
+    active.forEach(sel => { document.querySelector(sel).classList.add('active'); });
 
     // start app
     setTimeout(() => {
       this.root.activate();
-      active.forEach(sel => { document.querySelector(sel).classList.add('active'); });
+      document.querySelector('.wrapper').classList.add('active');
       document.documentElement.classList.add('freeze');
     }, 500);
   }

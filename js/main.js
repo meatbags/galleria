@@ -10,10 +10,14 @@ class App {
     this.isMobile = detectMobileTablet();
     this.scene = new Scene();
     this.renderer = new Renderer(this.scene);
-    this.surface = new Surface(this.scene, this.isMobile);
+    this.surface = new Surface(this.scene, this.renderer, this.isMobile);
     this.menu = new Menu(this);
     this.active = false;
     this.loop();
+  }
+
+  deactivate() {
+    this.active = false;
   }
 
   activate() {
@@ -24,7 +28,7 @@ class App {
 
   loop() {
     requestAnimationFrame(() => { this.loop(); });
-    if (this.active) {
+    if (this.active && false) {
       const t = performance.now();
       const delta = (t - this.now) / 1000;
       this.now = t;

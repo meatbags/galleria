@@ -12,7 +12,7 @@ class Renderer {
     this.renderer.setClearColor(0x444444, 1);
     this.renderer.gammaInput = true;
     this.renderer.gammaOutput = true;
-    this.padding = {x: 80, y: 192};
+    this.padding = {x: 320, y: 148, minX: 640, minY: 480};
     this.setSize();
 
     // render passes
@@ -36,8 +36,10 @@ class Renderer {
   }
 
   setSize() {
-    this.width = window.innerWidth - this.padding.x;
-    this.height = window.innerHeight - this.padding.y;
+    const w = Math.min(window.innerWidth, Math.max(this.padding.minX, window.innerWidth - this.padding.x));
+    const h = Math.min(window.innerHeight, Math.max(this.padding.minY, window.innerHeight - this.padding.y));
+    this.width = w;
+    this.height = h;
     if (!this.size) {
       this.size = new THREE.Vector2(this.width, this.height);
     } else {

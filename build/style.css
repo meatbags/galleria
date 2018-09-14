@@ -1,6 +1,6 @@
-.ext-grid, .nav .nav__inner, .grid, .main-title .main-title__inner .logo .logo-text {
-  background-size: 16px 16px;
-  background-image: linear-gradient(to right, rgba(255, 255, 255, 0.025) 1px, transparent 1px), linear-gradient(to bottom, rgba(255, 255, 255, 0.025) 1px, transparent 1px); }
+.ext-grid, .nav .nav__inner, .grid {
+  background-size: 8px 8px;
+  background-image: linear-gradient(to right, rgba(238, 238, 238, 0.025) 1px, transparent 1px), linear-gradient(to bottom, rgba(238, 238, 238, 0.025) 1px, transparent 1px); }
 
 /* http://meyerweb.com/eric/tools/css/reset/
    v2.0 | 20110126
@@ -63,7 +63,7 @@ body {
   line-height: 1.25;
   letter-spacing: initial;
   color: #eee;
-  background: #4b474a;
+  background: #4c474b;
   z-index: 1;
   overflow-x: hidden; }
 
@@ -87,16 +87,22 @@ a {
   -ms-flex-pack: center;
       justify-content: center;
   user-select: none;
-  z-index: 4;
+  z-index: 5;
   opacity: 0;
   pointer-events: none;
-  transition: opacity 1s; }
+  transition: opacity 0.5s;
+  overflow: hidden; }
   .wrapper.active {
     opacity: 1;
     pointer-events: all; }
   .wrapper .canvas-wrapper {
     position: relative;
-    cursor: crosshair; }
+    cursor: crosshair;
+    border: 1px solid #eee;
+    margin: 0;
+    padding: 0;
+    display: -ms-flexbox;
+    display: flex; }
     .wrapper .canvas-wrapper canvas {
       margin: 0;
       padding: 0; }
@@ -118,26 +124,26 @@ a {
   display: flex;
   -ms-flex-pack: end;
       justify-content: flex-end;
-  z-index: 6; }
+  z-index: 7; }
   .nav .nav__inner {
     padding-left: 32px;
     padding-right: 32px;
     padding-top: 32px;
     padding-bottom: 32px;
     padding-bottom: 0;
-    background-color: #4b474a;
+    background-color: #4c474b;
     width: 50%;
     display: -ms-flexbox;
     display: flex; }
     .nav .nav__inner .list {
-      border-bottom: 1px solid #fff;
+      border-bottom: 1px solid #eee;
       display: -ms-flexbox;
       display: flex;
       -ms-flex-align: end;
           align-items: flex-end;
       height: 100%;
       width: 100%;
-      height: 48px; }
+      height: 24px; }
       .nav .nav__inner .list .item {
         padding-left: 16px;
         padding-right: 16px;
@@ -146,7 +152,7 @@ a {
         padding-left: 0;
         cursor: pointer; }
         .nav .nav__inner .list .item:hover {
-          color: #b888fa; }
+          color: #9446ff; }
 
 .grid {
   position: fixed;
@@ -154,10 +160,10 @@ a {
   left: 0;
   width: 100%;
   height: 100vh;
-  z-index: 2;
+  z-index: 3;
   pointer-events: none; }
 
-.main-title {
+.logo-wrapper {
   position: fixed;
   top: 0;
   left: 0;
@@ -170,61 +176,63 @@ a {
   -ms-flex-align: center;
       align-items: center;
   pointer-events: none;
-  z-index: 3;
+  z-index: 2;
   -webkit-user-select: none;
      -moz-user-select: none;
       -ms-user-select: none;
-          user-select: none; }
-  .main-title .main-title__inner {
+          user-select: none;
+  transition: 1s; }
+  .logo-wrapper .logo {
+    width: 512px;
+    height: 512px;
+    padding: 8px;
+    position: relative;
+    overflow: hidden;
     display: -ms-flexbox;
     display: flex;
-    -ms-flex-direction: column;
-        flex-direction: column;
-    -ms-flex-pack: start;
-        justify-content: flex-start;
+    -ms-flex-pack: center;
+        justify-content: center;
+    -ms-flex-align: center;
+        align-items: center; }
+    .logo-wrapper .logo img {
+      width: 512px;
+      height: auto; }
+  .logo-wrapper.active {
+    width: 100%; }
+
+.loading {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 50%;
+  height: 100vh;
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-pack: center;
+      justify-content: center;
+  -ms-flex-align: center;
+      align-items: center;
+  -webkit-user-select: none;
+     -moz-user-select: none;
+      -ms-user-select: none;
+          user-select: none;
+  z-index: 4; }
+  .loading .loading__inner {
+    width: 400px;
+    height: 400px;
+    display: -ms-flexbox;
+    display: flex;
+    -ms-flex-pack: center;
+        justify-content: center;
     -ms-flex-align: end;
-        align-items: flex-end;
-    padding: 32px;
-    pointer-events: all;
-    transition: 0.5s; }
-    .main-title .main-title__inner .logo {
-      width: 240px;
-      height: 240px;
-      padding: 8px;
-      position: relative;
-      overflow: hidden; }
-      .main-title .main-title__inner .logo .logo-image {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        display: -ms-flexbox;
-        display: flex;
-        -ms-flex-pack: center;
-            justify-content: center;
-        -ms-flex-align: center;
-            align-items: center; }
-        .main-title .main-title__inner .logo .logo-image img {
-          width: 384px;
-          height: 384px; }
-      .main-title .main-title__inner .logo .logo-text {
-        position: absolute;
-        top: 0;
-        left: 0;
-        padding: 8px;
-        font-size: 12px;
-        text-align: right;
-        width: 100%;
-        height: 100%; }
-    .main-title .main-title__inner #open-gallery {
-      margin-top: 16px;
+        align-items: flex-end; }
+    .loading .loading__inner .loading-button {
       padding-left: 16px;
       padding-right: 16px;
       padding-top: 8px;
       padding-bottom: 8px;
-      border: 1px solid #fff;
-      box-shadow: 5px 5px 20px rgba(255, 255, 255, 0.25);
+      border: 1px solid #eee;
+      box-shadow: 5px 5px 20px rgba(238, 238, 238, 0.25);
       text-transform: uppercase;
       cursor: pointer; }
 
@@ -237,11 +245,11 @@ a {
   display: flex;
   -ms-flex-pack: end;
       justify-content: flex-end;
-  z-index: 5;
-  transition: 1s;
-  transition-timing-function: linear; }
+  z-index: 6;
+  transform-origin: top left;
+  transition: opacity 0.5s ease 0.125s, transform 0.5s ease 0s; }
   .page.hidden {
-    transform: translateX(50vw);
+    opacity: 0;
     pointer-events: none; }
   .page .page__inner {
     padding-left: 32px;
@@ -255,16 +263,16 @@ a {
       padding-top: 4px;
       padding-bottom: 4px;
       display: inline-block;
-      box-shadow: 5px 5px 20px rgba(255, 255, 255, 0.25);
-      border: 1px solid #fff;
+      box-shadow: 5px 5px 20px rgba(238, 238, 238, 0.25);
+      border: 1px solid #eee;
       text-transform: uppercase; }
     .page .page__inner .section {
       width: 100%;
       padding-top: 16px;
-      margin-top: 128px;
-      border-top: 1px solid #fff; }
+      margin-top: 64px;
+      border-top: 1px solid #eee; }
       .page .page__inner .section:nth-child(1) {
-        margin-top: 64px;
+        margin-top: 32px;
         border-top: none; }
 
 .featured .artist-name {
@@ -280,14 +288,14 @@ a {
   padding-top: 4px;
   padding-bottom: 4px;
   font-size: 24px;
-  color: #b888fa; }
+  color: #9446ff; }
 
 .featured .dates {
   margin-left: 0px;
   margin-right: 0px;
   margin-top: 4px;
   margin-bottom: 4px;
-  color: #b888fa;
+  color: #9446ff;
   display: inline-block; }
 
 .featured .artist-description {
@@ -300,14 +308,14 @@ a {
   margin-top: 16px;
   margin-bottom: 16px;
   font-size: 24px;
-  border-left: 1px solid #fff; }
+  border-left: 1px solid #eee; }
 
 .featured .artist-social-media-links .title {
   padding-left: 0px;
   padding-right: 0px;
   padding-top: 4px;
   padding-bottom: 4px;
-  color: #b888fa; }
+  color: #9446ff; }
 
 .featured .artist-social-media-links .links {
   display: -ms-flexbox;
@@ -323,14 +331,14 @@ a {
       padding-bottom: 4px;
       padding-left: 0; }
       .featured .artist-social-media-links .links .item a:hover {
-        color: #b888fa; }
+        color: #9446ff; }
 
 .upcoming .list .item {
   width: 66.66%;
   padding-top: 32px;
   padding-bottom: 32px; }
   .upcoming .list .item .dates {
-    color: #b888fa;
+    color: #9446ff;
     padding-bottom: 16px;
     text-decoration: underline;
     font-size: 24px; }
@@ -357,13 +365,13 @@ a {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 16px;
-  border-left: 1px solid #fff;
+  border-left: 1px solid #eee;
   font-size: 24px;
   width: 100%; }
   .about .about-text p {
     display: block;
     width: 100%;
-    margin-bottom: 32px; }
+    margin-bottom: 16px; }
     .about .about-text p:last-child {
       margin-bottom: 0; }
 

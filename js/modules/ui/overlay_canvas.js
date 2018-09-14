@@ -3,11 +3,12 @@
  **/
 
 class OverlayCanvas {
-  constructor(root, domElement) {
+  constructor(root, domElement, canvasTarget) {
     this.root = root;
     this.cvs = document.createElement('canvas');
     this.ctx = this.cvs.getContext('2d');
     this.domElement = domElement;
+    this.canvasTarget = canvasTarget;
     this.resize();
     this.domElement.append(this.cvs);
 
@@ -28,9 +29,9 @@ class OverlayCanvas {
   }
 
   resize() {
-    const rect = this.domElement.getBoundingClientRect();
-    this.cvs.width = rect.width;
-    this.cvs.height = rect.height;
+    //const rect = this.domElement.getBoundingClientRect();
+    this.cvs.width = this.canvasTarget.width;
+    this.cvs.height = this.canvasTarget.height;
   }
 
   promptClick(active, x, y) {
