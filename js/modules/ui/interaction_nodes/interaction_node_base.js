@@ -2,7 +2,7 @@
  * Base UI node. Converts world space to screen space.
  **/
 
-class NodeBase {
+class InteractionNodeBase {
   constructor(position, clipping) {
     this.onscreen = true;
     this.position = position;
@@ -36,4 +36,4 @@ class NodeBase {
   }
 }
 
-export { NodeBase };
+export { InteractionNodeBase };

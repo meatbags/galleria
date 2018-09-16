@@ -1,0 +1,42 @@
+.pane-content {
+  z-index: $indexPaneContent;
+  transform: translateX(100vw);
+
+  .pane__inner {
+    display: flex;
+    justify-content: flex-end;
+
+    .pages {
+      width: 50%;
+    }
+  }
+
+  .gallery-prompt {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 50%;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    .gallery-prompt__inner {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      cursor: pointer;
+
+      .logo {
+        padding: $space;
+      }
+
+      .open-gallery-button {
+        @include pad(2, 1);
+        border: $border;
+        box-shadow: $boxShadow;
+        cursor: pointer;
+      }
+    }
+  }
+}

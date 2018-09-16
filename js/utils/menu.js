@@ -5,52 +5,66 @@
 class Menu {
   constructor(root) {
     this.root = root;
-    document.querySelector('#open-gallery').onclick = () => { this.openGallery(); };
-
-    // menus
-    document.querySelectorAll('.nav-menu .item').forEach(item => {
-      item.onclick = () => { this.toggleMenu(item); };
-    });
-    document.querySelectorAll('.close-menu').forEach(item => {
-      item.onclick = () => { this.closeMenu(item); };
+    document.querySelector('#open-gallery').onclick = () => { this.toggleGallery(true); };
+    document.querySelectorAll('.close-gallery').forEach(e => {
+      e.addEventListener('click', () => { this.toggleGallery(false); });
     });
 
-    //this.openGallery();
+    this.initMenus();
+    //this.toggleGallery(true);
   }
 
-  openGallery() {
-    // adjust dom
-    const active = ['.logo-wrapper'];
-    const hidden = ['.page'];
-    hidden.forEach(sel => { document.querySelector(sel).classList.add('hidden'); });
-    active.forEach(sel => { document.querySelector(sel).classList.add('active'); });
+  toggleGallery(active) {
+    if (!this.lock) {
+      this.lock = true;
+      this.toggleCount = this.toggleCount ? this.toggleCount + 1 : 1;
+      const content = document.querySelector('#pane-content');
+      const gallery = document.querySelector('#pane-gallery');
+      const grid = document.querySelector('#background-grid');
+      const nav = document.querySelector('.nav');
 
-    // start app
-    setTimeout(() => {
-      this.root.activate();
-      document.querySelector('.wrapper').classList.add('active');
-      document.documentElement.classList.add('freeze');
-    }, 500);
-  }
-
-  closeMenu(item) {
-    const target = document.querySelector(item.dataset.selector);
-    if (target) {
-      target.classList.remove('active');
-      item.classList.remove('active');
-      document.querySelectorAll('.nav-menu .item.active').forEach(e => { e.classList.remove('active'); });
+      if (content.classList.contains('active')) {
+        content.classList.remove('active');
+        gallery.classList.add('active');
+        grid.classList.add('active');
+        nav.classList.add('active');
+        document.documentElement.classList.add('freeze');
+        if (this.toggleCount == 1) {
+          setTimeout(() => {
+            this.lock = false;
+            this.root.activate();
+          }, 1000);
+        } else {
+          this.root.activate();
+          this.lock = false;
+        }
+      } else {
+        gallery.classList.remove('active');
+        content.classList.add('active');
+        grid.classList.remove('active');
+        nav.classList.remove('active');
+        document.documentElement.classList.remove('freeze');
+        this.root.deactivate();
+        this.lock = false;
+      }
     }
   }
 
-  toggleMenu(item) {
-    const target = document.querySelector(item.dataset.selector);
-    const open = target && target.classList.contains('active');
-    document.querySelectorAll('.nav-menu .item').forEach(e => { e.classList.remove('active'); });
-    document.querySelectorAll('.menu').forEach(e => { e.classList.remove('active'); });
-    if (!open && target) {
-      target.classList.add('active');
-      item.classList.add('active');
-    }
+  initMenus() {
+    document.querySelectorAll('.pane-content-nav .item').forEach(item => {
+      item.addEventListener('click', e => {
+        const el = e.currentTarget;
+        if (el.dataset.active) {
+          const target = document.querySelector(el.dataset.active);
+          if (target) {
+            el.parentNode.querySelectorAll('.active').forEach(e => { e.classList.remove('active'); });
+            el.classList.add('active');
+            document.querySelectorAll('.pane-content .page.active').forEach(page => { page.classList.remove('active'); });
+            target.classList.add('active');
+          }
+        }
+      });
+    });
   }
 }
 

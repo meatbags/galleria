@@ -2,16 +2,17 @@
  * Signify view location exists.
  **/
 
-import { NodeBase } from './node_base';
+import { InteractionNodeBase } from './interaction_node_base';
 
-class NodeView extends NodeBase {
+class InteractionNodeView extends InteractionNodeBase {
   constructor(position, rotation, clipping) {
     super(position, clipping || null);
     this.rotation = rotation;
     this.active = true;
     this.hover = false;
-    this.radius = {min: 5, max: 30, fadeThreshold: 5};
-    this.boundingBox = {width: 40, height: 40};
+    this.nearby = false;
+    this.radius = {min: 7, max: 20, fadeThreshold: 5};
+    this.boundingBox = {width: 40, height: 40, nearbyThreshold: 150};
     this.eye = {
       width: 18,
       height: 9,
@@ -30,7 +31,9 @@ class NodeView extends NodeBase {
   }
 
   mouseOver(x, y) {
+    // check if mouse hover or nearby
     if (this.active && this.onscreen) {
+      this.nearby = Math.hypot(this.coords.x - x, this.coords.y - y) < this.boundingBox.nearbyThreshold;
       this.hover = (
         x >= this.coords.x - this.boundingBox.width &&
         x <= this.coords.x + this.boundingBox.width &&
@@ -38,9 +41,9 @@ class NodeView extends NodeBase {
         y <= this.coords.y + this.boundingBox.height
       );
     } else {
+      this.nearby = false;
       this.hover = false;
     }
-    return this.hover;
   }
 
   isHover() {
@@ -69,26 +72,25 @@ class NodeView extends NodeBase {
 
   draw(ctx) {
     if (this.onscreen && this.active) {
+      ctx.globalAlpha = this.opacity;
       this.eye.radius.current += ((this.hover ? this.eye.radius.max : this.eye.radius.min) - this.eye.radius.current) * 0.25;
       this.bez.offset.current += ((this.hover ? this.bez.offset.min : this.bez.offset.max) - this.bez.offset.current) * 0.25;
-      ctx.globalAlpha = this.opacity;
       ctx.beginPath();
-      ctx.arc(this.coords.x, this.coords.y, this.eye.radius.current, Math.PI * 0.5, Math.PI * 2.5);
-      ctx.moveTo(this.coords.x + this.bez.p1.x, this.coords.y + this.bez.p1.y - this.bez.offset.current);
-      ctx.bezierCurveTo(this.coords.x + this.bez.cp1.x, this.coords.y + this.bez.cp1.y - this.bez.offset.current, this.coords.x + this.bez.cp2.x, this.coords.y + this.bez.cp2.y - this.bez.offset.current, this.coords.x + this.bez.p2.x, this.coords.y + this.bez.p2.y - this.bez.offset.current);
-      ctx.bezierCurveTo(this.coords.x - this.bez.cp2.x, this.coords.y + this.bez.cp2.y - this.bez.offset.current, this.coords.x - this.bez.cp1.x, this.coords.y + this.bez.cp1.y - this.bez.offset.current, this.coords.x - this.bez.p1.x, this.coords.y + this.bez.p1.y - this.bez.offset.current);
-      ctx.moveTo(this.coords.x - this.bez.p1.x, this.coords.y - this.bez.p1.y + this.bez.offset.current);
-      ctx.bezierCurveTo(this.coords.x - this.bez.cp1.x, this.coords.y - this.bez.cp1.y + this.bez.offset.current, this.coords.x - this.bez.cp2.x, this.coords.y - this.bez.cp2.y + this.bez.offset.current, this.coords.x - this.bez.p2.x, this.coords.y - this.bez.p2.y + this.bez.offset.current);
-      ctx.bezierCurveTo(this.coords.x + this.bez.cp2.x, this.coords.y - this.bez.cp2.y + this.bez.offset.current, this.coords.x + this.bez.cp1.x, this.coords.y - this.bez.cp1.y + this.bez.offset.current, this.coords.x + this.bez.p1.x, this.coords.y - this.bez.p1.y + this.bez.offset.current);
-      ctx.stroke();
+      ctx.arc(this.coords.x, this.coords.y, this.nearby ? this.eye.radius.current : this.eye.radius.current * 0.75, Math.PI * 0.5, Math.PI * 2.5);
 
-      if (this.hover) {
-        //ctx.beginPath();
-        //ctx.arc(this.coords.x, this.coords.y, this.eye.radius.current, 0, Math.PI * 2);
-        //ctx.fill();
+      /*
+      if (this.nearby) {
+        ctx.moveTo(this.coords.x + this.bez.p1.x, this.coords.y + this.bez.p1.y - this.bez.offset.current);
+        ctx.bezierCurveTo(this.coords.x + this.bez.cp1.x, this.coords.y + this.bez.cp1.y - this.bez.offset.current, this.coords.x + this.bez.cp2.x, this.coords.y + this.bez.cp2.y - this.bez.offset.current, this.coords.x + this.bez.p2.x, this.coords.y + this.bez.p2.y - this.bez.offset.current);
+        ctx.bezierCurveTo(this.coords.x - this.bez.cp2.x, this.coords.y + this.bez.cp2.y - this.bez.offset.current, this.coords.x - this.bez.cp1.x, this.coords.y + this.bez.cp1.y - this.bez.offset.current, this.coords.x - this.bez.p1.x, this.coords.y + this.bez.p1.y - this.bez.offset.current);
+        ctx.moveTo(this.coords.x - this.bez.p1.x, this.coords.y - this.bez.p1.y + this.bez.offset.current);
+        ctx.bezierCurveTo(this.coords.x - this.bez.cp1.x, this.coords.y - this.bez.cp1.y + this.bez.offset.current, this.coords.x - this.bez.cp2.x, this.coords.y - this.bez.cp2.y + this.bez.offset.current, this.coords.x - this.bez.p2.x, this.coords.y - this.bez.p2.y + this.bez.offset.current);
+        ctx.bezierCurveTo(this.coords.x + this.bez.cp2.x, this.coords.y - this.bez.cp2.y + this.bez.offset.current, this.coords.x + this.bez.cp1.x, this.coords.y - this.bez.cp1.y + this.bez.offset.current, this.coords.x + this.bez.p1.x, this.coords.y - this.bez.p1.y + this.bez.offset.current);
       }
+      */
+      ctx.stroke();
     }
   }
 }
 
-export { NodeView };
+export { InteractionNodeView };

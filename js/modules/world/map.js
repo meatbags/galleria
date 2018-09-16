@@ -32,6 +32,11 @@ class Map {
       this.addCollisionMap(map);
     }, (err) => { console.log(err); });
 
+    this.loader.loadFBX('props').then((map) => {
+      this.scene.add(map);
+      this.conformGroups(map);
+    });
+
     // load props
     /*
     //const mat = this.materials.getCustomMaterial('warp');

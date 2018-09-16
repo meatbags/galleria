@@ -1,0 +1,48 @@
+.pane-gallery {
+  z-index: $indexPaneContent;
+
+  .pane__inner {
+
+  }
+
+  .canvas-wrapper {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    user-select: none;
+
+    // #canvas-target
+    .canvas-wrapper__inner {
+      background: $black;
+      position: relative;
+      cursor: crosshair;
+      box-shadow: $boxShadow;
+
+      canvas {
+        margin: 0;
+        padding: 0;
+        position: absolute;
+      }
+    }
+  }
+
+  .gallery-controls {
+    position: absolute;
+
+    .close-gallery-button {
+      margin-top: $gridSize * 5;
+      margin-left: $gridSize * 5;
+      width: 80px;
+      height: 80px;
+      cursor: pointer;
+      padding: $space;
+      box-shadow: $boxShadow;
+      border: $border;
+    }
+  }
+}

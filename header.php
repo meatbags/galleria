@@ -2,12 +2,12 @@
 <!-- by xavierburrow.com -->
 <html lang="en">
 <head>
-	<title>C&times;O&times;M</title>
+	<title>Closed On Monday</title>
 	<?php wp_head(); ?>
 	<meta charset="utf-8">
 	<meta name="description" content="A virtual webgl gallery packed with exciting art!">
   <meta name="keywords" content="virtual gallery, online gallery, webgl, 3D">
-  <meta name="author" content="Closed On Mondays">
+  <meta name="author" content="http://xavierburrow.com">
 	<meta content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0' name='viewport' />
 	<meta property="og:url" content="http://closedmondaygallery.com/" />
 	<meta property="og:title" content="Closed On Mondays"/>

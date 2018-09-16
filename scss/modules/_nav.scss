@@ -1,0 +1,65 @@
+.nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  display: flex;
+  justify-content: flex-end;
+  z-index: $indexNav;
+  pointer-events: none;
+
+  .nav__inner {
+    @include pad(0, 4);
+    @extend .ext-grid;
+    padding-bottom: 0;
+    background-color: $colourBackground;
+    width: 50%;
+    display: flex;
+    pointer-events: all;
+    transition: $transitionSlow;
+    user-select: none;
+
+    .list {
+      border-bottom: $border;
+      display: flex;
+      align-items: flex-end;
+      height: 100%;
+      width: 100%;
+      height: $gridSize * 3;
+
+      //&.#nav-content
+      &#nav-gallery {
+        display: none;
+      }
+
+      .item {
+        @include pad(0, 1);
+        margin-right: $space * 2;
+        cursor: pointer;
+
+        &:hover {
+          color: $colourAlt;
+        }
+
+        &.active {
+          color: $colourAlt;
+          border-bottom: $space/2 solid white;
+        }
+      }
+    }
+  }
+
+  &.active {
+    .nav__inner {
+      background-color: $colourBackgroundAlt;
+
+      #nav-content {
+        display: none;
+      }
+
+      #nav-gallery {
+        display: inherit;
+      }
+    }
+  }
+}

@@ -1,0 +1,29 @@
+.section-upcoming {
+  .list {
+    .item {
+      padding-bottom: $space * 2;
+      width: 66.66%;
+
+      .dates {
+        font-size: $fontLarge;
+        margin-bottom: 0;
+      }
+
+      h1 {
+        padding: 0;
+      }
+
+      .desc {
+        @include margin(0, 2);
+
+        .heading {
+          text-decoration: underline;
+        }
+
+        padding-left: $space * 2;
+        border-left: $border;
+        font-size: $fontLarge;
+      }
+    }
+  }
+}

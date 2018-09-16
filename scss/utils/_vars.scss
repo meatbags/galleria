@@ -2,32 +2,35 @@
 $colourPrimary: #eee;
 $colourSecondary: #444;
 $colourBackground: #4c474b;
-$colourBackgroundAlt: lighten($colourBackground, 5%);
-$colourAlt: #9446ff;
+$colourBackgroundAlt: #2c272b;
+$colourAlt: #9648ff;
 $transparent: rgba($colourBackground, 0.5);
 $black: #000;
 $white: #eee;
+$colourGrid: rgba($white, 0.025);
+
+// sizes
+$space: 8px;
+$gridSize: $space * 2;
+$navHeight: $space * 6;
 
 // style
-$colourGrid: rgba($white, 0.025);
 $border: 1px solid $white;
 $borderAlt: 3px double $white;
 $boxShadow: 5px 5px 20px rgba($white, 0.25);
-
-// sizesa
-$space: 8px;
-$gridSize: $space;
-$navHeight: $space * 6;
+$backgroundGrid: linear-gradient(to right, $colourGrid 1px, transparent 1px), linear-gradient(to bottom, $colourGrid 1px, transparent 1px);
 
 // index
 $indexBody: 1;
-$indexLogo: 2;
 $indexGrid: 3;
-$indexLoading: 4;
-$indexCanvas: 5;
-$indexPage: 6;
-$indexNav: 7;
+$indexPaneContent: 4;
+//$indexLoading: 4;
+//$indexCanvas: 5;
+//$indexPage: 6;
+$indexNav: 9;
+$indexControls: 8;
 
 // animation
-$transition: 0.5s;
+$transition: 0.25s;
 $transitionSlow: 1s;
+$transitionVerySlow: 2s;

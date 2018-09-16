@@ -6,7 +6,7 @@ import { Camera, Lighting, Player, Map } from './world';
 
 class Scene {
   constructor() {
-    this.element = document.querySelector('.canvas-wrapper');
+    this.element = document.querySelector('#canvas-target');
     this.width = window.innerWidth;
     this.height = window.innerHeight;
     this.scene = new THREE.Scene();

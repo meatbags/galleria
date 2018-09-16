@@ -1,0 +1,25 @@
+.pane {
+  width: 100%;
+  height: 100vh;
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: flex;
+  pointer-events: none;
+  transition: transform $transitionSlow, opacity $transitionSlow;
+  opacity: 0;
+  //transition-timing-function: linear;
+  transform: translateX(-100vw);
+
+  .pane__inner {
+    position: relative;
+    display: flex;
+    width: 100%;
+  }
+
+  &.active {
+    opacity: 1;
+    pointer-events: all;
+    transform: translateX(0);
+  }
+}
