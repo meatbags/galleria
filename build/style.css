@@ -64,7 +64,7 @@ html.freeze {
 body {
   font-family: "Karla", sans-serif;
   font-size: 17px;
-  line-height: 1.2;
+  line-height: 1.25;
   letter-spacing: initial;
   word-spacing: initial;
   color: #eee;
@@ -109,7 +109,11 @@ a {
     transform: translateX(0); }
 
 .pane-gallery {
-  z-index: 4; }
+  z-index: 4;
+  -webkit-user-select: none;
+     -moz-user-select: none;
+      -ms-user-select: none;
+          user-select: none; }
   .pane-gallery .canvas-wrapper {
     position: absolute;
     top: 0;
@@ -121,11 +125,7 @@ a {
     -ms-flex-pack: center;
         justify-content: center;
     -ms-flex-align: center;
-        align-items: center;
-    -webkit-user-select: none;
-       -moz-user-select: none;
-        -ms-user-select: none;
-            user-select: none; }
+        align-items: center; }
     .pane-gallery .canvas-wrapper .canvas-wrapper__inner {
       background: #000;
       position: relative;
@@ -135,6 +135,51 @@ a {
         margin: 0;
         padding: 0;
         position: absolute; }
+  .pane-gallery .artwork-info {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    margin-right: 80px;
+    margin-bottom: 56px;
+    padding: 8px;
+    opacity: 0;
+    transform: translateX(-32px);
+    transition: opacity 0.4s, transform 0.4s;
+    display: -ms-flexbox;
+    display: flex;
+    -ms-flex-direction: column;
+        flex-direction: column;
+    -ms-flex-align: end;
+        align-items: flex-end; }
+    .pane-gallery .artwork-info .title {
+      padding-left: 0px;
+      padding-right: 0px;
+      padding-top: 4px;
+      padding-bottom: 4px;
+      font-size: 40px; }
+    .pane-gallery .artwork-info .subtitle {
+      padding-left: 0px;
+      padding-right: 0px;
+      padding-top: 8px;
+      padding-bottom: 8px;
+      max-width: 300px;
+      font-style: italic; }
+    .pane-gallery .artwork-info .desc {
+      padding-left: 0px;
+      padding-right: 0px;
+      padding-top: 4px;
+      padding-bottom: 4px;
+      border-top: 1px solid #eee;
+      max-width: 300px;
+      text-align: right; }
+    .pane-gallery .artwork-info .link {
+      padding-left: 0px;
+      padding-right: 0px;
+      padding-top: 4px;
+      padding-bottom: 4px; }
+    .pane-gallery .artwork-info.active {
+      opacity: 1;
+      transform: translateX(0); }
   .pane-gallery .gallery-controls {
     position: absolute; }
     .pane-gallery .gallery-controls .close-gallery-button {
@@ -145,7 +190,11 @@ a {
       cursor: pointer;
       padding: 8px;
       box-shadow: 5px 5px 20px rgba(238, 238, 238, 0.25);
-      border: 1px solid #eee; }
+      border: 1px solid #eee;
+      -webkit-user-select: none;
+         -moz-user-select: none;
+          -ms-user-select: none;
+              user-select: none; }
 
 .pane-content {
   z-index: 4;

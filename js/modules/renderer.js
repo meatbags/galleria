@@ -14,7 +14,7 @@ class Renderer {
     this.renderer.gammaOutput = true;
     this.padding = {x: 64, y: 96, minX: 640, minY: 480};
     this.setSize();
-    
+
     // render passes
     const strength = 0.5;
     const radius = 0.125;

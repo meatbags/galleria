@@ -5,14 +5,18 @@
 import { InteractionNodeView } from './interaction_nodes';
 
 class Artwork {
-  constructor(e) {
+  constructor(id, e) {
+    this.id = id;
+    this.position = new THREE.Vector3();
+    this.direction = new THREE.Vector3();
     this.element = e;
+    this.nearRadius = 5;
     this.data = {
-      title: e.dataset.title,
       url: e.dataset.url,
-      subtitle: e.dataset.subtitle,
-      desc: e.dataset.desc,
-      link: e.dataset.link,
+      title: e.dataset.title || '',
+      subtitle: e.dataset.subtitle || '',
+      desc: e.dataset.desc || '',
+      link: e.dataset.link || '',
       width: parseFloat(e.dataset.width),
       offset: {
         horizontal: parseFloat(e.dataset.hoff),
@@ -70,10 +74,20 @@ class Artwork {
 
     // create interaction node
     this.node = new InteractionNodeView(p, null, v);
+    this.position.set(p.x, p.y, p.z);
+    this.direction.set(v.x, v.y, v.z);
   }
 
-  draw() {
-    
+  getDistanceTo(p) {
+    return this.position.distanceTo(p);
+  }
+
+  getCameraDot(p, v) {
+    // get dot product p->position . v
+    const d = this.position.clone();
+    d.sub(p);
+    d.normalize();
+    return d.dot(v);
   }
 }
 

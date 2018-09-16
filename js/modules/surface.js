@@ -19,11 +19,8 @@ class Surface {
     this.timestamp = null;
     this.threshold = {click: 150, pan: 200};
 
-    // interactive nodes??
-    // ...?
-    this.floorPlan = new FloorPlan(scene.scene); // put all nodes <--
-    // this.nodes = [];
-    // this.nodes.push(new NodeView(new THREE.Vector3(0, 3, 0), null));
+    // interactive nodes
+    this.floorPlan = new FloorPlan(scene);
 
     // events
     this.keyboard = new Keyboard((key) => { this.onKeyboard(key); });
@@ -125,6 +122,9 @@ class Surface {
         this.activeTitle = artwork.data.title;
       }
     });
+
+    // update artwork display
+    this.floorPlan.update(delta);
   }
 
   draw() {

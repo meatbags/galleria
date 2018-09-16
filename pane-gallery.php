@@ -10,5 +10,11 @@
         [logo/ home button]
       </div>
     </div>
+    <div id='artwork-target' class='artwork-info'>
+      <div class='title'></div>
+      <div class='subtitle'></div>
+      <div class='desc'></div>
+      <div class='link'></div>
+    </div>
   </div>
 </div>

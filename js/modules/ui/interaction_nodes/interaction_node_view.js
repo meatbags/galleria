@@ -11,7 +11,7 @@ class InteractionNodeView extends InteractionNodeBase {
     this.active = true;
     this.hover = false;
     this.nearby = false;
-    this.radius = {min: 7, max: 20, fadeThreshold: 5};
+    this.radius = {min: 5, max: 20, fadeThreshold: 4};
     this.boundingBox = {width: 40, height: 40, nearbyThreshold: 150};
     this.eye = {
       width: 18,
