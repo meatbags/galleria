@@ -8,12 +8,26 @@ class FloorPlan {
   constructor(scene) {
     this.scene = scene;
     this.artworks = [];
-    document.querySelectorAll('#artworks .image').forEach(e => { this.artworks.push(new Artwork(e)); });
+
+    // get artworks
+    var count = 0;
+    document.querySelectorAll('#artworks .image').forEach(e => { this.artworks.push(new Artwork(++count, e)); });
     this.placeArtworks();
+
+    // props
+    this.domElement = document.querySelector('#artwork-target');
+    this.el = {
+      title: this.domElement.querySelector('.title'),
+      subtitle: this.domElement.querySelector('.subtitle'),
+      desc: this.domElement.querySelector('.desc'),
+      link: this.domElement.querySelector('.link'),
+    };
+    this.cameraDirection = new THREE.Vector3();
+    this.artworkActiveRadius = 7;
   }
 
   placeArtworks() {
-    // total (17)
+    // total (17) ??? re-organise
     const positions = [
       // brick wall (6)
       {x: 30, y: 4, z: 6, nx: -1, nz: 0},
@@ -43,9 +57,7 @@ class FloorPlan {
       // upstairs (2)
       {x: -8, y: 11, z: -11.5, nx: 0, nz: 1},
       {x: 8, y: 11, z: -11.5, nx: 0, nz: 1},
-      // front & back wall (2)
-
-
+      // front & back wall (2) ??
     ];
 
     this.artworks.forEach(artwork => {
@@ -70,7 +82,7 @@ class FloorPlan {
       if (p) {
         const position = new THREE.Vector3(p.x, p.y, p.z);
         const direction = new THREE.Vector3(p.nx, 0, p.nz);
-        artwork.init(this.scene, position, direction);
+        artwork.init(this.scene.scene, position, direction);
       }
     });
 
@@ -80,9 +92,41 @@ class FloorPlan {
       if (!p.active) {
         const board = new THREE.Mesh(new THREE.BoxBufferGeometry(0.25, 0.25, 0.25), mat);
         board.position.set(p.x, p.y, p.z);
-        this.scene.add(board);
+        this.scene.scene.add(board);
       }
     })
+  }
+
+  update(delta) {
+    // get active artwork based on camera/ player position
+    const p = this.scene.camera.camera.position;
+    this.scene.camera.camera.getWorldDirection(this.cameraDirection);
+    var res = false;
+    var maxDot = -1;
+
+    for (var i=0; i<this.artworks.length; ++i) {
+      if (this.artworks[i].getDistanceTo(p) < this.artworkActiveRadius) {
+        const dot = this.artworks[i].getCameraDot(p, this.cameraDirection);
+        if (dot > maxDot) {
+          maxDot = dot;
+          res = this.artworks[i];
+        }
+      }
+    }
+
+    // display
+    if (res) {
+      if (this.domElement.dataset.active === undefined || this.domElement.dataset.active != res.id || !this.domElement.classList.contains('active')) {
+        this.domElement.dataset.active = res.id;
+        this.domElement.classList.add('active');
+        this.el.title.innerHTML = res.data.title;
+        this.el.subtitle.innerHTML = res.data.subtitle;
+        this.el.desc.innerHTML = res.data.desc;
+        this.el.link.innerHTML = res.data.link ? `<a href='${res.data.link}' target='_blank'>Link</a>` : '';
+      }
+    } else {
+      this.domElement.classList.remove('active');
+    }
   }
 }
 

@@ -5,16 +5,15 @@
 class Menu {
   constructor(root) {
     this.root = root;
-    document.querySelector('#open-gallery').onclick = () => { this.toggleGallery(true); };
+    document.querySelector('#open-gallery').onclick = () => { this.toggleGallery(); };
     document.querySelectorAll('.close-gallery').forEach(e => {
-      e.addEventListener('click', () => { this.toggleGallery(false); });
+      e.addEventListener('click', () => { this.toggleGallery(); });
     });
-
     this.initMenus();
-    //this.toggleGallery(true);
+    this.toggleGallery();
   }
 
-  toggleGallery(active) {
+  toggleGallery() {
     if (!this.lock) {
       this.lock = true;
       this.toggleCount = this.toggleCount ? this.toggleCount + 1 : 1;
