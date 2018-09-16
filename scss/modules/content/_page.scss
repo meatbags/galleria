@@ -24,6 +24,7 @@
       box-shadow: $boxShadow;
       border: $border;
       text-transform: uppercase;
+      user-select: none;
     }
 
     .section {

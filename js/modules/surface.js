@@ -2,8 +2,7 @@
  * Control surface and player interface.
  **/
 
-import { FloorPlan } from './world';
-import { Mouse, Keyboard, NodeView, OverlayCanvas } from './ui';
+import { Mouse, Keyboard, OverlayCanvas, FloorPlan } from './ui';
 import { Clamp } from './maths';
 
 class Surface {
@@ -13,19 +12,18 @@ class Surface {
     this.player = this.scene.player;
     this.camera = this.scene.camera.camera;
     this.worldVector = new THREE.Vector3();
-    this.domElement = document.querySelector('.canvas-wrapper');
+    this.domElement = document.querySelector('#canvas-target');
     this.centre = {x:0, y:0};
     this.setSize();
     this.rotation = new THREE.Vector2();
     this.timestamp = null;
     this.threshold = {click: 150, pan: 200};
 
+    // interactive nodes??
     // ...?
-    this.floorPlan = new FloorPlan(scene);
-
-    // interactive nodes
-    this.nodes = [];
-    this.nodes.push(new NodeView(new THREE.Vector3(0, 3, 0), null));
+    this.floorPlan = new FloorPlan(scene.scene); // put all nodes <--
+    // this.nodes = [];
+    // this.nodes.push(new NodeView(new THREE.Vector3(0, 3, 0), null));
 
     // events
     this.keyboard = new Keyboard((key) => { this.onKeyboard(key); });
@@ -57,9 +55,9 @@ class Surface {
         this.player.setRotation(pitch, yaw);
       }
     } else {
-      // highlight ui nodes
-      for (var i=0, len=this.nodes.length; i<len; ++i) {
-        this.nodes[i].mouseOver(this.mouse.x, this.mouse.y);
+      // update artwork nodes
+      for (var i=0, len=this.floorPlan.artworks.length; i<len; ++i) {
+        this.floorPlan.artworks[i].node.mouseOver(this.mouse.x, this.mouse.y);
       }
     }
   }
@@ -67,7 +65,7 @@ class Surface {
   onMouseUp(e) {
     this.mouse.stop();
     if (Date.now() - this.timestamp < this.threshold.click) {
-       // apply clickw
+       // apply click
     }
   }
 
@@ -120,18 +118,19 @@ class Surface {
     // update nodes
     this.camera.getWorldDirection(this.worldVector);
     this.activeNode = false;
-    for (var i=0, len=this.nodes.length; i<len; ++i) {
-      this.nodes[i].update(delta, this.player, this.camera, this.worldVector, this.centre);
-      if (this.nodes[i].isHover()) {
+    this.floorPlan.artworks.forEach(artwork => {
+      artwork.node.update(delta, this.player, this.camera, this.worldVector, this.centre);
+      if (artwork.node.isHover()) {
         this.activeNode = true;
+        this.activeTitle = artwork.data.title;
       }
-    }
+    });
   }
 
   draw() {
-    this.canvas.draw(this.nodes);
+    this.canvas.draw(this.floorPlan.artworks);
     this.canvas.promptTouchMove((this.mouse.active && (Date.now() - this.timestamp > this.threshold.pan)));
-    this.canvas.promptClick((!this.mouse.active && this.activeNode), this.mouse.x, this.mouse.y);
+    this.canvas.promptClick('view: ' + (this.activeTitle || ''), (!this.mouse.active && this.activeNode), this.mouse.x, this.mouse.y);
     if (this.player.noclip) {
       this.canvas.promptGodMode();
     }

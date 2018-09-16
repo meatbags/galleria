@@ -16,10 +16,26 @@ body {
 	font-size: $fontSize;
 	line-height: $lineHeight;
 	letter-spacing: $letterSpacing;
+	word-spacing: $wordSpacing;
 	color: $colourPrimary;
 	background: $colourBackground;
 	z-index: $indexBody;
 	overflow-x: hidden;
+}
+
+#background-grid {
+	@extend .ext-grid;
+	background-color: $colourBackground;
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	transition: background-color $transitionSlow;
+
+	&.active {
+		background-color: $colourBackgroundAlt;
+	}
 }
 
 a {

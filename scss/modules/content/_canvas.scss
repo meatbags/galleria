@@ -10,27 +10,26 @@
   justify-content: center;
   user-select: none;
   z-index: $indexCanvas;
-  opacity: 0;
   pointer-events: none;
   transition: opacity $transition;
   overflow: hidden;
 
-  &.active {
-    opacity: 1;
-    pointer-events: all;
-  }
-
   .canvas-wrapper {
     position: relative;
     cursor: crosshair;
-    border: $border;
     margin: 0;
     padding: 0;
     display: flex;
+    //transform: translateX(-$gridSize);
+    box-shadow: $boxShadow;
+    opacity: 1;
+    transition: transform $transitionSlow, opacity $transitionSlow;
 
     canvas {
       margin: 0;
       padding: 0;
+      opacity: 0;
+      transition: opacity $transitionVerySlow;
 
       &:nth-child(2) {
         position: absolute;
@@ -38,5 +37,15 @@
         left: 0;
       }
     }
+
+    &.active {
+      canvas {
+        opacity: 1;
+      }
+    }
+  }
+
+  &.active {
+    pointer-events: all;
   }
 }

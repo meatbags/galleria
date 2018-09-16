@@ -14,5 +14,10 @@
 
 .ext-grid {
 	background-size: $gridSize $gridSize;
-  background-image: linear-gradient(to right, $colourGrid 1px, transparent 1px), linear-gradient(to bottom, $colourGrid 1px, transparent 1px);
+  background-image: $backgroundGrid;
+}
+
+.ext-grid-alt {
+	background-size: $gridSize*2 $gridSize*2;
+  background-image: $backgroundGrid;
 }

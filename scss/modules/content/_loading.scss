@@ -26,4 +26,8 @@
       cursor: pointer;
     }
   }
+
+  &.hidden {
+    opacity: 0;
+  }
 }

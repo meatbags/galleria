@@ -10,7 +10,7 @@
   pointer-events: none;
   z-index: $indexLogo;
   user-select: none;
-  transition: $transitionSlow;
+  transition: $transition;
 
   .logo {
     width: 512px;
@@ -29,6 +29,6 @@
   }
 
   &.active {
-    width: 100%;
+    opacity: 0;
   }
 }

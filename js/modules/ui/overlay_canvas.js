@@ -16,7 +16,6 @@ class OverlayCanvas {
     this.prompt = {};
     this.prompt.touchMove = {alpha: {current: 0, min: 0, max: 1}, size: {current: 12, min: 12, max: 24}};
     this.prompt.click = {alpha: {current: 0, min: 0, max: 1}};
-    this.transition = {fill: '#4b474a', nodes: []};
   }
 
   clear() {
@@ -34,7 +33,7 @@ class OverlayCanvas {
     this.cvs.height = this.canvasTarget.height;
   }
 
-  promptClick(active, x, y) {
+  promptClick(text, active, x, y) {
     // animate click prompt
     if (active) {
       this.prompt.click.alpha.current += (this.prompt.click.alpha.max - this.prompt.click.alpha.current) * 0.2;
@@ -45,7 +44,7 @@ class OverlayCanvas {
     // draw
     if (this.prompt.click.alpha.current > 0) {
       this.ctx.globalAlpha = this.prompt.click.alpha.current;
-      this.ctx.fillText('view artwork', x + 12, y + 12);
+      this.ctx.fillText(text, x + 12, y + 12);
     }
   }
 
@@ -66,16 +65,12 @@ class OverlayCanvas {
       const cx = this.cvs.width / 2;
       const cy = this.cvs.height / 2;
       this.ctx.globalAlpha = this.prompt.touchMove.alpha.current;
-      this.ctx.strokeRect(s1, s1, this.cvs.width - s2, this.cvs.height - s2);
       this.ctx.beginPath();
       this.ctx.arc(cx, cy, s1, 0, Math.PI * 2, false);
       this.ctx.moveTo(cx - s1, cy);
       this.ctx.lineTo(cx + s1, cy);
       this.ctx.moveTo(cx, cy - 4);
       this.ctx.lineTo(cx, cy + 4);
-      // border
-      this.ctx.moveTo(0, 0);
-      this.ctx.lineTo(s1, s1);
       this.ctx.stroke();
     }
   }
@@ -94,10 +89,10 @@ class OverlayCanvas {
     this.ctx.fillText(`${x}, ${y}, ${z}, ${rx}`, 20, this.cvs.height - 20);
   }
 
-  draw(objects) {
+  draw(artworks) {
     this.clear();
-    for (var i=0, len=objects.length; i<len; ++i) {
-      objects[i].draw(this.ctx);
+    for (var i=0, len=artworks.length; i<len; ++i) {
+      artworks[i].node.draw(this.ctx);
     }
     this.drawDevOverlay();
   }

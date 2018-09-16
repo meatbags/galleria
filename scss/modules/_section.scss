@@ -1,0 +1,75 @@
+.section {
+  padding-bottom: $space * 8;
+  padding-right: $space * 2;
+
+  .label {
+    @include pad(2, 0.5);
+    display: inline-block;
+    box-shadow: $boxShadow;
+    border: $border;
+    text-transform: uppercase;
+    user-select: none;
+  }
+
+  h1 {
+    @include pad(0, 1);
+    font-size: $fontHuge;
+  }
+
+  h2 {
+    @include pad(0, 0.5);
+    font-size: $fontLarge;
+    color: $colourAlt;
+  }
+
+  .dates {
+    @include margin(0, 0.5);
+    color: $colourAlt;
+    display: inline-block;
+  }
+
+  strong {
+    font-weight: bold;
+  }
+
+  p {
+    @include pad(0, 1);
+    font-size: $fontLarge;
+
+    a {
+      text-decoration: underline;
+    }
+  }
+
+  ul {
+    @include margin(0, 2);
+    padding-left: $space * 2;
+    padding-left: $space * 2;
+    border-left: $border;
+    font-size: $fontLarge;
+  }
+
+  .border {
+    @include margin(0, 2);
+    padding-left: $space * 2;
+    border-left: $border;
+  }
+
+  .links {
+    display: flex;
+
+    .item {
+      display: flex;
+      font-size: $fontLarge;
+
+      a {
+        @include pad(2, 0.5);
+        padding-left: 0;
+
+        &:hover {
+          color: $colourAlt;
+        }
+      }
+    }
+  }
+}

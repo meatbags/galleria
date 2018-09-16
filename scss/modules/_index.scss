@@ -1,2 +1,8 @@
-@import './general/index';
-@import './home/index';
+@import 'global';
+@import 'pane';
+@import 'pane-gallery';
+@import 'pane-content';
+@import 'pages';
+@import 'nav';
+@import 'section';
+@import 'pages/index';

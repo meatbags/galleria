@@ -31,11 +31,11 @@ class Player {
     };
 
     // physical attributes
-    this.speed = 8; //4
+    this.speed = 8; //5
     this.rotationSpeed = Math.PI * 0.8; //0.5
     this.jump = 8;
     this.jumpSpeedMultiplier = 0.25;
-    this.height = 2;
+    this.height = 3;
     this.falling = false;
     this.fallTime = 0;
     this.fallTimeThreshold = 0.2;
@@ -179,7 +179,7 @@ class Player {
 
     // rotate
     if (!this.automove.active.rotation) {
-      this.rotation.x += MinAngleBetween(this.rotation.x, this.target.rotation.x) * this.adjust.maximum;
+      this.rotation.x += MinAngleBetween(this.rotation.x, this.target.rotation.x) * this.adjust.normal;
       this.rotation.y = Blend(this.rotation.y, this.target.rotation.y, this.adjust.normal);
     }
 

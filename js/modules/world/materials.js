@@ -14,7 +14,7 @@ class Materials {
     this.normalMap = new THREE.TextureLoader().load(this.path + 'textures/noise.jpg');
     this.normalMap.wrapS = this.normalMap.wrapT = THREE.RepeatWrapping;
     this.normalMap.repeat.set(32, 32);
-
+    
     // set envmaps
     Object.keys(this.mat).forEach(key => {
       if (this.mat[key].type && this.mat[key].type === 'MeshPhysicalMaterial') {
@@ -32,25 +32,30 @@ class Materials {
   conform(mat) {
     if (!this.loaded[mat.name]) {
       this.loaded[mat.name] = mat;
-      mat.envMap = this.envMap;
-      mat.envMapIntensity = 0.5;
+    }
 
-      // mat specific
-      switch (mat.name) {
-        case 'concrete':
-          mat.normalScale.x = 0.25;
-          mat.normalScale.y = 0.25;
-          break;
-        case 'gold':
-          break;
-        case 'neon':
-          mat.emissive = new THREE.Color(1, 1, 1);
-          mat.emissiveIntensity = 1.0;
-          mat.fog = false;
-          break;
-        default:
-          break;
-      }
+    // mat specific
+    mat.envMap = this.envMap;
+    mat.envMapIntensity = 0.5;
+
+    switch (mat.name) {
+      case 'concrete':
+        mat.normalScale.x = 0.25;
+        mat.normalScale.y = 0.25;
+        break;
+      case 'gold':
+        break;
+      case 'neon':
+        mat.emissive = new THREE.Color(1, 1, 1);
+        mat.emissiveIntensity = 1.0;
+        //mat.fog = false;
+        break;
+      case 'plastic':
+        //mat.emissive = new THREE.Color(1, .95, .95);
+        //mat.emissiveIntensity = .75;
+        break;
+      default:
+        break;
     }
   }
 
