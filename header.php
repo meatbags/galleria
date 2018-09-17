@@ -24,7 +24,6 @@
 	//]]>
 	</script>
 	<link rel="icon" type="image/png" href="<?php echo get_template_directory_uri(); ?>/img/favicon.png">
-	<!--
 	<script async src="https://www.googletagmanager.com/gtag/js?id=UA-60746754-7"></script>
 	<script>
 	  window.dataLayer = window.dataLayer || [];
@@ -32,6 +31,5 @@
 	  gtag('js', new Date());
 	  gtag('config', 'UA-60746754-7');
 	</script>
-	-->
 </head>
 <body <?php body_class(); ?>>
