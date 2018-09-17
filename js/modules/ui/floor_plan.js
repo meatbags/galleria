@@ -33,7 +33,7 @@ class FloorPlan {
     // make notes
     this.notes = [];
     this.notes.push(
-      new InteractionNodeNote('[ logo here ]', new THREE.Vector3(28, 12, 6), null),
+      //new InteractionNodeNote('[ logo here ]', new THREE.Vector3(28, 12, 6), null),
       new InteractionNodeNote('[ door here ]', new THREE.Vector3(-28, 5, 15), null)
     );
   }
