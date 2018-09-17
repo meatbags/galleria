@@ -6,6 +6,44 @@
 
   }
 
+  .gallery-menu {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+
+    .menu {
+      display: none;
+      pointer-events: none;
+      background: black;
+      padding: $space;
+      box-shadow: $boxShadow;
+
+      &.active {
+        display: block;
+        pointer-events: all;
+      }
+
+      .title {
+        font-size: $fontHuge;
+      }
+
+      .content {
+
+      }
+
+      .close-gallery-menu {
+        font-size: $fontHuge;
+        cursor: pointer;
+
+        &:hover {
+          color: $colourAlt;
+        }
+      }
+    }
+  }
+
   .canvas-wrapper {
     position: absolute;
     top: 0;
@@ -27,6 +65,12 @@
         margin: 0;
         padding: 0;
         position: absolute;
+        opacity: 0;
+        transition: opacity $transitionVerySlow;
+
+        &.active {
+          opacity: 1;
+        }
       }
     }
   }
@@ -43,7 +87,7 @@
     transition: opacity $transition, transform $transition;
     display: flex;
     flex-direction: column;
-    align-items: flex-end;
+    align-items: flex-start;
 
     .title {
       @include pad(0, 0.5);
@@ -60,7 +104,7 @@
       @include pad(0, 0.5);
       border-top: $border;
       max-width: 300px;
-      text-align: right;
+      //text-align: right;
     }
 
     .link {

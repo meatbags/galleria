@@ -10,6 +10,18 @@
         [logo/ home button]
       </div>
     </div>
+    <div class='gallery-menu'>
+      <div id='menu-controls' class='menu'>
+        <div class='title'>Controls</div>
+        <div class='content'>[ controls here ]</div>
+        <div class='close-gallery-menu'>Close X</div>
+      </div>
+      <div id='menu-artworks' class='menu'>
+        <div class='title'>Artworks</div>
+        <div class='content'>[ artworks here ]</div>
+        <div class='close-gallery-menu'>Close X</div>
+      </div>
+    </div>
     <div id='artwork-target' class='artwork-info'>
       <div class='title'></div>
       <div class='subtitle'></div>

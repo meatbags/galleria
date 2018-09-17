@@ -10,8 +10,6 @@ class Surface {
     this.scene = scene;
     this.isMobile = isMobile;
     this.player = this.scene.player;
-    this.camera = this.scene.camera.camera;
-    this.worldVector = new THREE.Vector3();
     this.domElement = document.querySelector('#canvas-target');
     this.centre = {x:0, y:0};
     this.setSize();
@@ -19,14 +17,14 @@ class Surface {
     this.timestamp = null;
     this.threshold = {click: 150, pan: 200};
 
-    // interactive nodes
-    this.floorPlan = new FloorPlan(scene);
-
     // events
     this.keyboard = new Keyboard((key) => { this.onKeyboard(key); });
     this.mouse = new Mouse(this.domElement, (e) => { this.onMouseDown(e); }, (e) => { this.onMouseMove(e); }, (e) => { this.onMouseUp(e); });
     this.canvas = new OverlayCanvas(this, this.domElement, renderer.renderer.domElement);
     window.addEventListener('resize', () => { this.resize(); });
+
+    // artwork handler
+    this.floorPlan = new FloorPlan(this);
   }
 
   onMouseDown(e) {
@@ -53,9 +51,7 @@ class Surface {
       }
     } else {
       // update artwork nodes
-      for (var i=0, len=this.floorPlan.artworks.length; i<len; ++i) {
-        this.floorPlan.artworks[i].node.mouseOver(this.mouse.x, this.mouse.y);
-      }
+      this.floorPlan.mouseOver(this.mouse.x, this.mouse.y);
     }
   }
 
@@ -112,27 +108,21 @@ class Surface {
   }
 
   update(delta) {
-    // update nodes
-    this.camera.getWorldDirection(this.worldVector);
-    this.activeNode = false;
-    this.floorPlan.artworks.forEach(artwork => {
-      artwork.node.update(delta, this.player, this.camera, this.worldVector, this.centre);
-      if (artwork.node.isHover()) {
-        this.activeNode = true;
-        this.activeTitle = artwork.data.title;
-      }
-    });
-
     // update artwork display
     this.floorPlan.update(delta);
+    this.activeTitle = this.floorPlan.activeArtwork == null ? '' : this.floorPlan.activeArtwork.data.title;
   }
 
   draw() {
-    this.canvas.draw(this.floorPlan.artworks);
+    this.canvas.clear();
+    this.floorPlan.draw(this.canvas);
     this.canvas.promptTouchMove((this.mouse.active && (Date.now() - this.timestamp > this.threshold.pan)));
-    this.canvas.promptClick('view: ' + (this.activeTitle || ''), (!this.mouse.active && this.activeNode), this.mouse.x, this.mouse.y);
+    this.canvas.promptClick('view: ' + this.activeTitle, (!this.mouse.active && this.floorPlan.activeArtwork != null), this.mouse.x, this.mouse.y);
     if (this.player.noclip) {
       this.canvas.promptGodMode();
+      this.canvas.drawDevOverlay();
+    } else {
+      this.canvas.drawDevOverlay();
     }
   }
 }

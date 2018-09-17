@@ -1,0 +1,59 @@
+.logo-main {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 50%;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: $indexLogo;
+  transition: opacity $transitionSlow, transform $transitionSlow;
+
+  &.active {
+    opacity: 0;
+    transform: translateX(100vw);
+    pointer-events: none;
+  }
+
+  .logo-main__inner {
+    width: 360px;
+    height: 360px;
+    position: relative;
+
+    .logo-main-image {
+      position: absolute;
+      top: 0;
+      left: 0;
+      padding: $space;
+      width: 100%;
+      height: 100%;
+
+      img {
+        width: 100%;
+        height: auto;
+      }
+    }
+
+    .logo-main-text {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      @extend .ext-grid;
+      background-color: rgba($colourBackground, 0.8);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+
+      .open-gallery-button {
+        @include pad(2, 1);
+        border: $border;
+        box-shadow: $boxShadow;
+        cursor: pointer;
+      }
+    }
+  }
+}

@@ -38,9 +38,9 @@ class Map {
     });
 
     // load props
-    /*
     //const mat = this.materials.getCustomMaterial('warp');
-    //const mat = this.materials.mat.metal.clone();
+    /*
+    const mat = this.materials.mat.metal.clone();
     mat.roughness = 0.3;
     this.group = [];
     for (var x=-15; x<16; ++x) {

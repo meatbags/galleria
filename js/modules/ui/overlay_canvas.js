@@ -89,12 +89,8 @@ class OverlayCanvas {
     this.ctx.fillText(`${x}, ${y}, ${z}, ${rx}`, 20, this.cvs.height - 20);
   }
 
-  draw(artworks) {
-    this.clear();
-    for (var i=0, len=artworks.length; i<len; ++i) {
-      artworks[i].node.draw(this.ctx);
-    }
-    this.drawDevOverlay();
+  drawNode(node) {
+    node.draw(this.ctx);
   }
 }
 
