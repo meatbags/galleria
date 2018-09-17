@@ -9,13 +9,18 @@
         get_template_part('page-footer');
       ?>
     </div>
-    <div class='gallery-prompt'>
-      <!-- <img src='<?php echo get_template_directory_uri() . '/img/logo-1.jpg'; ?>'/> -->
-      <div class='gallery-prompt__inner'>
-        <div class='logo'>[[ Logo here ]]</div>
-        <div id='open-gallery' class='open-gallery-button'>
-          Loading Gallery <span class='percent'>33%</span>
-        </div>
+  </div>
+</div>
+
+<div class='logo-main'>
+  <div class='logo-main__inner'>
+    <div class='logo-main-image'>
+      <img src='<?php echo get_template_directory_uri() . '/img/logo-1.jpg'; ?>'/>
+    </div>
+    <div class='logo-main-text'>
+      [ Logo/ Img Here ]<br /><br />
+      <div id='open-gallery' class='open-gallery-button'>
+        Loading Gallery <span class='percent'>33%</span>
       </div>
     </div>
   </div>

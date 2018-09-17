@@ -9,27 +9,32 @@
   pointer-events: none;
 
   .nav__inner {
-    @include pad(0, 4);
     @extend .ext-grid;
-    padding-bottom: 0;
     background-color: $colourBackground;
     width: 50%;
-    display: flex;
+    height: $gridSize * 5;
     pointer-events: all;
     transition: $transitionSlow;
     user-select: none;
+    border-bottom: $border;
+    position: relative;
 
     .list {
-      border-bottom: $border;
+      position: absolute;
+      left: 0;
+      bottom: 0;
       display: flex;
       align-items: flex-end;
       height: 100%;
       width: 100%;
       height: $gridSize * 3;
+      transition: opacity $transitionSlow, transform $transitionSlow;
 
       //&.#nav-content
       &#nav-gallery {
-        display: none;
+        opacity: 0;
+        pointer-events: none;
+        transform: translateX(-66vw);
       }
 
       .item {
@@ -54,11 +59,15 @@
       background-color: $colourBackgroundAlt;
 
       #nav-content {
-        display: none;
+        opacity: 0;
+        pointer-events: none;
+        transform: translateX(66vw);
       }
 
       #nav-gallery {
-        display: inherit;
+        opacity: 1;
+        pointer-events: all;
+        transform: translateX(0);
       }
     }
   }
