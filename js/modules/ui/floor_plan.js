@@ -75,7 +75,8 @@ class FloorPlan {
       {x: 8, y: 11, z: -11.5, nx: 0, nz: 1},
     ];
 
-    this.artworks.forEach(artwork => {
+    for (var i=0, len=this.artworks.length; i<len; ++i) {
+      const artwork = this.artworks[i];
       var p = false;
 
       // get position slot
@@ -98,8 +99,13 @@ class FloorPlan {
         const position = new THREE.Vector3(p.x, p.y, p.z);
         const direction = new THREE.Vector3(p.nx, 0, p.nz);
         artwork.init(this.scene, position, direction);
+      } else {
+        console.log('Error: Duplicate artwork slot reference.');
+        this.artworks.splice(i, 1);
+        i -= 1;
+        len -= 1;
       }
-    });
+    }
 
     // placeholders
     const mat = new THREE.MeshStandardMaterial({color: 0x0, roughness: 0.75, metalness: 0});
