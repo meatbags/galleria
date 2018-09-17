@@ -25,7 +25,7 @@ class Lighting {
     this.lights.point.a = new THREE.PointLight(0xff0000, 1, 20, 2);
     this.lights.point.b = new THREE.PointLight(0xffffff, 1, 32, 2);
     this.lights.point.c = new THREE.PointLight(0xffffff, 1, 20, 2);
-    this.lights.ambient.a = new THREE.AmbientLight(0xffffff, 0.25);
+    this.lights.ambient.a = new THREE.AmbientLight(0xffffff, 0.3);
     this.lights.directional.a = new THREE.DirectionalLight(0xffffff, 0.5);
     this.lights.hemisphere.a = new THREE.HemisphereLight(0x0, 0x0000ff, 0.25);
 
