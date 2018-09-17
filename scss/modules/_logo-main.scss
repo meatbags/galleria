@@ -46,7 +46,7 @@
       align-items: flex-end;
 
       .open-gallery-button {
-        @include margin(2, 12);
+        @include margin(1, 12);
         @include pad(2, 1);
         border: $border;
         box-shadow: $boxShadow;

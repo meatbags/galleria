@@ -62,10 +62,10 @@ html.freeze {
   width: 100%; }
 
 body {
-  font-family: "Karla", sans-serif;
+  font-family: "Roboto", sans-serif;
   font-size: 17px;
   line-height: 1.25;
-  letter-spacing: initial;
+  letter-spacing: 1px;
   word-spacing: initial;
   color: #e8e8e8;
   background: #4c474b;
@@ -447,8 +447,8 @@ a {
       -ms-flex-align: end;
           align-items: flex-end; }
       .logo-main .logo-main__inner .logo-main-text .open-gallery-button {
-        margin-left: 16px;
-        margin-right: 16px;
+        margin-left: 8px;
+        margin-right: 8px;
         margin-top: 96px;
         margin-bottom: 96px;
         padding-left: 16px;
