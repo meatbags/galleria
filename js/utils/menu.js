@@ -38,7 +38,7 @@ class Menu {
             this.lock = false;
             gallery.querySelectorAll('canvas').forEach(e => { e.classList.add('active'); });
             this.root.activate();
-          }, 1000);
+          }, 1250);
         } else {
           this.root.activate();
           this.lock = false;

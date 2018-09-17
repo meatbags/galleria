@@ -1,9 +1,9 @@
 // colours
-$colourPrimary: #eee;//teal;//#eee;
+$colourPrimary: #e8e8e8;//teal;//#eee;
 $colourSecondary: #444;
 $colourBackground: #4c474b;//lighten(teal, 0%);//;
 $colourBackgroundAlt: #2c272b;
-$colourAlt: #9648ff;// #000;//#9648ff;
+$colourAlt: #ff89da; //#9648ff;// #000;//#9648ff;
 $transparent: rgba($colourBackground, 0.5);
 $black: #000;
 $white: #eee;
@@ -17,7 +17,7 @@ $navHeight: $space * 6;
 // style
 $border: 1px solid $white;
 $borderAlt: 3px double $white;
-$boxShadow: 5px 5px 20px rgba($white, 0.25);
+$boxShadow: 5px 5px 20px rgba($colourAlt, 0.4);
 $backgroundGrid: linear-gradient(to right, $colourGrid 1px, transparent 1px), linear-gradient(to bottom, $colourGrid 1px, transparent 1px);
 
 // index
@@ -32,6 +32,6 @@ $indexNav: 9;
 $indexControls: 8;
 
 // animation
-$transition: 0.4s;
-$transitionSlow: 1s;
-$transitionVerySlow: 2s;
+$transition: 0.5s;
+$transitionSlow: 1.25s;
+$transitionVerySlow: 2.5s;

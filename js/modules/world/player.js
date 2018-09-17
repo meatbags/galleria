@@ -8,7 +8,7 @@ class Player {
   constructor(root) {
     this.root = root;
     this.position = new THREE.Vector3(-24, 1, 16);
-    this.rotation = new THREE.Vector2(Math.PI * 0.55, Math.PI * 0.03);
+    this.rotation = new THREE.Vector2(Math.PI * 0.55, Math.PI * -0.05);
     this.motion = new THREE.Vector3();
     this.target = {
       position: this.position.clone(),
@@ -23,7 +23,7 @@ class Player {
       active: {position: true, rotation: true},
       speed: {current: 0, max: 5},
       position: this.position.clone(),
-      rotation: this.rotation.clone(),
+      rotation: new THREE.Vector2(Math.PI * 0.55, Math.PI * 0.03),
       threshold: {
         position: {outer: 2, inner: 0.02},
         rotation: Math.PI / 1000 // ~0.006
@@ -31,8 +31,8 @@ class Player {
     };
 
     // physical attributes
-    this.speed = 8; //5
-    this.rotationSpeed = Math.PI * 0.8; //0.5
+    this.speed = 6; //5
+    this.rotationSpeed = Math.PI * 0.5; //0.5
     this.jump = 8;
     this.jumpSpeedMultiplier = 0.25;
     this.height = 3;
@@ -51,7 +51,7 @@ class Player {
 
     // add to scene
     this.group = new THREE.Group();
-    this.light = new THREE.PointLight(0xffffff, 1.0, 20, 2);
+    this.light = new THREE.PointLight(0xffffff, 1.0, 12, 2);
     this.light.position.y = this.height + 0.25;
     this.group.add(this.light);
     this.root.scene.add(this.group);

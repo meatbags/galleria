@@ -15,12 +15,11 @@
 <div class='logo-main'>
   <div class='logo-main__inner'>
     <div class='logo-main-image'>
-      <!--<img src='<?php echo get_template_directory_uri() . '/img/logo-1.jpg'; ?>'/>-->
+      <img src='<?php echo get_template_directory_uri() . '/img/logo-wire.png'; ?>'/>
     </div>
     <div class='logo-main-text'>
-      [ Logo/ Img Here ]<br /><br />
       <div id='open-gallery' class='open-gallery-button'>
-        Loading Gallery <span class='percent'>33%</span>
+        Loading: <span class='percent'>33%</span>
       </div>
     </div>
   </div>
