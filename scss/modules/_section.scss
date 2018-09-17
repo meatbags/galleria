@@ -1,6 +1,10 @@
 .section {
-  padding-bottom: $space * 8;
-  padding-right: $space * 2;
+  padding-bottom: $gridSize * 4;
+  padding-right: $gridSize * 5;
+
+  &:last-child {
+    padding-bottom: 0;
+  }
 
   .label {
     @include pad(2, 0.5);
@@ -9,7 +13,6 @@
     border: $border;
     text-transform: uppercase;
     user-select: none;
-    
   }
 
   h1 {
@@ -18,13 +21,15 @@
   }
 
   h2 {
-    @include pad(0, 0.5);
+    @include pad(0, 1);
+    padding-bottom: 0;
     font-size: $fontLarge;
     color: $colourAlt;
+    font-weight: bold;
+    //text-decoration: underline;
   }
 
   .dates {
-    @include margin(0, 0.5);
     color: $colourAlt;
     display: inline-block;
   }

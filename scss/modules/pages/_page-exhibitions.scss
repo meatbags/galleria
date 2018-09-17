@@ -1,8 +1,9 @@
 .section-upcoming {
   .list {
     .item {
-      padding-bottom: $space * 2;
       width: 66.66%;
+      padding-top: $space * 2;
+      padding-bottom: $space * 4;
 
       .dates {
         font-size: $fontLarge;
@@ -14,7 +15,7 @@
       }
 
       .desc {
-        @include margin(0, 2);
+        @include margin(0, 1);
 
         .heading {
           text-decoration: underline;
