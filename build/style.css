@@ -45,7 +45,7 @@ table {
   border-collapse: collapse;
   border-spacing: 0; }
 
-.ext-grid, #background-grid, .nav .nav__inner, .logo-main .logo-main__inner .logo-main-text {
+.ext-grid, #background-grid, .nav .nav__inner {
   background-size: 16px 16px;
   background-image: linear-gradient(to right, rgba(238, 238, 238, 0.025) 1px, transparent 1px), linear-gradient(to bottom, rgba(238, 238, 238, 0.025) 1px, transparent 1px); }
 
@@ -64,10 +64,10 @@ html.freeze {
 body {
   font-family: "Karla", sans-serif;
   font-size: 17px;
-  line-height: 1.15;
+  line-height: 1.25;
   letter-spacing: initial;
   word-spacing: initial;
-  color: #eee;
+  color: #e8e8e8;
   background: #4c474b;
   z-index: 1;
   overflow-x: hidden; }
@@ -79,7 +79,7 @@ body {
   left: 0;
   width: 100%;
   height: 100%;
-  transition: background-color 1s; }
+  transition: background-color 1.25s; }
   #background-grid.active {
     background-color: #2c272b; }
 
@@ -95,7 +95,7 @@ a {
   display: -ms-flexbox;
   display: flex;
   pointer-events: none;
-  transition: transform 1s, opacity 1s;
+  transition: transform 1.25s, opacity 1.25s;
   opacity: 0;
   transform: translateX(-100vw); }
   .pane .pane__inner {
@@ -125,7 +125,7 @@ a {
       pointer-events: none;
       background: black;
       padding: 8px;
-      box-shadow: 5px 5px 20px rgba(238, 238, 238, 0.25); }
+      box-shadow: 5px 5px 20px rgba(255, 137, 218, 0.4); }
       .pane-gallery .gallery-menu .menu.active {
         display: block;
         pointer-events: all; }
@@ -135,7 +135,7 @@ a {
         font-size: 40px;
         cursor: pointer; }
         .pane-gallery .gallery-menu .menu .close-gallery-menu:hover {
-          color: #9648ff; }
+          color: #ff89da; }
   .pane-gallery .canvas-wrapper {
     position: absolute;
     top: 0;
@@ -152,13 +152,13 @@ a {
       background: #000;
       position: relative;
       cursor: crosshair;
-      box-shadow: 5px 5px 20px rgba(238, 238, 238, 0.25); }
+      box-shadow: 5px 5px 20px rgba(255, 137, 218, 0.4); }
       .pane-gallery .canvas-wrapper .canvas-wrapper__inner canvas {
         margin: 0;
         padding: 0;
         position: absolute;
         opacity: 0;
-        transition: opacity 2s; }
+        transition: opacity 2.5s; }
         .pane-gallery .canvas-wrapper .canvas-wrapper__inner canvas.active {
           opacity: 1; }
   .pane-gallery .artwork-info {
@@ -170,7 +170,7 @@ a {
     padding: 8px;
     opacity: 0;
     transform: translateX(-32px);
-    transition: opacity 0.4s, transform 0.4s;
+    transition: opacity 0.5s, transform 0.5s;
     display: -ms-flexbox;
     display: flex;
     -ms-flex-direction: column;
@@ -214,7 +214,7 @@ a {
       height: 80px;
       cursor: pointer;
       padding: 8px;
-      box-shadow: 5px 5px 20px rgba(238, 238, 238, 0.25);
+      box-shadow: 5px 5px 20px rgba(255, 137, 218, 0.4);
       border: 1px solid #eee;
       -webkit-user-select: none;
          -moz-user-select: none;
@@ -260,7 +260,7 @@ a {
       margin-bottom: 32px; }
       .pages .page-footer .page-footer__inner a {
         text-decoration: none;
-        color: #9648ff; }
+        color: #ff89da; }
 
 .nav {
   position: fixed;
@@ -278,7 +278,7 @@ a {
     width: 50%;
     height: 80px;
     pointer-events: all;
-    transition: 1s;
+    transition: 1.25s;
     -webkit-user-select: none;
        -moz-user-select: none;
         -ms-user-select: none;
@@ -296,7 +296,7 @@ a {
       height: 100%;
       width: 100%;
       height: 48px;
-      transition: opacity 1s, transform 1s; }
+      transition: opacity 1.25s, transform 1.25s; }
       .nav .nav__inner .list#nav-gallery {
         opacity: 0;
         pointer-events: none;
@@ -309,9 +309,9 @@ a {
         margin-right: 16px;
         cursor: pointer; }
         .nav .nav__inner .list .item:hover {
-          color: #9648ff; }
+          color: #ff89da; }
         .nav .nav__inner .list .item.active {
-          color: #9648ff;
+          color: #ff89da;
           border-bottom: 4px solid #eee; }
   .nav.active .nav__inner {
     background-color: #2c272b; }
@@ -333,7 +333,7 @@ a {
     padding-top: 4px;
     padding-bottom: 4px;
     display: inline-block;
-    box-shadow: 5px 5px 20px rgba(238, 238, 238, 0.25);
+    box-shadow: 5px 5px 20px rgba(255, 137, 218, 0.4);
     border: 1px solid #eee;
     text-transform: uppercase;
     -webkit-user-select: none;
@@ -352,13 +352,13 @@ a {
     padding-top: 4px;
     padding-bottom: 4px;
     font-size: 22px;
-    color: #9648ff; }
+    color: #ff89da; }
   .section .dates {
     margin-left: 0px;
     margin-right: 0px;
     margin-top: 4px;
     margin-bottom: 4px;
-    color: #9648ff;
+    color: #ff89da;
     display: inline-block; }
   .section strong {
     font-weight: bold; }
@@ -400,7 +400,7 @@ a {
         padding-bottom: 4px;
         padding-left: 0; }
         .section .links .item a:hover {
-          color: #9648ff; }
+          color: #ff89da; }
 
 .logo-main {
   position: fixed;
@@ -415,14 +415,14 @@ a {
   -ms-flex-align: center;
       align-items: center;
   z-index: 9;
-  transition: opacity 1s, transform 1s; }
+  transition: opacity 1.25s, transform 1.25s; }
   .logo-main.active {
     opacity: 0;
     transform: translateX(100vw);
     pointer-events: none; }
   .logo-main .logo-main__inner {
-    width: 360px;
-    height: 360px;
+    width: 400px;
+    height: 400px;
     position: relative; }
     .logo-main .logo-main__inner .logo-main-image {
       position: absolute;
@@ -440,22 +440,24 @@ a {
       left: 0;
       width: 100%;
       height: 100%;
-      background-color: rgba(76, 71, 75, 0.8);
       display: -ms-flexbox;
       display: flex;
-      -ms-flex-pack: center;
-          justify-content: center;
-      -ms-flex-align: center;
-          align-items: center;
-      -ms-flex-direction: column;
-          flex-direction: column; }
+      -ms-flex-pack: end;
+          justify-content: flex-end;
+      -ms-flex-align: end;
+          align-items: flex-end; }
       .logo-main .logo-main__inner .logo-main-text .open-gallery-button {
+        margin-left: 16px;
+        margin-right: 16px;
+        margin-top: 96px;
+        margin-bottom: 96px;
         padding-left: 16px;
         padding-right: 16px;
         padding-top: 8px;
         padding-bottom: 8px;
         border: 1px solid #eee;
-        box-shadow: 5px 5px 20px rgba(238, 238, 238, 0.25);
+        box-shadow: 5px 5px 20px rgba(255, 137, 218, 0.4);
+        background-color: rgba(76, 71, 75, 0.5);
         cursor: pointer; }
 
 .section-upcoming .list .item {

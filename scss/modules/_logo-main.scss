@@ -17,8 +17,8 @@
   }
 
   .logo-main__inner {
-    width: 360px;
-    height: 360px;
+    width: 400px;
+    height: 400px;
     position: relative;
 
     .logo-main-image {
@@ -41,17 +41,16 @@
       left: 0;
       width: 100%;
       height: 100%;
-      @extend .ext-grid;
-      background-color: rgba($colourBackground, 0.8);
       display: flex;
-      justify-content: center;
-      align-items: center;
-      flex-direction: column;
+      justify-content: flex-end;
+      align-items: flex-end;
 
       .open-gallery-button {
+        @include margin(2, 12);
         @include pad(2, 1);
         border: $border;
         box-shadow: $boxShadow;
+        background-color: rgba($colourBackground, 0.5);
         cursor: pointer;
       }
     }
