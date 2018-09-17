@@ -42,60 +42,45 @@ class FloorPlan {
     // 26
     const positions = [
       // brick wall (8)
-      {x: -24, y: 4, z: 23, nx: 0, nz: -1},
-      {x: -10.5, y: 3.5, z: 23, nx: 0, nz: -1},
-      {x: -8, y: 3.5, z: 23, nx: 0, nz: -1},
-      {x: -5.5, y: 3.5, z: 23, nx: 0, nz: -1},
-      {x: 5.5, y: 3.5, z: 23, nx: 0, nz: -1},
-      {x: 8, y: 3.5, z: 23, nx: 0, nz: -1},
-      {x: 10.5, y: 3.5, z: 23, nx: 0, nz: -1},
-      {x: 24, y: 4, z: 23, nx: 0, nz: -1},
+      {x: -24, y: 4, z: 23, nx: 0, nz: -1}, {x: -10.5, y: 3.5, z: 23, nx: 0, nz: -1}, {x: -8, y: 3.5, z: 23, nx: 0, nz: -1},
+      {x: -5.5, y: 3.5, z: 23, nx: 0, nz: -1}, {x: 5.5, y: 3.5, z: 23, nx: 0, nz: -1}, {x: 8, y: 3.5, z: 23, nx: 0, nz: -1},
+      {x: 10.5, y: 3.5, z: 23, nx: 0, nz: -1}, {x: 24, y: 4, z: 23, nx: 0, nz: -1},
       // central block A (6)
-      {x: -12, y: 3.5, z: 8, nx: 0, nz: 1},
-      {x: -8, y: 3.5, z: 8, nx: 0, nz: 1},
-      {x: -4, y: 3.5, z: 8, nx: 0, nz: 1},
-      {x: 4, y: 3.5, z: 8, nx: 0, nz: 1},
-      {x: 8, y: 3.5, z: 8, nx: 0, nz: 1},
-      {x: 12, y: 3.5, z: 8, nx: 0, nz: 1},
+      {x: -12, y: 3.5, z: 8, nx: 0, nz: 1}, {x: -8, y: 3.5, z: 8, nx: 0, nz: 1}, {x: -4, y: 3.5, z: 8, nx: 0, nz: 1},
+      {x: 4, y: 3.5, z: 8, nx: 0, nz: 1}, {x: 8, y: 3.5, z: 8, nx: 0, nz: 1}, {x: 12, y: 3.5, z: 8, nx: 0, nz: 1},
       // end walls (2)
-      {x: -29.5, y: 4, z: 6, nx: 1, nz: 0},
-      {x: 30, y: 4, z: 6, nx: -1, nz: 0},
+      {x: -29.5, y: 4, z: 6, nx: 1, nz: 0}, {x: 30, y: 4, z: 6, nx: -1, nz: 0},
       // central block B (6)
-      {x: -12, y: 3.5, z: 4, nx: 0, nz: -1},
-      {x: -8, y: 3.5, z: 4, nx: 0, nz: -1},
-      {x: -4, y: 3.5, z: 4, nx: 0, nz: -1},
-      {x: 4, y: 3.5, z: 4, nx: 0, nz: -1},
-      {x: 8, y: 3.5, z: 4, nx: 0, nz: -1},
-      {x: 12, y: 3.5, z: 4, nx: 0, nz: -1},
+      {x: -12, y: 3.5, z: 4, nx: 0, nz: -1}, {x: -8, y: 3.5, z: 4, nx: 0, nz: -1}, {x: -4, y: 3.5, z: 4, nx: 0, nz: -1},
+      {x: 4, y: 3.5, z: 4, nx: 0, nz: -1}, {x: 8, y: 3.5, z: 4, nx: 0, nz: -1}, {x: 12, y: 3.5, z: 4, nx: 0, nz: -1},
       // white wall downstairs (2)
-      {x: -8, y: 3.5, z: -11.5, nx: 0, nz: 1},
-      {x: 8, y: 3.5, z: -11.5, nx: 0, nz: 1},
+      {x: -8, y: 3.5, z: -11.5, nx: 0, nz: 1}, {x: 8, y: 3.5, z: -11.5, nx: 0, nz: 1},
       // upstairs (2)
-      {x: -8, y: 11, z: -11.5, nx: 0, nz: 1},
-      {x: 8, y: 11, z: -11.5, nx: 0, nz: 1},
+      {x: -8, y: 11, z: -11.5, nx: 0, nz: 1}, {x: 8, y: 11, z: -11.5, nx: 0, nz: 1},
     ];
 
-    for (var i=0, len=this.artworks.length; i<len; ++i) {
+    for (var i=0; i<this.artworks.length; i++) {
       const artwork = this.artworks[i];
-      var p = false;
+      var p = null;
 
       // get position slot
-      if (typeof(artwork.data.index) != 'number') {
-        for (var i=0; i<positions.length; ++i) {
-          if (!positions[i].active) {
-            p = positions[i];
+      if (typeof(artwork.data.index) == 'number' && artwork.data.index < positions.length && positions[artwork.data.index].active == undefined) {
+        p = positions[artwork.data.index];
+        p.active = true;
+      }
+
+      // auto
+      if (p == null) {
+        for (var j=0; j<positions.length; j++) {
+          if (!positions[j].active) {
+            p = positions[j];
             p.active = true;
             break;
           }
         }
-      } else {
-        if (artwork.data.index < positions.length && !positions[artwork.data.index].active) {
-          p = positions[artwork.data.index];
-          p.active = true;
-        }
       }
 
-      if (p) {
+      if (p != null) {
         const position = new THREE.Vector3(p.x, p.y, p.z);
         const direction = new THREE.Vector3(p.nx, 0, p.nz);
         artwork.init(this.scene, position, direction);
@@ -103,7 +88,6 @@ class FloorPlan {
         console.log('Error: Duplicate artwork slot reference.');
         this.artworks.splice(i, 1);
         i -= 1;
-        len -= 1;
       }
     }
 
