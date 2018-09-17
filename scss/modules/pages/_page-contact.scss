@@ -2,6 +2,9 @@
   .page__inner {
     .section {
       .contact-text {
+        ul {
+          color: $colourAlt;
+        }
       }
     }
   }
