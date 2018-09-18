@@ -8,4 +8,5 @@
       <p class='border'>Coming soon -- the archive will be a showcase of previous Closed On Monday exhibitions.</p>
     </div>
   </div>
+  <?php get_template_part('page-footer'); ?>
 </div>

@@ -6,7 +6,6 @@
         get_template_part('page-about');
         get_template_part('page-archive');
         get_template_part('page-contact');
-        get_template_part('page-footer');
       ?>
     </div>
   </div>
@@ -18,8 +17,8 @@
       <img src='<?php echo get_template_directory_uri() . '/img/logo-wire.png'; ?>'/>
     </div>
     <div class='logo-main-text'>
-      <div id='open-gallery' class='open-gallery-button'>
-        Loading: <span class='percent'>33%</span>
+      <div id='open-gallery' class='open-gallery-button is-loading'>
+        Loading...
       </div>
     </div>
   </div>

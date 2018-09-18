@@ -49,6 +49,7 @@
         &.active {
           color: $colourAlt;
           border-bottom: $space/2 solid $white;
+          box-shadow: $boxShadowAlt;
         }
       }
     }

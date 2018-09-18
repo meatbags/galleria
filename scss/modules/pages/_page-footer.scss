@@ -1,0 +1,16 @@
+.page-footer {
+  width: 100%;
+  font-size: $fontLarge;
+
+  .page-footer__inner {
+    @include margin(0, 4);
+    display: flex;
+
+    .content {
+      a {
+        text-decoration: none;
+        color: $colourAlt;
+      }
+    }
+  }
+}
