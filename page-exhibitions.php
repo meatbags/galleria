@@ -24,12 +24,9 @@
 
 <div id='page-exhibitions' class='page active'>
   <div class='page__inner'>
-
-    <?php
-      // featured artist and current exhibition
-      if ($active): ?>
+    <?php if ($active): ?>
       <div class='section section-featured'>
-        <div class='label'>Featured</div>
+        <div class='label'>Featured Artist</div>
         <br /><br />
         <h1><?php echo $active['artist_name']; ?></h1>
         <?php if ($active['exhibition_title']): ?>
@@ -52,7 +49,6 @@
         <?php endif; ?>
       </div>
     <?php endif; ?>
-
     <div class='section section-upcoming'>
       <div class='label'>Coming Up</div>
       <br /><br />
@@ -72,4 +68,5 @@
       </div>
     </div>
   </div>
+  <?php get_template_part('page-footer'); ?>
 </div>

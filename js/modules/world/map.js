@@ -21,23 +21,36 @@ class Map {
     this.floor.position.y = -0.25;
     this.colliderSystem.add(this.floor);
 
-    // load main maps
+    // onloads
+    this.toLoad = 2;
+    this.checkLoaded = () => {
+      this.toLoad -= 1;
+      if (this.toLoad == 0) {
+        const target = document.querySelector('#open-gallery');
+        target.classList.remove('is-loading');
+        target.classList.add('flash');
+        target.innerHTML = 'Open Gallery';
+      }
+    };
+
+    // main maps
     this.loader.loadFBX('map').then((map) => {
       this.scene.add(map);
       this.conformGroups(map);
-      console.log(this.materials.loaded);
+      this.checkLoaded();
     }, (err) => { console.log(err); });
 
     this.loader.loadOBJ('collision').then((map) => {
       this.addCollisionMap(map);
+      this.checkLoaded();
     }, (err) => { console.log(err); });
 
+    // peripherals
     this.loader.loadFBX('props').then((map) => {
       this.scene.add(map);
       this.conformGroups(map);
     });
 
-    // load props
     //const mat = this.materials.getCustomMaterial('warp');
     /*
     const mat = this.materials.mat.metal.clone();

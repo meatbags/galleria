@@ -1,36 +1,33 @@
 .pages {
   width: 100%;
-  min-height: 105vh;
+  min-height: 102vh;
   position: relative;
-  //display: flex;
   flex-direction: column;
   justify-content: flex-start;
 
   .page {
+    //display: none;
     width: 100%;
     top: 0;
     left: 0;
-    display: none;
+    height: 0;
+    overflow: hidden;
+    opacity: 0;
     pointer-events: none;
-    padding-top: $gridSize * 8;
+    padding-top: 0;
+    transition: opacity $transition;
 
     &.active {
-      display: block;
+      //display: block;
+      padding-top: $gridSize * 8;
+      height: auto;
+      overflow: auto;
       opacity: 1;
       pointer-events: all;
     }
-  }
 
-  .page-footer {
-    font-size: $fontLarge;
-
-    .page-footer__inner {
-      @include margin(0, 4);
-
-      a {
-        text-decoration: none;
-        color: $colourAlt;
-      }
+    &.display-none {
+      display: none;
     }
   }
 }

@@ -7,7 +7,7 @@
     </div>
     <div class='gallery-controls'>
       <div class='close-gallery-button close-gallery'>
-        [logo/ home button]
+        <img src='<?php echo get_template_directory_uri(); ?>/img/logo-box-blur.png' alt='Logo' />
       </div>
     </div>
     <div class='gallery-menu'>

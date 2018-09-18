@@ -1,3 +1,9 @@
+@keyframes flashing {
+  0% { background: transparent; }
+  15% { background: $colourAlt; }
+  30% { background: transparent; }
+}
+
 .logo-main {
   position: fixed;
   top: 0;
@@ -52,6 +58,12 @@
         box-shadow: $boxShadow;
         background-color: rgba($colourBackground, 0.5);
         cursor: pointer;
+
+        &.flash {
+          animation-name: flashing;
+          animation-duration: 4s;
+          animation-iteration-count: infinite;
+        }
       }
     }
   }

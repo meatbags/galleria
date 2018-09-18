@@ -5,7 +5,13 @@
 class Menu {
   constructor(root) {
     this.root = root;
-    document.querySelector('#open-gallery').onclick = () => { this.toggleGallery(); };
+    this.openGalleryButton = document.querySelector('#open-gallery');
+    this.openGalleryButton.onclick = () => {
+      if (!this.openGalleryButton.classList.contains('is-loading')) {
+        this.openGalleryButton.classList.remove('flash');
+        this.toggleGallery();
+      }
+    };
     document.querySelectorAll('.close-gallery').forEach(e => {
       e.addEventListener('click', () => {
         this.closeGalleryMenu();
