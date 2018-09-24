@@ -3,12 +3,12 @@
  **/
 
 import { Scene, Renderer, Surface } from './modules';
-import { detectMobileTablet, Menu } from './utils';
+import { detectMobileAndTablet, Menu } from './utils';
 
 class App {
   constructor() {
     this.active = false;
-    this.isMobile = detectMobileTablet();
+    this.isMobile = detectMobileAndTablet();
     this.scene = new Scene();
     this.renderer = new Renderer(this.scene);
     this.surface = new Surface(this.scene, this.renderer, this.isMobile);
