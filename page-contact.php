@@ -5,7 +5,7 @@
 <div id='page-contact' class='page page-contact'>
   <div class='page__inner'>
     <div class='section'>
-      <div class='label'>Contact</div>
+      <div class='label'>Submit</div>
       <br /><br />
       <h1>Artist Call Out</h1>
       <h2>You, this space</h2>

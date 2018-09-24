@@ -26,7 +26,7 @@
   <div class='page__inner'>
     <?php if ($active): ?>
       <div class='section section-featured'>
-        <div class='label'>Featured Artist</div>
+        <div class='label'>Featured Exhibition</div>
         <br /><br />
         <h1><?php echo $active['artist_name']; ?></h1>
         <?php if ($active['exhibition_title']): ?>

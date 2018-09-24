@@ -19,12 +19,41 @@ class Surface {
 
     // events
     this.keyboard = new Keyboard((key) => { this.onKeyboard(key); });
-    this.mouse = new Mouse(this.domElement, (e) => { this.onMouseDown(e); }, (e) => { this.onMouseMove(e); }, (e) => { this.onMouseUp(e); });
+    if (!this.isMobile) {
+      this.mouse = new Mouse(
+        this.domElement,
+        (e) => { this.onMouseDown(e); },
+        (e) => { this.onMouseMove(e); },
+        (e) => { this.onMouseUp(e); },
+        this.isMobile
+      );
+    } else {
+      this.mouse = new Mouse(
+        this.domElement,
+        (e) => { this.onMouseDown(this.processTouch(e)); },
+        (e) => { this.onMouseMove(this.processTouch(e)); },
+        (e) => { this.onMouseUp(this.processTouch(e)); },
+        this.isMobile
+      );
+    }
     this.canvas = new OverlayCanvas(this, this.domElement, renderer.renderer.domElement);
     window.addEventListener('resize', () => { this.resize(); });
 
     // artwork handler
     this.floorPlan = new FloorPlan(this);
+  }
+
+  processTouch(e) {
+    // touch event -> mouse analogue
+    var x = 0;
+    var y = 0;
+    if (e.targetTouches.length) {
+      const rect = this.domElement.getBoundingClientRect();
+      const touch = e.targetTouches[0];
+      x = touch.pageX - rect.left;
+      y = touch.pageY - rect.top;
+    }
+    return {offsetX: x, offsetY: y};
   }
 
   onMouseDown(e) {
