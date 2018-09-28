@@ -13,7 +13,7 @@ class FloorPlan {
     this.scene = this.root.scene.scene;
     this.centre = this.root.centre;
     this.cameraDirection = new THREE.Vector3();
-    this.artworkActiveRadius = 7;
+    this.artworkActiveRadius = 10;
     this.artworks = [];
 
     // get artworks
@@ -34,7 +34,7 @@ class FloorPlan {
 
     // make notes
     this.notes = [];
-    //new InteractionNodeNote('[ logo here ]', new THREE.Vector3(28, 12, 6), null)
+    this.notes.push( new InteractionNodeNote('<- something here?', new THREE.Vector3(0, 14, 6), null) );
   }
 
   placeArtworks() {
@@ -128,19 +128,23 @@ class FloorPlan {
     this.activeArtwork = null;
 
     for (var i=0; i<this.artworks.length; ++i) {
-      // check if artwork in range, facing camera
-      if (this.artworks[i].getDistanceTo(this.camera.position) < this.artworkActiveRadius) {
-        const dot = this.artworks[i].getCameraDot(this.camera.position, this.cameraDirection);
-        if (dot >= 0 && dot > maxDot) {
+      const a = this.artworks[i];
+      a.update(delta);
+
+      // check if artwork in range, facing camera, best match
+      if (a.getDistanceTo(this.camera.position) < this.artworkActiveRadius &&
+        a.isFacing(this.camera.position)) {
+        const dot = a.getCameraDot(this.camera.position, this.cameraDirection);
+        if (dot > 0.66 && dot > maxDot) {
           maxDot = dot;
-          res = this.artworks[i];
+          res = a;
         }
       }
 
       // update node
-      this.artworks[i].node.update(delta, this.player, this.camera, this.cameraDirection, this.centre);
-      if (this.artworks[i].node.isHover()) {
-        this.activeArtwork = this.artworks[i];
+      a.node.update(delta, this.player, this.camera, this.cameraDirection, this.centre);
+      if (a.node.isHover()) {
+        this.activeArtwork = a;
       }
     }
 
@@ -153,9 +157,12 @@ class FloorPlan {
         this.el.subtitle.innerHTML = res.data.subtitle;
         this.el.desc.innerHTML = res.data.desc;
         this.el.link.innerHTML = res.data.link ? `<a href='${res.data.link}' target='_blank'>Link</a>` : '';
+        this.artworks.forEach(a => { a.deactivate(); });
+        res.activate();
       }
     } else {
       this.domElement.classList.remove('active');
+      this.artworks.forEach(a => { a.deactivate(); });
     }
 
     // update notes
