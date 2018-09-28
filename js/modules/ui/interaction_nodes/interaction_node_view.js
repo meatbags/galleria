@@ -5,7 +5,7 @@
 import { InteractionNodeBase } from './interaction_node_base';
 
 class InteractionNodeView extends InteractionNodeBase {
-  constructor(position, rotation, clipping) {
+  constructor(position, rotation, clipping, baseY) {
     super(position, clipping || null);
     this.rotation = rotation;
     this.active = true;
@@ -26,8 +26,11 @@ class InteractionNodeView extends InteractionNodeBase {
     this.bez.p2 = {x: 0, y: this.eye.height};
     this.bez.offset = {current: 0, min: -2, max: 1.5};
     this.distance = -1;
-    this.maxVerticalDifference = 5;
+    this.maxVerticalDifference = 4;
     this.opacity = 1;
+
+    // set base Y (optional)
+    this.baseY = baseY || false;
   }
 
   mouseOver(x, y) {
@@ -55,7 +58,8 @@ class InteractionNodeView extends InteractionNodeBase {
 
     // fade out and deactivate
     this.distance = player.position.distanceTo(this.position);
-    this.height = Math.abs((player.position.y + player.height) - this.position.y);
+    this.height = Math.abs((player.position.y + player.height) - ((this.baseY === false) ? this.position.y : this.baseY));
+
     if (this.distance < this.radius.min || this.distance > this.radius.max || this.height > this.maxVerticalDifference) {
       this.active = false;
     } else {

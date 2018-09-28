@@ -48,6 +48,9 @@ class Artwork {
     texture.wrapS = texture.wrapT = THREE.ClampToEdgeWrapping;
     texture.minFilter = THREE.LinearFilter;
 
+    // record original
+    this.baseY = p.y;
+
     // reposition
     p.x += (v.x != 0 ? 0 : 1) * this.data.offset.horizontal;
     p.y += this.data.offset.vertical;
@@ -74,7 +77,7 @@ class Artwork {
     scene.add(board);
 
     // create interaction node
-    this.node = new InteractionNodeView(p, null, v);
+    this.node = new InteractionNodeView(p, null, v, this.baseY);
     this.position.set(p.x, p.y, p.z);
     this.direction.set(v.x, v.y, v.z);
   }
