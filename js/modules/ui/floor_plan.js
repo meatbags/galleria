@@ -18,7 +18,9 @@ class FloorPlan {
 
     // get artworks
     var count = 0;
-    document.querySelectorAll('#artworks .image').forEach(e => { this.artworks.push(new Artwork(++count, e)); });
+    document.querySelectorAll('#artworks .image').forEach(e => {
+      this.artworks.push(new Artwork(++count, e));
+    });
     this.placeArtworks();
 
     // doc
@@ -32,10 +34,7 @@ class FloorPlan {
 
     // make notes
     this.notes = [];
-    this.notes.push(
-      //new InteractionNodeNote('[ logo here ]', new THREE.Vector3(28, 12, 6), null),
-      new InteractionNodeNote('[ door here ]', new THREE.Vector3(-28, 5, 15), null)
-    );
+    //new InteractionNodeNote('[ logo here ]', new THREE.Vector3(28, 12, 6), null)
   }
 
   placeArtworks() {
@@ -56,7 +55,7 @@ class FloorPlan {
       // white wall downstairs (2)
       {x: -8, y: 3.5, z: -11.5, nx: 0, nz: 1}, {x: 8, y: 3.5, z: -11.5, nx: 0, nz: 1},
       // upstairs (2)
-      {x: -8, y: 11, z: -11.5, nx: 0, nz: 1}, {x: 8, y: 11, z: -11.5, nx: 0, nz: 1},
+      {x: -8, y: 11, z: -11.5, nx: 0, nz: 1, upstairs: true}, {x: 8, y: 11, z: -11.5, nx: 0, nz: 1, upstairs: true},
     ];
 
     for (var i=0; i<this.artworks.length; i++) {
@@ -84,6 +83,9 @@ class FloorPlan {
         const position = new THREE.Vector3(p.x, p.y, p.z);
         const direction = new THREE.Vector3(p.nx, 0, p.nz);
         artwork.init(this.scene, position, direction);
+        if (p.upstairs !== undefined) {
+          artwork.upstairs = true;
+        }
       } else {
         console.log('Error: Duplicate artwork slot reference.');
         this.artworks.splice(i, 1);
@@ -105,6 +107,16 @@ class FloorPlan {
   mouseOver(x, y) {
     for (var i=0, len=this.artworks.length; i<len; ++i) {
       this.artworks[i].node.mouseOver(x, y);
+    }
+  }
+
+  click(x, y) {
+    for (var i=0, len=this.artworks.length; i<len; ++i) {
+      this.artworks[i].node.mouseOver(x, y);
+      if (this.artworks[i].node.isHover()) {
+        this.player.moveToArtwork(this.artworks[i]);
+        break;
+      }
     }
   }
 
