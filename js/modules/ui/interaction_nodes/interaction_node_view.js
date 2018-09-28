@@ -12,7 +12,7 @@ class InteractionNodeView extends InteractionNodeBase {
     this.hover = false;
     this.nearby = false;
     this.radius = {min: 5, max: 20, fadeThreshold: 4};
-    this.boundingBox = {width: 40, height: 40, nearbyThreshold: 150};
+    this.boundingBox = {width: 50, height: 50, nearbyThreshold: 100};
     this.eye = {
       width: 18,
       height: 9,
@@ -75,10 +75,10 @@ class InteractionNodeView extends InteractionNodeBase {
   }
 
   draw(ctx) {
-    if (this.onscreen && this.active) {
+    if (this.onscreen && this.active && this.nearby) {
       ctx.globalAlpha = this.opacity;
-      this.eye.radius.current += ((this.hover ? this.eye.radius.max : this.eye.radius.min) - this.eye.radius.current) * 0.25;
-      this.bez.offset.current += ((this.hover ? this.bez.offset.min : this.bez.offset.max) - this.bez.offset.current) * 0.25;
+      this.eye.radius.current = 2;// this.eye.radius.min;// ((this.hover ? this.eye.radius.max : this.eye.radius.min) - this.eye.radius.current) * 0.25;
+      this.bez.offset.current = this.bez.offset.min; //((this.hover ? this.bez.offset.min : this.bez.offset.max) - this.bez.offset.current) * 0.25;
       ctx.beginPath();
       ctx.arc(this.coords.x, this.coords.y, this.nearby ? this.eye.radius.current : this.eye.radius.current * 0.75, Math.PI * 0.5, Math.PI * 2.5);
 
