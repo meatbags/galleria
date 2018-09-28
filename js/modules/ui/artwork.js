@@ -11,6 +11,7 @@ class Artwork {
     this.direction = new THREE.Vector3();
     this.element = e;
     this.nearRadius = 5;
+    this.upstairs = false;
     this.data = {
       url: e.dataset.url,
       title: e.dataset.title || '',

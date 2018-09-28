@@ -26,7 +26,7 @@ class InteractionNodeView extends InteractionNodeBase {
     this.bez.p2 = {x: 0, y: this.eye.height};
     this.bez.offset = {current: 0, min: -2, max: 1.5};
     this.distance = -1;
-    this.maxVerticalDifference = 2;
+    this.maxVerticalDifference = 5;
     this.opacity = 1;
   }
 

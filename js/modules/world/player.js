@@ -115,11 +115,22 @@ class Player {
     }
   }
 
+  moveToArtwork(artwork) {
+    const p = artwork.position.clone();
+    const v = artwork.direction.clone();
+    v.normalize();
+    v.multiplyScalar(3);
+    p.add(v);
+    this.automove.position.set(p.x, p.y, p.z);
+    this.automove.active.position = true;
+  }
+
   applyAutomove(delta) {
     // position
     if (this.automove.active.position) {
       const p = this.automove.position.clone();
       p.sub(this.position);
+      p.y = 0; // use x, z only
       const mag = p.length();
       p.normalize();
 
@@ -135,6 +146,8 @@ class Player {
           p.multiplyScalar(this.automove.speed.current * delta);
           this.position.add(p);
         } else {
+          // reset y and jump to final position
+          this.automove.position.y = this.target.position.y;
           this.target.position.copy(this.automove.position);
           this.automove.active.position = false;
           this.keys.disabled = false;

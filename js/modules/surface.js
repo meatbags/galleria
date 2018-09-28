@@ -87,8 +87,12 @@ class Surface {
   onMouseUp(e) {
     this.mouse.stop();
     if (Date.now() - this.timestamp < this.threshold.click) {
-       // apply click
+       this.floorPlan.click(this.mouse.x, this.mouse.y);
     }
+  }
+
+  initOnscreenKeyboard() {
+    // ?
   }
 
   onKeyboard(key) {
