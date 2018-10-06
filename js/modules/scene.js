@@ -18,6 +18,7 @@ class Scene {
 
     // events
     window.addEventListener('resize', () => { this.resize(); });
+    window.addEventListener('orientationchange', () => { setTimeout(() => { this.resize(); }, 125); });
   }
 
   resize() {

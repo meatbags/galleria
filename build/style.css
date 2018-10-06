@@ -114,6 +114,42 @@ a {
      -moz-user-select: none;
       -ms-user-select: none;
           user-select: none; }
+  .pane-gallery .controls {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    display: -ms-flexbox;
+    display: flex;
+    -ms-flex-pack: center;
+        justify-content: center;
+    pointer-events: none; }
+    .pane-gallery .controls .controls__inner {
+      display: -ms-flexbox;
+      display: flex;
+      padding-bottom: 96px;
+      pointer-events: all; }
+      .pane-gallery .controls .controls__inner .block {
+        height: 100%;
+        -ms-flex: 1;
+            flex: 1;
+        display: -ms-flexbox;
+        display: flex;
+        -ms-flex-direction: column;
+            flex-direction: column;
+        -ms-flex-pack: center;
+            justify-content: center; }
+        .pane-gallery .controls .controls__inner .block .control {
+          padding-left: 16px;
+          padding-right: 16px;
+          padding-top: 12px;
+          padding-bottom: 12px;
+          cursor: pointer; }
+          .pane-gallery .controls .controls__inner .block .control svg {
+            transition: 0.35s;
+            fill: transparent; }
+          .pane-gallery .controls .controls__inner .block .control.active svg {
+            transform: scale(1.2, 1.2);
+            fill: #ff89da; }
   .pane-gallery .gallery-menu {
     position: absolute;
     top: 50%;
@@ -153,6 +189,8 @@ a {
       position: relative;
       cursor: crosshair;
       box-shadow: 5px 5px 20px rgba(255, 137, 218, 0.4); }
+      .pane-gallery .canvas-wrapper .canvas-wrapper__inner.clickable {
+        cursor: pointer; }
       .pane-gallery .canvas-wrapper .canvas-wrapper__inner canvas {
         margin: 0;
         padding: 0;
@@ -210,11 +248,12 @@ a {
     .pane-gallery .gallery-controls .close-gallery-button {
       margin-top: 80px;
       margin-left: 80px;
-      width: 80px;
-      height: 80px;
+      width: 70px;
+      height: 70px;
       cursor: pointer;
       box-shadow: 5px 5px 20px rgba(255, 137, 218, 0.4);
       border: 1px solid #eee;
+      border-width: 2px;
       -webkit-user-select: none;
          -moz-user-select: none;
           -ms-user-select: none;

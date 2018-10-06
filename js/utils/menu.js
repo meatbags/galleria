@@ -19,7 +19,7 @@ class Menu {
       });
     });
     this.initMenus();
-    //this.toggleGallery();
+    this.toggleGallery();
   }
 
   toggleGallery() {
@@ -44,7 +44,7 @@ class Menu {
             this.lock = false;
             gallery.querySelectorAll('canvas').forEach(e => { e.classList.add('active'); });
             this.root.activate();
-          }, 1250);
+          }, 0);//750);
         } else {
           this.root.activate();
           this.lock = false;

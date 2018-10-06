@@ -34,7 +34,7 @@ class FloorPlan {
 
     // make notes
     this.notes = [];
-    this.notes.push( new InteractionNodeNote('<- something here?', new THREE.Vector3(0, 14, 6), null) );
+    //this.notes.push( new InteractionNodeNote('<- something here?', new THREE.Vector3(0, 14, 6), null) );
   }
 
   placeArtworks() {
@@ -106,13 +106,13 @@ class FloorPlan {
 
   mouseOver(x, y) {
     for (var i=0, len=this.artworks.length; i<len; ++i) {
-      this.artworks[i].node.mouseOver(x, y);
+      this.artworks[i].node.mouseOver(x, y, this.player.position);
     }
   }
 
   click(x, y) {
     for (var i=0, len=this.artworks.length; i<len; ++i) {
-      this.artworks[i].node.mouseOver(x, y);
+      this.artworks[i].node.mouseOver(x, y, this.player.position);
       if (this.artworks[i].node.isHover()) {
         this.player.moveToArtwork(this.artworks[i]);
         break;

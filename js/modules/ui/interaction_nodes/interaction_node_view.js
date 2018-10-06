@@ -3,48 +3,43 @@
  **/
 
 import { InteractionNodeBase } from './interaction_node_base';
+import { pointToScreen } from './point_to_screen';
 
 class InteractionNodeView extends InteractionNodeBase {
-  constructor(position, rotation, clipping, baseY) {
+  constructor(position, rotation, clipping, root) {
     super(position, clipping || null);
     this.rotation = rotation;
     this.active = true;
     this.hover = false;
-    this.nearby = false;
-    this.radius = {min: 5, max: 20, fadeThreshold: 4};
-    this.boundingBox = {width: 50, height: 50, nearbyThreshold: 100};
-    this.eye = {
-      width: 18,
-      height: 9,
-      bez: 6,
-      radius: {current: 7, min: 5, max: 7}
+    this.radius = {min: 5, max: 24, fadeThreshold: 3};
+    this.corners = {
+      world: {a: new THREE.Vector3(), b: new THREE.Vector3(), c: new THREE.Vector3(), d: new THREE.Vector3()},
+      screen: {a: new THREE.Vector2(), b: new THREE.Vector2(), c: new THREE.Vector2(), d: new THREE.Vector2()}
     };
-    this.bez = {};
-    this.bez.p1 = {x: this.eye.width, y: 2};
-    this.bez.cp1 = {x: this.eye.width - this.eye.bez, y: 2 + this.eye.bez * 0.75};
-    this.bez.cp2 = {x: this.eye.bez, y: this.eye.height};
-    this.bez.p2 = {x: 0, y: this.eye.height};
-    this.bez.offset = {current: 0, min: -2, max: 1.5};
     this.distance = -1;
     this.maxVerticalDifference = 4;
     this.opacity = 1;
 
-    // set base Y (optional)
-    this.baseY = baseY || false;
+    // set root (optional)
+    this.root = root || null;
   }
 
-  mouseOver(x, y) {
-    // check if mouse hover or nearby
+  isCorrectQuadrant(p) {
+    return (
+      (p.x <= -16 || p.x >= 16) ||
+      ((p.z >= 6 && this.position.z >= 6) || (p.z <= 6 && this.position.z <= 6))
+    );
+  }
+
+  mouseOver(x, y, player) {
+    // check if mouse hover
     if (this.active && this.onscreen) {
-      this.nearby = Math.hypot(this.coords.x - x, this.coords.y - y) < this.boundingBox.nearbyThreshold;
-      this.hover = (
-        x >= this.coords.x - this.boundingBox.width &&
-        x <= this.coords.x + this.boundingBox.width &&
-        y >= this.coords.y - this.boundingBox.height &&
-        y <= this.coords.y + this.boundingBox.height
-      );
+      const minX = Math.min(this.corners.screen.a.x, this.corners.screen.b.x) - 4;
+      const maxX = Math.max(this.corners.screen.a.x, this.corners.screen.b.x) + 4;
+      const minY = this.corners.screen.a.y + 4;
+      const maxY = this.corners.screen.c.y - 4;
+      this.hover = (x >= minX && x <= maxX && y >= minY && y <= maxY && this.isCorrectQuadrant(player));
     } else {
-      this.nearby = false;
       this.hover = false;
     }
   }
@@ -58,12 +53,21 @@ class InteractionNodeView extends InteractionNodeBase {
 
     // fade out and deactivate
     this.distance = player.position.distanceTo(this.position);
-    this.height = Math.abs((player.position.y + player.height) - ((this.baseY === false) ? this.position.y : this.baseY));
+    this.height = Math.abs((player.position.y + player.height) - ((this.root == null) ? this.position.y : this.root.baseY));
 
     if (this.distance < this.radius.min || this.distance > this.radius.max || this.height > this.maxVerticalDifference) {
       this.active = false;
     } else {
       this.active = true;
+
+      // calculate corners
+      if (this.root) {
+        pointToScreen(this.corners.world.a, camera, centre, this.corners.screen.a);
+        pointToScreen(this.corners.world.b, camera, centre, this.corners.screen.b);
+        pointToScreen(this.corners.world.c, camera, centre, this.corners.screen.c);
+        pointToScreen(this.corners.world.d, camera, centre, this.corners.screen.d);
+      }
+
       if (this.distance < this.radius.min + this.radius.fadeThreshold) {
         this.opacity = (this.distance - this.radius.min) / this.radius.fadeThreshold;
       } else if (this.distance > this.radius.max - this.radius.fadeThreshold) {
@@ -74,25 +78,43 @@ class InteractionNodeView extends InteractionNodeBase {
     }
   }
 
-  draw(ctx) {
-    if (this.onscreen && this.active && this.nearby) {
-      ctx.globalAlpha = this.opacity;
-      this.eye.radius.current = 2;// this.eye.radius.min;// ((this.hover ? this.eye.radius.max : this.eye.radius.min) - this.eye.radius.current) * 0.25;
-      this.bez.offset.current = this.bez.offset.min; //((this.hover ? this.bez.offset.min : this.bez.offset.max) - this.bez.offset.current) * 0.25;
-      ctx.beginPath();
-      ctx.arc(this.coords.x, this.coords.y, this.nearby ? this.eye.radius.current : this.eye.radius.current * 0.75, Math.PI * 0.5, Math.PI * 2.5);
+  setCorners() {
+    // set 2D corner positions
+    const p = this.root.position;
+    const v = this.root.direction;
+    const s = this.root.board.scale;
+    const scale = 0.5;
+    const xo = v.x * this.root.thickness / 2;
+    const zo = v.z * this.root.thickness / 2;
+    this.corners.world.a.set(p.x - (v.x != 0 ? 0 : s.x * scale) + xo, p.y + s.y * scale, p.z - (v.z != 0 ? 0 : s.z * scale) + zo);
+    this.corners.world.b.set(p.x + (v.x != 0 ? 0 : s.x * scale) + xo, p.y + s.y * scale, p.z + (v.z != 0 ? 0 : s.z * scale) + zo);
+    this.corners.world.c.set(p.x + (v.x != 0 ? 0 : s.x * scale) + xo, p.y - s.y * scale, p.z + (v.z != 0 ? 0 : s.z * scale) + zo);
+    this.corners.world.d.set(p.x - (v.x != 0 ? 0 : s.x * scale) + xo, p.y - s.y * scale, p.z - (v.z != 0 ? 0 : s.z * scale) + zo);
+  }
 
-      /*
-      if (this.nearby) {
-        ctx.moveTo(this.coords.x + this.bez.p1.x, this.coords.y + this.bez.p1.y - this.bez.offset.current);
-        ctx.bezierCurveTo(this.coords.x + this.bez.cp1.x, this.coords.y + this.bez.cp1.y - this.bez.offset.current, this.coords.x + this.bez.cp2.x, this.coords.y + this.bez.cp2.y - this.bez.offset.current, this.coords.x + this.bez.p2.x, this.coords.y + this.bez.p2.y - this.bez.offset.current);
-        ctx.bezierCurveTo(this.coords.x - this.bez.cp2.x, this.coords.y + this.bez.cp2.y - this.bez.offset.current, this.coords.x - this.bez.cp1.x, this.coords.y + this.bez.cp1.y - this.bez.offset.current, this.coords.x - this.bez.p1.x, this.coords.y + this.bez.p1.y - this.bez.offset.current);
-        ctx.moveTo(this.coords.x - this.bez.p1.x, this.coords.y - this.bez.p1.y + this.bez.offset.current);
-        ctx.bezierCurveTo(this.coords.x - this.bez.cp1.x, this.coords.y - this.bez.cp1.y + this.bez.offset.current, this.coords.x - this.bez.cp2.x, this.coords.y - this.bez.cp2.y + this.bez.offset.current, this.coords.x - this.bez.p2.x, this.coords.y - this.bez.p2.y + this.bez.offset.current);
-        ctx.bezierCurveTo(this.coords.x + this.bez.cp2.x, this.coords.y - this.bez.cp2.y + this.bez.offset.current, this.coords.x + this.bez.cp1.x, this.coords.y - this.bez.cp1.y + this.bez.offset.current, this.coords.x + this.bez.p1.x, this.coords.y - this.bez.p1.y + this.bez.offset.current);
-      }
-      */
+  shouldDraw() {
+    // check onscreen, active, and corners not distorting
+    return (
+      this.onscreen &&
+      this.active &&
+      this.hover &&
+      Math.max(this.corners.screen.a.x, this.corners.screen.b.x) - Math.min(this.corners.screen.a.x, this.corners.screen.b.x) < window.innerWidth
+    );
+  }
+
+  draw(ctx) {
+    if (this.shouldDraw()) {
+      ctx.globalAlpha = this.opacity;
+      ctx.beginPath();
+      ctx.moveTo(this.corners.screen.a.x, this.corners.screen.a.y);
+      ctx.lineTo(this.corners.screen.b.x, this.corners.screen.b.y);
+      ctx.lineTo(this.corners.screen.c.x, this.corners.screen.c.y);
+      ctx.lineTo(this.corners.screen.d.x, this.corners.screen.d.y);
+      ctx.closePath();
       ctx.stroke();
+      const x = Math.max(this.corners.screen.a.x, this.corners.screen.b.x);
+      const y = (x == this.corners.screen.a.x ? this.corners.screen.a.y : this.corners.screen.b.y);
+      ctx.fillText('(i) ' + this.root.data.title, x + 8, y + 18);
     }
   }
 }
