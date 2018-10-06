@@ -214,7 +214,8 @@ a {
     -ms-flex-direction: column;
         flex-direction: column;
     -ms-flex-align: start;
-        align-items: flex-start; }
+        align-items: flex-start;
+    pointer-events: none; }
     .pane-gallery .artwork-info .title {
       padding-left: 0px;
       padding-right: 0px;
@@ -242,7 +243,8 @@ a {
       padding-bottom: 4px; }
     .pane-gallery .artwork-info.active {
       opacity: 1;
-      transform: translateX(0); }
+      transform: translateX(0);
+      pointer-events: all; }
   .pane-gallery .gallery-controls {
     position: absolute; }
     .pane-gallery .gallery-controls .close-gallery-button {
