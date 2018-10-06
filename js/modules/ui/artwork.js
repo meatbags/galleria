@@ -12,7 +12,7 @@ class Artwork {
     this.direction = new THREE.Vector3();
     this.element = e;
     this.nearRadius = 5;
-    this.thickness = 0.125;
+    this.thickness = 0.2;
     this.upstairs = false;
     this.data = {
       url: e.dataset.url,
@@ -31,82 +31,68 @@ class Artwork {
 
   init(scene, p, v) {
     const planeOffset = this.thickness / 2 + 0.01;
-    const board = new THREE.Mesh(new THREE.BoxBufferGeometry(1, 1, 1), new THREE.MeshStandardMaterial({color: 0x0, roughness: 0.75, metalness: 0}));
-    const plane = new THREE.Mesh(new THREE.PlaneBufferGeometry(1, 1), new THREE.MeshStandardMaterial({roughness: 1.0, metalness: 0.5}));
+    this.board = new THREE.Mesh(new THREE.BoxBufferGeometry(1, 1, 1), new THREE.MeshStandardMaterial({color: 0x0, roughness: 0.75, metalness: 0}));
+    this.plane = new THREE.Mesh(new THREE.PlaneBufferGeometry(1, 1), new THREE.MeshStandardMaterial({roughness: 1.0, metalness: 0.5}));
+
+    // set position, create node
+    this.baseY = p.y;
+    p.x += (v.x != 0 ? 0 : 1) * this.data.offset.horizontal;
+    p.y += this.data.offset.vertical;
+    p.z += (v.z != 0 ? 0 : 1) * this.data.offset.horizontal;
+    this.plane.position.set(p.x + v.x * planeOffset, p.y, p.z + v.z * planeOffset);
+    this.position.set(p.x, p.y, p.z);
+    this.direction.set(v.x, v.y, v.z);
+    this.node = new InteractionNodeView(p, null, v, this);
 
     // get texture from image file
     const texture = new THREE.TextureLoader().load(this.data.url, (tex) => {
       // scale to image dimensions
       const height = this.data.width * (tex.image.naturalHeight / tex.image.naturalWidth);
-      plane.scale.x = this.data.width;
-      plane.scale.y = height;
-      board.scale.x = v.x != 0 ? this.thickness : this.data.width;
-      board.scale.y = height;
-      board.scale.z = v.z != 0 ? this.thickness : this.data.width;
+      this.plane.scale.x = this.data.width;
+      this.plane.scale.y = height;
+      this.board.scale.x = v.x != 0 ? this.thickness : this.data.width;
+      this.board.scale.y = height;
+      this.board.scale.z = v.z != 0 ? this.thickness : this.data.width;
+
+      // set
+      this.node.setCorners();
     });
+
+    // set artwork texture
+    this.plane.material.map = texture;
 
     // required for NPOT textures
     texture.wrapS = texture.wrapT = THREE.ClampToEdgeWrapping;
     texture.minFilter = THREE.LinearFilter;
 
-    // record original
-    this.baseY = p.y;
-
-    // reposition
-    p.x += (v.x != 0 ? 0 : 1) * this.data.offset.horizontal;
-    p.y += this.data.offset.vertical;
-    p.z += (v.z != 0 ? 0 : 1) * this.data.offset.horizontal;
-
-    // set, add to scene
-    plane.material.map = texture;
-    plane.position.set(p.x + v.x * planeOffset, p.y, p.z + v.z * planeOffset);
-
     if (v.z == 1) {
       // default
     } else if (v.z == -1) {
-      plane.rotation.y = Math.PI;
+      this.plane.rotation.y = Math.PI;
     } else if (v.x == 1) {
-      plane.rotation.y = Math.PI * 0.5;
+      this.plane.rotation.y = Math.PI * 0.5;
     } else if (v.x == -1) {
-      plane.rotation.y = Math.PI * 1.5;
+      this.plane.rotation.y = Math.PI * 1.5;
     }
 
-    board.scale.x = v.x != 0 ? this.thickness : 1;
-    board.scale.z = v.z != 0 ? this.thickness : 1;
-    board.position.set(p.x, p.y, p.z);
-    scene.add(plane);
-    scene.add(board);
+    this.board.scale.x = v.x != 0 ? this.thickness : 1;
+    this.board.scale.z = v.z != 0 ? this.thickness : 1;
+    this.board.position.set(p.x, p.y, p.z);
 
-    // save reference
-    this.board = board;
-
-    // create interaction node
-    this.node = new InteractionNodeView(p, null, v, this.baseY);
-    this.position.set(p.x, p.y, p.z);
-    this.direction.set(v.x, v.y, v.z);
+    // add
+    scene.add(this.plane);
+    scene.add(this.board);
   }
 
   activate() {
-    if (!this.active && this.board !== undefined) {
+    if (!this.active) {
       this.active = true;
-      if (!this.saveScale) {
-        this.saveScale = this.board.scale.clone();
-      }
-
-      // set target
-      this.targetScale = this.board.scale.clone();
-      this.targetScale.x += this.board.scale.x == this.thickness ? 0 : 0.25;
-      this.targetScale.y += 0.25;
-      this.targetScale.z += this.board.scale.z == this.thickness ? 0 : 0.25;
     }
   }
 
   deactivate() {
     if (this.active) {
       this.active = false;
-      if (this.saveScale) {
-        this.targetScale.set(this.saveScale.x, this.saveScale.y, this.saveScale.z);
-      }
     }
   }
 
@@ -130,11 +116,6 @@ class Artwork {
   }
 
   update(delta) {
-    if (this.targetScale && this.board) {
-      this.board.scale.x += (this.targetScale.x - this.board.scale.x) * 0.15;
-      this.board.scale.y += (this.targetScale.y - this.board.scale.y) * 0.15;
-      this.board.scale.z += (this.targetScale.z - this.board.scale.z) * 0.15;
-    }
   }
 }
 

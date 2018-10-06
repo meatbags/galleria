@@ -10,7 +10,7 @@
     <div id='nav-gallery' class='list'>
       <div class='item active close-gallery-menu'>The Gallery</div>
       <div data-active='#menu-controls' class='item'>Controls</div>
-      <div data-active='#menu-artworks' class='item'>Artworks</div>
+      <!--<div data-active='#menu-artworks' class='item'>Artworks</div>-->
       <div class='item close-gallery'>Home</div>
     </div>
   </div>

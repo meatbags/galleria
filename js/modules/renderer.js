@@ -12,7 +12,7 @@ class Renderer {
     this.renderer.setClearColor(0x444444, 1);
     this.renderer.gammaInput = true;
     this.renderer.gammaOutput = true;
-    this.padding = {x: 64, y: 96, minX: 640, minY: 480};
+    this.padding = {x: 64, y: 96, minX: 768, minY: 480};
     this.setSize();
 
     // render passes
@@ -35,6 +35,7 @@ class Renderer {
 
     // events, doc
     window.addEventListener('resize', () => { this.resize(); });
+    window.addEventListener('orientationchange', () => { setTimeout(() => { this.resize(); }, 125); });
     this.domElement = document.querySelector('#canvas-target');
     this.domElement.append(this.renderer.domElement);
     this.resize();

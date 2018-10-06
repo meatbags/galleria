@@ -2,8 +2,46 @@
   z-index: $indexPaneContent;
   user-select: none;
 
-  .pane__inner {
+  .pane__inner {}
 
+  .controls {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    pointer-events: none;
+
+    .controls__inner {
+      display: flex;
+      padding-bottom: $space * 12;
+      pointer-events: all;
+
+      .block {
+        height: 100%;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+
+        .control {
+          @include pad(2, 1.5);
+          cursor: pointer;
+
+          svg {
+            transition: $transitionFast;
+            fill: transparent;
+          }
+
+          &.active {
+            svg {
+              transform: scale(1.2, 1.2);
+              fill: $colourAlt;
+            }
+          }
+        }
+      }
+    }
   }
 
   .gallery-menu {
@@ -60,6 +98,10 @@
       position: relative;
       cursor: crosshair;
       box-shadow: $boxShadow;
+
+      &.clickable {
+        cursor: pointer;
+      }
 
       canvas {
         margin: 0;
@@ -123,11 +165,12 @@
     .close-gallery-button {
       margin-top: $gridSize * 5;
       margin-left: $gridSize * 5;
-      width: 80px;
-      height: 80px;
+      width: 70px;
+      height: 70px;
       cursor: pointer;
       box-shadow: $boxShadow;
       border: $border;
+      border-width: 2px;
       user-select: none;
 
       img {
