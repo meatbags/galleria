@@ -4,6 +4,7 @@
 
 class Menu {
   constructor(root) {
+    this.isDev = (window.location.host.indexOf('localhost') != -1);
     this.root = root;
     this.openGalleryButton = document.querySelector('#open-gallery');
     this.openGalleryButton.onclick = () => {
@@ -19,7 +20,11 @@ class Menu {
       });
     });
     this.initMenus();
-    this.toggleGallery();
+
+    // dev
+    if (this.isDev) {
+      this.toggleGallery();
+    }
   }
 
   toggleGallery() {
@@ -44,7 +49,7 @@ class Menu {
             this.lock = false;
             gallery.querySelectorAll('canvas').forEach(e => { e.classList.add('active'); });
             this.root.activate();
-          }, 0);//750);
+          }, this.isDev ? 125 : 1000);
         } else {
           this.root.activate();
           this.lock = false;

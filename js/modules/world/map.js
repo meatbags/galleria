@@ -54,19 +54,6 @@ class Map {
 
     // revolving display
     this.makeBox();
-
-    //const mat = this.materials.getCustomMaterial('warp');
-    /*
-      const mat = this.materials.mat.metal.clone();
-      mat.roughness = 0.3;
-      this.group = [];
-      for (var x=-15; x<16; ++x) {
-        const mesh = new THREE.Mesh(new THREE.BoxBufferGeometry(0.125, 5, 1), mat);
-        mesh.position.set(x, 6, 6);
-        this.scene.add(mesh);
-        this.group.push(mesh);
-      }
-    */
   }
 
   addCollisionMap(obj) {
@@ -88,8 +75,9 @@ class Map {
   }
 
   makeBox() {
+    /*
     this.box = new THREE.Group();
-    const w = 3.0;
+    const w = 2.0;
     const r = 0.1;
     const o = w/2 - r/2;
     const arr = [
@@ -102,13 +90,30 @@ class Map {
       mesh.position.set(e[3], e[4], e[5]);
       this.box.add(mesh);
     });
-    this.box.position.set(0, 14, 6);
+    this.box.position.set(0, 17, 19.5);
     this.scene.add(this.box);
+    */
+
+    // neon lights
+    const size = 0.1;
+    const rodSize = 4;
+    for (var x=-16; x<=16; x+=8) {
+      const y = 19;
+      const mesh = new THREE.Mesh(new THREE.BoxBufferGeometry(size, size, rodSize), this.materials.mat.neon);
+      const holster = new THREE.Mesh(new THREE.BoxBufferGeometry(size, size * 4, rodSize), this.materials.mat.dark);
+      const rod1 = new THREE.Mesh(new THREE.BoxBufferGeometry(size, 1, size), this.materials.mat.dark);
+      const rod2 = rod1.clone();
+      mesh.position.set(x, y, 6);
+      holster.position.set(x, y + size*2.5, 6);
+      rod1.position.set(x, y + size*4.5 + 0.5, 6 + rodSize / 3);
+      rod2.position.set(x, y + size*4.5 + 0.5, 6 - rodSize / 3);
+      this.scene.add(mesh, holster, rod1, rod2);
+    }
   }
 
   update(delta) {
     this.materials.update(delta);
-    this.box.rotation.y += delta * Math.PI / 8;
+    //this.box.rotation.y += delta * Math.PI / 12;
   }
 }
 
