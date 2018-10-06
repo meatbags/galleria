@@ -20,9 +20,20 @@ class Surface {
 
     // events
     document.querySelectorAll('.controls .controls__inner .control').forEach(e => {
-      e.addEventListener('mousedown', evt => { this.onControlDown(evt.currentTarget); });
-      e.addEventListener('mouseup', evt => { this.onControlUp(evt.currentTarget); });
-      e.addEventListener('mouseleave', evt => { this.onControlLeave(evt.currentTarget); });
+      if (!isMobile) {
+        e.addEventListener('mousedown', evt => { this.onControlDown(evt.currentTarget); });
+        e.addEventListener('mouseup', evt => { this.onControlUp(evt.currentTarget); });
+        e.addEventListener('mouseleave', evt => { this.onControlLeave(evt.currentTarget); });
+      } else {
+        e.addEventListener('touchstart', evt => {
+          evt.preventDefault();
+          this.onControlDown(evt.currentTarget);
+        });
+        e.addEventListener('touchend', evt => {
+          evt.preventDefault();
+          this.onControlUp(evt.currentTarget);
+        });
+      }
     });
     this.controls = {
       up: document.querySelector('#ctrl-U'),
@@ -77,6 +88,11 @@ class Surface {
     this.rotation.x = this.player.rotation.x;
     this.timestamp = Date.now();
     this.mouse.start(e);
+
+    // set cursor position mobile
+    if (this.isMobile) {
+      this.onMouseMove(e);
+    }
   }
 
   onMouseMove(e) {

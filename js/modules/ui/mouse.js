@@ -22,6 +22,9 @@ class Mouse {
       this.domElement.addEventListener('touchstart', onDown, false);
       this.domElement.addEventListener('touchmove', onMove, false);
       this.domElement.addEventListener('touchend', onUp, false);
+
+      // capture click
+      //this.domElement.addEventListener('click', e => {onDown(e); onUp(e);}, false);
     }
   }
 
