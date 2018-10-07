@@ -112,9 +112,9 @@ class InteractionNodeView extends InteractionNodeBase {
       ctx.lineTo(this.corners.screen.d.x, this.corners.screen.d.y);
       ctx.closePath();
       ctx.stroke();
-      const x = Math.max(this.corners.screen.a.x, this.corners.screen.b.x);
-      const y = (x == this.corners.screen.a.x ? this.corners.screen.a.y : this.corners.screen.b.y);
-      ctx.fillText('(i) ' + this.root.data.title, x + 8, y + 18);
+      const x = Math.max(this.corners.screen.c.x, this.corners.screen.d.x);
+      const y = (x == this.corners.screen.c.x ? this.corners.screen.c.y : this.corners.screen.d.y);
+      ctx.fillText(this.root.data.title, x + 8, y);
     }
   }
 }
