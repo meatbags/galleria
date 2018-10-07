@@ -4,84 +4,6 @@
 
   .pane__inner {}
 
-  .controls {
-    position: absolute;
-    bottom: 0;
-    width: 100%;
-    display: flex;
-    justify-content: center;
-    pointer-events: none;
-
-    .controls__inner {
-      display: flex;
-      padding-bottom: $space * 12;
-      pointer-events: all;
-
-      .block {
-        height: 100%;
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-
-        .control {
-          @include pad(2, 1.5);
-          cursor: pointer;
-
-          svg {
-            transition: $transitionFast;
-            fill: transparent;
-          }
-
-          &.active {
-            svg {
-              transform: scale(1.2, 1.2);
-              fill: $colourAlt;
-            }
-          }
-        }
-      }
-    }
-  }
-
-  .gallery-menu {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    pointer-events: none;
-
-    .menu {
-      display: none;
-      pointer-events: none;
-      background: black;
-      padding: $space;
-      box-shadow: $boxShadow;
-
-      &.active {
-        display: block;
-        pointer-events: all;
-      }
-
-      .title {
-        font-size: $fontHuge;
-      }
-
-      .content {
-
-      }
-
-      .close-gallery-menu {
-        font-size: $fontHuge;
-        cursor: pointer;
-
-        &:hover {
-          color: $colourAlt;
-        }
-      }
-    }
-  }
-
   .canvas-wrapper {
     position: absolute;
     top: 0;
@@ -117,68 +39,21 @@
     }
   }
 
-  .artwork-info {
+  .close-gallery-button {
     position: absolute;
-    bottom: 0;
-    right: 0;
-    margin-right: $space * 10;
-    margin-bottom: $space * 7;
-    padding: $space;
-    opacity: 0;
-    transform: translateX(-$gridSize * 2);
-    transition: opacity $transition, transform $transition;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    pointer-events: none;
+    margin-top: $gridSize * 5;
+    margin-left: $gridSize * 5;
+    width: 70px;
+    height: 70px;
+    cursor: pointer;
+    box-shadow: $boxShadow;
+    border: $border;
+    border-width: 2px;
+    user-select: none;
 
-    .title {
-      @include pad(0, 0.5);
-      font-size: $fontHuge;
-    }
-
-    .subtitle {
-      @include pad(0, 1);
-      max-width: 300px;
-      font-style: italic;
-    }
-
-    .desc {
-      @include pad(0, 0.5);
-      border-top: $border;
-      max-width: 300px;
-      //text-align: right;
-    }
-
-    .link {
-      @include pad(0, 0.5);
-    }
-
-    &.active {
-      opacity: 1;
-      transform: translateX(0);
-      pointer-events: all;
-    }
-  }
-
-  .gallery-controls {
-    position: absolute;
-
-    .close-gallery-button {
-      margin-top: $gridSize * 5;
-      margin-left: $gridSize * 5;
-      width: 70px;
-      height: 70px;
-      cursor: pointer;
-      box-shadow: $boxShadow;
-      border: $border;
-      border-width: 2px;
-      user-select: none;
-
-      img {
-        width: 100%;
-        height: auto;
-      }
+    img {
+      width: 100%;
+      height: auto;
     }
   }
 }

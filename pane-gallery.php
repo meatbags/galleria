@@ -1,11 +1,11 @@
 <div id='pane-gallery' class='pane pane-gallery'>
   <div class='pane__inner'>
+
     <div class='canvas-wrapper'>
-      <div id='canvas-target' class='canvas-wrapper__inner'>
-        <!-- canvas -->
-      </div>
+      <div id='canvas-target' class='canvas-wrapper__inner'><!-- canvas --></div>
     </div>
-    <div class='controls'>
+
+    <div id='gallery-controls' class='pane-gallery_controls controls'>
       <div class='controls__inner'>
         <div class='block'>
           <div id='ctrl-L' data-dir='left' class='control'>
@@ -35,16 +35,40 @@
         </div>
       </div>
     </div>
-    <div class='gallery-controls'>
-      <div class='close-gallery-button close-gallery'>
-        <img src='<?php echo get_template_directory_uri(); ?>/img/logo-box-blur.png' alt='Logo' />
-      </div>
+
+    <div class='close-gallery-button close-gallery'>
+      <img src='<?php echo get_template_directory_uri(); ?>/img/logo-box-blur.png' alt='Logo' />
     </div>
-    <div class='gallery-menu'>
+
+    <div class='pane-gallery_gallery-menu gallery-menu'>
       <div id='menu-controls' class='menu'>
-        <div class='title'>Controls</div>
-        <div class='content'>[ controls here ]</div>
-        <div class='close-gallery-menu'>Close X</div>
+        <div class='content'>
+          <div class='item'>
+            <div class='requires-activate control-mouse'>
+              <img src='<?php echo get_template_directory_uri(); ?>/img/control-mouse.png' />
+            </div>
+            <div class='text'>
+              Click and drag to pan the camera.
+            </div>
+          </div>
+          <div class='item'>
+            <div class='requires-activate control-arrow'>
+              <img src='<?php echo get_template_directory_uri(); ?>/img/control-arrow.png' />
+            </div>
+            <div class='text'>
+              Use your keyboard arrows or those on-screen to move.
+            </div>
+          </div>
+          <div class='item'>
+            <div class='requires-activate control-artwork'>
+              <img src='<?php echo get_template_directory_uri(); ?>/img/control-artwork.png' />
+            </div>
+            <div class='text'>
+              Click on the artworks to view them up close.
+            </div>
+          </div>
+        </div>
+        <div class='close-gallery-menu'>&times;</div>
       </div>
       <!--
       <div id='menu-artworks' class='menu'>
@@ -54,7 +78,8 @@
       </div>
       -->
     </div>
-    <div id='artwork-target' class='artwork-info'>
+
+    <div id='artwork-target' class='pane-gallery_artwork-info artwork-info'>
       <div class='title'></div>
       <div class='subtitle'></div>
       <div class='desc'></div>

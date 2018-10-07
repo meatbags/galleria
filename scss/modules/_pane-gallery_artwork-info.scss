@@ -1,0 +1,43 @@
+.pane-gallery_artwork-info {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  margin-right: $space * 10;
+  margin-bottom: $space * 7;
+  padding: $space;
+  opacity: 0;
+  transform: translateX(-$gridSize * 2);
+  transition: opacity $transition, transform $transition;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  pointer-events: none;
+
+  .title {
+    @include pad(0, 0.5);
+    font-size: $fontLarge;
+  }
+
+  .subtitle {
+    @include pad(0, 1);
+    max-width: 300px;
+    font-style: italic;
+  }
+
+  .desc {
+    @include pad(0, 0.5);
+    border-top: $border;
+    max-width: 300px;
+    //text-align: right;
+  }
+
+  .link {
+    @include pad(0, 0.5);
+  }
+
+  &.active {
+    opacity: 1;
+    transform: translateX(0);
+    pointer-events: all;
+  }
+}

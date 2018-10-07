@@ -45,7 +45,7 @@ table {
   border-collapse: collapse;
   border-spacing: 0; }
 
-.ext-grid, #background-grid, .nav .nav__inner {
+.ext-grid, #background-grid, .pane-gallery_gallery-menu .menu, .nav .nav__inner {
   background-size: 16px 16px;
   background-image: linear-gradient(to right, rgba(238, 238, 238, 0.025) 1px, transparent 1px), linear-gradient(to bottom, rgba(238, 238, 238, 0.025) 1px, transparent 1px); }
 
@@ -114,64 +114,6 @@ a {
      -moz-user-select: none;
       -ms-user-select: none;
           user-select: none; }
-  .pane-gallery .controls {
-    position: absolute;
-    bottom: 0;
-    width: 100%;
-    display: -ms-flexbox;
-    display: flex;
-    -ms-flex-pack: center;
-        justify-content: center;
-    pointer-events: none; }
-    .pane-gallery .controls .controls__inner {
-      display: -ms-flexbox;
-      display: flex;
-      padding-bottom: 96px;
-      pointer-events: all; }
-      .pane-gallery .controls .controls__inner .block {
-        height: 100%;
-        -ms-flex: 1;
-            flex: 1;
-        display: -ms-flexbox;
-        display: flex;
-        -ms-flex-direction: column;
-            flex-direction: column;
-        -ms-flex-pack: center;
-            justify-content: center; }
-        .pane-gallery .controls .controls__inner .block .control {
-          padding-left: 16px;
-          padding-right: 16px;
-          padding-top: 12px;
-          padding-bottom: 12px;
-          cursor: pointer; }
-          .pane-gallery .controls .controls__inner .block .control svg {
-            transition: 0.35s;
-            fill: transparent; }
-          .pane-gallery .controls .controls__inner .block .control.active svg {
-            transform: scale(1.2, 1.2);
-            fill: #ff89da; }
-  .pane-gallery .gallery-menu {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    pointer-events: none; }
-    .pane-gallery .gallery-menu .menu {
-      display: none;
-      pointer-events: none;
-      background: black;
-      padding: 8px;
-      box-shadow: 5px 5px 20px rgba(255, 137, 218, 0.4); }
-      .pane-gallery .gallery-menu .menu.active {
-        display: block;
-        pointer-events: all; }
-      .pane-gallery .gallery-menu .menu .title {
-        font-size: 40px; }
-      .pane-gallery .gallery-menu .menu .close-gallery-menu {
-        font-size: 40px;
-        cursor: pointer; }
-        .pane-gallery .gallery-menu .menu .close-gallery-menu:hover {
-          color: #ff89da; }
   .pane-gallery .canvas-wrapper {
     position: absolute;
     top: 0;
@@ -199,70 +141,204 @@ a {
         transition: opacity 2.5s; }
         .pane-gallery .canvas-wrapper .canvas-wrapper__inner canvas.active {
           opacity: 1; }
-  .pane-gallery .artwork-info {
+  .pane-gallery .close-gallery-button {
     position: absolute;
-    bottom: 0;
-    right: 0;
-    margin-right: 80px;
-    margin-bottom: 56px;
-    padding: 8px;
-    opacity: 0;
-    transform: translateX(-32px);
-    transition: opacity 0.5s, transform 0.5s;
+    margin-top: 80px;
+    margin-left: 80px;
+    width: 70px;
+    height: 70px;
+    cursor: pointer;
+    box-shadow: 5px 5px 20px rgba(255, 137, 218, 0.4);
+    border: 1px solid #eee;
+    border-width: 2px;
+    -webkit-user-select: none;
+       -moz-user-select: none;
+        -ms-user-select: none;
+            user-select: none; }
+    .pane-gallery .close-gallery-button img {
+      width: 100%;
+      height: auto; }
+
+.pane-gallery_controls {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-pack: center;
+      justify-content: center;
+  pointer-events: none; }
+  .pane-gallery_controls.display-none {
+    display: none; }
+  .pane-gallery_controls .controls__inner {
     display: -ms-flexbox;
     display: flex;
-    -ms-flex-direction: column;
-        flex-direction: column;
-    -ms-flex-align: start;
-        align-items: flex-start;
-    pointer-events: none; }
-    .pane-gallery .artwork-info .title {
-      padding-left: 0px;
-      padding-right: 0px;
-      padding-top: 4px;
-      padding-bottom: 4px;
+    padding-bottom: 96px;
+    pointer-events: all; }
+    .pane-gallery_controls .controls__inner .block {
+      height: 100%;
+      -ms-flex: 1;
+          flex: 1;
+      display: -ms-flexbox;
+      display: flex;
+      -ms-flex-direction: column;
+          flex-direction: column;
+      -ms-flex-pack: center;
+          justify-content: center; }
+      .pane-gallery_controls .controls__inner .block .control {
+        padding-left: 16px;
+        padding-right: 16px;
+        padding-top: 12px;
+        padding-bottom: 12px;
+        cursor: pointer; }
+        .pane-gallery_controls .controls__inner .block .control svg {
+          transition: 0.35s;
+          fill: transparent; }
+        .pane-gallery_controls .controls__inner .block .control.active svg {
+          transform: scale(1.2, 1.2);
+          fill: #ff89da; }
+
+@keyframes wiggle-x {
+  0% {
+    transform: translateX(-20px) rotate(10deg); }
+  100% {
+    transform: translateX(0px) rotate(-10deg); } }
+
+@keyframes wiggle-y {
+  0% {
+    transform: translateY(-10px); }
+  100% {
+    transform: translateY(0px); } }
+
+@keyframes wiggle-scale {
+  0% {
+    transform: scale(0.9); }
+  100% {
+    transform: scale(1); } }
+
+.pane-gallery_gallery-menu {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none; }
+  .pane-gallery_gallery-menu .menu {
+    padding-left: 16px;
+    padding-right: 16px;
+    padding-top: 16px;
+    padding-bottom: 16px;
+    display: none;
+    pointer-events: none;
+    position: relative;
+    background-color: #2c272b;
+    box-shadow: 5px 5px 20px rgba(255, 137, 218, 0.4); }
+    .pane-gallery_gallery-menu .menu.active {
+      display: block;
+      pointer-events: all; }
+    .pane-gallery_gallery-menu .menu .title {
       font-size: 40px; }
-    .pane-gallery .artwork-info .subtitle {
+    .pane-gallery_gallery-menu .menu .close-gallery-menu {
+      position: absolute;
+      font-size: 40px;
+      cursor: pointer;
+      top: -16px;
+      right: -16px;
+      background-color: #2c272b;
+      padding: 8px;
+      border: 1px solid #eee;
+      border-width: 2px;
+      border-radius: 48px;
+      width: 48px;
+      height: 48px;
+      display: -ms-flexbox;
+      display: flex;
+      -ms-flex-align: center;
+          align-items: center;
+      -ms-flex-pack: center;
+          justify-content: center; }
+      .pane-gallery_gallery-menu .menu .close-gallery-menu:hover {
+        color: #ff89da;
+        border-color: #ff89da; }
+    .pane-gallery_gallery-menu .menu .content {
       padding-left: 0px;
       padding-right: 0px;
       padding-top: 8px;
       padding-bottom: 8px;
-      max-width: 300px;
-      font-style: italic; }
-    .pane-gallery .artwork-info .desc {
-      padding-left: 0px;
-      padding-right: 0px;
-      padding-top: 4px;
-      padding-bottom: 4px;
-      border-top: 1px solid #eee;
-      max-width: 300px; }
-    .pane-gallery .artwork-info .link {
-      padding-left: 0px;
-      padding-right: 0px;
-      padding-top: 4px;
-      padding-bottom: 4px; }
-    .pane-gallery .artwork-info.active {
-      opacity: 1;
-      transform: translateX(0);
-      pointer-events: all; }
-  .pane-gallery .gallery-controls {
-    position: absolute; }
-    .pane-gallery .gallery-controls .close-gallery-button {
-      margin-top: 80px;
-      margin-left: 80px;
-      width: 70px;
-      height: 70px;
-      cursor: pointer;
-      box-shadow: 5px 5px 20px rgba(255, 137, 218, 0.4);
-      border: 1px solid #eee;
-      border-width: 2px;
-      -webkit-user-select: none;
-         -moz-user-select: none;
-          -ms-user-select: none;
-              user-select: none; }
-      .pane-gallery .gallery-controls .close-gallery-button img {
-        width: 100%;
-        height: auto; }
+      display: -ms-flexbox;
+      display: flex; }
+      .pane-gallery_gallery-menu .menu .content .item {
+        width: 33%;
+        padding: 8px;
+        display: -ms-flexbox;
+        display: flex;
+        -ms-flex-direction: column;
+            flex-direction: column;
+        -ms-flex-align: center;
+            align-items: center; }
+        .pane-gallery_gallery-menu .menu .content .item .text {
+          text-align: center; }
+        .pane-gallery_gallery-menu .menu .content .item .control-mouse.active {
+          animation: wiggle-x;
+          animation-duration: 1.25s;
+          animation-iteration-count: infinite;
+          animation-direction: alternate; }
+        .pane-gallery_gallery-menu .menu .content .item .control-arrow.active {
+          animation: wiggle-y;
+          animation-duration: 1.0s;
+          animation-iteration-count: infinite;
+          animation-direction: alternate; }
+        .pane-gallery_gallery-menu .menu .content .item .control-artwork.active {
+          animation: wiggle-scale;
+          animation-duration: 1s;
+          animation-iteration-count: infinite;
+          animation-direction: alternate; }
+
+.pane-gallery_artwork-info {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  margin-right: 80px;
+  margin-bottom: 56px;
+  padding: 8px;
+  opacity: 0;
+  transform: translateX(-32px);
+  transition: opacity 0.5s, transform 0.5s;
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-direction: column;
+      flex-direction: column;
+  -ms-flex-align: start;
+      align-items: flex-start;
+  pointer-events: none; }
+  .pane-gallery_artwork-info .title {
+    padding-left: 0px;
+    padding-right: 0px;
+    padding-top: 4px;
+    padding-bottom: 4px;
+    font-size: 20px; }
+  .pane-gallery_artwork-info .subtitle {
+    padding-left: 0px;
+    padding-right: 0px;
+    padding-top: 8px;
+    padding-bottom: 8px;
+    max-width: 300px;
+    font-style: italic; }
+  .pane-gallery_artwork-info .desc {
+    padding-left: 0px;
+    padding-right: 0px;
+    padding-top: 4px;
+    padding-bottom: 4px;
+    border-top: 1px solid #eee;
+    max-width: 300px; }
+  .pane-gallery_artwork-info .link {
+    padding-left: 0px;
+    padding-right: 0px;
+    padding-top: 4px;
+    padding-bottom: 4px; }
+  .pane-gallery_artwork-info.active {
+    opacity: 1;
+    transform: translateX(0);
+    pointer-events: all; }
 
 .pane-content {
   z-index: 4;

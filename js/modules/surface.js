@@ -19,7 +19,7 @@ class Surface {
     this.scaleRotation = {x: isMobile ? 0.75 : 1, y: 1};
 
     // events
-    document.querySelectorAll('.controls .controls__inner .control').forEach(e => {
+    document.querySelectorAll('#gallery-controls .controls__inner .control').forEach(e => {
       if (!isMobile) {
         e.addEventListener('mousedown', evt => { this.onControlDown(evt.currentTarget); });
         e.addEventListener('mouseup', evt => { this.onControlUp(evt.currentTarget); });

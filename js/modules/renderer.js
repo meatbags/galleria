@@ -20,8 +20,8 @@ class Renderer {
     const radius = 0.125;
     const threshold = 0.96;
     this.passRender = new THREE.RenderPass(this.scene, this.camera);
-    this.passFXAA = new THREE.ShaderPass(THREE.FXAAShader);
-		this.passFXAA.uniforms['resolution'].value.set(1/this.width, 1/this.height);
+    //this.passFXAA = new THREE.ShaderPass(THREE.FXAAShader);
+		//this.passFXAA.uniforms['resolution'].value.set(1/this.width, 1/this.height);
     this.passPoster = new THREE.PosterPass(this.size);
     this.passBloom = new THREE.UnrealBloomPass(this.size, strength, radius, threshold);
     this.passBloom.renderToScreen = true;
@@ -29,7 +29,7 @@ class Renderer {
     // compose
     this.composer = new THREE.EffectComposer(this.renderer);
     this.composer.addPass(this.passRender);
-    this.composer.addPass(this.passFXAA);
+    //this.composer.addPass(this.passFXAA);
     this.composer.addPass(this.passPoster);
     this.composer.addPass(this.passBloom);
 
@@ -62,7 +62,7 @@ class Renderer {
     this.renderer.setSize(this.width, this.height);
     this.composer.setSize(this.width, this.height);
     this.passBloom.setSize(this.width, this.height);
-    this.passFXAA.uniforms['resolution'].value.set(1/this.width, 1/this.height);
+    //this.passFXAA.uniforms['resolution'].value.set(1/this.width, 1/this.height);
   }
 
   draw(delta) {
