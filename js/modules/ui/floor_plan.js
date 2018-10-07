@@ -15,6 +15,7 @@ class FloorPlan {
     this.cameraDirection = new THREE.Vector3();
     this.artworkActiveRadius = 10;
     this.artworks = [];
+    this.isDev = window.location.host.indexOf('localhost') != -1;
 
     // get artworks
     var count = 0;
@@ -38,7 +39,7 @@ class FloorPlan {
   }
 
   placeArtworks() {
-    // 26
+    // 32
     const positions = [
       // brick wall (8)
       {x: -24, y: 4, z: 23, nx: 0, nz: -1}, {x: -10.5, y: 3.5, z: 23, nx: 0, nz: -1}, {x: -8, y: 3.5, z: 23, nx: 0, nz: -1},
@@ -47,15 +48,17 @@ class FloorPlan {
       // central block A (6)
       {x: -12, y: 3.5, z: 8, nx: 0, nz: 1}, {x: -8, y: 3.5, z: 8, nx: 0, nz: 1}, {x: -4, y: 3.5, z: 8, nx: 0, nz: 1},
       {x: 4, y: 3.5, z: 8, nx: 0, nz: 1}, {x: 8, y: 3.5, z: 8, nx: 0, nz: 1}, {x: 12, y: 3.5, z: 8, nx: 0, nz: 1},
-      // end walls (2)
-      {x: -29.5, y: 4, z: 6, nx: 1, nz: 0}, {x: 30, y: 4, z: 6, nx: -1, nz: 0},
+      // end walls (6)
+      {x: -31, y: 4, z: 14, nx: 1, nz: 0}, {x: -29.5, y: 4, z: 6, nx: 1, nz: 0}, {x: -31, y: 4, z: -2, nx: 1, nz: 0},
+      {x: 32, y: 4, z: 14, nx: -1, nz: 0}, {x: 30, y: 4, z: 6, nx: -1, nz: 0}, {x: 32, y: 4, z: -2, nx: -1, nz: 0},
       // central block B (6)
       {x: -12, y: 3.5, z: 4, nx: 0, nz: -1}, {x: -8, y: 3.5, z: 4, nx: 0, nz: -1}, {x: -4, y: 3.5, z: 4, nx: 0, nz: -1},
       {x: 4, y: 3.5, z: 4, nx: 0, nz: -1}, {x: 8, y: 3.5, z: 4, nx: 0, nz: -1}, {x: 12, y: 3.5, z: 4, nx: 0, nz: -1},
       // white wall downstairs (2)
       {x: -8, y: 3.5, z: -11.5, nx: 0, nz: 1}, {x: 8, y: 3.5, z: -11.5, nx: 0, nz: 1},
-      // upstairs (2)
-      {x: -8, y: 11, z: -11.5, nx: 0, nz: 1, upstairs: true}, {x: 8, y: 11, z: -11.5, nx: 0, nz: 1, upstairs: true},
+      // upstairs (4)
+      {x: -24, y: 11, z: -11, nx: 0, nz: 1, upstairs: true},  {x: -8, y: 11, z: -11.5, nx: 0, nz: 1, upstairs: true},
+      {x: 8, y: 11, z: -11.5, nx: 0, nz: 1, upstairs: true}, {x: 24, y: 11, z: -11, nx: 0, nz: 1, upstairs: true}
     ];
 
     for (var i=0; i<this.artworks.length; i++) {
@@ -94,14 +97,16 @@ class FloorPlan {
     }
 
     // placeholders
-    const mat = new THREE.MeshStandardMaterial({color: 0x0, roughness: 0.75, metalness: 0});
-    positions.forEach(p => {
-      if (!p.active) {
-        const board = new THREE.Mesh(new THREE.BoxBufferGeometry(0.25, 0.25, 0.25), mat);
-        board.position.set(p.x, p.y, p.z);
-        this.scene.add(board);
-      }
-    })
+    if (this.isDev) {
+      const mat = new THREE.MeshStandardMaterial({color: 0x0, roughness: 0.75, metalness: 0});
+      positions.forEach(p => {
+        if (!p.active) {
+          const board = new THREE.Mesh(new THREE.BoxBufferGeometry(0.25, 0.25, 0.25), mat);
+          board.position.set(p.x, p.y, p.z);
+          this.scene.add(board);
+        }
+      });
+    }
   }
 
   mouseOver(x, y) {

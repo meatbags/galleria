@@ -1,0 +1,43 @@
+.pane-gallery_controls {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  pointer-events: none;
+
+  &.display-none {
+    display: none;
+  }
+
+  .controls__inner {
+    display: flex;
+    padding-bottom: $space * 12;
+    pointer-events: all;
+
+    .block {
+      height: 100%;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+
+      .control {
+        @include pad(2, 1.5);
+        cursor: pointer;
+
+        svg {
+          transition: $transitionFast;
+          fill: transparent;
+        }
+
+        &.active {
+          svg {
+            transform: scale(1.2, 1.2);
+            fill: $colourAlt;
+          }
+        }
+      }
+    }
+  }
+}

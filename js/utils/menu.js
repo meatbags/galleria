@@ -72,13 +72,18 @@ class Menu {
       e.classList.remove('active');
     });
     document.querySelector('#nav-gallery .close-gallery-menu').classList.add('active');
+
+    // show controls
+    document.querySelector('#gallery-controls').classList.remove('display-none');
   }
 
   onMenuItem(el) {
     if (el.dataset.active) {
       const target = document.querySelector(el.dataset.active);
       if (target) {
-        el.parentNode.querySelectorAll('.active').forEach(e => { e.classList.remove('active'); });
+        el.parentNode.querySelectorAll('.active').forEach(e => {
+          e.classList.remove('active');
+        });
         el.classList.add('active');
 
         // close pages or menus
@@ -89,11 +94,20 @@ class Menu {
         } else {
           document.querySelectorAll('.gallery-menu .menu.active').forEach(e => {
             e.classList.remove('active');
+            e.querySelectorAll('.requires-activate').forEach(f => {
+              f.classList.remove('active');
+            });
           });
+
+          // hide controls
+          document.querySelector('#gallery-controls').classList.add('display-none');
         }
 
         // open target
         target.classList.add('active');
+        target.querySelectorAll('.requires-activate').forEach(e => {
+          e.classList.add('active');
+        });
       }
     }
   }
@@ -110,6 +124,9 @@ class Menu {
         this.closeGalleryMenu();
       });
     });
+
+    // open controls menu
+    this.onMenuItem(document.querySelector('#nav-item-controls'));
   }
 }
 

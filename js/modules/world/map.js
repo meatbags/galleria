@@ -107,6 +107,8 @@ class Map {
       holster.position.set(x, y + size*2.5, 6);
       rod1.position.set(x, y + size*4.5 + 0.5, 6 + rodSize / 3);
       rod2.position.set(x, y + size*4.5 + 0.5, 6 - rodSize / 3);
+      rod1.rotation.y = Math.PI / 4;
+      rod2.rotation.y = Math.PI / 4;
       this.scene.add(mesh, holster, rod1, rod2);
     }
   }
