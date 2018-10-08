@@ -58,8 +58,8 @@ class InteractionNodeView extends InteractionNodeBase {
   mouseOver(x, y, player) {
     // check if mouse hover
     if (this.active && this.onscreen && this.cornersOK) {
-      const minX = Math.min(this.corners.screen.c.x, this.corners.screen.d.x) - 10;
-      const maxX = Math.max(this.corners.screen.c.x, this.corners.screen.d.x) + 10;
+      const minX = Math.min(this.corners.screen.a.x, this.corners.screen.b.x, this.corners.screen.c.x, this.corners.screen.d.x) - 10;
+      const maxX = Math.max(this.corners.screen.a.x, this.corners.screen.b.x, this.corners.screen.c.x, this.corners.screen.d.x) + 10;
       const minY = Math.min(this.corners.screen.a.y, this.corners.screen.b.y) - 10;
       const maxY = Math.max(this.corners.screen.c.y, this.corners.screen.d.y) + 10;
       let bX = Math.max(this.corners.screen.c.x, this.corners.screen.d.x);
