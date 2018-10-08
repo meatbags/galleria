@@ -12,7 +12,10 @@ class InteractionNodeView extends InteractionNodeBase {
     this.active = true;
     this.hover = false;
     this.cornersOK = false;
-    this.radius = {min: 5, max: 32};
+    this.buttonActive = false;
+    this.buttonRadius = 32;
+    this.buttonHover = false;
+    this.radius = {min: 8, max: 32};
     this.corners = {
       world: {a: new THREE.Vector3(), b: new THREE.Vector3(), c: new THREE.Vector3(), d: new THREE.Vector3()},
       screen: {a: new THREE.Vector2(), b: new THREE.Vector2(), c: new THREE.Vector2(), d: new THREE.Vector2()}
@@ -49,17 +52,25 @@ class InteractionNodeView extends InteractionNodeBase {
 
   isCorrectQuadrant(p) {
     // prevent clicking through walls by using set quadrants
-    return ((p.x <= -16 || p.x >= 16) || ((p.z >= 6 && this.position.z >= 6) || (p.z <= 6 && this.position.z <= 6)));
+    return ((p.x <= -16 || p.x >= 16 || this.position.x >= 16 || this.position.x <= -16) || ((p.z >= 6 && this.position.z >= 6) || (p.z <= 6 && this.position.z <= 6)));
   }
 
   mouseOver(x, y, player) {
     // check if mouse hover
-    if (this.active && this.onscreen) {
-      const minX = Math.min(this.corners.screen.a.x, this.corners.screen.b.x) - 4;
-      const maxX = Math.max(this.corners.screen.a.x, this.corners.screen.b.x) + 4;
-      const minY = Math.min(this.corners.screen.a.y, this.corners.screen.b.y) - 4;
-      const maxY = Math.max(this.corners.screen.c.y, this.corners.screen.d.y) + 4;
-      this.hover = (x >= minX && x <= maxX && y >= minY && y <= maxY && this.isCorrectQuadrant(player));
+    if (this.active && this.onscreen && this.cornersOK) {
+      const minX = Math.min(this.corners.screen.a.x, this.corners.screen.b.x) - 10;
+      const maxX = Math.max(this.corners.screen.a.x, this.corners.screen.b.x) + 10;
+      const minY = Math.min(this.corners.screen.a.y, this.corners.screen.b.y) - 10;
+      const maxY = Math.max(this.corners.screen.c.y, this.corners.screen.d.y) + 10;
+      let bX = Math.max(this.corners.screen.c.x, this.corners.screen.d.x);
+      let bY = (bX == this.corners.screen.c.x) ? this.corners.screen.c.y : this.corners.screen.d.y;
+      bX += this.buttonRadius + 5;
+      bY -= this.buttonRadius / 2;
+      this.buttonHover = this.buttonActive && Math.hypot(bX - x, bY - y) < this.buttonRadius + 10;
+      this.hover = (
+        (this.buttonHover || (x >= minX && x <= maxX && y >= minY && y <= maxY)) &&
+        this.isCorrectQuadrant(player)
+      );
     } else {
       this.hover = false;
     }
@@ -79,8 +90,11 @@ class InteractionNodeView extends InteractionNodeBase {
     } else {
       this.active = true;
 
-      // calculate corners
+      // calculate 2d corner positions
       this.updateCorners(camera, centre);
+
+      // check if inside min radius
+      this.buttonActive = this.distance <= this.radius.min;
     }
   }
 
@@ -94,6 +108,19 @@ class InteractionNodeView extends InteractionNodeBase {
       ctx.lineTo(this.corners.screen.d.x, this.corners.screen.d.y);
       ctx.closePath();
       ctx.stroke();
+
+      if (this.buttonActive) {
+        let bX = Math.max(this.corners.screen.c.x, this.corners.screen.d.x);
+        let bY = (bX == this.corners.screen.c.x ? this.corners.screen.c.y : this.corners.screen.d.y);
+        bX += this.buttonRadius + 5;
+        bY -= this.buttonRadius / 2;
+        //ctx.beginPath();
+        //ctx.arc(bX, bY, this.buttonRadius, 0, Math.PI * 2, false);
+        //ctx.stroke();
+        ctx.textAlign = 'center';
+        ctx.globalAlpha = this.buttonHover ? 0.5 : 1;
+        ctx.fillText('[info]', bX, bY + 4);
+      }
       //const x = Math.max(this.corners.screen.c.x, this.corners.screen.d.x);
       //const y = (x == this.corners.screen.c.x ? this.corners.screen.c.y : this.corners.screen.d.y);
       //ctx.textAlign = 'end';

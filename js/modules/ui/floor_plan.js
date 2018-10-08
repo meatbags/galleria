@@ -23,6 +23,19 @@ class FloorPlan {
       this.artworks.push(new Artwork(this, ++count, e));
     });
     this.placeArtworks();
+
+    // dom target
+    this.domElement = document.querySelector('#artwork-target');
+    this.el = {
+      image: this.domElement.querySelector('.image'),
+      title: this.domElement.querySelector('.title'),
+      subtitle: this.domElement.querySelector('.subtitle'),
+      desc: this.domElement.querySelector('.desc'),
+      link: this.domElement.querySelector('.link'),
+      comments: this.domElement.querySelector('.comments'),
+      close: this.domElement.querySelector('.close-artwork-menu')
+    };
+    this.el.close.addEventListener('click', () => { this.closeArtworkMenu(); });
   }
 
   placeArtworks() {
@@ -97,15 +110,29 @@ class FloorPlan {
   }
 
   mouseOver(x, y) {
-    var hover = false;
+    var isHovered = [];
     for (var i=0, len=this.artworks.length; i<len; ++i) {
       this.artworks[i].mouseOver(x, y, this.player.position);
       if (this.artworks[i].isHover()) {
-        hover = true;
+        isHovered.push(this.artworks[i]);
       }
     }
 
-    if (hover) {
+    if (isHovered.length > 1) {
+      var dmax = 100;
+      var res = isHovered[0];
+      for (var i=0; i<isHovered.length; ++i) {
+        isHovered[i].removeHover();
+        const d = this.player.position.distanceTo(isHovered[i].position);
+        if (d < dmax) {
+          dmax = d;
+          res = isHovered[i];
+        }
+      }
+      res.forceHover();
+    }
+
+    if (isHovered.length) {
       this.root.domElement.classList.add('clickable');
     } else {
       this.root.domElement.classList.remove('clickable');
@@ -119,27 +146,26 @@ class FloorPlan {
   }
 
   openArtworkMenu(artwork) {
-    /*
-    this.domElement = document.querySelector('#artwork-target');
-    this.el = {
-      title: this.domElement.querySelector('.title'),
-      subtitle: this.domElement.querySelector('.subtitle'),
-      desc: this.domElement.querySelector('.desc'),
-      link: this.domElement.querySelector('.link'),
-    };
-    if (res) {
-      if (this.domElement.dataset.active === undefined || this.domElement.dataset.active != res.id || !this.domElement.classList.contains('active')) {
-        this.domElement.dataset.active = res.id;
-        this.domElement.classList.add('active');
-        this.el.title.innerHTML = res.data.title;
-        this.el.subtitle.innerHTML = res.data.subtitle;
-        this.el.desc.innerHTML = res.data.desc;
-        this.el.link.innerHTML = res.data.link ? `<a href='${res.data.link}' target='_blank'>Link</a>` : '';
-      }
-    } else {
-      this.domElement.classList.remove('active');
+    document.querySelector('#gallery-controls').classList.add('display-none');
+    if (this.domElement.dataset.active != artwork.id) {
+      this.domElement.dataset.active = artwork.id;
+      this.el.image.innerHTML = '[ image loads here ]';
+      this.el.title.innerHTML = artwork.data.title;
+      this.el.subtitle.innerHTML = artwork.data.subtitle;
+      this.el.desc.innerHTML = artwork.data.desc;
+      this.el.link.innerHTML = artwork.data.link ? `<a href='${artwork.data.link}' target='_blank'>Link</a>` : '';
+      this.el.comments.innerHTML = '[comments here]';
     }
-    */
+    this.domElement.classList.add('active');
+  }
+
+  closeArtworkMenu() {
+    document.querySelector('#gallery-controls').classList.remove('display-none');
+    this.domElement.classList.remove('active');
+  }
+
+  moveToArtwork(artwork) {
+    this.player.moveToArtwork(artwork);
   }
 
   update(delta) {

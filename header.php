@@ -14,10 +14,12 @@
 	<meta property="og:image" content="<?php echo get_template_directory_uri(); ?>/img/og-image.jpg">
 	<meta property="og:site_name" content="Closed On Mondays">
 	<meta property="og:description" content="A virtual gallery.">
+	<link href="https://fonts.googleapis.com/css?family=Karla" rel="stylesheet">
+	<!--
 	<link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
-	<!-- <link href="https://fonts.googleapis.com/css?family=Karla" rel="stylesheet">
 	<link href="https://fonts.googleapis.com/css?family=Playfair+Display" rel="stylesheet">
-	<link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">-->
+	<link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
+	-->
 	<script type="text/javascript">
 	//<![CDATA[
 		var SITE_URL = '<?php echo get_site_url(); ?>';

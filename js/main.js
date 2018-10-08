@@ -13,6 +13,7 @@ class App {
     this.renderer = new Renderer(this.scene);
     this.surface = new Surface(this.scene, this.renderer, this.isMobile);
     this.menu = new Menu(this);
+    this.maxDelta = 1 / 10;
     this.loop();
   }
 
@@ -29,7 +30,7 @@ class App {
     requestAnimationFrame(() => { this.loop(); });
     if (this.active) {
       const t = performance.now();
-      const delta = (t - this.now) / 1000;
+      const delta = Math.min(this.maxDelta, (t - this.now) / 1000);
       this.now = t;
       this.scene.update(delta);
       this.surface.update(delta);

@@ -62,7 +62,7 @@ html.freeze {
   width: 100%; }
 
 body {
-  font-family: "Roboto", sans-serif;
+  font-family: "Karla", sans-serif;
   font-size: 17px;
   line-height: 1.2;
   letter-spacing: 1px;
@@ -237,9 +237,9 @@ a {
       pointer-events: all; }
     .pane-gallery_gallery-menu .menu .title {
       font-size: 40px; }
-    .pane-gallery_gallery-menu .menu .close-gallery-menu {
+    .pane-gallery_gallery-menu .menu .close-gallery-menu, .pane-gallery_gallery-menu .menu .close-artwork-menu {
       position: absolute;
-      font-size: 40px;
+      font-size: 30px;
       cursor: pointer;
       top: -16px;
       right: -16px;
@@ -256,7 +256,7 @@ a {
           align-items: center;
       -ms-flex-pack: center;
           justify-content: center; }
-      .pane-gallery_gallery-menu .menu .close-gallery-menu:hover {
+      .pane-gallery_gallery-menu .menu .close-gallery-menu:hover, .pane-gallery_gallery-menu .menu .close-artwork-menu:hover {
         color: #ff89da;
         border-color: #ff89da; }
     .pane-gallery_gallery-menu .menu .content {
@@ -266,6 +266,29 @@ a {
       padding-bottom: 8px;
       display: -ms-flexbox;
       display: flex; }
+      .pane-gallery_gallery-menu .menu .content .item-half {
+        width: 50%; }
+        .pane-gallery_gallery-menu .menu .content .item-half .artwork-info {
+          padding-left: 8px;
+          padding-right: 8px;
+          padding-top: 16px;
+          padding-bottom: 16px;
+          border-bottom: 1px solid #eee; }
+          .pane-gallery_gallery-menu .menu .content .item-half .artwork-info .title {
+            font-size: 40px;
+            padding-bottom: 8px; }
+          .pane-gallery_gallery-menu .menu .content .item-half .artwork-info .subtitle {
+            color: #ff89da; }
+          .pane-gallery_gallery-menu .menu .content .item-half .artwork-info .desc {
+            padding-left: 0px;
+            padding-right: 0px;
+            padding-top: 4px;
+            padding-bottom: 4px; }
+        .pane-gallery_gallery-menu .menu .content .item-half .comments {
+          padding-left: 8px;
+          padding-right: 8px;
+          padding-top: 16px;
+          padding-bottom: 16px; }
       .pane-gallery_gallery-menu .menu .content .item {
         width: 33%;
         padding: 8px;
@@ -292,6 +315,8 @@ a {
           animation-duration: 1s;
           animation-iteration-count: infinite;
           animation-direction: alternate; }
+  .pane-gallery_gallery-menu #artwork-target {
+    width: 50vw; }
 
 .pane-gallery_artwork-info {
   position: absolute;
