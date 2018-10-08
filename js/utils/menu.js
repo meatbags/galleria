@@ -21,9 +21,11 @@ class Menu {
     });
     this.initMenus();
 
-    // dev
+    // dev & live modes
     if (this.isDev) {
       this.toggleGallery();
+    } else {
+      this.onMenuItem(document.querySelector('#nav-item-controls'));
     }
   }
 
@@ -124,9 +126,6 @@ class Menu {
         this.closeGalleryMenu();
       });
     });
-
-    // open controls menu
-    this.onMenuItem(document.querySelector('#nav-item-controls'));
   }
 }
 
