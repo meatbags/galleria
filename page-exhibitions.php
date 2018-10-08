@@ -49,6 +49,7 @@
         <?php endif; ?>
       </div>
     <?php endif; ?>
+
     <div class='section section-upcoming'>
       <div class='label'>Coming Up</div>
       <br /><br />
@@ -66,6 +67,13 @@
           </div>
         <?php endforeach; ?>
       </div>
+    </div>
+
+    <div class='section'>
+      <div class='label'>Archive</div>
+      <br /><br /><br />
+      <h2>Exhibitions Archive</h2>
+      <p class='border'>Coming soon -- the archive will be a showcase of previous Closed On Monday exhibitions.</p>
     </div>
   </div>
   <?php get_template_part('page-footer'); ?>

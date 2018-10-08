@@ -38,9 +38,9 @@
       font-size: $fontHuge;
     }
 
-    .close-gallery-menu {
+    .close-gallery-menu, .close-artwork-menu {
       position: absolute;
-      font-size: $fontHuge;
+      font-size: ($fontLarge + $fontHuge) / 2;
       cursor: pointer;
       top: -$space * 2;
       right: -$space * 2;
@@ -64,6 +64,35 @@
     .content {
       @include pad(0, 1);
       display: flex;
+
+      .item-half {
+        width: 50%;
+
+        .artwork-info {
+          @include pad(1, 2);
+          border-bottom: $border;
+
+          .title {
+            font-size: $fontHuge;
+            padding-bottom: $space;
+          }
+
+          .subtitle {
+            color: $colourAlt;
+          }
+
+          .desc {
+            @include pad(0, 0.5);
+          }
+
+          .link {
+          }
+        }
+
+        .comments {
+          @include pad(1, 2);
+        }
+      }
 
       .item {
         width: 33%;
@@ -98,5 +127,9 @@
         }
       }
     }
+  }
+
+  #artwork-target {
+    width: 50vw;
   }
 }

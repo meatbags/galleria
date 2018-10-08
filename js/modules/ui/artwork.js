@@ -35,8 +35,10 @@ class Artwork {
     this.board = new THREE.Mesh(new THREE.BoxBufferGeometry(1, 1, 1), new THREE.MeshStandardMaterial({color: 0x0, roughness: 0.75, metalness: 0}));
     this.plane = new THREE.Mesh(new THREE.PlaneBufferGeometry(1, 1), new THREE.MeshStandardMaterial({roughness: 1.0, metalness: 0.5}));
 
-    // set position, create node
+    // cache base
     this.baseY = p.y;
+
+    // set position, create node
     p.x += (v.x != 0 ? 0 : 1) * this.data.offset.horizontal;
     p.y += this.data.offset.vertical;
     p.z += (v.z != 0 ? 0 : 1) * this.data.offset.horizontal;
@@ -44,6 +46,24 @@ class Artwork {
     this.position.set(p.x, p.y, p.z);
     this.direction.set(v.x, v.y, v.z);
     this.node = new InteractionNodeView(p, null, v, this);
+
+    // calc view position
+    this.viewPosition = new THREE.Vector3();
+    this.viewPosition.y = Math.min(7.8, this.baseY - 3);
+    this.viewPosition.x = p.x + v.x * Math.min((p.y - this.viewPosition.y) * 0.9, 8);
+    this.viewPosition.z = p.z + v.z * Math.min((p.y - this.viewPosition.y) * 0.9, 8);
+
+    // special: artwork above stairs
+    if (p.x > 20 && p.z < -10) {
+      this.viewPosition.set(24, 6, -8);
+    } else if (p.x < -20 && p.z < -10) {
+      this.viewPosition.set(-24, 6, -8);
+    }
+
+    // calc view rotation (pitch, yaw)
+    this.viewRotation = new THREE.Vector2();
+    this.viewRotation.y = Math.atan2(p.y - (this.viewPosition.y + this.root.player.height) - 0.125, Math.hypot(p.x - this.viewPosition.x, p.z - this.viewPosition.z));
+    this.viewRotation.x = Math.atan2(p.x - this.viewPosition.x, p.z - this.viewPosition.z);
 
     // get texture from image file
     const texture = new THREE.TextureLoader().load(this.data.url, (tex) => {
@@ -92,8 +112,24 @@ class Artwork {
   click(x, y, player) {
     this.node.mouseOver(x, y, player);
     if (this.node.isHover()) {
-      console.log('Clicked!');
+      this.root.closeArtworkMenu();
+      this.root.moveToArtwork(this);
+      if (this.node.buttonActive) {
+        this.root.openArtworkMenu(this);
+      }
     }
+  }
+
+  removeHover() {
+    this.node.hover = false;
+  }
+
+  forceHover() {
+    this.node.hover = true;
+  }
+
+  getFloorPosition() {
+    return this.floorPosition;
   }
 
   isHover() {
@@ -110,24 +146,3 @@ class Artwork {
 }
 
 export { Artwork };
-
-/*
-getDistanceTo(p) {
-  return this.position.distanceTo(p);
-}
-
-isFacing(p) {
-  // check if (position->p . direction) >= 0
-  const v = p.clone();
-  v.sub(this.position);
-  return (v.dot(this.direction) >= 0);
-}
-
-getCameraDot(p, v) {
-  // get dot product p->position . v
-  const d = this.position.clone();
-  d.sub(p);
-  d.normalize();
-  return d.dot(v);
-}
-*/

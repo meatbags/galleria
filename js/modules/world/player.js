@@ -21,7 +21,8 @@ class Player {
     // automatic motion and panning
     this.automove = {
       active: {position: true, rotation: true},
-      speed: {current: 0, max: 5},
+      speed: {current: 0, max: 7.5, blend: 0.125},
+      rotationSpeed: {current: 0, max: Math.PI / 2.5, accum: Math.PI / 70},
       position: this.position.clone(),
       rotation: new THREE.Vector2(Math.PI * 0.55, Math.PI * 0.03),
       threshold: {
@@ -116,13 +117,15 @@ class Player {
   }
 
   moveToArtwork(artwork) {
-    const p = artwork.position.clone();
-    const v = artwork.direction.clone();
-    v.normalize();
-    v.multiplyScalar(3);
-    p.add(v);
-    this.automove.position.set(p.x, p.y, p.z);
-    this.automove.active.position = true;
+    if (this.position.distanceTo(artwork.viewPosition) > this.automove.threshold.position.outer) {
+      // position
+      this.automove.position.copy(artwork.viewPosition);
+      this.automove.active.position = true;
+
+      // rotation
+      this.automove.rotation.copy(artwork.viewRotation);
+      this.automove.active.rotation = true;
+    }
   }
 
   applyAutomove(delta) {
@@ -130,24 +133,21 @@ class Player {
     if (this.automove.active.position) {
       const p = this.automove.position.clone();
       p.sub(this.position);
-      p.y = 0; // use x, z only
       const mag = p.length();
       p.normalize();
 
       // increase speed, reduce speed, or stop
       if (mag > this.automove.threshold.position.outer) {
-        this.automove.speed.current += (this.automove.speed.max - this.automove.speed.current) * 0.1;
+        this.automove.speed.current += (this.automove.speed.max - this.automove.speed.current) * this.automove.speed.blend;
         p.multiplyScalar(this.automove.speed.current * delta);
         this.position.add(p);
       } else {
         if (mag > this.automove.threshold.position.inner) {
           const speed = this.automove.speed.max * (mag / this.automove.threshold.position.outer);
-          this.automove.speed.current += (speed - this.automove.speed.current) * 0.1;
+          this.automove.speed.current += (speed - this.automove.speed.current) * this.automove.speed.blend;
           p.multiplyScalar(this.automove.speed.current * delta);
           this.position.add(p);
         } else {
-          // reset y and jump to final position
-          this.automove.position.y = this.target.position.y;
           this.target.position.copy(this.automove.position);
           this.automove.active.position = false;
           this.keys.disabled = false;
@@ -159,17 +159,30 @@ class Player {
 
     // rotation
     if (this.automove.active.rotation) {
+      this.automove.rotationSpeed.current = Math.min(this.automove.rotationSpeed.current + this.automove.rotationSpeed.accum, this.automove.rotationSpeed.max);
       const rx = MinAngleBetween(this.rotation.x, this.automove.rotation.x);
       const ry = MinAngleBetween(this.rotation.y, this.automove.rotation.y);
       const mag = Math.hypot(rx, ry);
-      this.rotation.x += rx * 0.025;
-      this.rotation.y += ry * 0.025;
+      this.rotation.x += rx * this.automove.rotationSpeed.current * delta;
+      this.rotation.y += ry * this.automove.rotationSpeed.current * delta;
 
       if (mag < this.automove.threshold.rotation) {
         this.automove.active.rotation = false;
         this.target.rotation.copy(this.automove.rotation);
       }
+    } else {
+      this.automove.rotationSpeed.current = 0;
     }
+  }
+
+  setRotation(pitch, yaw) {
+    this.target.rotation.y = pitch;
+    this.target.rotation.x = yaw;
+    this.automove.active.rotation = false;
+  }
+
+  getTargetPosition() {
+    return this.target.position;
   }
 
   update(delta) {
@@ -198,16 +211,6 @@ class Player {
 
     this.group.position.set(this.position.x, this.position.y, this.position.z);
 	}
-
-  setRotation(pitch, yaw) {
-    this.target.rotation.y = pitch;
-    this.target.rotation.x = yaw;
-    this.automove.active.rotation = false;
-  }
-
-  getTargetPosition() {
-    return this.target.position;
-  }
 };
 
 export { Player };

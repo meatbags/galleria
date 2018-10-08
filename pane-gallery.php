@@ -70,20 +70,24 @@
         </div>
         <div class='close-gallery-menu'>&times;</div>
       </div>
-      <!--
-      <div id='menu-artworks' class='menu'>
-        <div class='title'>Artworks</div>
-        <div class='content'>[ artworks here ]</div>
-        <div class='close-gallery-menu'>Close X</div>
-      </div>
-      -->
-    </div>
 
-    <div id='artwork-target' class='pane-gallery_artwork-info artwork-info'>
-      <div class='title'></div>
-      <div class='subtitle'></div>
-      <div class='desc'></div>
-      <div class='link'></div>
+      <div id='artwork-target' data-active='' class='menu'>
+        <div class='content'>
+          <div class='item-half'>
+            <div class='image'></div>
+          </div>
+          <div class='item-half'>
+            <div class='artwork-info'>
+              <div class='title'></div>
+              <div class='subtitle'></div>
+              <div class='desc'></div>
+              <div class='link'></div>
+            </div>
+            <div class='comments'></div>
+          </div>
+          <div class='close-artwork-menu'>&times;</div>
+        </div>
+      </div>
     </div>
   </div>
 </div>
