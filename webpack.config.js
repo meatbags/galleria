@@ -27,7 +27,7 @@ module.exports = [{
         new Uglify({
           cache: true,
           parallel: true,
-          uglifyOptions: {compress: false, ecma: 6, mangle: true},
+          uglifyOptions: {compress: false, ecma: 6, mangle: true, output: {comments: false}},
           sourceMap: true
         })
       ]

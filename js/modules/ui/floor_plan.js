@@ -20,22 +20,9 @@ class FloorPlan {
     // get artworks
     var count = 0;
     document.querySelectorAll('#artworks .image').forEach(e => {
-      this.artworks.push(new Artwork(++count, e));
+      this.artworks.push(new Artwork(this, ++count, e));
     });
     this.placeArtworks();
-
-    // doc
-    this.domElement = document.querySelector('#artwork-target');
-    this.el = {
-      title: this.domElement.querySelector('.title'),
-      subtitle: this.domElement.querySelector('.subtitle'),
-      desc: this.domElement.querySelector('.desc'),
-      link: this.domElement.querySelector('.link'),
-    };
-
-    // make notes
-    this.notes = [];
-    //this.notes.push( new InteractionNodeNote('<- something here?', new THREE.Vector3(0, 14, 6), null) );
   }
 
   placeArtworks() {
@@ -110,50 +97,36 @@ class FloorPlan {
   }
 
   mouseOver(x, y) {
+    var hover = false;
     for (var i=0, len=this.artworks.length; i<len; ++i) {
-      this.artworks[i].node.mouseOver(x, y, this.player.position);
+      this.artworks[i].mouseOver(x, y, this.player.position);
+      if (this.artworks[i].isHover()) {
+        hover = true;
+      }
+    }
+
+    if (hover) {
+      this.root.domElement.classList.add('clickable');
+    } else {
+      this.root.domElement.classList.remove('clickable');
     }
   }
 
   click(x, y) {
     for (var i=0, len=this.artworks.length; i<len; ++i) {
-      this.artworks[i].node.mouseOver(x, y, this.player.position);
-      if (this.artworks[i].node.isHover()) {
-        this.player.moveToArtwork(this.artworks[i]);
-        break;
-      }
+      this.artworks[i].click(x, y, this.player.position);
     }
   }
 
-  update(delta) {
-    // get closest artwork, update interaction nodes, get active artwork node
-    this.camera.getWorldDirection(this.cameraDirection);
-    var res = false;
-    var maxDot = -1;
-    this.activeArtwork = null;
-
-    for (var i=0; i<this.artworks.length; ++i) {
-      const a = this.artworks[i];
-      a.update(delta);
-
-      // check if artwork in range, facing camera, best match
-      if (a.getDistanceTo(this.camera.position) < this.artworkActiveRadius &&
-        a.isFacing(this.camera.position)) {
-        const dot = a.getCameraDot(this.camera.position, this.cameraDirection);
-        if (dot > 0.66 && dot > maxDot) {
-          maxDot = dot;
-          res = a;
-        }
-      }
-
-      // update node
-      a.node.update(delta, this.player, this.camera, this.cameraDirection, this.centre);
-      if (a.node.isHover()) {
-        this.activeArtwork = a;
-      }
-    }
-
-    // display
+  openArtworkMenu(artwork) {
+    /*
+    this.domElement = document.querySelector('#artwork-target');
+    this.el = {
+      title: this.domElement.querySelector('.title'),
+      subtitle: this.domElement.querySelector('.subtitle'),
+      desc: this.domElement.querySelector('.desc'),
+      link: this.domElement.querySelector('.link'),
+    };
     if (res) {
       if (this.domElement.dataset.active === undefined || this.domElement.dataset.active != res.id || !this.domElement.classList.contains('active')) {
         this.domElement.dataset.active = res.id;
@@ -162,29 +135,25 @@ class FloorPlan {
         this.el.subtitle.innerHTML = res.data.subtitle;
         this.el.desc.innerHTML = res.data.desc;
         this.el.link.innerHTML = res.data.link ? `<a href='${res.data.link}' target='_blank'>Link</a>` : '';
-        this.artworks.forEach(a => { a.deactivate(); });
-        res.activate();
       }
     } else {
       this.domElement.classList.remove('active');
-      this.artworks.forEach(a => { a.deactivate(); });
     }
+    */
+  }
 
-    // update notes
-    for (var i=0, len=this.notes.length; i<len; ++i) {
-      this.notes[i].update(this.camera, this.cameraDirection, this.centre);
+  update(delta) {
+    // update artworks, notes
+    this.camera.getWorldDirection(this.cameraDirection);
+    for (var i=0; i<this.artworks.length; ++i) {
+      this.artworks[i].update(delta, this.player, this.camera, this.cameraDirection, this.centre);
     }
   }
 
-  draw(cvs) {
+  draw(ctx) {
     // artwork interaction nodes
     for (var i=0, len=this.artworks.length; i<len; ++i) {
-      cvs.drawNode(this.artworks[i].node);
-    }
-
-    // notes
-    for (var i=0, len=this.notes.length; i<len; ++i) {
-      cvs.drawNode(this.notes[i]);
+      this.artworks[i].draw(ctx);
     }
   }
 }

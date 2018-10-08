@@ -89,8 +89,8 @@ class OverlayCanvas {
     //
   }
 
-  drawNode(node) {
-    node.draw(this.ctx);
+  getContext() {
+    return this.ctx;
   }
 }
 

@@ -5,7 +5,8 @@
 import { InteractionNodeView } from './interaction_nodes';
 
 class Artwork {
-  constructor(id, e) {
+  constructor(root, id, e) {
+    this.root = root;
     this.id = id;
     this.active = false;
     this.position = new THREE.Vector3();
@@ -84,39 +85,49 @@ class Artwork {
     scene.add(this.board);
   }
 
-  activate() {
-    if (!this.active) {
-      this.active = true;
+  mouseOver(x, y, player) {
+    this.node.mouseOver(x, y, player);
+  }
+
+  click(x, y, player) {
+    this.node.mouseOver(x, y, player);
+    if (this.node.isHover()) {
+      console.log('Clicked!');
     }
   }
 
-  deactivate() {
-    if (this.active) {
-      this.active = false;
-    }
+  isHover() {
+    return this.node.isHover();
   }
 
-  getDistanceTo(p) {
-    return this.position.distanceTo(p);
+  update(delta, player, camera, cameraDir, centre) {
+    this.node.update(delta, player, camera, cameraDir, centre);
   }
 
-  isFacing(p) {
-    // check if (position->p . direction) >= 0
-    const v = p.clone();
-    v.sub(this.position);
-    return (v.dot(this.direction) >= 0);
-  }
-
-  getCameraDot(p, v) {
-    // get dot product p->position . v
-    const d = this.position.clone();
-    d.sub(p);
-    d.normalize();
-    return d.dot(v);
-  }
-
-  update(delta) {
+  draw(ctx) {
+    this.node.draw(ctx);
   }
 }
 
 export { Artwork };
+
+/*
+getDistanceTo(p) {
+  return this.position.distanceTo(p);
+}
+
+isFacing(p) {
+  // check if (position->p . direction) >= 0
+  const v = p.clone();
+  v.sub(this.position);
+  return (v.dot(this.direction) >= 0);
+}
+
+getCameraDot(p, v) {
+  // get dot product p->position . v
+  const d = this.position.clone();
+  d.sub(p);
+  d.normalize();
+  return d.dot(v);
+}
+*/

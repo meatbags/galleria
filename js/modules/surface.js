@@ -15,7 +15,7 @@ class Surface {
     this.setSize();
     this.rotation = new THREE.Vector2();
     this.timestamp = null;
-    this.threshold = {click: 150, pan: 200};
+    this.threshold = {click: 200, pan: 200};
     this.scaleRotation = {x: isMobile ? 0.75 : 1, y: 1};
 
     // events
@@ -234,18 +234,11 @@ class Surface {
   update(delta) {
     // update artwork display
     this.floorPlan.update(delta);
-    if (this.floorPlan.activeArtwork != null) {
-      this.activeTitle = this.floorPlan.activeArtwork.data.title;
-      this.domElement.classList.add('clickable');
-    } else {
-      this.activeTitle = '';
-      this.domElement.classList.remove('clickable');
-    }
   }
 
   draw() {
     this.canvas.clear();
-    this.floorPlan.draw(this.canvas);
+    this.floorPlan.draw(this.canvas.getContext());
     this.canvas.promptTouchMove((this.mouse.active && (Date.now() - this.timestamp > this.threshold.pan)));
     //this.canvas.promptClick(this.activeTitle, (!this.mouse.active && this.floorPlan.activeArtwork != null), this.mouse.x, this.mouse.y);
     if (this.player.noclip) {

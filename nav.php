@@ -2,10 +2,10 @@
   <div class='nav__inner'>
     <div id='nav-content' class='list'>
       <div data-active='#page-exhibitions' class='item active'>Exhibitions</div>
-      <div data-active='#page-about' class='item'>About</div>
-      <div data-active='#page-archive' class='item'>Archive</div>
       <div data-active='#page-submissions' class='item'>Submissions</div>
-      <div data-active='#page-contact' class='item'>Contact</div>
+      <div data-active='#page-archive' class='item'>Archive</div>
+      <div data-active='#page-about' class='item'>Info</div>
+      <!--<div data-active='#page-contact' class='item'>Contact</div>-->
     </div>
     <div id='nav-gallery' class='list'>
       <div class='item active close-gallery-menu'>The Gallery</div>
