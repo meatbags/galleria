@@ -18,6 +18,13 @@ class Mouse {
       this.domElement.addEventListener('mousemove', onMove, false);
       this.domElement.addEventListener('mouseup', onUp, false);
       this.domElement.addEventListener('mouseleave', onUp, false);
+
+      // click, trigger all
+      this.domElement.addEventListener('click', evt => {
+        //onDown(evt);
+        onMove(evt);
+        onUp(evt);
+      }, false);
     } else {
       this.domElement.addEventListener('touchstart', onDown, false);
       this.domElement.addEventListener('touchmove', onMove, false);
