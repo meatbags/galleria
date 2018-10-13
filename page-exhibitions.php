@@ -53,24 +53,26 @@
       </div>
     <?php endif; ?>
 
-    <div class='section section-upcoming'>
-      <div class='label'>Coming Up</div>
-      <br /><br />
-      <div class='list'>
-        <?php foreach ($gallery as $g): ?>
-          <div class='item'>
-            <div class='dates'><?php echo $g['start_date']; ?> &rarr; <?php echo $g['end_date']; ?></div>
-            <div class='desc'>
-              <h1><?php echo $g['artist_name']; ?></h1>
-              <?php if ($g['exhibition_title']) : ?>
-                <span class='heading'><?php echo $g['exhibition_title']; ?></span>
-              <?php endif; ?>
-              <?php echo $g['artist_short_description']; ?>
+    <?php if (count($gallery) > 0): ?>
+      <div class='section section-upcoming'>
+        <div class='label'>Coming Up</div>
+        <br /><br />
+        <div class='list'>
+          <?php foreach ($gallery as $g): ?>
+            <div class='item'>
+              <div class='dates'><?php echo $g['start_date']; ?> &rarr; <?php echo $g['end_date']; ?></div>
+              <div class='desc'>
+                <h1><?php echo $g['artist_name']; ?></h1>
+                <?php if ($g['exhibition_title']) : ?>
+                  <span class='heading'><?php echo $g['exhibition_title']; ?></span>
+                <?php endif; ?>
+                <?php echo $g['artist_short_description']; ?>
+              </div>
             </div>
-          </div>
-        <?php endforeach; ?>
+          <?php endforeach; ?>
+        </div>
       </div>
-    </div>
+    <?php endif; ?>
 
     <div class='section'>
       <div class='label'>Archive</div>
