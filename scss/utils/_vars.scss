@@ -14,7 +14,8 @@ $space: 8px;
 $gridSize: $space * 2;
 $navHeight: $space * 6;
 $mobile: 500px;
-$mobileLandscape: 800px;
+$mobileLandscape: 720px;
+$tabletPortrait: 820px;
 $tablet: 1100px;
 
 // style
@@ -28,9 +29,10 @@ $backgroundGrid: linear-gradient(to right, $colourGrid 1px, transparent 1px), li
 $indexBody: 1;
 $indexGrid: 3;
 $indexPaneContent: 4;
+$indexControls: 8;
 $indexLogo: 9;
 $indexNav: 9;
-$indexControls: 8;
+$indexMobileLogo: 10;
 
 // animation
 $transitionFast: 0.35s;

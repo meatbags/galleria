@@ -83,12 +83,15 @@
     padding-bottom: $gridSize * 2;
   }
 
-  @media screen and (max-width: $tablet) {
-    @include pad(2, 2);
-    //padding-top: 0;
+  @media screen and (max-width: $mobileLandscape) {
+    @include pad(1, 0);
 
     p {
       font-size: 95%;
     }
+  }
+
+  @media screen and (max-width: $mobile) {
+    @include pad(2, 2);
   }
 }

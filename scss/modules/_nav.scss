@@ -79,6 +79,19 @@
     }
   }
 
+  @media screen and (max-width: $mobileLandscape) {
+    .nav__inner {
+      width: 60%;
+      height: $gridSize * 3;
+    }
+
+    &.active {
+      .nav__inner {
+        background-color: transparent;
+      }
+    }
+  }
+
   @media screen and (max-width: $mobile) {
     .nav__inner {
       width: 100%;

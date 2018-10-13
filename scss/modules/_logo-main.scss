@@ -82,7 +82,7 @@
         @include pad(2, 1);
         border: $border;
         box-shadow: $boxShadow;
-        background-color: rgba($colourBackground, 0.5);
+        background-color: rgba($colourBackground, 0.75);
         cursor: pointer;
 
         &.flash {
@@ -91,12 +91,14 @@
           animation-iteration-count: infinite;
         }
 
-        @media screen and (max-width: $mobile) {
-          background-color: $colourBackground;
-
+        @media screen and (max-width: $mobileLandscape) {
           &.flash {
             animation-name: flashing-mobile;
           }
+        }
+
+        @media screen and (max-width: $mobile) {
+          background-color: $colourBackground;
         }
       }
     }
@@ -112,6 +114,22 @@
       .logo-main-text {
         .open-gallery-button {
           @include margin(0, 6);
+          @include pad(2, 1);
+        }
+      }
+    }
+  }
+
+  @media screen and (max-width: $mobileLandscape) {
+    width: 40%;
+
+    .logo-main__inner {
+      width: 240px;
+      height: 240px;
+
+      .logo-main-text {
+        .open-gallery-button {
+          @include margin(1, 6);
           @include pad(2, 1);
         }
       }
