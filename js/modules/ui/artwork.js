@@ -55,7 +55,7 @@ class Artwork {
     this.viewPosition.x = p.x + v.x * Math.min((p.y - this.viewPosition.y) * offScale, 8);
     this.viewPosition.z = p.z + v.z * Math.min((p.y - this.viewPosition.y) * offScale, 8);
 
-    // special: artwork above stairs
+    // spacially above ramp
     if (p.x > 20 && p.z < -10) {
       this.viewPosition.set(28, 4.4, -8);
     } else if (p.x < -20 && p.z < -10) {

@@ -56,4 +56,25 @@
       height: auto;
     }
   }
+
+  @media screen and (max-width: $mobileLandscape) {
+    .close-gallery-button {
+      margin-top: $gridSize;
+      margin-left: $gridSize;
+      width: 40px;
+      height: 40px;
+    }
+  }
+
+  @media screen and (max-width: $mobile) {
+    .close-gallery-button {
+      display: none;
+    }
+  }
+}
+
+@media screen and (max-width: $mobile) {
+  #nav-gallery {
+    justify-content: center;
+  }
 }

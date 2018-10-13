@@ -29,7 +29,7 @@ class Map {
         const target = document.querySelector('#open-gallery');
         target.classList.remove('is-loading');
         target.classList.add('flash');
-        target.innerHTML = 'Open Gallery';
+        target.innerHTML = '<span class="mobile-show">&larr;&nbsp;Open Gallery</span><span class="mobile-hide">Open Gallery</span>';
       }
     };
 

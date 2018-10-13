@@ -40,4 +40,16 @@
       }
     }
   }
+
+  @media screen and (max-width: $mobileLandscape) {
+    .controls__inner {
+      padding-bottom: $space / 2;
+    }
+  }
+
+  @media screen and (max-width: $mobile) {
+    .controls__inner {
+      padding-bottom: $space * 11;
+    }
+  }
 }

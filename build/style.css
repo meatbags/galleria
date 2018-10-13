@@ -167,6 +167,20 @@ a {
     .pane-gallery .close-gallery-button img {
       width: 100%;
       height: auto; }
+  @media screen and (max-width: 720px) {
+    .pane-gallery .close-gallery-button {
+      margin-top: 16px;
+      margin-left: 16px;
+      width: 40px;
+      height: 40px; } }
+  @media screen and (max-width: 500px) {
+    .pane-gallery .close-gallery-button {
+      display: none; } }
+
+@media screen and (max-width: 500px) {
+  #nav-gallery {
+    -ms-flex-pack: center;
+        justify-content: center; } }
 
 .pane-gallery_controls {
   position: absolute;
@@ -206,6 +220,12 @@ a {
         .pane-gallery_controls .controls__inner .block .control.active svg {
           transform: scale(1.2, 1.2);
           fill: #ff89da; }
+  @media screen and (max-width: 720px) {
+    .pane-gallery_controls .controls__inner {
+      padding-bottom: 4px; } }
+  @media screen and (max-width: 500px) {
+    .pane-gallery_controls .controls__inner {
+      padding-bottom: 88px; } }
 
 @keyframes wiggle-x {
   0% {
@@ -329,6 +349,27 @@ a {
           animation-direction: alternate; }
   .pane-gallery_gallery-menu #artwork-target {
     width: 50vw; }
+  @media screen and (max-width: 500px) {
+    .pane-gallery_gallery-menu .menu {
+      width: 80vw; }
+      .pane-gallery_gallery-menu .menu .content {
+        -ms-flex-direction: column;
+            flex-direction: column; }
+        .pane-gallery_gallery-menu .menu .content .item {
+          width: 100%;
+          display: -ms-flexbox;
+          display: flex;
+          -ms-flex-direction: row;
+              flex-direction: row; }
+          .pane-gallery_gallery-menu .menu .content .item .control-img {
+            width: 40%;
+            padding-left: 8px;
+            padding-right: 8px;
+            padding-top: 0px;
+            padding-bottom: 0px; }
+          .pane-gallery_gallery-menu .menu .content .item .text {
+            width: 60%;
+            text-align: left; } }
 
 .pane-gallery_artwork-info {
   position: absolute;
@@ -386,43 +427,46 @@ a {
     -ms-flex-pack: end;
         justify-content: flex-end; }
     .pane-content .pane__inner .pages {
-      width: 50%; }
+      width: 50%;
+      min-height: 102vh;
+      position: relative;
+      -ms-flex-direction: column;
+          flex-direction: column;
+      -ms-flex-pack: start;
+          justify-content: flex-start; }
+      .pane-content .pane__inner .pages .page {
+        width: 100%;
+        top: 0;
+        left: 0;
+        height: 0;
+        overflow: hidden;
+        opacity: 0;
+        pointer-events: none;
+        padding-top: 0;
+        transition: opacity 0.5s; }
+        .pane-content .pane__inner .pages .page.active {
+          padding-top: 128px;
+          height: auto;
+          overflow: auto;
+          opacity: 1;
+          pointer-events: all; }
+          @media screen and (max-width: 720px) {
+            .pane-content .pane__inner .pages .page.active {
+              padding-top: 80px; } }
+          @media screen and (max-width: 500px) {
+            .pane-content .pane__inner .pages .page.active {
+              padding-top: 96px; } }
+        .pane-content .pane__inner .pages .page.display-none {
+          display: none; }
   @media screen and (max-width: 1100px) {
     .pane-content .pane__inner .pages {
       width: 55%; } }
+  @media screen and (max-width: 720px) {
+    .pane-content .pane__inner .pages {
+      width: 60%; } }
   @media screen and (max-width: 500px) {
     .pane-content .pane__inner .pages {
       width: 100%; } }
-
-.pages {
-  width: 100%;
-  min-height: 102vh;
-  position: relative;
-  -ms-flex-direction: column;
-      flex-direction: column;
-  -ms-flex-pack: start;
-      justify-content: flex-start; }
-  .pages .page {
-    width: 100%;
-    top: 0;
-    left: 0;
-    height: 0;
-    overflow: hidden;
-    opacity: 0;
-    pointer-events: none;
-    padding-top: 0;
-    transition: opacity 0.5s; }
-    .pages .page.active {
-      padding-top: 128px;
-      height: auto;
-      overflow: auto;
-      opacity: 1;
-      pointer-events: all; }
-      @media screen and (max-width: 500px) {
-        .pages .page.active {
-          padding-top: 96px; } }
-    .pages .page.display-none {
-      display: none; }
 
 .nav {
   position: fixed;
@@ -489,6 +533,12 @@ a {
   @media screen and (max-width: 1100px) {
     .nav .nav__inner {
       width: 55%; } }
+  @media screen and (max-width: 720px) {
+    .nav .nav__inner {
+      width: 60%;
+      height: 48px; }
+    .nav.active .nav__inner {
+      background-color: transparent; } }
   @media screen and (max-width: 500px) {
     .nav .nav__inner {
       width: 100%; }
@@ -575,14 +625,20 @@ a {
     .section {
       padding-right: 48px;
       padding-bottom: 32px; } }
-  @media screen and (max-width: 1100px) {
+  @media screen and (max-width: 720px) {
+    .section {
+      padding-left: 8px;
+      padding-right: 8px;
+      padding-top: 0px;
+      padding-bottom: 0px; }
+      .section p {
+        font-size: 95%; } }
+  @media screen and (max-width: 500px) {
     .section {
       padding-left: 16px;
       padding-right: 16px;
       padding-top: 16px;
-      padding-bottom: 16px; }
-      .section p {
-        font-size: 95%; } }
+      padding-bottom: 16px; } }
 
 @keyframes flashing {
   0% {
@@ -674,17 +730,18 @@ a {
         padding-bottom: 8px;
         border: 1px solid #eee;
         box-shadow: 5px 5px 20px rgba(255, 137, 218, 0.4);
-        background-color: rgba(76, 71, 75, 0.5);
+        background-color: rgba(76, 71, 75, 0.75);
         cursor: pointer; }
         .logo-main .logo-main__inner .logo-main-text .open-gallery-button.flash {
           animation-name: flashing;
           animation-duration: 4s;
           animation-iteration-count: infinite; }
+        @media screen and (max-width: 720px) {
+          .logo-main .logo-main__inner .logo-main-text .open-gallery-button.flash {
+            animation-name: flashing-mobile; } }
         @media screen and (max-width: 500px) {
           .logo-main .logo-main__inner .logo-main-text .open-gallery-button {
-            background-color: #4c474b; }
-            .logo-main .logo-main__inner .logo-main-text .open-gallery-button.flash {
-              animation-name: flashing-mobile; } }
+            background-color: #4c474b; } }
   @media screen and (max-width: 1100px) {
     .logo-main {
       width: 45%; }
@@ -694,6 +751,21 @@ a {
         .logo-main .logo-main__inner .logo-main-text .open-gallery-button {
           margin-left: 0px;
           margin-right: 0px;
+          margin-top: 48px;
+          margin-bottom: 48px;
+          padding-left: 16px;
+          padding-right: 16px;
+          padding-top: 8px;
+          padding-bottom: 8px; } }
+  @media screen and (max-width: 720px) {
+    .logo-main {
+      width: 40%; }
+      .logo-main .logo-main__inner {
+        width: 240px;
+        height: 240px; }
+        .logo-main .logo-main__inner .logo-main-text .open-gallery-button {
+          margin-left: 8px;
+          margin-right: 8px;
           margin-top: 48px;
           margin-bottom: 48px;
           padding-left: 16px;
