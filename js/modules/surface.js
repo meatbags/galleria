@@ -15,7 +15,7 @@ class Surface {
     this.setSize();
     this.rotation = new THREE.Vector2();
     this.timestamp = null;
-    this.threshold = {click: 200, pan: 200, mouseDelta: isMobile ? 0.25 : 0.125};
+    this.threshold = {click: 225, pan: 200, mouseDelta: isMobile ? 0.5 : 0.25};
     this.scaleRotation = {x: isMobile ? 0.75 : 1, y: 1};
 
     // events
