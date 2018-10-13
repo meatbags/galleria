@@ -1,9 +1,9 @@
 // colours
-$colourPrimary: #e8e8e8;//teal;//#eee;
+$colourPrimary: #e8e8e8;
 $colourSecondary: #444;
-$colourBackground: #4c474b;//lighten(teal, 0%);//;
+$colourBackground: #4c474b;
 $colourBackgroundAlt: #2c272b;
-$colourAlt: #ff89da; //#9648ff;// #000;//#9648ff;
+$colourAlt: #ff89da;
 $transparent: rgba($colourBackground, 0.5);
 $black: #000;
 $white: #eee;
@@ -13,6 +13,9 @@ $colourGrid: rgba($white, 0.025);
 $space: 8px;
 $gridSize: $space * 2;
 $navHeight: $space * 6;
+$mobile: 500px;
+$mobileLandscape: 800px;
+$tablet: 1100px;
 
 // style
 $border: 1px solid $white;
@@ -25,9 +28,6 @@ $backgroundGrid: linear-gradient(to right, $colourGrid 1px, transparent 1px), li
 $indexBody: 1;
 $indexGrid: 3;
 $indexPaneContent: 4;
-//$indexLoading: 4;
-//$indexCanvas: 5;
-//$indexPage: 6;
 $indexLogo: 9;
 $indexNav: 9;
 $indexControls: 8;

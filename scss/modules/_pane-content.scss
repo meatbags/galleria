@@ -10,4 +10,20 @@
       width: 50%;
     }
   }
+
+  @media screen and (max-width: $tablet) {
+    .pane__inner {
+      .pages {
+        width: 55%;
+      }
+    }
+  }
+
+  @media screen and (max-width: $mobile) {
+    .pane__inner {
+      .pages {
+        width: 100%;
+      }
+    }
+  }
 }

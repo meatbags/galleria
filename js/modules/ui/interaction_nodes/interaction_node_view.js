@@ -8,22 +8,27 @@ import { pointToScreen } from './point_to_screen';
 class InteractionNodeView extends InteractionNodeBase {
   constructor(position, rotation, clipping, root) {
     super(position, clipping || null);
+
+    // set artwork root
+    this.root = root;
+
+    // position caches
     this.rotation = rotation;
     this.active = true;
     this.hover = false;
     this.cornersOK = false;
     this.buttonActive = false;
     this.buttonRadius = 32;
+    this.buttonRadiusHalf = 16;
+    this.buttonRadiusOffset = 24;
     this.buttonHover = false;
-    this.radius = {min: 8, max: 32};
+    this.textColour = Math.abs(position.x) <= 16 && (position.z > 10 || position.z < 0) ? '#884466' : "#fff";
+    this.radius = {min: this.root.isMobile ? 10 : 8, max: 32};
     this.corners = {
       world: {a: new THREE.Vector3(), b: new THREE.Vector3(), c: new THREE.Vector3(), d: new THREE.Vector3()},
       screen: {a: new THREE.Vector2(), b: new THREE.Vector2(), c: new THREE.Vector2(), d: new THREE.Vector2()}
     };
     this.distance = -1;
-
-    // set root (optional)
-    this.root = root || null;
   }
 
   setCorners() {
@@ -46,6 +51,7 @@ class InteractionNodeView extends InteractionNodeBase {
     pointToScreen(this.corners.world.b, camera, centre, this.corners.screen.b);
     pointToScreen(this.corners.world.c, camera, centre, this.corners.screen.c);
     pointToScreen(this.corners.world.d, camera, centre, this.corners.screen.d);
+    const maxSize = this.root.isMobile ? window.innerWidth * 2.0 : window.innerWidth;
     this.cornersOK = (this.corners.screen.a.y < this.corners.screen.c.y && this.corners.screen.b.y < this.corners.screen.d.y) &&
       Math.abs(this.corners.screen.a.x - this.corners.screen.b.x) < window.innerWidth;
   }
@@ -114,17 +120,16 @@ class InteractionNodeView extends InteractionNodeBase {
         let bY = (bX == this.corners.screen.c.x ? this.corners.screen.c.y : this.corners.screen.d.y);
         bX += this.buttonRadius + 5;
         bY -= this.buttonRadius / 2;
-        //ctx.beginPath();
-        //ctx.arc(bX, bY, this.buttonRadius, 0, Math.PI * 2, false);
-        //ctx.stroke();
-        ctx.textAlign = 'center';
-        ctx.globalAlpha = this.buttonHover ? 0.5 : 1;
-        ctx.fillText('[info]', bX, bY + 4);
+        ctx.fillStyle = this.textColour;
+        ctx.textAlign = 'start';
+        ctx.globalAlpha = this.buttonHover ? 0.6 : 1;
+        ctx.fillText('[info]', bX - this.buttonRadiusOffset, bY + 4);
+
+        // doesn't fit properly
+        if (!this.root.isMobile) {
+          ctx.fillText(this.root.data.title, bX - this.buttonRadiusOffset, bY - this.buttonRadiusHalf);
+        }
       }
-      //const x = Math.max(this.corners.screen.c.x, this.corners.screen.d.x);
-      //const y = (x == this.corners.screen.c.x ? this.corners.screen.c.y : this.corners.screen.d.y);
-      //ctx.textAlign = 'end';
-      //ctx.fillText(this.root.data.title, x + 8, y);
     }
   }
 }

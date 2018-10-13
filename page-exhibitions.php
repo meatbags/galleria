@@ -26,6 +26,9 @@
   <div class='page__inner'>
     <?php if ($active): ?>
       <div class='section section-featured'>
+        <!--<div class='mobile-show mobile-logo'>
+          <img src='<?php echo get_template_directory_uri() . '/img/logo-wire.png'; ?>'/>
+        </div>-->
         <div class='label'>Featured Exhibition</div>
         <br /><br />
         <h1><?php echo $active['artist_name']; ?></h1>

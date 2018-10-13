@@ -2,6 +2,12 @@
   .page__inner {
     .section {
       .submissions-text {
+        a {
+          font-size: 90%;
+          color: $colourAlt;
+          display: block;
+        }
+
         ul {
           color: $colourAlt;
         }

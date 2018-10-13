@@ -21,3 +21,17 @@
 	background-size: $gridSize*2 $gridSize*2;
   background-image: $backgroundGrid;
 }
+
+.mobile-show {
+	display: none;
+}
+
+@media screen and (max-width: $mobile) {
+	.mobile-hide {
+		display: none;
+	}
+
+	.mobile-show {
+		display: block;
+	}
+}

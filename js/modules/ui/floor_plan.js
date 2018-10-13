@@ -6,8 +6,9 @@ import { InteractionNodeNote } from './interaction_nodes';
 import { Artwork } from './artwork';
 
 class FloorPlan {
-  constructor(root) {
+  constructor(root, isMobile) {
     this.root = root;
+    this.isMobile = isMobile;
     this.player = this.root.scene.player;
     this.camera = this.root.scene.camera.camera;
     this.scene = this.root.scene.scene;
@@ -20,7 +21,7 @@ class FloorPlan {
     // get artworks
     var count = 0;
     document.querySelectorAll('#artworks .image').forEach(e => {
-      this.artworks.push(new Artwork(this, ++count, e));
+      this.artworks.push(new Artwork(this, ++count, e, this.isMobile));
     });
     this.placeArtworks();
 

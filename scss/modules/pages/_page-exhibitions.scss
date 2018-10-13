@@ -5,6 +5,10 @@
       padding-top: $space * 2;
       padding-bottom: $space * 4;
 
+      @media screen and (max-width: $tablet) {
+        width: 80%;
+      }
+
       .dates {
         font-size: $fontLarge;
         margin-bottom: 0;
