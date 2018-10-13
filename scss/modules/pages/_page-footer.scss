@@ -13,4 +13,10 @@
       }
     }
   }
+
+  @media screen and (max-width: $mobile) {
+    padding-left: $space * 2;
+    margin-top: $space * 4;
+    margin-bottom: $space * 12;
+  }
 }

@@ -6,7 +6,6 @@
   justify-content: flex-start;
 
   .page {
-    //display: none;
     width: 100%;
     top: 0;
     left: 0;
@@ -18,12 +17,15 @@
     transition: opacity $transition;
 
     &.active {
-      //display: block;
       padding-top: $gridSize * 8;
       height: auto;
       overflow: auto;
       opacity: 1;
       pointer-events: all;
+
+      @media screen and (max-width: $mobile) {
+        padding-top: $gridSize * 6;
+      }
     }
 
     &.display-none {

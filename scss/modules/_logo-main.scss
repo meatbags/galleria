@@ -4,6 +4,30 @@
   30% { background: transparent; }
 }
 
+@keyframes flashing-mobile {
+  0% { background: $colourBackground; }
+  15% { background: $colourAlt; }
+  30% { background: $colourBackground; }
+}
+
+/*
+.mobile-logo {
+  @include pad(1, 1);
+  position: fixed;
+  top: $navHeight;
+  width: 100%;
+  z-index: -1;
+  opacity: 0.25;
+  display: flex;
+  justify-content: center;
+
+  img {
+    width: 600px;
+    height: auto;
+  }
+}
+*/
+
 .logo-main {
   position: fixed;
   top: 0;
@@ -15,6 +39,7 @@
   align-items: center;
   z-index: $indexLogo;
   transition: opacity $transitionSlow, transform $transitionSlow;
+  pointer-events: none;
 
   &.active {
     opacity: 0;
@@ -26,6 +51,7 @@
     width: 400px;
     height: 400px;
     position: relative;
+    pointer-events: all;
 
     .logo-main-image {
       position: absolute;
@@ -63,6 +89,60 @@
           animation-name: flashing;
           animation-duration: 4s;
           animation-iteration-count: infinite;
+        }
+
+        @media screen and (max-width: $mobile) {
+          background-color: $colourBackground;
+
+          &.flash {
+            animation-name: flashing-mobile;
+          }
+        }
+      }
+    }
+  }
+
+  @media screen and (max-width: $tablet) {
+    width: 45%;
+
+    .logo-main__inner {
+      width: 300px;
+      height: 300px;
+
+      .logo-main-text {
+        .open-gallery-button {
+          @include margin(0, 6);
+          @include pad(2, 1);
+        }
+      }
+    }
+  }
+
+  @media screen and (max-width: $mobile) {
+    width: auto;
+    height: auto;
+    bottom: 0;
+    right: 0;
+    left: auto;
+    top: auto;
+    width: 100%;
+
+    .logo-main__inner {
+      width: 100%;
+
+      .logo-main-image {
+        display: none;
+      }
+
+      .logo-main-text {
+        width: 100%;
+        text-transform: uppercase;
+
+        .open-gallery-button {
+          width: 100%;
+          text-align: center;
+          @include margin(1, 1);
+          @include pad(3, 2);
         }
       }
     }

@@ -40,7 +40,6 @@
 
     .close-gallery-menu, .close-artwork-menu {
       position: absolute;
-      font-size: ($fontLarge + $fontHuge) / 2;
       cursor: pointer;
       top: -$space * 2;
       right: -$space * 2;
@@ -54,6 +53,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
+      font-size: ($fontLarge + $fontHuge) / 2;
 
       &:hover {
         color: $colourAlt;
@@ -103,6 +103,10 @@
 
         .text {
           text-align: center;
+
+          @media screen and (max-width: $mobile) {
+            font-size: 80%;
+          }
         }
 
         .control-mouse.active {

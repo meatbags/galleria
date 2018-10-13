@@ -15,7 +15,7 @@ class Surface {
     this.setSize();
     this.rotation = new THREE.Vector2();
     this.timestamp = null;
-    this.threshold = {click: 200, pan: 200};
+    this.threshold = {click: 200, pan: 200, mouseDelta: isMobile ? 0.25 : 0.125};
     this.scaleRotation = {x: isMobile ? 0.75 : 1, y: 1};
 
     // events
@@ -66,7 +66,7 @@ class Surface {
     this.canvas = new OverlayCanvas(this, this.domElement, renderer.renderer.domElement);
 
     // artwork handler
-    this.floorPlan = new FloorPlan(this);
+    this.floorPlan = new FloorPlan(this, isMobile);
   }
 
   processTouch(e) {
@@ -117,7 +117,7 @@ class Surface {
 
   onMouseUp(e) {
     this.mouse.stop();
-    if (Date.now() - this.timestamp < this.threshold.click) {
+    if (Date.now() - this.timestamp < this.threshold.click && Math.hypot(this.mouse.delta.x, this.mouse.delta.y) < window.innerWidth * this.threshold.mouseDelta) {
        this.floorPlan.click(this.mouse.x, this.mouse.y);
     }
   }

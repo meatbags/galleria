@@ -1,17 +1,18 @@
 /**
- ** Handle individual artwork.
+ ** Handle individual artwork placement and interaction.
  **/
 
 import { InteractionNodeView } from './interaction_nodes';
 
 class Artwork {
-  constructor(root, id, e) {
+  constructor(root, id, e, isMobile) {
     this.root = root;
     this.id = id;
+    this.isMobile = isMobile;
+    this.element = e;
     this.active = false;
     this.position = new THREE.Vector3();
     this.direction = new THREE.Vector3();
-    this.element = e;
     this.nearRadius = 5;
     this.thickness = 0.2;
     this.upstairs = false;
@@ -48,16 +49,17 @@ class Artwork {
     this.node = new InteractionNodeView(p, null, v, this);
 
     // calc view position
+    const offScale = this.isMobile ? 1.5 : 0.9;
     this.viewPosition = new THREE.Vector3();
     this.viewPosition.y = Math.min(7.8, this.baseY - 3);
-    this.viewPosition.x = p.x + v.x * Math.min((p.y - this.viewPosition.y) * 0.9, 8);
-    this.viewPosition.z = p.z + v.z * Math.min((p.y - this.viewPosition.y) * 0.9, 8);
+    this.viewPosition.x = p.x + v.x * Math.min((p.y - this.viewPosition.y) * offScale, 8);
+    this.viewPosition.z = p.z + v.z * Math.min((p.y - this.viewPosition.y) * offScale, 8);
 
     // special: artwork above stairs
     if (p.x > 20 && p.z < -10) {
-      this.viewPosition.set(24, 6, -8);
+      this.viewPosition.set(28, 4.4, -8);
     } else if (p.x < -20 && p.z < -10) {
-      this.viewPosition.set(-24, 6, -8);
+      this.viewPosition.set(-28, 4.4, -8);
     }
 
     // calc view rotation (pitch, yaw)
