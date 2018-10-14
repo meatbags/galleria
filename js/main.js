@@ -10,7 +10,7 @@ class App {
     this.active = false;
     this.isMobile = detectMobileAndTablet();
     this.scene = new Scene();
-    this.renderer = new Renderer(this.scene);
+    this.renderer = new Renderer(this, this.scene);
     this.surface = new Surface(this.scene, this.renderer, this.isMobile);
     this.menu = new Menu(this);
     this.maxDelta = 1 / 10;
@@ -20,7 +20,17 @@ class App {
       // TODO
     }
 
+    window.addEventListener('orientationchange', () => { setTimeout(() => {
+      this.resize();
+    }, 500); });
+
     this.loop();
+  }
+
+  resize() {
+    this.renderer.resize();
+    this.scene.resize();
+    this.surface.resize();
   }
 
   deactivate() {
