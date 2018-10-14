@@ -80,7 +80,7 @@
             <div class='comments'>
               <div class='comments__inner'>
                 <div class='comments-title'>Comments</div>
-                <div class='comment-list'></div>
+                <div id='comments-here' class='comment-list'></div>
                 <div class='comment-form'>
                   <?php comment_form(array(
                     'fields' => array('author' => '<p class="comment-form-author"><label for="author"></label>' .

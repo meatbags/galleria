@@ -11,6 +11,7 @@ class Surface {
     this.isMobile = isMobile;
     this.player = this.scene.player;
     this.domElement = document.querySelector('#canvas-target');
+    this.domArtworkTarget = document.querySelector('#artwork-target');
     this.centre = {x:0, y:0};
     this.setSize();
     this.rotation = new THREE.Vector2();
@@ -167,54 +168,56 @@ class Surface {
   }
 
   onKeyboard(key) {
-    switch (key) {
-      case 'a': case 'A': case 'ArrowLeft':
-        this.player.keys.left = this.keyboard.keys[key];
-        if (this.player.keys.left) {
-          this.controls.left.classList.add('active');
-        } else {
-          this.controls.left.classList.remove('active');
-        }
-        break;
-      case 'd': case 'D': case 'ArrowRight':
-        this.player.keys.right = this.keyboard.keys[key];
-        if (this.player.keys.right) {
-          this.controls.right.classList.add('active');
-        } else {
-          this.controls.right.classList.remove('active');
-        }
-        break;
-      case 'w': case 'W': case 'ArrowUp':
-        this.player.keys.up = this.keyboard.keys[key];
-        if (this.player.keys.up) {
-          this.controls.up.classList.add('active');
-        } else {
-          this.controls.up.classList.remove('active');
-        }
-        break;
-      case 's': case 'S': case 'ArrowDown':
-        this.player.keys.down = this.keyboard.keys[key];
-        if (this.player.keys.down) {
-          this.controls.down.classList.add('active');
-        } else {
-          this.controls.down.classList.remove('active');
-        }
-        break;
-      case ' ':
-        this.player.keys.jump = this.keyboard.keys[key];
-        break;
-      case 'x': case 'X':
-        // toggle noclip on ctrl+x
-        if (this.keyboard.keys['x'] || this.keyboard.keys['X']) {
-          if (this.keyboard.isControl()) {
-            this.player.toggleNoclip();
+    if (!this.domArtworkTarget.classList.contains('active')) {
+      switch (key) {
+        case 'a': case 'A': case 'ArrowLeft':
+          this.player.keys.left = this.keyboard.keys[key];
+          if (this.player.keys.left) {
+            this.controls.left.classList.add('active');
+          } else {
+            this.controls.left.classList.remove('active');
           }
-          this.keyboard.release('x');
-          this.keyboard.release('X');
-        }
-        break;
-      default:
-        break;
+          break;
+        case 'd': case 'D': case 'ArrowRight':
+          this.player.keys.right = this.keyboard.keys[key];
+          if (this.player.keys.right) {
+            this.controls.right.classList.add('active');
+          } else {
+            this.controls.right.classList.remove('active');
+          }
+          break;
+        case 'w': case 'W': case 'ArrowUp':
+          this.player.keys.up = this.keyboard.keys[key];
+          if (this.player.keys.up) {
+            this.controls.up.classList.add('active');
+          } else {
+            this.controls.up.classList.remove('active');
+          }
+          break;
+        case 's': case 'S': case 'ArrowDown':
+          this.player.keys.down = this.keyboard.keys[key];
+          if (this.player.keys.down) {
+            this.controls.down.classList.add('active');
+          } else {
+            this.controls.down.classList.remove('active');
+          }
+          break;
+        case ' ':
+          this.player.keys.jump = this.keyboard.keys[key];
+          break;
+        case 'x': case 'X':
+          // toggle noclip on ctrl+x
+          if (this.keyboard.keys['x'] || this.keyboard.keys['X']) {
+            if (this.keyboard.isControl()) {
+              this.player.toggleNoclip();
+            }
+            this.keyboard.release('x');
+            this.keyboard.release('X');
+          }
+          break;
+        default:
+          break;
+      }
     }
   }
 
