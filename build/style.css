@@ -45,7 +45,7 @@ table {
   border-collapse: collapse;
   border-spacing: 0; }
 
-.ext-grid, #background-grid, .pane-gallery_gallery-menu .menu, .nav .nav__inner {
+.ext-grid, #background-grid, .pane-gallery_gallery-menu .menu, .pane-gallery_gallery-menu #artwork-target .content, .nav .nav__inner {
   background-size: 16px 16px;
   background-image: linear-gradient(to right, rgba(238, 238, 238, 0.025) 1px, transparent 1px), linear-gradient(to bottom, rgba(238, 238, 238, 0.025) 1px, transparent 1px); }
 
@@ -297,29 +297,6 @@ a {
       padding-bottom: 8px;
       display: -ms-flexbox;
       display: flex; }
-      .pane-gallery_gallery-menu .menu .content .item-half {
-        width: 50%; }
-        .pane-gallery_gallery-menu .menu .content .item-half .artwork-info {
-          padding-left: 8px;
-          padding-right: 8px;
-          padding-top: 16px;
-          padding-bottom: 16px;
-          border-bottom: 1px solid #eee; }
-          .pane-gallery_gallery-menu .menu .content .item-half .artwork-info .title {
-            font-size: 40px;
-            padding-bottom: 8px; }
-          .pane-gallery_gallery-menu .menu .content .item-half .artwork-info .subtitle {
-            color: #ff89da; }
-          .pane-gallery_gallery-menu .menu .content .item-half .artwork-info .desc {
-            padding-left: 0px;
-            padding-right: 0px;
-            padding-top: 4px;
-            padding-bottom: 4px; }
-        .pane-gallery_gallery-menu .menu .content .item-half .comments {
-          padding-left: 8px;
-          padding-right: 8px;
-          padding-top: 16px;
-          padding-bottom: 16px; }
       .pane-gallery_gallery-menu .menu .content .item {
         width: 33%;
         padding: 8px;
@@ -350,7 +327,152 @@ a {
           animation-iteration-count: infinite;
           animation-direction: alternate; }
   .pane-gallery_gallery-menu #artwork-target {
-    width: 50vw; }
+    width: 70vw;
+    height: 60vh;
+    background-color: transparent;
+    box-shadow: none;
+    padding-left: 8px;
+    padding-right: 8px;
+    padding-top: 0px;
+    padding-bottom: 0px; }
+    .pane-gallery_gallery-menu #artwork-target .content {
+      padding: 0;
+      height: 100%;
+      width: 100%;
+      background-color: #2c272b;
+      box-shadow: 5px 5px 20px rgba(255, 137, 218, 0.4); }
+      .pane-gallery_gallery-menu #artwork-target .content .artwork-half {
+        height: 40%;
+        height: 100%; }
+        .pane-gallery_gallery-menu #artwork-target .content .artwork-half .image {
+          width: 100%;
+          height: 100%;
+          padding: 16px;
+          display: -ms-flexbox;
+          display: flex;
+          -ms-flex-pack: center;
+              justify-content: center;
+          -ms-flex-align: center;
+              align-items: center; }
+          .pane-gallery_gallery-menu #artwork-target .content .artwork-half .image img {
+            max-width: 100%;
+            max-height: 100%;
+            box-shadow: 5px 5px 20px rgba(255, 137, 218, 0.4);
+            -o-object-fit: contain;
+               object-fit: contain; }
+      .pane-gallery_gallery-menu #artwork-target .content .info-half {
+        padding-left: 8px;
+        padding-right: 8px;
+        padding-top: 16px;
+        padding-bottom: 16px;
+        padding-right: 16px;
+        width: 60%;
+        display: -ms-flexbox;
+        display: flex;
+        -ms-flex-direction: column;
+            flex-direction: column; }
+        .pane-gallery_gallery-menu #artwork-target .content .info-half .artwork-info {
+          padding-left: 8px;
+          padding-right: 8px;
+          padding-top: 16px;
+          padding-bottom: 16px;
+          border-bottom: 1px solid #eee; }
+          .pane-gallery_gallery-menu #artwork-target .content .info-half .artwork-info .title {
+            font-size: 40px;
+            padding-bottom: 8px; }
+          .pane-gallery_gallery-menu #artwork-target .content .info-half .artwork-info .subtitle {
+            color: #ff89da; }
+          .pane-gallery_gallery-menu #artwork-target .content .info-half .artwork-info .desc {
+            padding-left: 0px;
+            padding-right: 0px;
+            padding-top: 4px;
+            padding-bottom: 4px; }
+        .pane-gallery_gallery-menu #artwork-target .content .info-half .comments {
+          height: 100%;
+          width: 100%;
+          overflow: hidden;
+          position: relative; }
+          .pane-gallery_gallery-menu #artwork-target .content .info-half .comments .comments-title {
+            font-size: 20px;
+            padding-left: 16px;
+            padding-right: 16px;
+            padding-top: 8px;
+            padding-bottom: 8px;
+            border: 1px solid #eee;
+            box-shadow: 5px 5px 20px rgba(255, 137, 218, 0.4);
+            display: inline-block; }
+          .pane-gallery_gallery-menu #artwork-target .content .info-half .comments .comment-scroll-prompt {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            pointer-events: none;
+            padding: 8px; }
+          .pane-gallery_gallery-menu #artwork-target .content .info-half .comments .comments__inner {
+            padding-left: 8px;
+            padding-right: 8px;
+            padding-top: 16px;
+            padding-bottom: 16px;
+            width: 120%;
+            height: 100%;
+            overflow-y: scroll;
+            overflow-x: hidden; }
+            .pane-gallery_gallery-menu #artwork-target .content .info-half .comments .comments__inner .comment-list {
+              padding-left: 0px;
+              padding-right: 0px;
+              padding-top: 16px;
+              padding-bottom: 16px;
+              width: 83%; }
+              .pane-gallery_gallery-menu #artwork-target .content .info-half .comments .comments__inner .comment-list .comment {
+                padding-left: 0px;
+                padding-right: 0px;
+                padding-top: 16px;
+                padding-bottom: 16px;
+                margin-left: 0px;
+                margin-right: 0px;
+                margin-top: 4px;
+                margin-bottom: 4px;
+                border-top: 1px solid #eee;
+                border-bottom: 1px solid #eee; }
+            .pane-gallery_gallery-menu #artwork-target .content .info-half .comments .comments__inner .comment-form {
+              width: 83%;
+              padding-left: 0px;
+              padding-right: 0px;
+              padding-top: 8px;
+              padding-bottom: 8px; }
+              .pane-gallery_gallery-menu #artwork-target .content .info-half .comments .comments__inner .comment-form .comment-reply-title {
+                padding-bottom: 4px; }
+              .pane-gallery_gallery-menu #artwork-target .content .info-half .comments .comments__inner .comment-form form p {
+                margin-left: 0px;
+                margin-right: 0px;
+                margin-top: 4px;
+                margin-bottom: 4px; }
+              .pane-gallery_gallery-menu #artwork-target .content .info-half .comments .comments__inner .comment-form form textarea, .pane-gallery_gallery-menu #artwork-target .content .info-half .comments .comments__inner .comment-form form input[type=text] {
+                outline: none !important;
+                border: 1px solid #eee !important;
+                border-radius: 0;
+                background: black;
+                color: white;
+                font-size: 17px;
+                font-family: "Karla", sans-serif;
+                padding: 4px;
+                box-shadow: 5px 5px 20px rgba(255, 137, 218, 0.4); }
+              .pane-gallery_gallery-menu #artwork-target .content .info-half .comments .comments__inner .comment-form form input[type=submit] {
+                font-family: "Karla", sans-serif;
+                margin-left: 0px;
+                margin-right: 0px;
+                margin-top: 4px;
+                margin-bottom: 4px;
+                padding-left: 8px;
+                padding-right: 8px;
+                padding-top: 0px;
+                padding-bottom: 0px;
+                font-size: 17px;
+                border-radius: 0;
+                box-shadow: 5px 5px 20px rgba(255, 137, 218, 0.4); }
+    @media screen and (max-width: 820px) {
+      .pane-gallery_gallery-menu #artwork-target {
+        width: 85vw;
+        height: 65vh; } }
   @media screen and (max-width: 500px) {
     .pane-gallery_gallery-menu .menu {
       width: 80vw; }

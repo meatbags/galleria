@@ -7,7 +7,7 @@
       <div data-active='#page-contact' class='item'>Contact</div>
     </div>
     <div id='nav-gallery' class='list'>
-      <div class='item active close-gallery-menu'>The Gallery</div>
+      <div id='nav-item-gallery' class='item active close-gallery-menu'>The Gallery</div>
       <div id='nav-item-controls' data-active='#menu-controls' class='item'>Controls</div>
       <div class='item close-gallery'>Home</div>
     </div>

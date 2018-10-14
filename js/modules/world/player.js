@@ -9,6 +9,13 @@ class Player {
     this.root = root;
     this.position = new THREE.Vector3(-24, 1, 16);
     this.rotation = new THREE.Vector2(Math.PI * 0.55, Math.PI * -0.05);
+
+    // dev
+    if (window.location.host.indexOf('localhost') != -1) {
+      this.position = new THREE.Vector3(-13, 0.5, 10.5);
+      this.rotation = new THREE.Vector2(Math.PI, Math.PI * -0.05);
+    }
+
     this.motion = new THREE.Vector3();
     this.target = {
       position: this.position.clone(),

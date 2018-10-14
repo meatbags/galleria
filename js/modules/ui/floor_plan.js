@@ -33,7 +33,7 @@ class FloorPlan {
       subtitle: this.domElement.querySelector('.subtitle'),
       desc: this.domElement.querySelector('.desc'),
       link: this.domElement.querySelector('.link'),
-      comments: this.domElement.querySelector('.comments'),
+      comments: this.domElement.querySelector('.comments .comments__inner .comment-list'),
       close: this.domElement.querySelector('.close-artwork-menu')
     };
     this.el.close.addEventListener('click', () => { this.closeArtworkMenu(); });
@@ -147,16 +147,39 @@ class FloorPlan {
   }
 
   openArtworkMenu(artwork) {
+    // remove control arrows
     document.querySelector('#gallery-controls').classList.add('display-none');
+
+    // remove open menus and remove sub active elements
+    document.querySelectorAll('.gallery-menu .menu.active').forEach(e => {
+      e.classList.remove('active');
+      e.querySelectorAll('.requires-activate').forEach(f => {
+        f.classList.remove('active');
+      });
+    });
+
+    // change nav to gallery main
+    const navItem = document.querySelector('#nav-item-gallery');
+    if (!navItem.classList.contains('active')) {
+      navItem.parentNode.querySelectorAll('.active').forEach(e => { e.classList.remove('active'); });
+      navItem.classList.add('active');
+    }
+
+    // change info
     if (this.domElement.dataset.active != artwork.id) {
       this.domElement.dataset.active = artwork.id;
-      this.el.image.innerHTML = '[ image loads here ]';
+      this.el.image.innerHTML = `<img src="${artwork.data.url}"/>`;
       this.el.title.innerHTML = artwork.data.title;
       this.el.subtitle.innerHTML = artwork.data.subtitle;
       this.el.desc.innerHTML = artwork.data.desc;
       this.el.link.innerHTML = artwork.data.link ? `<a href='${artwork.data.link}' target='_blank'>Link</a>` : '';
-      this.el.comments.innerHTML = '[comments here]';
+
+      // comments
+
+      //this.el.comments.innerHTML = '[comments here]';
     }
+
+    // show
     this.domElement.classList.add('active');
   }
 
