@@ -65,35 +65,6 @@
       @include pad(0, 1);
       display: flex;
 
-      .item-half {
-        width: 50%;
-
-        .artwork-info {
-          @include pad(1, 2);
-          border-bottom: $border;
-
-          .title {
-            font-size: $fontHuge;
-            padding-bottom: $space;
-          }
-
-          .subtitle {
-            color: $colourAlt;
-          }
-
-          .desc {
-            @include pad(0, 0.5);
-          }
-
-          .link {
-          }
-        }
-
-        .comments {
-          @include pad(1, 2);
-        }
-      }
-
       .item {
         width: 33%;
         padding: $space;
@@ -134,7 +105,167 @@
   }
 
   #artwork-target {
-    width: 50vw;
+    width: 70vw;
+    height: 60vh;
+    background-color: transparent;
+    box-shadow: none;
+    @include pad(1, 0);
+
+    .content {
+      padding: 0;
+      height: 100%;
+      width: 100%;
+      background-color: $colourBackgroundAlt;
+      box-shadow: $boxShadow;
+      @extend .ext-grid;
+
+      .artwork-half {
+        height: 40%;
+        height: 100%;
+
+        .image {
+          width: 100%;
+          height: 100%;
+          padding: $space * 2;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+
+          img {
+            max-width: 100%;
+            max-height: 100%;
+            box-shadow: $boxShadow;
+            object-fit: contain;
+          }
+        }
+      }
+
+      .info-half {
+        @include pad(1, 2);
+        padding-right: $space * 2;
+        width: 60%;
+        display: flex;
+        flex-direction: column;
+
+        .artwork-info {
+          @include pad(1, 2);
+          border-bottom: $border;
+
+          .title {
+            font-size: $fontHuge;
+            padding-bottom: $space;
+          }
+
+          .subtitle {
+            color: $colourAlt;
+          }
+
+          .desc {
+            @include pad(0, 0.5);
+          }
+
+          .link {
+          }
+        }
+
+        .comments {
+          height: 100%;
+          width: 100%;
+          overflow: hidden;
+          position: relative;
+
+          .comments-title {
+            font-size: $fontLarge;
+            @include pad(2, 1);
+            border: $border;
+            box-shadow: $boxShadow;
+            display: inline-block;
+          }
+
+          .comment-scroll-prompt {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            pointer-events: none;
+            padding: $space;
+          }
+
+          .comments__inner {
+            @include pad(1, 2);
+            width: 120%;
+            height: 100%;
+            overflow-y: scroll;
+            overflow-x: hidden;
+
+            .comment-list {
+              @include pad(0, 2);
+              width: 83%;
+
+              .comment {
+                @include pad(0, 2);
+                @include margin(0, 0.5);
+                border-top: $border;
+                border-bottom: $border;
+
+                .name {
+
+                }
+
+                .date {
+
+                }
+
+                .text {
+
+                }
+              }
+            }
+
+            .comment-form {
+              width: 83%;
+              @include pad(0, 1);
+
+              .comment-reply-title {
+                padding-bottom: $space / 2;
+              }
+
+              form {
+                p {
+                  @include margin(0, 0.5);
+
+                }
+
+                textarea, input[type=text] {
+                  outline: none !important;
+                  border: $border !important;
+                  border-radius: 0;
+                  background: black;
+                  color: white;
+                  font-size: $fontSize;
+                  font-family: $fontStack;
+                  padding: $space / 2;
+                  box-shadow: $boxShadow;
+                }
+
+                input[type=submit] {
+                  font-family: $fontStack;
+                  @include margin(0, 0.5);
+                  @include pad(1, 0);
+                  font-size: $fontSize;
+                  border-radius: 0;
+                  box-shadow: $boxShadow;
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+
+    @media screen and (max-width: $tabletPortrait) {
+      width: 85vw;
+      height: 65vh;
+    }
   }
 
   @media screen and (max-width: $mobile) {

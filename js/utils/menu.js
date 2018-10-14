@@ -23,7 +23,7 @@ class Menu {
 
     // dev & live modes
     if (this.isDev) {
-      //this.toggleGallery();
+      this.toggleGallery();
     } else {
       this.onMenuItem(document.querySelector('#nav-item-controls'));
     }
@@ -82,10 +82,9 @@ class Menu {
   onMenuItem(el) {
     if (el.dataset.active) {
       const target = document.querySelector(el.dataset.active);
+
       if (target) {
-        el.parentNode.querySelectorAll('.active').forEach(e => {
-          e.classList.remove('active');
-        });
+        el.parentNode.querySelectorAll('.active').forEach(e => { e.classList.remove('active'); });
         el.classList.add('active');
 
         // close pages or menus
@@ -101,8 +100,9 @@ class Menu {
             });
           });
 
-          // hide controls
+          // hide controls & info
           document.querySelector('#gallery-controls').classList.add('display-none');
+          document.querySelector('#artwork-target').classList.remove('active');
         }
 
         // open target

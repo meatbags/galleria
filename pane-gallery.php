@@ -67,17 +67,33 @@
 
       <div id='artwork-target' data-active='' class='menu'>
         <div class='content'>
-          <div class='item-half'>
+          <div class='artwork-half'>
             <div class='image'></div>
           </div>
-          <div class='item-half'>
+          <div class='info-half'>
             <div class='artwork-info'>
               <div class='title'></div>
               <div class='subtitle'></div>
               <div class='desc'></div>
               <div class='link'></div>
             </div>
-            <div class='comments'></div>
+            <div class='comments'>
+              <div class='comments__inner'>
+                <div class='comments-title'>Comments</div>
+                <div class='comment-list'></div>
+                <div class='comment-form'>
+                  <?php comment_form(array(
+                    'fields' => array('author' => '<p class="comment-form-author"><label for="author"></label>' .
+                      '<input id="author" name="author" type="text" placeholder="Your name" value=""/></p>'),
+                    'title_reply' => '<div class="form-title">Leave a comment! Be nice (mostly).</div>',
+                    'comment_notes_before' => '',
+                    'comment_field' => '<p class="comment-form-comment"><label for="comment"></label>' .
+                      '<textarea placeholder="Your comment" id="comment" name="comment" cols="45" rows="8" aria-required="true"></textarea></p>'
+                  )); ?>
+                </div>
+              </div>
+              <div class='comment-scroll-prompt'>&darr;</div>
+            </div>
           </div>
           <div class='close-artwork-menu'>&times;</div>
         </div>
