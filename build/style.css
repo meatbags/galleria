@@ -139,7 +139,9 @@ a {
       background: #000;
       position: relative;
       cursor: crosshair;
-      box-shadow: 5px 5px 20px rgba(255, 137, 218, 0.4); }
+      box-shadow: 5px 5px 20px rgba(255, 137, 218, 0.4);
+      -ms-touch-action: none;
+          touch-action: none; }
       .pane-gallery .canvas-wrapper .canvas-wrapper__inner.clickable {
         cursor: pointer; }
       .pane-gallery .canvas-wrapper .canvas-wrapper__inner canvas {
