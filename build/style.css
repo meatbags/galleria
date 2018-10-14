@@ -330,19 +330,18 @@ a {
     width: 70vw;
     height: 60vh;
     background-color: transparent;
-    box-shadow: none;
-    padding-left: 8px;
-    padding-right: 8px;
-    padding-top: 0px;
-    padding-bottom: 0px; }
+    box-shadow: none; }
     .pane-gallery_gallery-menu #artwork-target .content {
-      padding: 0;
+      padding-left: 32px;
+      padding-right: 32px;
+      padding-top: 16px;
+      padding-bottom: 16px;
       height: 100%;
       width: 100%;
       background-color: #2c272b;
       box-shadow: 5px 5px 20px rgba(255, 137, 218, 0.4); }
       .pane-gallery_gallery-menu #artwork-target .content .artwork-half {
-        height: 40%;
+        width: 45%;
         height: 100%; }
         .pane-gallery_gallery-menu #artwork-target .content .artwork-half .image {
           width: 100%;
@@ -361,22 +360,25 @@ a {
             -o-object-fit: contain;
                object-fit: contain; }
       .pane-gallery_gallery-menu #artwork-target .content .info-half {
-        padding-left: 8px;
-        padding-right: 8px;
+        padding-left: 16px;
+        padding-right: 16px;
         padding-top: 16px;
         padding-bottom: 16px;
-        padding-right: 16px;
-        width: 60%;
+        width: 55%;
         display: -ms-flexbox;
         display: flex;
         -ms-flex-direction: column;
-            flex-direction: column; }
+            flex-direction: column;
+        -ms-flex-pack: center;
+            justify-content: center; }
         .pane-gallery_gallery-menu #artwork-target .content .info-half .artwork-info {
-          padding-left: 8px;
-          padding-right: 8px;
+          padding-left: 16px;
+          padding-right: 16px;
           padding-top: 16px;
           padding-bottom: 16px;
-          border-bottom: 1px solid #eee; }
+          border: 1px solid #eee;
+          box-shadow: 5px 5px 20px rgba(255, 137, 218, 0.4);
+          width: 100%; }
           .pane-gallery_gallery-menu #artwork-target .content .info-half .artwork-info .title {
             font-size: 40px;
             padding-bottom: 8px; }
@@ -387,92 +389,98 @@ a {
             padding-right: 0px;
             padding-top: 4px;
             padding-bottom: 4px; }
-        .pane-gallery_gallery-menu #artwork-target .content .info-half .comments {
-          height: 100%;
-          width: 100%;
-          overflow: hidden;
-          position: relative; }
-          .pane-gallery_gallery-menu #artwork-target .content .info-half .comments .comments-title {
-            font-size: 20px;
-            padding-left: 16px;
-            padding-right: 16px;
-            padding-top: 8px;
-            padding-bottom: 8px;
-            border: 1px solid #eee;
-            box-shadow: 5px 5px 20px rgba(255, 137, 218, 0.4);
-            display: inline-block; }
-          .pane-gallery_gallery-menu #artwork-target .content .info-half .comments .comment-scroll-prompt {
-            position: absolute;
-            bottom: 0;
-            right: 0;
-            pointer-events: none;
-            padding: 8px; }
-          .pane-gallery_gallery-menu #artwork-target .content .info-half .comments .comments__inner {
-            padding-left: 8px;
-            padding-right: 8px;
-            padding-top: 16px;
-            padding-bottom: 16px;
-            width: 120%;
-            height: 100%;
-            overflow-y: scroll;
-            overflow-x: hidden; }
-            .pane-gallery_gallery-menu #artwork-target .content .info-half .comments .comments__inner .comment-list {
-              padding-left: 0px;
-              padding-right: 0px;
-              padding-top: 16px;
-              padding-bottom: 16px;
-              width: 83%; }
-              .pane-gallery_gallery-menu #artwork-target .content .info-half .comments .comments__inner .comment-list .comment {
-                padding-left: 0px;
-                padding-right: 0px;
-                padding-top: 16px;
-                padding-bottom: 16px;
-                margin-left: 0px;
-                margin-right: 0px;
-                margin-top: 4px;
-                margin-bottom: 4px;
-                border-top: 1px solid #eee;
-                border-bottom: 1px solid #eee; }
-            .pane-gallery_gallery-menu #artwork-target .content .info-half .comments .comments__inner .comment-form {
-              width: 83%;
-              padding-left: 0px;
-              padding-right: 0px;
-              padding-top: 8px;
-              padding-bottom: 8px; }
-              .pane-gallery_gallery-menu #artwork-target .content .info-half .comments .comments__inner .comment-form .comment-reply-title {
-                padding-bottom: 4px; }
-              .pane-gallery_gallery-menu #artwork-target .content .info-half .comments .comments__inner .comment-form form p {
-                margin-left: 0px;
-                margin-right: 0px;
-                margin-top: 4px;
-                margin-bottom: 4px; }
-              .pane-gallery_gallery-menu #artwork-target .content .info-half .comments .comments__inner .comment-form form textarea, .pane-gallery_gallery-menu #artwork-target .content .info-half .comments .comments__inner .comment-form form input[type=text] {
-                outline: none !important;
-                border: 1px solid #eee !important;
-                border-radius: 0;
-                background: black;
-                color: white;
-                font-size: 17px;
-                font-family: "Karla", sans-serif;
-                padding: 4px;
-                box-shadow: 5px 5px 20px rgba(255, 137, 218, 0.4); }
-              .pane-gallery_gallery-menu #artwork-target .content .info-half .comments .comments__inner .comment-form form input[type=submit] {
-                font-family: "Karla", sans-serif;
-                margin-left: 0px;
-                margin-right: 0px;
-                margin-top: 4px;
-                margin-bottom: 4px;
-                padding-left: 8px;
-                padding-right: 8px;
-                padding-top: 0px;
-                padding-bottom: 0px;
-                font-size: 17px;
-                border-radius: 0;
-                box-shadow: 5px 5px 20px rgba(255, 137, 218, 0.4); }
     @media screen and (max-width: 820px) {
       .pane-gallery_gallery-menu #artwork-target {
+        width: 80vw;
+        height: 65vh; }
+        .pane-gallery_gallery-menu #artwork-target .content {
+          padding-left: 16px;
+          padding-right: 16px;
+          padding-top: 16px;
+          padding-bottom: 16px;
+          -ms-flex-direction: column;
+              flex-direction: column; }
+          .pane-gallery_gallery-menu #artwork-target .content .artwork-half {
+            width: 100%;
+            height: 70%; }
+          .pane-gallery_gallery-menu #artwork-target .content .info-half {
+            width: 100%;
+            height: 30%; }
+            .pane-gallery_gallery-menu #artwork-target .content .info-half .artwork-info {
+              width: 100%;
+              height: 100%; }
+              .pane-gallery_gallery-menu #artwork-target .content .info-half .artwork-info .title {
+                font-size: 30px; } }
+    @media screen and (max-width: 720px) {
+      .pane-gallery_gallery-menu #artwork-target {
         width: 85vw;
-        height: 65vh; } }
+        height: 70vh; }
+        .pane-gallery_gallery-menu #artwork-target .close-gallery-menu, .pane-gallery_gallery-menu #artwork-target .close-artwork-menu {
+          top: -8px;
+          right: -8px; }
+        .pane-gallery_gallery-menu #artwork-target .content {
+          padding-left: 16px;
+          padding-right: 16px;
+          padding-top: 0px;
+          padding-bottom: 0px;
+          -ms-flex-direction: row;
+              flex-direction: row; }
+          .pane-gallery_gallery-menu #artwork-target .content .artwork-half {
+            width: 50%;
+            height: 100%; }
+          .pane-gallery_gallery-menu #artwork-target .content .info-half {
+            width: 50%;
+            height: 100%; }
+            .pane-gallery_gallery-menu #artwork-target .content .info-half .artwork-info {
+              width: auto;
+              height: auto;
+              border: none;
+              box-shadow: none; }
+              .pane-gallery_gallery-menu #artwork-target .content .info-half .artwork-info .title {
+                font-size: 20px;
+                text-decoration: underline; }
+              .pane-gallery_gallery-menu #artwork-target .content .info-half .artwork-info .desc {
+                padding: 0; } }
+    @media screen and (max-width: 500px) {
+      .pane-gallery_gallery-menu #artwork-target {
+        width: 90vw;
+        height: 70vh; }
+        .pane-gallery_gallery-menu #artwork-target .close-gallery-menu, .pane-gallery_gallery-menu #artwork-target .close-artwork-menu {
+          top: 0;
+          right: 0; }
+        .pane-gallery_gallery-menu #artwork-target .content {
+          padding-left: 8px;
+          padding-right: 8px;
+          padding-top: 8px;
+          padding-bottom: 8px;
+          -ms-flex-direction: column;
+              flex-direction: column; }
+          .pane-gallery_gallery-menu #artwork-target .content .artwork-half {
+            width: 100%;
+            height: 65%; }
+            .pane-gallery_gallery-menu #artwork-target .content .artwork-half .image {
+              padding-left: 8px;
+              padding-right: 8px;
+              padding-top: 8px;
+              padding-bottom: 8px; }
+          .pane-gallery_gallery-menu #artwork-target .content .info-half {
+            padding-left: 8px;
+            padding-right: 8px;
+            padding-top: 8px;
+            padding-bottom: 8px;
+            width: 100%;
+            height: 35%; }
+            .pane-gallery_gallery-menu #artwork-target .content .info-half .artwork-info {
+              width: 100%;
+              height: 100%;
+              padding-left: 8px;
+              padding-right: 8px;
+              padding-top: 8px;
+              padding-bottom: 8px;
+              border: none;
+              box-shadow: none; }
+              .pane-gallery_gallery-menu #artwork-target .content .info-half .artwork-info .title {
+                font-size: 20px; } }
   @media screen and (max-width: 500px) {
     .pane-gallery_gallery-menu .menu {
       width: 80vw; }
@@ -911,7 +919,8 @@ a {
           display: none; }
         .logo-main .logo-main__inner .logo-main-text {
           width: 100%;
-          text-transform: uppercase; }
+          text-transform: uppercase;
+          font-size: 20px; }
           .logo-main .logo-main__inner .logo-main-text .open-gallery-button {
             width: 100%;
             text-align: center;
@@ -921,8 +930,8 @@ a {
             margin-bottom: 8px;
             padding-left: 24px;
             padding-right: 24px;
-            padding-top: 16px;
-            padding-bottom: 16px; } }
+            padding-top: 24px;
+            padding-bottom: 24px; } }
 
 .section-upcoming .list .item {
   width: 66.66%;

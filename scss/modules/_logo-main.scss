@@ -155,12 +155,13 @@
       .logo-main-text {
         width: 100%;
         text-transform: uppercase;
+        font-size: $fontLarge;
 
         .open-gallery-button {
           width: 100%;
           text-align: center;
           @include margin(1, 1);
-          @include pad(3, 2);
+          @include pad(3, 3);
         }
       }
     }

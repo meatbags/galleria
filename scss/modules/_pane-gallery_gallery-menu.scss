@@ -109,10 +109,9 @@
     height: 60vh;
     background-color: transparent;
     box-shadow: none;
-    @include pad(1, 0);
 
     .content {
-      padding: 0;
+      @include pad(4, 2);
       height: 100%;
       width: 100%;
       background-color: $colourBackgroundAlt;
@@ -120,7 +119,7 @@
       @extend .ext-grid;
 
       .artwork-half {
-        height: 40%;
+        width: 45%;
         height: 100%;
 
         .image {
@@ -141,15 +140,17 @@
       }
 
       .info-half {
-        @include pad(1, 2);
-        padding-right: $space * 2;
-        width: 60%;
+        @include pad(2, 2);
+        width: 55%;
         display: flex;
         flex-direction: column;
+        justify-content: center;
 
         .artwork-info {
-          @include pad(1, 2);
-          border-bottom: $border;
+          @include pad(2, 2);
+          border: $border;
+          box-shadow: $boxShadow;
+          width: 100%;
 
           .title {
             font-size: $fontHuge;
@@ -164,107 +165,121 @@
             @include pad(0, 0.5);
           }
 
-          .link {
-          }
+          .link {}
+        }
+      }
+    }
+
+    @media screen and (max-width: $tabletPortrait) {
+      width: 80vw;
+      height: 65vh;
+
+      .content {
+        @include pad(2, 2);
+        flex-direction: column;
+
+        .artwork-half {
+          width: 100%;
+          height: 70%;
         }
 
-        .comments {
-          height: 100%;
+        .info-half {
           width: 100%;
-          overflow: hidden;
-          position: relative;
+          height: 30%;
 
-          .comments-title {
-            font-size: $fontLarge;
-            @include pad(2, 1);
-            border: $border;
-            box-shadow: $boxShadow;
-            display: inline-block;
-          }
-
-          .comment-scroll-prompt {
-            position: absolute;
-            bottom: 0;
-            right: 0;
-            pointer-events: none;
-            padding: $space;
-          }
-
-          .comments__inner {
-            @include pad(1, 2);
-            width: 120%;
+          .artwork-info {
+            width: 100%;
             height: 100%;
-            overflow-y: scroll;
-            overflow-x: hidden;
 
-            .comment-list {
-              @include pad(0, 2);
-              width: 83%;
-
-              .comment {
-                @include pad(0, 2);
-                @include margin(0, 0.5);
-                border-top: $border;
-                border-bottom: $border;
-
-                .name {
-
-                }
-
-                .date {
-
-                }
-
-                .text {
-
-                }
-              }
-            }
-
-            .comment-form {
-              width: 83%;
-              @include pad(0, 1);
-
-              .comment-reply-title {
-                padding-bottom: $space / 2;
-              }
-
-              form {
-                p {
-                  @include margin(0, 0.5);
-
-                }
-
-                textarea, input[type=text] {
-                  outline: none !important;
-                  border: $border !important;
-                  border-radius: 0;
-                  background: black;
-                  color: white;
-                  font-size: $fontSize;
-                  font-family: $fontStack;
-                  padding: $space / 2;
-                  box-shadow: $boxShadow;
-                }
-
-                input[type=submit] {
-                  font-family: $fontStack;
-                  @include margin(0, 0.5);
-                  @include pad(1, 0);
-                  font-size: $fontSize;
-                  border-radius: 0;
-                  box-shadow: $boxShadow;
-                }
-              }
+            .title {
+              font-size: ($fontLarge + $fontHuge) * 0.5;
             }
           }
         }
       }
     }
 
-    @media screen and (max-width: $tabletPortrait) {
+    @media screen and (max-width: $mobileLandscape) {
       width: 85vw;
-      height: 65vh;
+      height: 70vh;
+
+      .close-gallery-menu, .close-artwork-menu {
+        top: -$space;
+        right: -$space;
+      }
+
+      .content {
+        @include pad(2, 0);
+        flex-direction: row;
+
+        .artwork-half {
+          width: 50%;
+          height: 100%;
+        }
+
+        .info-half {
+          width: 50%;
+          height: 100%;
+
+          .artwork-info {
+            width: auto;
+            height: auto;
+            border: none;
+            box-shadow: none;
+
+            .title {
+              font-size: $fontLarge;
+              text-decoration: underline;
+            }
+
+            .desc {
+              padding: 0;
+            }
+          }
+        }
+      }
+    }
+
+    @media screen and (max-width: $mobile) {
+      width: 90vw;
+      height: 70vh;
+
+      .close-gallery-menu, .close-artwork-menu {
+        top: 0;
+        right: 0;
+      }
+
+      .content {
+        @include pad(1, 1);
+        flex-direction: column;
+
+        .artwork-half {
+          width: 100%;
+          height: 65%;
+
+          .image {
+            @include pad(1, 1);
+          }
+        }
+
+        .info-half {
+          @include pad(1, 1);
+          width: 100%;
+          height: 35%;
+
+          .artwork-info {
+            width: 100%;
+            height: 100%;
+            @include pad(1, 1);
+            border: none;
+            box-shadow: none;
+
+            .title {
+              font-size: $fontLarge;
+            }
+          }
+        }
+      }
     }
   }
 

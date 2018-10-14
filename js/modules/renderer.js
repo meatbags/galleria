@@ -5,7 +5,8 @@
 import '../lib/glsl';
 
 class Renderer {
-  constructor(scene) {
+  constructor(root, scene) {
+    this.root = scene;
     this.scene = scene.scene;
     this.camera = scene.camera.camera;
     this.renderer = new THREE.WebGLRenderer({});
@@ -35,7 +36,6 @@ class Renderer {
 
     // events, doc
     window.addEventListener('resize', () => { this.resize(); });
-    window.addEventListener('orientationchange', () => { setTimeout(() => { this.resize(); }, 300); });
     this.domElement = document.querySelector('#canvas-target');
     this.domElement.append(this.renderer.domElement);
     this.resize();

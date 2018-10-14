@@ -61,7 +61,6 @@ class Surface {
       );
     }
     window.addEventListener('resize', () => { this.resize(); });
-    window.addEventListener('orientationchange', () => { setTimeout(() => { this.resize(); }, 125); });
 
     // 2d canvas
     this.canvas = new OverlayCanvas(this, this.domElement, renderer.renderer.domElement);
@@ -74,7 +73,7 @@ class Surface {
     // touch event -> mouse analogue
     var x = 0;
     var y = 0;
-    if (e.targetTouches.length) {
+    if (e.targetTouches && e.targetTouches.length) {
       const rect = this.domElement.getBoundingClientRect();
       const touch = e.targetTouches[0];
       x = touch.pageX - rect.left;

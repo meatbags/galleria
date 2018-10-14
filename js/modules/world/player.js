@@ -11,9 +11,10 @@ class Player {
     this.rotation = new THREE.Vector2(Math.PI * 0.55, Math.PI * -0.05);
 
     // dev
-    if (window.location.host.indexOf('localhost') != -1) {
+    this.isDev = window.location.host.indexOf('localhost') != -1;
+    if (this.isDev) {
       this.position = new THREE.Vector3(-13, 0.5, 10.5);
-      this.rotation = new THREE.Vector2(Math.PI, Math.PI * -0.05);
+      this.rotation = new THREE.Vector2(Math.PI, 0);
     }
 
     this.motion = new THREE.Vector3();
@@ -31,7 +32,7 @@ class Player {
       speed: {current: 0, max: 7.5, blend: 0.125},
       rotationSpeed: {current: 0, max: Math.PI / 2.5, accum: Math.PI / 70},
       position: this.position.clone(),
-      rotation: new THREE.Vector2(Math.PI * 0.55, Math.PI * 0.03),
+      rotation: this.isDev ? this.rotation.clone() : new THREE.Vector2(Math.PI * 0.55, Math.PI * 0.03),
       threshold: {
         position: {outer: 2, inner: 0.02},
         rotation: Math.PI / 1000 // ~0.006
