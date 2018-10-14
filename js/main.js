@@ -17,7 +17,7 @@ class App {
 
     // lock orientation
     if (detectMobileOnly()) {
-      window.screen.lockOrientation('portrait');
+      // TODO
     }
 
     this.loop();

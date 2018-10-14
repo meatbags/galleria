@@ -35,7 +35,7 @@ class Renderer {
 
     // events, doc
     window.addEventListener('resize', () => { this.resize(); });
-    window.addEventListener('orientationchange', () => { setTimeout(() => { this.resize(); }, 125); });
+    window.addEventListener('orientationchange', () => { setTimeout(() => { this.resize(); }, 300); });
     this.domElement = document.querySelector('#canvas-target');
     this.domElement.append(this.renderer.domElement);
     this.resize();

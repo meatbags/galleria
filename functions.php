@@ -1,4 +1,19 @@
 <?php
+function ajaxComment($comment_ID, $comment_status) {
+	// If it's an AJAX-submitted comment
+	if(isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest'){
+		// Get the comment data
+		$comment = get_comment($comment_ID);
+		// Allow the email to the author to be sent
+		wp_notify_postauthor($comment_ID, $comment->comment_type);
+		// Get the comment HTML from my custom comment HTML function
+		$commentContent = getCommentHTML($comment);
+		// Kill the script, returning the comment HTML
+		die($commentContent);
+	}
+}
+add_action('comment_post', 'ajaxComment', 20, 2);
+
 function gallery_setup() {
 	add_theme_support('title-tag');
 	add_theme_support('automatic-feed-links');
