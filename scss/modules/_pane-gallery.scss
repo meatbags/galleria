@@ -20,6 +20,7 @@
       position: relative;
       cursor: crosshair;
       box-shadow: $boxShadow;
+      touch-action: none;
 
       &.clickable {
         cursor: pointer;
