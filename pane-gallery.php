@@ -47,19 +47,19 @@
             <div class='requires-activate control-mouse control-img'>
               <img src='<?php echo get_template_directory_uri(); ?>/img/control-mouse.png' />
             </div>
-            <div class='text'>Click and drag to pan the camera.</div>
+            <div class='text'>Hold and drag to pan the camera.</div>
           </div>
           <div class='item'>
             <div class='requires-activate control-arrow control-img'>
               <img src='<?php echo get_template_directory_uri(); ?>/img/control-arrow.png' />
             </div>
-            <div class='text'>Use your keyboard arrows or those on-screen to move.</div>
+            <div class='text'>Use the arrows or your keyboard arrows to move.</div>
           </div>
           <div class='item'>
             <div class='requires-activate control-artwork control-img'>
               <img src='<?php echo get_template_directory_uri(); ?>/img/control-artwork.png' />
             </div>
-            <div class='text'>Click on the artworks to view them up close.</div>
+            <div class='text'>Click on an artwork to view it up close.</div>
           </div>
         </div>
         <div class='close-gallery-menu'>&times;</div>
