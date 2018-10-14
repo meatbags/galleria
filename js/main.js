@@ -3,7 +3,7 @@
  **/
 
 import { Scene, Renderer, Surface } from './modules';
-import { detectMobileAndTablet, Menu } from './utils';
+import { detectMobileOnly, detectMobileAndTablet, Menu } from './utils';
 
 class App {
   constructor() {
@@ -14,6 +14,12 @@ class App {
     this.surface = new Surface(this.scene, this.renderer, this.isMobile);
     this.menu = new Menu(this);
     this.maxDelta = 1 / 10;
+
+    // lock orientation
+    if (detectMobileOnly()) {
+      window.screen.lockOrientation('portrait');
+    }
+
     this.loop();
   }
 
