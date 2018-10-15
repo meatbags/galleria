@@ -9,9 +9,9 @@
   <meta name="author" content="http://xavierburrow.com">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 	<meta property="og:url" content="http://closedonmondaygallery.com/">
-	<meta property="og:title" content="Closed On Mondays">
+	<meta property="og:title" content="Closed On Monday">
 	<meta property="og:image" content="<?php echo get_template_directory_uri(); ?>/img/com_og_image.jpg">
-	<meta property="og:site_name" content="Closed On Mondays">
+	<meta property="og:site_name" content="Closed On Monday">
 	<meta property="og:description" content="Closed On Monday is an online 3D space that hosts monthly exhibitions.">
 	<?php wp_head(); ?>
 	<link href="https://fonts.googleapis.com/css?family=Karla" rel="stylesheet">
