@@ -37,7 +37,7 @@ class Renderer {
     // events, doc
     window.addEventListener('resize', () => { this.resize(); });
     this.domElement = document.querySelector('#canvas-target');
-    this.domElement.append(this.renderer.domElement);
+    this.domElement.appendChild(this.renderer.domElement);
     this.resize();
     scene.resize();
   }

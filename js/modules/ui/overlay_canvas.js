@@ -10,7 +10,7 @@ class OverlayCanvas {
     this.domElement = domElement;
     this.canvasTarget = canvasTarget;
     this.resize();
-    this.domElement.append(this.cvs);
+    this.domElement.appendChild(this.cvs);
 
     // draw settings
     this.prompt = {};
