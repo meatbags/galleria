@@ -41,7 +41,7 @@
     </div>
 
     <div class='pane-gallery_gallery-menu gallery-menu'>
-      <div id='menu-controls' class='menu'>
+      <div id='menu-controls' class='menu gallery-menu-controls'>
         <div class='content'>
           <div class='item'>
             <div class='requires-activate control-mouse control-img'>
@@ -65,7 +65,7 @@
         <div class='close-gallery-menu'>&times;</div>
       </div>
 
-      <div id='artwork-target' data-active='' class='menu'>
+      <div id='artwork-target' data-active='' class='menu gallery-menu-artwork'>
         <div class='content'>
           <div class='artwork-half'>
             <div class='image'></div>
@@ -78,7 +78,7 @@
               <div class='link'></div>
             </div>
           </div>
-          <div class='close-artwork-menu'>&times;</div>
+          <div class='close-artwork-menu'>Close &times;</div>
         </div>
       </div>
     </div>
