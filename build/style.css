@@ -973,11 +973,56 @@ a {
   .page-footer .page-footer__inner {
     margin-left: 0px;
     margin-right: 0px;
-    margin-top: 32px;
-    margin-bottom: 32px;
+    margin-top: 40px;
+    margin-bottom: 40px;
     display: -ms-flexbox;
     display: flex; }
-    .page-footer .page-footer__inner .content a {
+    .page-footer .page-footer__inner .content .newsletter .newsletter-title {
+      padding-bottom: 4px;
+      color: #ff89da;
+      text-transform: lowercase; }
+    .page-footer .page-footer__inner .content .newsletter .newsletter-thanks {
+      font-size: 80%;
+      display: none; }
+      .page-footer .page-footer__inner .content .newsletter .newsletter-thanks.active {
+        display: block; }
+    .page-footer .page-footer__inner .content .newsletter .newsletter-thanks-message {
+      display: none; }
+    .page-footer .page-footer__inner .content .newsletter .newsletter-form {
+      display: -ms-flexbox;
+      display: flex;
+      padding-left: 0px;
+      padding-right: 0px;
+      padding-top: 4px;
+      padding-bottom: 4px; }
+      .page-footer .page-footer__inner .content .newsletter .newsletter-form input {
+        padding-left: 8px;
+        padding-right: 8px;
+        padding-top: 4px;
+        padding-bottom: 4px;
+        font-family: "Karla", sans-serif;
+        font-size: 17px;
+        border-radius: 0;
+        background: transparent;
+        border: 1px solid #eee;
+        box-shadow: 5px 5px 20px rgba(255, 137, 218, 0.4);
+        color: #eee;
+        outline: none !important; }
+      .page-footer .page-footer__inner .content .newsletter .newsletter-form button {
+        padding-left: 16px;
+        padding-right: 16px;
+        padding-top: 4px;
+        padding-bottom: 4px;
+        outline: none !important;
+        margin-left: 8px;
+        font-family: "Karla", sans-serif;
+        font-size: 17px;
+        border-radius: 0;
+        border: 1px solid #eee;
+        background: transparent;
+        cursor: pointer;
+        color: #eee; }
+    .page-footer .page-footer__inner .content .socmed a {
       text-decoration: none;
       color: #ff89da; }
   @media screen and (max-width: 500px) {

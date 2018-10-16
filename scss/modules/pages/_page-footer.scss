@@ -3,13 +3,67 @@
   font-size: $fontLarge;
 
   .page-footer__inner {
-    @include margin(0, 4);
+    @include margin(0, 5);
     display: flex;
 
     .content {
-      a {
-        text-decoration: none;
-        color: $colourAlt;
+      .newsletter {
+        .newsletter-title {
+          padding-bottom: $space / 2;
+          color: $colourAlt;
+          text-transform: lowercase;
+        }
+
+        .newsletter-thanks {
+          font-size: 80%;
+          display: none;
+
+          &.active {
+            display: block;
+          }
+        }
+
+        .newsletter-thanks-message {
+          display: none;
+        }
+
+        .newsletter-form {
+          display: flex;
+          @include pad(0, 0.5);
+
+          input {
+            @include pad(1, 0.5);
+            font-family: $fontStack;
+            font-size: $fontSize;
+            border-radius: 0;
+            background: transparent;
+            border: $border;
+            box-shadow: $boxShadow;
+            color: $white;
+            outline: none !important;
+          }
+
+          button {
+            @include pad(2, 0.5);
+            outline: none !important;
+            margin-left: $space;
+            font-family: $fontStack;
+            font-size: $fontSize;
+            border-radius: 0;
+            border: $border;
+            background: transparent;
+            //box-shadow: $boxShadow;
+            cursor: pointer;
+            color: $white;
+          }
+        }
+      }
+
+      .socmed {
+        a {
+          text-decoration: none;
+          color: $colourAlt;
+        }
       }
     }
   }
