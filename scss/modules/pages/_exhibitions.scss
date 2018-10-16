@@ -5,8 +5,8 @@
       padding-top: $space * 2;
       padding-bottom: $space * 4;
 
-      @media screen and (max-width: $tablet) {
-        width: 80%;
+      &:last-child {
+        padding-bottom: 0;
       }
 
       .dates {
@@ -28,6 +28,10 @@
         padding-left: $space * 2;
         border-left: $border;
         font-size: $fontLarge;
+      }
+
+      @media screen and (max-width: $tablet) {
+        width: 80%;
       }
     }
   }

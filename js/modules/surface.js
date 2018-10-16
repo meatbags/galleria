@@ -54,9 +54,17 @@ class Surface {
     } else {
       this.mouse = new Mouse(
         this.domElement,
-        (e) => { this.onMouseDown(this.processTouch(e)); },
-        (e) => { this.onMouseMove(this.processTouch(e)); },
-        (e) => { this.onMouseUp(this.processTouch(e)); },
+        (e) => {
+          e.preventDefault();
+          this.onMouseDown(this.processTouch(e));
+        },
+        (e) => {
+          this.onMouseMove(this.processTouch(e));
+        },
+        (e) => {
+          e.preventDefault();
+          this.onMouseUp(this.processTouch(e));
+        },
         this.isMobile
       );
     }

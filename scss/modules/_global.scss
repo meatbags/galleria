@@ -21,6 +21,7 @@ body {
 	background: $colourBackground;
 	z-index: $indexBody;
 	overflow-x: hidden;
+	touch-action: none
 }
 
 #background-grid {
