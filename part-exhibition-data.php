@@ -4,19 +4,38 @@
   $timeNow = time();
   $complete = false;
   $images = false;
+  $adminImages = false;
+  $loggedIn = is_user_logged_in();
+
   if ($query->have_posts()) {
     while ($query->have_posts()) {
       $query->the_post();
       if (!$complete) {
         $start = get_field('start_date');
         $end = get_field('end_date');
+
         if ($start && $end && strtotime($start) < $timeNow && strtotime($end) > $timeNow) {
           $complete = true;
           $images = get_field('images');
         }
+
+        // get admin gallery images
+        if ($loggedIn) {
+          $complete = false;
+          $p = get_field('preview_as_admin');
+          if ($p && in_array('preview', $p)) {
+            $adminImages = get_field('images');
+          }
+        }
       }
     }
   }
+
+  // set admin preview
+  if ($loggedIn && $adminImages) {
+    $images = $adminImages;
+  }
+
   wp_reset_postdata();
 ?>
 
