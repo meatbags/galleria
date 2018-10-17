@@ -3,7 +3,10 @@
   $query = new wp_Query(array("post_type" => "gallery", "posts_per_page" => -1, "order_by" => "menu_order"));
   $timeNow = time();
   $active = false;
+  $adminActive = false;
   $gallery = array();
+  $loggedIn = is_user_logged_in();
+
   if ($query->have_posts()) {
     while ($query->have_posts()) {
       $query->the_post();
@@ -17,8 +20,24 @@
           $active = $fields;
         }
       }
+
+      // get preview for admin
+      if ($loggedIn) {
+        $p = $fields['preview_as_admin'];
+        if ($p && in_array('preview', $fields['preview_as_admin'])) {
+          $adminActive = $fields;
+        }
+      }
     }
   }
+
+
+
+  // set admin preview
+  if ($loggedIn && $adminActive) {
+    $active = $adminActive;
+  }
+
   wp_reset_postdata();
 ?>
 
@@ -31,6 +50,9 @@
         </div>-->
         <div class='label'>Featured Exhibition</div>
         <br /><br />
+        <?php if ($loggedIn): ?>
+          <span style='color: red'>[viewing as admin]</span>
+        <?php endif; ?>
         <h1><?php echo $active['artist_name']; ?></h1>
         <?php if ($active['exhibition_title']): ?>
           <h2><?php echo $active['exhibition_title']; ?></h2>
