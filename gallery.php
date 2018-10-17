@@ -6,7 +6,7 @@
     </div>
 
     <div id='gallery-controls' class='pane-gallery_controls controls'>
-      <div class='controls__inner'>
+      <div class='controls__inner fix-safari'>
         <div class='block'>
           <div id='ctrl-L' data-dir='left' class='control'>
             <svg width="15" height="20">

@@ -251,7 +251,9 @@ a {
       padding-bottom: 4px; } }
   @media screen and (max-width: 500px) {
     .pane-gallery_controls .controls__inner {
-      padding-bottom: 48px; } }
+      padding-bottom: 16px; }
+      .pane-gallery_controls .controls__inner.safari {
+        padding-bottom: 68px; } }
 
 @keyframes wiggle-x {
   0% {

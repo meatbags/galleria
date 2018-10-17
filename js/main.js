@@ -3,7 +3,7 @@
  **/
 
 import { Scene, Renderer, Surface } from './modules';
-import { detectMobileOnly, detectMobileAndTablet, Menu } from './utils';
+import { detectMobileOnly, detectMobileSafari, detectMobileAndTablet, Menu } from './utils';
 
 class App {
   constructor() {
@@ -25,6 +25,11 @@ class App {
     window.addEventListener('orientationchange', () => { setTimeout(() => {
       this.resize();
     }, 500); });
+
+    // browser specific fixes
+    if (this.isMobileExclusive && detectMobileSafari()) {
+      document.querySelectorAll('.fix-safari').forEach(el => { el.classList.add('safari'); });
+    }
 
     // run
     this.loop();
