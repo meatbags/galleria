@@ -33,7 +33,7 @@ class FloorPlan {
       subtitle: this.domElement.querySelector('.subtitle'),
       desc: this.domElement.querySelector('.desc'),
       link: this.domElement.querySelector('.link'),
-      comments: this.domElement.querySelector('.comments .comments__inner .comment-list'),
+      //comments: this.domElement.querySelector('.comments .comments__inner .comment-list'),
       close: this.domElement.querySelector('.close-artwork-menu')
     };
     this.el.close.addEventListener('click', () => { this.closeArtworkMenu(); });
@@ -175,7 +175,6 @@ class FloorPlan {
       this.el.link.innerHTML = artwork.data.link ? `<a href='${artwork.data.link}' target='_blank'>Link</a>` : '';
 
       // comments
-
       //this.el.comments.innerHTML = '[comments here]';
     }
 

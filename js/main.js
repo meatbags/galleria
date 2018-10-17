@@ -9,21 +9,24 @@ class App {
   constructor() {
     this.active = false;
     this.isMobile = detectMobileAndTablet();
+    this.isMobileExclusive = detectMobileOnly();
     this.scene = new Scene();
     this.renderer = new Renderer(this, this.scene);
     this.surface = new Surface(this.scene, this.renderer, this.isMobile);
     this.menu = new Menu(this);
     this.maxDelta = 1 / 10;
 
-    // lock orientation
-    if (detectMobileOnly()) {
-      // TODO
-    }
-
+    // events
+    window.addEventListener('resize', () => {
+      if (!this.isMobileExclusive) {
+        this.resize();
+      }
+    });
     window.addEventListener('orientationchange', () => { setTimeout(() => {
       this.resize();
     }, 500); });
 
+    // run
     this.loop();
   }
 

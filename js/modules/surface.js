@@ -59,6 +59,7 @@ class Surface {
           this.onMouseDown(this.processTouch(e));
         },
         (e) => {
+          e.preventDefault();
           this.onMouseMove(this.processTouch(e));
         },
         (e) => {
@@ -68,7 +69,6 @@ class Surface {
         this.isMobile
       );
     }
-    window.addEventListener('resize', () => { this.resize(); });
 
     // 2d canvas
     this.canvas = new OverlayCanvas(this, this.domElement, renderer.renderer.domElement);
