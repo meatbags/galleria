@@ -49,7 +49,7 @@
 
   @media screen and (max-width: $mobile) {
     .controls__inner {
-      padding-bottom: $space;
+      padding-bottom: $space * 2;
     }
   }
 }
