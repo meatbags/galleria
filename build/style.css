@@ -251,7 +251,7 @@ a {
       padding-bottom: 4px; } }
   @media screen and (max-width: 500px) {
     .pane-gallery_controls .controls__inner {
-      padding-bottom: 88px; } }
+      padding-bottom: 8px; } }
 
 @keyframes wiggle-x {
   0% {
@@ -429,7 +429,8 @@ a {
     position: absolute;
     cursor: pointer;
     top: 0;
-    right: 0; }
+    right: 0;
+    text-transform: uppercase; }
     .gallery-menu-artwork .close-artwork-menu:hover {
       color: #ff89da;
       border-color: #ff89da; }
@@ -741,7 +742,9 @@ a {
     .nav .nav__inner {
       width: 100%; }
       .nav .nav__inner .list {
-        padding-left: 16px; } }
+        padding-left: 16px; }
+      .nav .nav__inner #nav-gallery {
+        background: rgba(0, 0, 0, 0.5); } }
 
 @keyframes flashing {
   0% {

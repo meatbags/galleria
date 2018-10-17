@@ -15,9 +15,6 @@ class Scene {
     this.camera = new Camera(this);
     this.lighting = new Lighting(this);
     this.map = new Map(this);
-
-    // events
-    window.addEventListener('resize', () => { this.resize(); });
   }
 
   resize() {
