@@ -5,6 +5,8 @@
   $complete = false;
   $images = false;
   $adminImages = false;
+  $installation = false;
+  $adminInstallation = false;
   $loggedIn = is_user_logged_in();
 
   if ($query->have_posts()) {
@@ -17,6 +19,7 @@
         if ($start && $end && strtotime($start) < $timeNow && strtotime($end) > $timeNow) {
           $complete = true;
           $images = get_field('images');
+          $installation = get_field('custom_exhibition_installation');
         }
 
         // get admin gallery images
@@ -25,6 +28,7 @@
           $p = get_field('preview_as_admin');
           if ($p && in_array('preview', $p)) {
             $adminImages = get_field('images');
+            $adminInstallation = get_field('custom_exhibition_installation');
           }
         }
       }
@@ -34,6 +38,7 @@
   // set admin preview
   if ($loggedIn && $adminImages) {
     $images = $adminImages;
+    $installation = $adminInstallation;
   }
 
   wp_reset_postdata();
@@ -59,3 +64,7 @@
     endforeach;
   endif; ?>
 </div>
+
+<script type='text/javascript'>
+  var CUSTOM_EXHIBITION_INSTALLATION = '<?php echo $installation; ?>';
+</script>

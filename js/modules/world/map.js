@@ -1,5 +1,5 @@
 /**
- * Load models.
+ ** Handle models.
  **/
 
 import { Materials } from './materials';
@@ -13,6 +13,7 @@ class Map {
     this.materials = new Materials('assets');
     this.loader = new Loader('assets');
     this.loadScene();
+    this.loadInstallation();
   }
 
   loadScene() {
@@ -36,7 +37,7 @@ class Map {
     // visual map
     this.loader.loadFBX('map').then((map) => {
       this.scene.add(map);
-      this.conformGroups(map);
+      this.materials.conformGroup(map);
       this.checkLoaded();
     }, (err) => { console.log(err); });
 
@@ -46,14 +47,82 @@ class Map {
       this.checkLoaded();
     }, (err) => { console.log(err); });
 
-    // peripherals (doesn't affect loading)
+    // peripherals props
     this.loader.loadFBX('props').then((map) => {
       this.scene.add(map);
-      this.conformGroups(map);
+      this.materials.conformGroup(map);
     });
 
-    // revolving display
-    this.makeBox();
+    // neon ceiling lighting
+    const size = 0.1;
+    const rodSize = 4;
+    for (var x=-16; x<=16; x+=8) {
+      const y = 19;
+      const mesh = new THREE.Mesh(new THREE.BoxBufferGeometry(size, size, rodSize), this.materials.mat.neon);
+      const holster = new THREE.Mesh(new THREE.BoxBufferGeometry(size, size * 4, rodSize), this.materials.mat.dark);
+      const rod1 = new THREE.Mesh(new THREE.BoxBufferGeometry(size, 1, size), this.materials.mat.dark);
+      const rod2 = rod1.clone();
+      mesh.position.set(x, y, 6);
+      holster.position.set(x, y + size * 2.5, 6);
+      rod1.position.set(x, y + size * 4.5 + 0.5, 6 + rodSize / 3);
+      rod2.position.set(x, y + size * 4.5 + 0.5, 6 - rodSize / 3);
+      rod1.rotation.y = Math.PI / 4;
+      rod2.rotation.y = Math.PI / 4;
+      this.scene.add(mesh, holster, rod1, rod2);
+    }
+  }
+
+  loadInstallation() {
+    // load exhibition-specific installations
+    if (CUSTOM_EXHIBITION_INSTALLATION === 'JACK_DE_LACY') {
+      this.installation = [{
+          src: 'jack_de_lacy/sculpture_1',
+          scale: 0.6,
+          rot: Math.PI / 32,
+          orientZ: Math.PI / 4,
+        }, {
+          src: 'jack_de_lacy/sculpture_2',
+          scale: 0.5,
+          rot: -Math.PI / 32,
+          orientZ: 0,
+        }, {
+          src: 'jack_de_lacy/sculpture_3',
+          scale: 0.5,
+          rot: Math.PI / 32,
+          orientZ: 0,
+        }
+      ];
+      for (var i=0; i<this.installation.length; ++i) {
+        const index = i;
+        this.loader.loadFBX(this.installation[index].src).then((obj) => {
+          const e = this.installation[index];
+          obj.children.forEach(child => {
+            this.materials.conformMaterial(child.material);
+            child.material = this.materials.getCustomMaterial(child.material);
+            if (index == 2) {
+              child.material.side = THREE.DoubleSide;
+            }
+            child.material.envMapIntensity = 0.25;
+          });
+          obj.scale.multiplyScalar(e.scale);
+          obj.rotation.z = e.orientZ;
+          obj.position.set(-12 + index * 12, 14, 6);
+          this.scene.add(obj);
+          e.object = obj;
+          e.active = true;
+        }, (err) => { console.log(err); });
+      }
+      this.customExhibitionActive = true;
+      this.updateCustomExhibition = (delta) => {
+        this.installation.forEach(obj => {
+          if (obj.active) {
+            obj.object.rotation.y += obj.rot * delta;
+          }
+        });
+      }
+    } else {
+      this.customExhibitionActive = false;
+    }
   }
 
   addCollisionMap(obj) {
@@ -65,57 +134,11 @@ class Map {
     }
   }
 
-  conformGroups(obj) {
-    // recursively conform object groups
-    if (obj.type === 'Mesh') {
-      this.materials.conform(obj.material);
-    } else if (obj.children && obj.children.length) {
-      obj.children.forEach(child => { this.conformGroups(child); });
-    }
-  }
-
-  makeBox() {
-    /*
-    this.box = new THREE.Group();
-    const w = 2.0;
-    const r = 0.1;
-    const o = w/2 - r/2;
-    const arr = [
-      [w, r, r, 0, o, o], [w, r, r, 0, o, -o], [w, r, r, 0, -o, o], [w, r, r, 0, -o, -o],
-      [r, w, r, o, 0, o], [r, w, r, o, 0, -o], [r, w, r, -o, 0, o], [r, w, r, -o, 0, -o],
-      [r, r, w, o, o, 0], [r, r, w, -o, o, 0], [r, r, w, -o, -o, 0], [r, r, w, o, -o, 0]
-    ];
-    arr.forEach(e => {
-      const mesh = new THREE.Mesh(new THREE.BoxBufferGeometry(e[0], e[1], e[2]), this.materials.mat.neon);
-      mesh.position.set(e[3], e[4], e[5]);
-      this.box.add(mesh);
-    });
-    this.box.position.set(0, 17, 19.5);
-    this.scene.add(this.box);
-    */
-
-    // neon lights
-    const size = 0.1;
-    const rodSize = 4;
-    for (var x=-16; x<=16; x+=8) {
-      const y = 19;
-      const mesh = new THREE.Mesh(new THREE.BoxBufferGeometry(size, size, rodSize), this.materials.mat.neon);
-      const holster = new THREE.Mesh(new THREE.BoxBufferGeometry(size, size * 4, rodSize), this.materials.mat.dark);
-      const rod1 = new THREE.Mesh(new THREE.BoxBufferGeometry(size, 1, size), this.materials.mat.dark);
-      const rod2 = rod1.clone();
-      mesh.position.set(x, y, 6);
-      holster.position.set(x, y + size*2.5, 6);
-      rod1.position.set(x, y + size*4.5 + 0.5, 6 + rodSize / 3);
-      rod2.position.set(x, y + size*4.5 + 0.5, 6 - rodSize / 3);
-      rod1.rotation.y = Math.PI / 4;
-      rod2.rotation.y = Math.PI / 4;
-      this.scene.add(mesh, holster, rod1, rod2);
-    }
-  }
-
   update(delta) {
     this.materials.update(delta);
-    //this.box.rotation.y += delta * Math.PI / 12;
+    if (this.customExhibitionActive) {
+      this.updateCustomExhibition(delta);
+    }
   }
 }
 
