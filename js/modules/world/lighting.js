@@ -1,5 +1,5 @@
 /**
- * Load lighting.
+ ** Handle all lighting.
  **/
 
 import '../../lib/glsl/SkyShader.js';
@@ -29,13 +29,13 @@ class Lighting {
     this.lights.directional.a = new THREE.DirectionalLight(0xffffff, 0.5);
     this.lights.hemisphere.a = new THREE.HemisphereLight(0x0, 0x0000ff, 0.25);
 
-    // light placement
+    // place lights
     this.lights.point.a.position.set(-8, 10, 14);
     this.lights.point.b.position.set(0, 10, -4);
     this.lights.point.c.position.set(26, 10, 6);
     this.lights.directional.a.position.set(-1, 1.5, -1);
 
-    // add to scene
+    // add
     Object.keys(this.lights).forEach(type => {
       Object.keys(this.lights[type]).forEach(light => {
         this.scene.add(this.lights[type][light]);

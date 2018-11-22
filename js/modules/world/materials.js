@@ -31,7 +31,18 @@ class Materials {
     this.loaded = {};
   }
 
-  conform(mat) {
+  conformGroup(obj) {
+    // recursively conform object groups
+    if (obj.type === 'Mesh') {
+      this.conformMaterial(obj.material);
+    } else if (obj.children && obj.children.length) {
+      obj.children.forEach(child => {
+        this.conformGroup(child);
+      });
+    }
+  }
+
+  conformMaterial(mat) {
     if (!this.loaded[mat.name]) {
       this.loaded[mat.name] = mat;
     }
@@ -65,9 +76,8 @@ class Materials {
     }
   }
 
-  getCustomMaterial(type) {
-    //if (type == 'warp') {
-    const mat = this.mat.metal.clone();
+  getCustomMaterial(matSource) {
+    const mat = matSource.clone();
     mat.onBeforeCompile = (shader) => {
       shader.vertexShader = `uniform float time;\n${shader.vertexShader}`;
       const beginVertex = `
@@ -75,11 +85,11 @@ class Materials {
         float theta = sin(time * 0.1 + mvp.x / 2.0);
         float c = cos(theta);
         float s = sin(theta);
-        float off = 1.0;// + 0.2 * sin(time + position.x * 200.0);
+        float off = 1.0 * sin(time + position.x * 200.0);
         mat3 roty = mat3(c, 0, s, 0, 1, 0, -s, 0, c);
-        //mat3 sy = mat3(s, 0, 0, 0, 1, 0, 0, 0, 1);
-        mat4 m = mat4(1, 0, 0, 0, 0, 1, 0, s * off * 2.0, 0, 0, 1, s * off, 0, 0, 0, 1);
-        vec4 t = vec4(position, 1.0) * m;
+        //mat4 m = mat4(1, 0, 0, 0, 0, 1, 0, s * off * 2.0, 0, 0, 1, s * off, 0, 0, 0, 1);
+        vec3 p = position;
+        vec4 t = vec4(p.x + 0.25 * sin(time + p.y), p.y, p.z + 0.25 * cos(time + p.y), 1.0);
         vec3 transformed = vec3(t.x, t.y, t.z);
         vNormal = vNormal * roty;
       `;
@@ -88,7 +98,7 @@ class Materials {
       // hook uniforms
       shader.uniforms.time = this.uniforms.time;
     };
-    mat.roughness = 0.5;
+    //mat.roughness = 0.5;
     return mat;
     //const index = shader.vertexShader.indexOf('#include <common>')''
     //shader.vertexShader = shader.vertexShader.slice(0, index) + '//funcs here' + shader.vertexShader.slice(index);

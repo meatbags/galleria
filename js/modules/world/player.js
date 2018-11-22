@@ -13,8 +13,8 @@ class Player {
     // dev
     this.isDev = window.location.host.indexOf('localhost') != -1;
     if (this.isDev) {
-      this.position = new THREE.Vector3(-13, 0.5, 10.5);
-      this.rotation = new THREE.Vector2(Math.PI, 0);
+      this.position = new THREE.Vector3(-12, 8, -6);
+      this.rotation = new THREE.Vector2(0, 0);
     }
 
     this.motion = new THREE.Vector3();
@@ -40,8 +40,8 @@ class Player {
     };
 
     // physical attributes
-    this.speed = 6; //5
-    this.rotationSpeed = Math.PI * 0.5; //0.5
+    this.speed = 6;
+    this.rotationSpeed = Math.PI * 0.5;
     this.jump = 8;
     this.jumpSpeedMultiplier = 0.25;
     this.height = 3;
