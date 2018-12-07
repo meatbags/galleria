@@ -1,5 +1,5 @@
 /**
- * 3D scene handler.
+ ** Logic handler.
  **/
 
 import { Camera, Lighting, Player, Map } from './world';

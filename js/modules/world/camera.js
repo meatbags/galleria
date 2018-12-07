@@ -1,5 +1,5 @@
 /**
- ** Perspective first-person camera which tracks player motion.
+ ** Perspective first-person camera which tracks player.
  **/
 
 class Camera {

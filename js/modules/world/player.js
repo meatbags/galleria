@@ -1,5 +1,5 @@
 /**
- * Handles user input and moves player on collision map.
+ ** Handle user input and move/ rotate player position.
  **/
 
 import { Blend, MinAngleBetween, TwoPI } from '../maths';

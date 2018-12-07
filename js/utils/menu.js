@@ -1,5 +1,5 @@
 /**
- * Hook up menus.
+ ** Hook up nav items and menus.
  **/
 
 class Menu {

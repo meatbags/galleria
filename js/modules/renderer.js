@@ -1,5 +1,5 @@
 /**
- * Webgl renderer.
+ ** Webgl/ three.js renderer.
  **/
 
 import '../lib/glsl';

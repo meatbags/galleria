@@ -1,5 +1,5 @@
 /**
- * Render HUD/ 2d overlay.
+ ** Render the 2d heads-up display.
  **/
 
 class OverlayCanvas {
