@@ -32,6 +32,9 @@ class Artwork {
   }
 
   init(scene, p, v) {
+    this.sceneReference = scene;
+
+    // create meshes
     const planeOffset = this.thickness / 2 + 0.01;
     this.board = new THREE.Mesh(new THREE.BoxBufferGeometry(1, 1, 1), new THREE.MeshStandardMaterial({color: 0x0, roughness: 0.75, metalness: 0}));
     this.plane = new THREE.Mesh(new THREE.PlaneBufferGeometry(1, 1), new THREE.MeshStandardMaterial({roughness: 1.0, metalness: 0.5}));
@@ -144,6 +147,12 @@ class Artwork {
 
   draw(ctx) {
     this.node.draw(ctx);
+  }
+
+  destroy() {
+    // remove artwork from scene
+    this.sceneReference.remove(this.plane);
+    this.sceneReference.remove(this.board);
   }
 }
 

@@ -43,28 +43,3 @@
 
   wp_reset_postdata();
 ?>
-
-<div id='artworks' style='display:none;'>
-<?php
-  // image data bank
-  if ($images):
-    foreach ($images as $img): ?>
-      <div class='image'
-        data-title='<?php echo $img['title']; ?>'
-        data-url='<?php echo $img['image_file']['sizes']['large']; ?>'
-        data-subtitle='<?php echo $img['sub_title']; ?>'
-        data-desc='<?php echo $img['description']; ?>'
-        data-hoff='<?php echo $img['horizontal_offset']; ?>'
-        data-voff='<?php echo $img['vertical_offset'] ?>'
-        data-width='<?php echo $img['width']; ?>'
-        data-link='<?php echo $img['link']; ?>'
-        data-location='<?php echo $img['location']; ?>'>
-      </div>
-    <?php
-    endforeach;
-  endif; ?>
-</div>
-
-<script type='text/javascript'>
-  var CUSTOM_EXHIBITION_INSTALLATION = '<?php echo $installation; ?>';
-</script>
