@@ -1,3 +1,16 @@
+.section-featured {
+  &.clickable {
+    cursor: pointer;
+
+    &:hover {
+      h1, p {
+        color: $colourAlt;
+      }
+    }
+  }
+}
+
+
 .section-archive {
   .list {
     .archive-item {

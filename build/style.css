@@ -985,6 +985,11 @@ a {
       margin-top: 32px;
       margin-bottom: 96px; } }
 
+.section-featured.clickable {
+  cursor: pointer; }
+  .section-featured.clickable:hover h1, .section-featured.clickable:hover p {
+    color: #ff89da; }
+
 .section-archive .list .archive-item {
   cursor: pointer; }
   .section-archive .list .archive-item:hover {

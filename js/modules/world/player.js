@@ -7,14 +7,14 @@ import { Blend, MinAngleBetween, TwoPI } from '../maths';
 class Player {
   constructor(root) {
     this.root = root;
+    this.isDev = window.location.host.indexOf('localhost') != -1;
     this.position = new THREE.Vector3(-24, 1, 16);
     this.rotation = new THREE.Vector2(Math.PI * 0.55, Math.PI * -0.05);
 
     // dev
-    this.isDev = window.location.host.indexOf('localhost') != -1;
     if (this.isDev) {
-      this.position = new THREE.Vector3(-12, 8, -6);
-      this.rotation = new THREE.Vector2(0, 0);
+      //this.position = new THREE.Vector3(-12, 8, -6);
+      //this.rotation = new THREE.Vector2(0, 0);
     }
 
     this.motion = new THREE.Vector3();
@@ -23,6 +23,8 @@ class Player {
       rotation: this.rotation.clone(),
       motion: this.motion.clone()
     };
+
+    // physics
     this.collider = new Collider.Collider(this.target.position, this.motion);
     this.collider.setPhysics({gravity: 20});
 
@@ -64,6 +66,17 @@ class Player {
     this.light.position.y = this.height + 0.25;
     this.group.add(this.light);
     this.root.scene.add(this.group);
+  }
+
+  resetPosition() {
+    this.position.set(-24, 1, 16);
+    this.rotation.set(Math.PI * 0.55, Math.PI * -0.05);
+    this.target.position.copy(this.position);
+    this.target.rotation.copy(this.rotation);
+    this.automove.active.position = true;
+    this.automove.active.rotation = true;
+    this.automove.position.copy(this.position);
+    this.automove.rotation.set(Math.PI * 0.55, Math.PI * 0.03);
   }
 
   move(delta) {
