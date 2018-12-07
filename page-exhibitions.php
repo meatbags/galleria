@@ -117,7 +117,12 @@
         </div>
       </div>
     <?php endif; ?>
+  </div>
+  <?php get_template_part('page-footer'); ?>
+</div>
 
+<div id='page-archive' class='page'>
+  <div class='page__inner'>
     <?php if (count($archive) > 0): ?>
       <div class='section section-archive'>
         <div class='label'>Archive</div>

@@ -2,9 +2,9 @@
   <div class='nav__inner'>
     <div id='nav-content' class='list'>
       <div data-active='#page-exhibitions' class='item active'><span class='mobile-hide'>Exhibitions</span><span class='mobile-show'>Exhibit</span></div>
+      <div data-active='#page-archive' class='item'>Archive</div>
       <div data-active='#page-about' class='item'>About</div>
-      <div data-active='#page-submissions' class='item'><span class='mobile-hide'>Submissions</span><span class='mobile-show'>Submit</span></div>
-      <div data-active='#page-contact' class='item'>Contact</div>
+      <div data-active='#page-contact' class='item'><span class='mobile-hide'>Submissions</span><span class='mobile-show'>Contact</span></div>
     </div>
     <div id='nav-gallery' class='list'>
       <div id='nav-item-gallery' class='item active close-gallery-menu'>The Gallery</div>

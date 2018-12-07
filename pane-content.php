@@ -4,8 +4,6 @@
       <?php
         get_template_part('page-exhibitions');
         get_template_part('page-about');
-        get_template_part('page-archive');
-        get_template_part('page-submissions');
         get_template_part('page-contact');
       ?>
     </div>
