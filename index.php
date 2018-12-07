@@ -8,7 +8,6 @@
   get_template_part('nav');
   get_template_part('pane-content');
   get_template_part('gallery');
-  get_template_part('part-exhibition-data');
   get_template_part('footer');
 ?>
 

@@ -71,6 +71,30 @@
           </div>
         <?php endif; ?>
       </div>
+
+      <!-- active exhibition data -->
+      <div class='exhibition-data active-exhibition-data' style='display:none'>
+        <?php if ($active['images']):
+          foreach ($active['images'] as $img): ?>
+          <div class='image'
+            data-title='<?php echo $img['title']; ?>'
+            data-url='<?php echo $img['image_file']['sizes']['large']; ?>'
+            data-subtitle='<?php echo $img['sub_title']; ?>'
+            data-desc='<?php echo $img['description']; ?>'
+            data-hoff='<?php echo $img['horizontal_offset']; ?>'
+            data-voff='<?php echo $img['vertical_offset'] ?>'
+            data-width='<?php echo $img['width']; ?>'
+            data-link='<?php echo $img['link']; ?>'
+            data-location='<?php echo $img['location']; ?>'>
+          </div>
+          <?php endforeach;
+        endif;
+        if ($active['custom_exhibition_installation']): ?>
+          <div class='custom-exhibition-installation'
+            data-value = '<?php echo $active['custom_exhibition_installation'] ?>'>
+          </div>
+        <?php endif ?>
+      </div>
     <?php endif; ?>
 
     <?php if (count($upcoming) > 0): ?>
@@ -109,6 +133,30 @@
                   <span class='heading'><?php echo $g['exhibition_title']; ?></span>
                 <?php endif; ?>
                 <?php echo $g['artist_short_description']; ?>
+              </div>
+
+              <!-- archival exhibition data -->
+              <div class='exhibition-data' style='display:none'>
+                <?php if ($g['images']):
+                  foreach ($g['images'] as $img): ?>
+                  <div class='image'
+                    data-title='<?php echo $img['title']; ?>'
+                    data-url='<?php echo $img['image_file']['sizes']['large']; ?>'
+                    data-subtitle='<?php echo $img['sub_title']; ?>'
+                    data-desc='<?php echo $img['description']; ?>'
+                    data-hoff='<?php echo $img['horizontal_offset']; ?>'
+                    data-voff='<?php echo $img['vertical_offset'] ?>'
+                    data-width='<?php echo $img['width']; ?>'
+                    data-link='<?php echo $img['link']; ?>'
+                    data-location='<?php echo $img['location']; ?>'>
+                  </div>
+                  <?php endforeach;
+                endif;
+                if ($g['custom_exhibition_installation']): ?>
+                  <div class='custom-exhibition-installation'
+                    data-value = '<?php echo $g['custom_exhibition_installation'] ?>'>
+                  </div>
+                <?php endif ?>
               </div>
             </div>
           <?php endforeach; ?>

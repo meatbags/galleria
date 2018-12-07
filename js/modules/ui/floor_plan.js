@@ -15,15 +15,10 @@ class FloorPlan {
     this.centre = this.root.centre;
     this.cameraDirection = new THREE.Vector3();
     this.artworkActiveRadius = 10;
-    this.artworks = [];
     this.isDev = window.location.host.indexOf('localhost') != -1;
 
     // get artworks
-    var count = 0;
-    document.querySelectorAll('#artworks .image').forEach(e => {
-      this.artworks.push(new Artwork(this, ++count, e, this.isMobile));
-    });
-    this.placeArtworks();
+    this.reloadExhibition();
 
     // dom target
     this.domElement = document.querySelector('#artwork-target');
@@ -37,6 +32,22 @@ class FloorPlan {
       close: this.domElement.querySelector('.close-artwork-menu')
     };
     this.el.close.addEventListener('click', () => { this.closeArtworkMenu(); });
+  }
+
+  reloadExhibition() {
+    // remove artworks
+    if (this.artworks) {
+      this.artworks.forEach(e => { e.destroy(); });
+    }
+
+    // create new artworks from data
+    this.domTarget = '.active-exhibition-data';
+    this.artworks = [];
+    var count = 0;
+    document.querySelectorAll(`${this.domTarget} .image`).forEach(e => {
+      this.artworks.push(new Artwork(this, ++count, e, this.isMobile));
+    });
+    this.placeArtworks();
   }
 
   placeArtworks() {

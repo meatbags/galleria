@@ -3,7 +3,7 @@
  **/
 
 import { Scene, Renderer, Surface } from './modules';
-import { detectMobileOnly, detectMobileSafari, detectMobileAndTablet, Menu } from './utils';
+import { detectMobileOnly, detectMobileSafari, detectMobileAndTablet, Menu, Archive } from './utils';
 
 class App {
   constructor() {
@@ -14,8 +14,9 @@ class App {
     this.renderer = new Renderer(this, this.scene);
     this.surface = new Surface(this.scene, this.renderer, this.isMobile);
     this.menu = new Menu(this);
+    this.archive = new Archive(this);
     this.maxDelta = 1 / 10;
-    
+
     // events
     window.addEventListener('resize', () => {
       if (!this.isMobileExclusive) {
