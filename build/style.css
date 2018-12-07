@@ -990,23 +990,18 @@ a {
   .section-featured.clickable:hover h1, .section-featured.clickable:hover p {
     color: #ff89da; }
 
-.section-archive .list .archive-item {
-  cursor: pointer; }
-  .section-archive .list .archive-item:hover {
-    color: #ff89da; }
-
-.section-upcoming .list .item, .section-archive .list .item {
+.section-upcoming .list .item {
   width: 66.66%;
   padding-top: 16px;
   padding-bottom: 32px; }
-  .section-upcoming .list .item:last-child, .section-archive .list .item:last-child {
+  .section-upcoming .list .item:last-child {
     padding-bottom: 0; }
-  .section-upcoming .list .item .dates, .section-archive .list .item .dates {
+  .section-upcoming .list .item .dates {
     font-size: 20px;
     margin-bottom: 0; }
-  .section-upcoming .list .item h1, .section-archive .list .item h1 {
+  .section-upcoming .list .item h1 {
     padding: 0; }
-  .section-upcoming .list .item .desc, .section-archive .list .item .desc {
+  .section-upcoming .list .item .desc {
     margin-left: 0px;
     margin-right: 0px;
     margin-top: 8px;
@@ -1014,19 +1009,41 @@ a {
     padding-left: 16px;
     border-left: 1px solid #eee;
     font-size: 20px; }
-    .section-upcoming .list .item .desc .heading, .section-archive .list .item .desc .heading {
+    .section-upcoming .list .item .desc .heading {
       text-decoration: underline; }
   @media screen and (max-width: 1100px) {
-    .section-upcoming .list .item, .section-archive .list .item {
+    .section-upcoming .list .item {
+      width: 80%; } }
+
+.section-archive .list .item {
+  width: 66.66%;
+  padding-top: 16px;
+  padding-bottom: 32px; }
+  .section-archive .list .item.archive-item {
+    cursor: pointer; }
+    .section-archive .list .item.archive-item:hover {
+      color: #ff89da; }
+  .section-archive .list .item:last-child {
+    padding-bottom: 0; }
+  .section-archive .list .item .dates {
+    font-size: 20px;
+    margin-bottom: 0; }
+  .section-archive .list .item h1 {
+    padding: 0; }
+  .section-archive .list .item .desc {
+    margin-left: 0px;
+    margin-right: 0px;
+    margin-top: 8px;
+    margin-bottom: 8px;
+    padding-left: 16px;
+    border-left: 1px solid #eee;
+    font-size: 20px; }
+    .section-archive .list .item .desc .heading {
+      text-decoration: underline; }
+  @media screen and (max-width: 1100px) {
+    .section-archive .list .item {
       width: 80%; } }
 
 .page-contact .page__inner .section .contact-text ul {
-  color: #ff89da; }
-
-.page-submissions .page__inner .section .submissions-text a {
-  color: #ff89da;
-  display: block; }
-
-.page-submissions .page__inner .section .submissions-text ul {
   color: #ff89da; }
 

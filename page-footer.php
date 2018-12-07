@@ -4,6 +4,7 @@
       <div class='socmed'>
         <a href='https://www.instagram.com/closed_on_monday_gallery/' target='_blank'> insta </a>/
         <a href='mailto:closedonmondaygallery@gmail.com'> email </a>/
+        <a href='https://www.facebook.com/closedonmondaygallery/' target='_blank'> fb </a>/
         <a href='https://github.com/meatbags/galleria' target='_blank'> github </a>
       </div>
       <div class='newsletter'>
