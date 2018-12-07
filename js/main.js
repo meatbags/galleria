@@ -15,7 +15,7 @@ class App {
     this.surface = new Surface(this.scene, this.renderer, this.isMobile);
     this.menu = new Menu(this);
     this.maxDelta = 1 / 10;
-
+    
     // events
     window.addEventListener('resize', () => {
       if (!this.isMobileExclusive) {

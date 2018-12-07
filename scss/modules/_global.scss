@@ -39,6 +39,16 @@ body {
 	}
 }
 
+.admin-notification {
+	z-index: $indexAdmin;
+	color: $colourAlt;
+	position: fixed;
+	top: 0;
+	left: 0;
+	font-size: $fontSmall;
+	@include pad(1, 1);
+}
+
 a {
 	color: inherit;
 }

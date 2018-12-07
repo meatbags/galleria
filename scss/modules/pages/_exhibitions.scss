@@ -1,4 +1,16 @@
-.section-upcoming {
+.section-archive {
+  .list {
+    .archive-item {
+      cursor: pointer;
+
+      &:hover {
+        color: $colourAlt;
+      }
+    }
+  }
+}
+
+.section-upcoming, .section-archive {
   .list {
     .item {
       width: 66.66%;
