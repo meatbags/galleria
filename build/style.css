@@ -94,6 +94,18 @@ body {
   #background-grid.active {
     background-color: #2c272b; }
 
+.admin-notification {
+  z-index: 20;
+  color: #ff89da;
+  position: fixed;
+  top: 0;
+  left: 0;
+  font-size: 12px;
+  padding-left: 8px;
+  padding-right: 8px;
+  padding-top: 8px;
+  padding-bottom: 8px; }
+
 a {
   color: inherit; }
 
@@ -973,18 +985,23 @@ a {
       margin-top: 32px;
       margin-bottom: 96px; } }
 
-.section-upcoming .list .item {
+.section-archive .list .archive-item {
+  cursor: pointer; }
+  .section-archive .list .archive-item:hover {
+    color: #ff89da; }
+
+.section-upcoming .list .item, .section-archive .list .item {
   width: 66.66%;
   padding-top: 16px;
   padding-bottom: 32px; }
-  .section-upcoming .list .item:last-child {
+  .section-upcoming .list .item:last-child, .section-archive .list .item:last-child {
     padding-bottom: 0; }
-  .section-upcoming .list .item .dates {
+  .section-upcoming .list .item .dates, .section-archive .list .item .dates {
     font-size: 20px;
     margin-bottom: 0; }
-  .section-upcoming .list .item h1 {
+  .section-upcoming .list .item h1, .section-archive .list .item h1 {
     padding: 0; }
-  .section-upcoming .list .item .desc {
+  .section-upcoming .list .item .desc, .section-archive .list .item .desc {
     margin-left: 0px;
     margin-right: 0px;
     margin-top: 8px;
@@ -992,17 +1009,16 @@ a {
     padding-left: 16px;
     border-left: 1px solid #eee;
     font-size: 20px; }
-    .section-upcoming .list .item .desc .heading {
+    .section-upcoming .list .item .desc .heading, .section-archive .list .item .desc .heading {
       text-decoration: underline; }
   @media screen and (max-width: 1100px) {
-    .section-upcoming .list .item {
+    .section-upcoming .list .item, .section-archive .list .item {
       width: 80%; } }
 
 .page-contact .page__inner .section .contact-text ul {
   color: #ff89da; }
 
 .page-submissions .page__inner .section .submissions-text a {
-  font-size: 90%;
   color: #ff89da;
   display: block; }
 

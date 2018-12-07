@@ -4,7 +4,8 @@
   $timeNow = time();
   $active = false;
   $adminActive = false;
-  $gallery = array();
+  $upcoming = array();
+  $archive = array();
   $loggedIn = is_user_logged_in();
 
   if ($query->have_posts()) {
@@ -12,13 +13,15 @@
       $query->the_post();
       $fields = get_fields();
       $start = $fields['start_date'];
+      $end = $fields['end_date'];
+
+      // add gallery to upcoming, active, or archive
       if ($start && strtotime($start) > $timeNow) {
-        $gallery[get_the_ID()] = $fields;
-      } else {
-        $end = $fields['end_date'];
-        if ($start && $end && strtotime($start) < $timeNow && strtotime($end) > $timeNow) {
-          $active = $fields;
-        }
+        $upcoming[get_the_ID()] = $fields;
+      } else if ($start && $end && strtotime($start) < $timeNow && strtotime($end) > $timeNow) {
+        $active = $fields;
+      } else if ($start && $end && strtotime($end) < $timeNow) {
+        $archive[get_the_ID()] = $fields;
       }
 
       // get preview for admin
@@ -30,8 +33,6 @@
       }
     }
   }
-
-
 
   // set admin preview
   if ($loggedIn && $adminActive) {
@@ -50,9 +51,6 @@
         </div>-->
         <div class='label'>Featured Exhibition</div>
         <br /><br />
-        <?php if ($loggedIn): ?>
-          <span style='color: red'>[viewing as admin]</span>
-        <?php endif; ?>
         <h1><?php echo $active['artist_name']; ?></h1>
         <?php if ($active['exhibition_title']): ?>
           <h2><?php echo $active['exhibition_title']; ?></h2>
@@ -75,12 +73,12 @@
       </div>
     <?php endif; ?>
 
-    <?php if (count($gallery) > 0): ?>
+    <?php if (count($upcoming) > 0): ?>
       <div class='section section-upcoming'>
         <div class='label'>Coming Up</div>
         <br /><br />
         <div class='list'>
-          <?php foreach ($gallery as $g): ?>
+          <?php foreach ($upcoming as $g): ?>
             <div class='item'>
               <div class='dates'><?php echo $g['start_date']; ?> &rarr; <?php echo $g['end_date']; ?></div>
               <div class='desc'>
@@ -96,12 +94,27 @@
       </div>
     <?php endif; ?>
 
-    <div class='section'>
-      <div class='label'>Archive</div>
-      <br /><br /><br />
-      <h2>Exhibitions Archive</h2>
-      <p class='border'>Coming soon -- the archive will be a showcase of previous Closed On Monday exhibitions.</p>
-    </div>
+    <?php if (count($archive) > 0): ?>
+      <div class='section section-archive'>
+        <div class='label'>Archive</div>
+        <br /><br />
+        <h2>View Previous Exhibitions</h2>
+        <div class='list'>
+          <?php foreach ($archive as $g): ?>
+            <div class='item archive-item'>
+              <div class='dates'>From <?php echo $g['start_date']; ?> &rarr; <?php echo $g['end_date']; ?></div>
+              <div class='desc'>
+                <h1><?php echo $g['artist_name']; ?></h1>
+                <?php if ($g['exhibition_title']) : ?>
+                  <span class='heading'><?php echo $g['exhibition_title']; ?></span>
+                <?php endif; ?>
+                <?php echo $g['artist_short_description']; ?>
+              </div>
+            </div>
+          <?php endforeach; ?>
+        </div>
+      </div>
+    <?php endif; ?>
   </div>
   <?php get_template_part('page-footer'); ?>
 </div>

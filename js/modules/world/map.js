@@ -53,6 +53,24 @@ class Map {
       this.materials.conformGroup(map);
     });
 
+    this.treeParse = (obj) => {
+      if (obj.type == "Mesh") {
+        if (obj.material.transparent) {
+          console.log(obj.material);
+          obj.material.color.set(0xffffff);
+          obj.material.side = THREE.DoubleSide;
+          obj.material.flatShading = true;
+        }
+      } else if (obj.children) {
+        obj.children.forEach(child => { this.treeParse(child); });
+      }
+    };
+    this.loader.loadFBX('tree/tree2').then(tree => {
+      console.log(tree);
+      this.treeParse(tree);
+      this.scene.add(tree);
+    });
+
     // neon ceiling lighting
     const size = 0.1;
     const rodSize = 4;
