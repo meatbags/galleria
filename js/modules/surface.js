@@ -1,5 +1,5 @@
 /**
- * Control surface and player interface.
+ ** Control surface and player interface. Handles MKB events.
  **/
 
 import { Mouse, Keyboard, OverlayCanvas, FloorPlan } from './ui';

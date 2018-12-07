@@ -1,5 +1,5 @@
 /**
- * App entry point.
+ ** Gallery entry point and main app loop.
  **/
 
 import { Scene, Renderer, Surface } from './modules';
@@ -15,31 +15,28 @@ class App {
     this.surface = new Surface(this.scene, this.renderer, this.isMobile);
     this.menu = new Menu(this);
     this.archive = new Archive(this);
-    this.maxDelta = 1 / 10;
+    this.maxTimeDelta = 1 / 10;
 
     // events
-    window.addEventListener('resize', () => {
-      if (!this.isMobileExclusive) {
-        this.resize();
-      }
-    });
+    window.addEventListener('resize', () => { this.resize(); });
     window.addEventListener('orientationchange', () => { setTimeout(() => {
       this.resize();
     }, 500); });
 
-    // browser specific fixes
+    // fix browser quirks
     if (this.isMobileExclusive && detectMobileSafari()) {
       document.querySelectorAll('.fix-safari').forEach(el => { el.classList.add('safari'); });
     }
 
-    // run
     this.loop();
   }
 
   resize() {
-    this.renderer.resize();
-    this.scene.resize();
-    this.surface.resize();
+    if (!this.isMobileExclusive) {
+      this.renderer.resize();
+      this.scene.resize();
+      this.surface.resize();
+    }
   }
 
   deactivate() {
@@ -55,7 +52,7 @@ class App {
     requestAnimationFrame(() => { this.loop(); });
     if (this.active) {
       const t = performance.now();
-      const delta = Math.min(this.maxDelta, (t - this.now) / 1000);
+      const delta = Math.min(this.maxTimeDelta, (t - this.now) / 1000);
       this.now = t;
       this.scene.update(delta);
       this.surface.update(delta);

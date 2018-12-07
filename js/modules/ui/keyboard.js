@@ -1,5 +1,5 @@
 /**
- * Keyboard interface.
+ ** Keyboard interface.
  **/
 
 class Keyboard {

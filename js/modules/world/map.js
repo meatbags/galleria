@@ -1,5 +1,5 @@
 /**
- ** Handle models.
+ ** Handle model loading and update.
  **/
 
 import { Materials } from './materials';

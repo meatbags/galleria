@@ -1,5 +1,5 @@
 /**
- ** Handle archive loading.
+ ** Handle archive loading and data.
  **/
 
 class Archive {

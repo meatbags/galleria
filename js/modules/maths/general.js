@@ -1,3 +1,7 @@
+/**
+ ** Some useful maths.
+ **/
+
 const Blend = (a, b, factor) => {
   return (b - a) * factor + a;
 };

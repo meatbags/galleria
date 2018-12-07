@@ -1,5 +1,5 @@
 /**
- * Raycaster for 3d mouse interaction.
+ ** Raycaster for three dimensional mouse interaction.
  **/
 
 class Raycaster {

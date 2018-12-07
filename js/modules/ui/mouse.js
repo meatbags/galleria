@@ -1,5 +1,5 @@
 /**
- * Mouse interface.
+ ** Mouse interface.
  **/
 
 class Mouse {
