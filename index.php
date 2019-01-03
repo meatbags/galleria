@@ -1,14 +1,12 @@
-<?php
-  get_header();
-?>
+<?php get_template_part('wordpress/header'); ?>
 
 <div id='background-grid' class='grid'></div>
 
 <?php
-  get_template_part('nav');
-  get_template_part('pane-content');
-  get_template_part('gallery');
-  get_template_part('footer');
+  get_template_part('wordpress/nav');
+  get_template_part('wordpress/pane-content');
+  get_template_part('wordpress/gallery');
+  get_template_part('wordpress/footer');
 ?>
 
 <?php if (is_user_logged_in()): ?>

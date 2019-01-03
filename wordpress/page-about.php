@@ -18,7 +18,7 @@
         endif;?>
     </div>
   </div>
-  <?php get_template_part('page-footer'); ?>
+  <?php get_template_part('wordpress/page-footer'); ?>
 </div>
 
 <?php wp_reset_postdata(); ?>
