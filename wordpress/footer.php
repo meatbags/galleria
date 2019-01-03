@@ -1,5 +1,7 @@
 <script type='text/javascript'>
   var buttons = document.querySelectorAll('.newsletter-submit-form');
+
+  // send newsletter sub -> google docs page
   for (var i=0; i<buttons.length; i++) {
     buttons[i].addEventListener('click', function(evt) {
       evt.preventDefault();

@@ -118,7 +118,7 @@
       </div>
     <?php endif; ?>
   </div>
-  <?php get_template_part('page-footer'); ?>
+  <?php get_template_part('wordpress/page-footer'); ?>
 </div>
 
 <div id='page-archive' class='page'>
@@ -169,5 +169,5 @@
       </div>
     <?php endif; ?>
   </div>
-  <?php get_template_part('page-footer'); ?>
+  <?php get_template_part('wordpress/page-footer'); ?>
 </div>

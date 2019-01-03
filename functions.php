@@ -39,9 +39,6 @@ add_action('init', 'add_admin_post_types');
 
 function remove_admin_post_types() {
 	remove_menu_page('edit.php');
-	//remove_menu_page('edit.php?post_type=page');
-	//remove_menu_page('edit-comments.php');
-	//remove_menu_page('plugins.php');
 }
 add_action('admin_menu', 'remove_admin_post_types');
 

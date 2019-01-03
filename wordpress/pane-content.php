@@ -2,9 +2,9 @@
   <div class='pane__inner'>
     <div class='pages'>
       <?php
-        get_template_part('page-exhibitions');
-        get_template_part('page-about');
-        get_template_part('page-contact');
+        get_template_part('wordpress/page-exhibitions');
+        get_template_part('wordpress/page-about');
+        get_template_part('wordpress/page-contact');
       ?>
     </div>
   </div>

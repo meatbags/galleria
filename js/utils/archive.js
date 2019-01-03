@@ -16,7 +16,9 @@ class Archive {
     });
 
     this.featured = document.querySelector('.section-featured');
-    this.featured.addEventListener('click', () => { this.reloadCurrentExhibition(); });
+    if (this.featured) {
+      this.featured.addEventListener('click', () => { this.reloadCurrentExhibition(); });
+    }
   }
 
   activateGallery(data) {
