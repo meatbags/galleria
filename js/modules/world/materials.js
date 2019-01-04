@@ -1,5 +1,5 @@
 /**
- * Material manager.
+ ** WebGL material loader and manager. Loads some default/ fallback materials.
  **/
 
 class Materials {

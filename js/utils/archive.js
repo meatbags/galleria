@@ -1,5 +1,5 @@
 /**
- ** Handle archive loading and data.
+ ** Handle the gallery archive. Load previous exhibitions.
  **/
 
 class Archive {
@@ -15,6 +15,7 @@ class Archive {
       })
     });
 
+    // reference the current gallery
     this.featured = document.querySelector('.section-featured');
     if (this.featured) {
       this.featured.addEventListener('click', () => { this.reloadCurrentExhibition(); });
@@ -33,6 +34,7 @@ class Archive {
   }
 
   reloadCurrentExhibition() {
+    // unload the archive and reload featured gallery
     const data = this.featured.querySelector('.exhibition-data');
     if (!this.lock && this.active && data) {
       this.active = false;
@@ -54,6 +56,7 @@ class Archive {
   }
 
   loadArchive(e) {
+    // unload the current exhibition and load archive exhibtion
     const data = e.querySelector('.exhibition-data');
     if (!this.lock && data && !data.classList.contains('active-exhibition-data')) {
       this.active = true;

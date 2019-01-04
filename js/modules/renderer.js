@@ -1,5 +1,5 @@
 /**
- ** Webgl/ three.js renderer.
+ ** The webGL renderer. Multiple passes with the effect composer.
  **/
 
 import '../lib/glsl';

@@ -1,5 +1,5 @@
 /**
- ** Logic handler.
+ ** Handle interaction logic.
  **/
 
 import { Camera, Lighting, Player, Map } from './world';
