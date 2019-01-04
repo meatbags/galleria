@@ -70,6 +70,7 @@ class Menu {
   }
 
   closeGalleryMenu() {
+    // de-activate nav items & menus
     document.querySelectorAll('#nav-gallery .item.active, .gallery-menu .active').forEach(e => {
       e.classList.remove('active');
     });
@@ -115,6 +116,7 @@ class Menu {
   }
 
   initMenus() {
+    // hook up nav item events
     document.querySelectorAll('.pane-content-nav .item').forEach(item => {
       item.addEventListener('click', evt => {
         this.onMenuItem(evt.currentTarget);

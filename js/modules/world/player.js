@@ -13,8 +13,8 @@ class Player {
 
     // dev
     if (this.isDev) {
-      //this.position = new THREE.Vector3(-12, 8, -6);
-      //this.rotation = new THREE.Vector2(0, 0);
+      // this.position = new THREE.Vector3(-12, 8, -6);
+      // this.rotation = new THREE.Vector2(0, 0);
     }
 
     this.motion = new THREE.Vector3();
