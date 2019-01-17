@@ -1,7 +1,12 @@
 var path = require('path');
 var webpack = require('webpack');
-var Uglify = require('uglifyjs-webpack-plugin');
+
+// modules
 var MiniCssExtractPlugin = require("mini-css-extract-plugin");
+var UglifyJsPlugin = require("uglifyjs-webpack-plugin");
+var OptimizeCSSAssetsPlugin = require("optimize-css-assets-webpack-plugin");
+
+// path
 var appName = 'CLM';
 var pathJS = './js/main.js';
 var pathSCSS = './scss/main.js';
@@ -24,7 +29,7 @@ module.exports = [{
     },
     optimization: {
       minimizer: [
-        new Uglify({
+        new UglifyJsPlugin({
           cache: true,
           parallel: true,
           uglifyOptions: {compress: false, ecma: 6, mangle: true, output: {comments: false}},
@@ -58,6 +63,16 @@ module.exports = [{
           }
         ]
       }]
+    },
+    optimization: {
+      minimizer: [
+        new UglifyJsPlugin({
+          cache: true,
+          parallel: true,
+          sourceMap: true
+        }),
+        new OptimizeCSSAssetsPlugin({})
+      ]
     },
     plugins: [new MiniCssExtractPlugin({filename: './style.css', allChunks: true})]
   }

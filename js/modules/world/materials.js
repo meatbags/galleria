@@ -23,7 +23,7 @@ class Materials {
         this.mat[key].envMap = this.envMap;
       }
     });
-
+    
     // custom shader uniforms
     this.uniforms = {time: {value: 0}};
 
