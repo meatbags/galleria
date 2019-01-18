@@ -29,26 +29,34 @@ class Lighting {
     this.lights.directional.a = new THREE.DirectionalLight(0xffffff, 0.5);
     this.lights.hemisphere.a = new THREE.HemisphereLight(0x0, 0x0000ff, 0.25);
 
-    // place lights
+    // apply exhibition settings
+    this.reloadExhibition();
+  }
+
+  reloadExhibition() {
+    // default light positions
     this.lights.point.a.position.set(-8, 10, 14);
     this.lights.point.b.position.set(0, 10, -4);
     this.lights.point.c.position.set(26, 10, 6);
     this.lights.directional.a.position.set(-1, 1.5, -1);
 
-    // add
+    // default light settings
+    this.lights.point.a.distance = 24;
+    this.lights.hemisphere.a.intensity = 0.25;
+
+    // add all lights
     Object.keys(this.lights).forEach(type => {
       Object.keys(this.lights[type]).forEach(light => {
         this.scene.add(this.lights[type][light]);
       });
     });
 
-    // apply custom exhibition settings
+    // alter lighting
     const target = document.querySelector('.active-exhibition-data .custom-exhibition-installation');
     if (target) {
       switch (target.dataset.value) {
         case 'TIYAN':
           // remove lights outside temp exhibition region
-          //this.scene.remove(this.lights.point.b);
           this.scene.remove(this.lights.directional.a);
           this.scene.remove(this.lights.ambient.a);
 
@@ -60,6 +68,7 @@ class Lighting {
           this.lights.point.c.position.set(-22, 8, 18);
           this.lights.hemisphere.a.intensity = 0.01;
           break;
+        case 'JACK_DE_LACY':
         default:
           break;
       }

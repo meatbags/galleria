@@ -24,6 +24,12 @@ class Scene {
     this.camera.resize();
   }
 
+  reloadExhibition() {
+    this.map.reloadInstallation();
+    this.lighting.reloadExhibition();
+    this.player.resetPosition();
+  }
+
   update(delta) {
     this.player.update(delta);
     this.camera.update(delta);
