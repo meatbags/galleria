@@ -130,14 +130,14 @@ class InteractionNodeView extends InteractionNodeBase {
         bY -= this.buttonRadius / 2;
         ctx.fillStyle = this.textColour;
         ctx.textAlign = 'start';
-        ctx.globalAlpha = this.buttonHover ? 0.6 : 1;
+        ctx.globalAlpha = this.buttonHover && !this.infoTagDisabled ? 0.6 : 1;
+
         if (!this.infoTagDisabled) {
           ctx.fillText('[info]', bX - this.buttonRadiusOffset, bY + 4);
-        }
 
-        // doesn't fit properly
-        if (!this.root.isMobile) {
-          ctx.fillText(this.root.data.title, bX - this.buttonRadiusOffset, bY - this.buttonRadiusHalf);
+          if (!this.root.isMobile) {
+            ctx.fillText(this.root.data.title, bX - this.buttonRadiusOffset, bY - this.buttonRadiusHalf);
+          }
         }
       }
     }
