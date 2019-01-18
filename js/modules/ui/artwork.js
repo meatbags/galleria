@@ -3,6 +3,7 @@
  **/
 
 import { InteractionNodeView } from './interaction_nodes';
+import { VideoElement } from './video_element';
 
 class Artwork {
   constructor(root, id, e, isMobile) {
@@ -11,11 +12,15 @@ class Artwork {
     this.isMobile = isMobile;
     this.element = e;
     this.active = false;
+
+    // position attributes
     this.position = new THREE.Vector3();
     this.direction = new THREE.Vector3();
     this.nearRadius = 5;
     this.thickness = 0.2;
     this.upstairs = false;
+
+    // get data from DOM node
     this.data = {
       url: e.dataset.url,
       title: e.dataset.title || '',
@@ -27,6 +32,9 @@ class Artwork {
         horizontal: parseFloat(e.dataset.hoff),
         vertical: parseFloat(e.dataset.voff)
       },
+      videoUrl: e.dataset.videofile || '',
+      audioUrl: e.dataset.audiofile || '',
+      activationRadius: parseInt(e.dataset.activationradius) || '',
       index: (parseInt(e.dataset.location) - 1) || e.dataset.location
     };
   }
@@ -58,7 +66,7 @@ class Artwork {
     this.viewPosition.x = p.x + v.x * Math.min((p.y - this.viewPosition.y) * offScale, 8);
     this.viewPosition.z = p.z + v.z * Math.min((p.y - this.viewPosition.y) * offScale, 8);
 
-    // spacially above ramp
+    // spatially above ramp
     if (p.x > 20 && p.z < -10) {
       this.viewPosition.set(28, 4.4, -8);
     } else if (p.x < -20 && p.z < -10) {
@@ -70,19 +78,39 @@ class Artwork {
     this.viewRotation.y = Math.atan2(p.y - (this.viewPosition.y + this.root.player.height) - 0.125, Math.hypot(p.x - this.viewPosition.x, p.z - this.viewPosition.z));
     this.viewRotation.x = Math.atan2(p.x - this.viewPosition.x, p.z - this.viewPosition.z);
 
-    // get texture from image file
-    const texture = new THREE.TextureLoader().load(this.data.url, (tex) => {
-      // scale to image dimensions
-      const height = this.data.width * (tex.image.naturalHeight / tex.image.naturalWidth);
+    // get texture from image file/ or link to video
+    let texture;
+    if (this.data.videoUrl !== '') {
+      this.videoElement = new VideoElement(this.data.videoUrl, this.data.audioUrl, this.plane,  this.root.root.scene.camera, this.data.activationRadius);
+
+      // video texture
+      texture = new THREE.VideoTexture(this.videoElement.getElement());
+
+      // set size
+      const height = this.data.width * (1080 / 1920);
       this.plane.scale.x = this.data.width;
       this.plane.scale.y = height;
       this.board.scale.x = v.x != 0 ? this.thickness : this.data.width;
       this.board.scale.y = height;
       this.board.scale.z = v.z != 0 ? this.thickness : this.data.width;
 
-      // set
+      // set node
       this.node.setCorners();
-    });
+      this.node.setIsVideoNode();
+    } else {
+      texture = new THREE.TextureLoader().load(this.data.url, (tex) => {
+        // scale to image dimensions
+        const height = this.data.width * (tex.image.naturalHeight / tex.image.naturalWidth);
+        this.plane.scale.x = this.data.width;
+        this.plane.scale.y = height;
+        this.board.scale.x = v.x != 0 ? this.thickness : this.data.width;
+        this.board.scale.y = height;
+        this.board.scale.z = v.z != 0 ? this.thickness : this.data.width;
+        
+        // set node
+        this.node.setCorners();
+      });
+    }
 
     // set artwork texture
     this.plane.material.map = texture;
@@ -143,6 +171,10 @@ class Artwork {
 
   update(delta, player, camera, cameraDir, centre) {
     this.node.update(delta, player, camera, cameraDir, centre);
+
+    if (this.videoElement) {
+      this.videoElement.update(player.position);
+    }
   }
 
   draw(ctx) {
@@ -153,6 +185,11 @@ class Artwork {
     // remove artwork from scene
     this.sceneReference.remove(this.plane);
     this.sceneReference.remove(this.board);
+
+    // pause video/ audio
+    if (this.videoElement) {
+      this.videoElement.destroy();
+    }
   }
 }
 
