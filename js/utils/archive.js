@@ -29,8 +29,7 @@ class Archive {
 
     // reload gallery
     this.root.surface.floorPlan.reloadExhibition();
-    this.root.scene.map.reloadInstallation();
-    this.root.scene.player.resetPosition();
+    this.root.scene.reloadExhibition();
   }
 
   reloadCurrentExhibition() {

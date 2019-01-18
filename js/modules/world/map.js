@@ -155,10 +155,17 @@ class Map {
           }
           break;
         case 'TIYAN':
+          this.installation = [{
+            src: 'tiyan/separators',
+          }];
+
           // load
-          this.loader.loadFBX('tiyan/separators').then(obj => {
-            this.materials.conformGroup(obj);
-            this.scene.add(obj);
+          this.installation.forEach(el => {
+            this.loader.loadFBX(el.src).then(obj => {
+              this.materials.conformGroup(obj);
+              this.scene.add(obj);
+              el.object = obj;
+            });
           });
 
           // add separator collisions
