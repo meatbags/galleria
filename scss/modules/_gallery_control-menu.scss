@@ -15,7 +15,7 @@
 
 .gallery-menu-controls {
   .content {
-    @include pad(0, 1);
+    @include pad(0, 2);
     display: flex;
 
     .item {
@@ -57,21 +57,13 @@
   }
 
   .close-gallery-menu {
+    @include pad(2, 1);
     position: absolute;
     cursor: pointer;
-    top: -$space * 2;
-    right: -$space * 2;
-    background-color: $colourBackgroundAlt;
-    padding: $space;
-    border: $border;
-    border-width: 2px;
-    border-radius: $space * 6;
-    width: $space * 6;
-    height: $space * 6;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: ($fontLarge + $fontHuge) / 2;
+    top: 0;
+    right: 0;
+    text-transform: uppercase;
+    text-decoration: underline;
 
     &:hover {
       color: $colourAlt;

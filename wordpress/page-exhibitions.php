@@ -84,7 +84,11 @@
               data-voff='<?php echo $img['vertical_offset'] ?>'
               data-width='<?php echo $img['width']; ?>'
               data-link='<?php echo $img['link']; ?>'
-              data-location='<?php echo $img['location']; ?>'>
+              data-location='<?php echo $img['location']; ?>'
+              data-videofile='<?php echo $img['video_file']; ?>'
+              data-audiofile='<?php echo $img['audio_file']; ?>'
+              data-activationradius='<?php echo $img['activation_radius']; ?>'
+              >
             </div>
             <?php endforeach;
           endif;
@@ -153,7 +157,11 @@
                     data-voff='<?php echo $img['vertical_offset'] ?>'
                     data-width='<?php echo $img['width']; ?>'
                     data-link='<?php echo $img['link']; ?>'
-                    data-location='<?php echo $img['location']; ?>'>
+                    data-location='<?php echo $img['location']; ?>'
+                    data-videofile='<?php echo $img['video_file']; ?>'
+                    data-audiofile='<?php echo $img['audio_file']; ?>'
+                    data-activationradius='<?php echo $img['activation_radius']; ?>'
+                    >
                   </div>
                   <?php endforeach;
                 endif;

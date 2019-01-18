@@ -62,7 +62,7 @@
             <div class='text'>Click on an artwork to view it up close.</div>
           </div>
         </div>
-        <div class='close-gallery-menu'>&times;</div>
+        <div class='close-gallery-menu'>Close &times;</div>
       </div>
 
       <div id='artwork-target' data-active='' class='menu gallery-menu-artwork'>

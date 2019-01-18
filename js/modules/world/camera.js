@@ -17,6 +17,11 @@ class Camera {
     this.camera.rotation.order = 'YXZ';
   }
 
+  addListener() {
+    this.listener = new THREE.AudioListener();
+    this.camera.add(this.listener);
+  }
+
   resize(w, h) {
     this.aspectRatio = this.root.width / this.root.height;
     this.camera.aspect = this.aspectRatio;

@@ -56,6 +56,10 @@ class InteractionNodeView extends InteractionNodeBase {
       Math.abs(this.corners.screen.a.x - this.corners.screen.b.x) < window.innerWidth;
   }
 
+  setIsVideoNode() {
+    this.isVideoNode = true;
+  }
+
   isCorrectQuadrant(p) {
     // prevent clicking through walls by using set quadrants
     return ((p.x <= -16 || p.x >= 16 || this.position.x >= 16 || this.position.x <= -16) || ((p.z >= 6 && this.position.z >= 6) || (p.z <= 6 && this.position.z <= 6)));
