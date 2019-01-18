@@ -43,6 +43,7 @@ class Map {
 
     // collision map
     this.loader.loadOBJ('collision').then((map) => {
+      this.defaultCollisionMap = map;
       this.addCollisionMap(map);
       this.checkLoaded();
     }, (err) => { console.log(err); });
@@ -80,10 +81,16 @@ class Map {
           this.scene.remove(obj.object);
         }
       });
+
+      // reload collision map
+      this.root.colliderSystem = new Collider.System();
+      this.colliderSystem = this.root.colliderSystem;
+      this.addCollisionMap(this.defaultCollisionMap);
     }
 
     // reset
     this.customExhibitionActive = false;
+    this.updateCustomExhibition = false;
     this.installation = [];
     const target = document.querySelector('.active-exhibition-data .custom-exhibition-installation');
 
@@ -91,56 +98,83 @@ class Map {
     if (target) {
       // load exhibition-specific installations
       const customExhibition = target.dataset.value;
-      if (customExhibition === 'JACK_DE_LACY') {
-        this.installation = [{
-            src: 'jack_de_lacy/sculpture_1',
-            scale: 0.6,
-            rot: Math.PI / 32,
-            orientZ: Math.PI / 4,
-          }, {
-            src: 'jack_de_lacy/sculpture_2',
-            scale: 0.5,
-            rot: -Math.PI / 32,
-            orientZ: 0,
-          }, {
-            src: 'jack_de_lacy/sculpture_3',
-            scale: 0.5,
-            rot: Math.PI / 32,
-            orientZ: 0,
-          }
-        ];
 
-        // load assets async
-        for (var i=0; i<this.installation.length; ++i) {
-          const index = i;
-          this.loader.loadFBX(this.installation[index].src).then((obj) => {
-            const e = this.installation[index];
-            obj.children.forEach(child => {
-              this.materials.conformMaterial(child.material);
-              child.material = this.materials.getCustomMaterial(child.material);
-              if (index == 2) {
-                child.material.side = THREE.DoubleSide;
-              }
-              child.material.envMapIntensity = 0.25;
-            });
-            obj.scale.multiplyScalar(e.scale);
-            obj.rotation.z = e.orientZ;
-            obj.position.set(-12 + index * 12, 14, 6);
-            this.scene.add(obj);
-            e.object = obj;
-            e.active = true;
-          }, (err) => { console.log(err); });
-        }
-        this.customExhibitionActive = true;
-
-        // installation update
-        this.updateCustomExhibition = (delta) => {
-          this.installation.forEach(obj => {
-            if (obj.active) {
-              obj.object.rotation.y += obj.rot * delta;
+      switch (customExhibition) {
+        case 'JACK_DE_LACY':
+          // custom installation container
+          this.installation = [{
+              src: 'jack_de_lacy/sculpture_1',
+              scale: 0.6,
+              rot: Math.PI / 32,
+              orientZ: Math.PI / 4,
+            }, {
+              src: 'jack_de_lacy/sculpture_2',
+              scale: 0.5,
+              rot: -Math.PI / 32,
+              orientZ: 0,
+            }, {
+              src: 'jack_de_lacy/sculpture_3',
+              scale: 0.5,
+              rot: Math.PI / 32,
+              orientZ: 0,
             }
+          ];
+
+          // load assets async
+          for (var i=0; i<this.installation.length; ++i) {
+            const index = i;
+            this.loader.loadFBX(this.installation[index].src).then((obj) => {
+              const e = this.installation[index];
+              obj.children.forEach(child => {
+                this.materials.conformMaterial(child.material);
+                child.material = this.materials.getCustomMaterial(child.material);
+                if (index == 2) {
+                  child.material.side = THREE.DoubleSide;
+                }
+                child.material.envMapIntensity = 0.25;
+              });
+              obj.scale.multiplyScalar(e.scale);
+              obj.rotation.z = e.orientZ;
+              obj.position.set(-12 + index * 12, 14, 6);
+              this.scene.add(obj);
+              e.object = obj;
+              e.active = true;
+            }, (err) => { console.log(err); });
+          }
+
+          // installation active flag
+          this.customExhibitionActive = true;
+
+          // installation update
+          this.updateCustomExhibition = (delta) => {
+            this.installation.forEach(obj => {
+              if (obj.active) {
+                obj.object.rotation.y += obj.rot * delta;
+              }
+            });
+          }
+          break;
+        case 'TIYAN':
+          // load
+          this.loader.loadFBX('tiyan/separators').then(obj => {
+            this.materials.conformGroup(obj);
+            this.scene.add(obj);
           });
-        }
+
+          // add separator collisions
+          const mesh1 = new THREE.Mesh(new THREE.BoxBufferGeometry(14, 4, 1.5), new THREE.MeshStandardMaterial({}));
+          const mesh2 = new THREE.Mesh(new THREE.BoxBufferGeometry(1.5, 4, 16), new THREE.MeshStandardMaterial({}));
+          mesh1.position.set(-23, 1, 6);
+          mesh2.position.set(17.25, 1, 15.5);
+          this.colliderSystem.add(mesh1);
+          this.colliderSystem.add(mesh2);
+
+          // installation active flag, update func
+          this.customExhibitionActive = true;
+          //this.updateCustomExhibition = (delta) => {};
+          break;
+        default:
+          break;
       }
     }
   }
@@ -176,7 +210,7 @@ class Map {
 
   update(delta) {
     this.materials.update(delta);
-    if (this.customExhibitionActive) {
+    if (this.customExhibitionActive && this.updateCustomExhibition) {
       this.updateCustomExhibition(delta);
     }
   }

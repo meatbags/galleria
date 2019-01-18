@@ -20,6 +20,9 @@ class Artwork {
     this.thickness = 0.2;
     this.upstairs = false;
 
+    // enable information display
+    this.artworkMenuActive = true;
+
     // get data from DOM node
     this.data = {
       url: e.dataset.url,
@@ -106,7 +109,7 @@ class Artwork {
         this.board.scale.x = v.x != 0 ? this.thickness : this.data.width;
         this.board.scale.y = height;
         this.board.scale.z = v.z != 0 ? this.thickness : this.data.width;
-        
+
         // set node
         this.node.setCorners();
       });
@@ -147,7 +150,7 @@ class Artwork {
     if (this.node.isHover()) {
       this.root.closeArtworkMenu();
       this.root.moveToArtwork(this);
-      if (this.node.buttonActive) {
+      if (this.node.buttonActive && this.artworkMenuActive) {
         this.root.openArtworkMenu(this);
       }
     }
@@ -167,6 +170,11 @@ class Artwork {
 
   isHover() {
     return this.node.isHover();
+  }
+
+  disableArtworkMenu() {
+    this.artworkMenuActive = false;
+    this.node.disableInfoTag();
   }
 
   update(delta, player, camera, cameraDir, centre) {
