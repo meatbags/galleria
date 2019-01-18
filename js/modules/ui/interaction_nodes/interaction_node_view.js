@@ -60,6 +60,10 @@ class InteractionNodeView extends InteractionNodeBase {
     this.isVideoNode = true;
   }
 
+  disableInfoTag() {
+    this.infoTagDisabled = true;
+  }
+
   isCorrectQuadrant(p) {
     // prevent clicking through walls by using set quadrants
     return ((p.x <= -16 || p.x >= 16 || this.position.x >= 16 || this.position.x <= -16) || ((p.z >= 6 && this.position.z >= 6) || (p.z <= 6 && this.position.z <= 6)));
@@ -127,7 +131,9 @@ class InteractionNodeView extends InteractionNodeBase {
         ctx.fillStyle = this.textColour;
         ctx.textAlign = 'start';
         ctx.globalAlpha = this.buttonHover ? 0.6 : 1;
-        ctx.fillText('[info]', bX - this.buttonRadiusOffset, bY + 4);
+        if (!this.infoTagDisabled) {
+          ctx.fillText('[info]', bX - this.buttonRadiusOffset, bY + 4);
+        }
 
         // doesn't fit properly
         if (!this.root.isMobile) {

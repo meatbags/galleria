@@ -48,6 +48,18 @@ class FloorPlan {
       this.artworks.push(new Artwork(this, ++count, e, this.isMobile));
     });
     this.placeArtworks();
+
+    // exhibition-specific changes
+    const target = document.querySelector('.active-exhibition-data .custom-exhibition-installation');
+    if (target) {
+      switch (target.dataset.value) {
+        case 'TIYAN':
+          this.artworks.forEach(el => { el.disableArtworkMenu(); });
+          break;
+        default:
+          break;
+      }
+    }
   }
 
   placeArtworks() {

@@ -20,7 +20,7 @@ class Lighting {
     this.sky.material.uniforms.sunPosition.value.copy(sunPos);
     this.scene.add(this.sky);
 
-    // lighting
+    // lights [6]
     this.lights = {point: {}, ambient: {}, directional: {}, hemisphere: {}};
     this.lights.point.a = new THREE.PointLight(0xffffff, 1, 24, 2);
     this.lights.point.b = new THREE.PointLight(0xffffff, 1, 32, 2);
@@ -41,6 +41,29 @@ class Lighting {
         this.scene.add(this.lights[type][light]);
       });
     });
+
+    // apply custom exhibition settings
+    const target = document.querySelector('.active-exhibition-data .custom-exhibition-installation');
+    if (target) {
+      switch (target.dataset.value) {
+        case 'TIYAN':
+          // remove lights outside temp exhibition region
+          //this.scene.remove(this.lights.point.b);
+          this.scene.remove(this.lights.directional.a);
+          this.scene.remove(this.lights.ambient.a);
+
+          // reposition & colour lights
+          //this.lights.ambient.a.intensity = 0.05;
+          this.lights.point.b.position.set(6, 10, 14);
+          this.lights.point.a.position.set(2, 9, 18);
+          this.lights.point.a.distance = 26;
+          this.lights.point.c.position.set(-22, 8, 18);
+          this.lights.hemisphere.a.intensity = 0.01;
+          break;
+        default:
+          break;
+      }
+    }
   }
 }
 
