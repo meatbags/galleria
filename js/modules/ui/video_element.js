@@ -5,7 +5,7 @@
 
 class VideoElement {
   constructor(videoSrc, audioSrc, mesh, camera, radius) {
-    this.radius = 5;//radius;
+    this.radius = radius || 20;
     this.refDistance = 1;
     this.rolloff = 1.5;
 
