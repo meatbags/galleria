@@ -81,6 +81,11 @@ class Artwork {
     this.viewRotation.y = Math.atan2(p.y - (this.viewPosition.y + this.root.player.height) - 0.125, Math.hypot(p.x - this.viewPosition.x, p.z - this.viewPosition.z));
     this.viewRotation.x = Math.atan2(p.x - this.viewPosition.x, p.z - this.viewPosition.z);
 
+    // set default board scale
+    this.board.scale.x = v.x != 0 ? this.thickness : 1;
+    this.board.scale.z = v.z != 0 ? this.thickness : 1;
+    this.board.position.set(p.x, p.y, p.z);
+
     // get texture from image file/ or link to video
     let texture;
     if (this.data.videoUrl !== '') {
@@ -90,12 +95,15 @@ class Artwork {
       texture = new THREE.VideoTexture(this.videoElement.getElement());
 
       // set size
-      const height = this.data.width * (1080 / 1920);
-      this.plane.scale.x = this.data.width;
+      const width = this.data.width;
+      const height = width * (1080 / 1920);
+      this.plane.scale.x = width;
       this.plane.scale.y = height;
-      this.board.scale.x = v.x != 0 ? this.thickness : this.data.width;
+      this.board.scale.x = v.x != 0 ? this.thickness : width;
       this.board.scale.y = height;
-      this.board.scale.z = v.z != 0 ? this.thickness : this.data.width;
+      this.board.scale.z = v.z != 0 ? this.thickness : width;
+
+      console.log(v, this.board.scale.x);
 
       // set node
       this.node.setCorners();
@@ -122,6 +130,7 @@ class Artwork {
     texture.wrapS = texture.wrapT = THREE.ClampToEdgeWrapping;
     texture.minFilter = THREE.LinearFilter;
 
+    // rotate image plane accordingly
     if (v.z == 1) {
       // default
     } else if (v.z == -1) {
@@ -131,10 +140,6 @@ class Artwork {
     } else if (v.x == -1) {
       this.plane.rotation.y = Math.PI * 1.5;
     }
-
-    this.board.scale.x = v.x != 0 ? this.thickness : 1;
-    this.board.scale.z = v.z != 0 ? this.thickness : 1;
-    this.board.position.set(p.x, p.y, p.z);
 
     // add
     scene.add(this.plane);
