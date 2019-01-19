@@ -103,8 +103,6 @@ class Artwork {
       this.board.scale.y = height;
       this.board.scale.z = v.z != 0 ? this.thickness : width;
 
-      console.log(v, this.board.scale.x);
-
       // set node
       this.node.setCorners();
       this.node.setIsVideoNode();
