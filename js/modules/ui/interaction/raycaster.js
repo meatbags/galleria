@@ -23,4 +23,4 @@ class Raycaster {
   }
 }
 
-export { Raycaster };
+export default Raycaster;

@@ -2,7 +2,10 @@
  ** Handle interaction logic.
  **/
 
-import { Camera, Lighting, Player, Map } from './world';
+import Camera from './world/camera';
+import Player from './world/player';
+import Lighting from './world/lighting';
+import Map from './world/map';
 
 class Scene {
   constructor() {
@@ -37,4 +40,4 @@ class Scene {
   }
 }
 
-export { Scene };
+export default Scene;

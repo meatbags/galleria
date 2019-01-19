@@ -2,8 +2,8 @@
  ** Handle model loading and update.
  **/
 
-import { Materials } from './materials';
-import { Loader } from '../loaders';
+import Materials from './materials';
+import Loader from '../utils/loader';
 
 class Map {
   constructor(root) {
@@ -223,4 +223,4 @@ class Map {
   }
 }
 
-export { Map };
+export default Map;

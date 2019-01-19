@@ -2,8 +2,7 @@
  ** Load, place and manage artworks.
  **/
 
-import { InteractionNodeNote } from './interaction_nodes';
-import { Artwork } from './artwork';
+import Artwork from './artwork';
 
 class FloorPlan {
   constructor(root, isMobile) {
@@ -230,4 +229,4 @@ class FloorPlan {
   }
 }
 
-export { FloorPlan };
+export default FloorPlan;

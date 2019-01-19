@@ -83,4 +83,4 @@ class VideoElement {
   }
 }
 
-export { VideoElement };
+export default VideoElement;

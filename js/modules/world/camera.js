@@ -38,4 +38,4 @@ class Camera {
   }
 }
 
-export { Camera };
+export default Camera;

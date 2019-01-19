@@ -1,5 +1,5 @@
 /**
- ** Load FBX & OBJ files.
+ ** Loader for FBX & OBJ files.
  **/
 
 import '../../lib/loaders';
@@ -40,4 +40,4 @@ class Loader {
   }
 }
 
-export { Loader };
+export default Loader;

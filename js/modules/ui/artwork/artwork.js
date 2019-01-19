@@ -2,8 +2,8 @@
  ** Handle individual artwork placement and interaction.
  **/
 
-import { InteractionNodeView } from './interaction_nodes';
-import { VideoElement } from './video_element';
+import InteractionNode from '../interaction/interaction_node';
+import VideoElement from './video_element';
 
 class Artwork {
   constructor(root, id, e, isMobile) {
@@ -60,7 +60,7 @@ class Artwork {
     this.plane.position.set(p.x + v.x * planeOffset, p.y, p.z + v.z * planeOffset);
     this.position.set(p.x, p.y, p.z);
     this.direction.set(v.x, v.y, v.z);
-    this.node = new InteractionNodeView(p, null, v, this);
+    this.node = new InteractionNode(p, null, v, this);
 
     // calc view position
     const offScale = this.isMobile ? 1.5 : 0.9;
@@ -89,7 +89,7 @@ class Artwork {
     // get texture from image file/ or link to video
     let texture;
     if (this.data.videoUrl !== '') {
-      this.videoElement = new VideoElement(this.data.videoUrl, this.data.audioUrl, this.plane,  this.root.root.scene.camera, this.data.activationRadius);
+      this.videoElement = new VideoElement(this.data.videoUrl, this.data.audioUrl, this.plane, this.root.root.scene.camera, this.data.activationRadius);
 
       // video texture
       texture = new THREE.VideoTexture(this.videoElement.getElement());
@@ -105,7 +105,6 @@ class Artwork {
 
       // set node
       this.node.setCorners();
-      this.node.setIsVideoNode();
     } else {
       texture = new THREE.TextureLoader().load(this.data.url, (tex) => {
         // scale to image dimensions
@@ -159,22 +158,6 @@ class Artwork {
     }
   }
 
-  removeHover() {
-    this.node.hover = false;
-  }
-
-  forceHover() {
-    this.node.hover = true;
-  }
-
-  getFloorPosition() {
-    return this.floorPosition;
-  }
-
-  isHover() {
-    return this.node.isHover();
-  }
-
   disableArtworkMenu() {
     this.artworkMenuActive = false;
     this.node.disableInfoTag();
@@ -202,6 +185,22 @@ class Artwork {
       this.videoElement.destroy();
     }
   }
+
+  removeHover() {
+    this.node.hover = false;
+  }
+
+  forceHover() {
+    this.node.hover = true;
+  }
+
+  getFloorPosition() {
+    return this.floorPosition;
+  }
+
+  isHover() {
+    return this.node.isHover();
+  }
 }
 
-export { Artwork };
+export default Artwork;

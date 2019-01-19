@@ -47,7 +47,7 @@ class Lighting {
     this.lights.point.a.distance = 24;
     this.lights.hemisphere.a.intensity = 0.25;
     this.lights.ambient.a.intensity = 0.3;
-    
+
     // add all lights
     Object.keys(this.lights).forEach(type => {
       Object.keys(this.lights[type]).forEach(key => {
@@ -86,4 +86,4 @@ class Lighting {
   }
 }
 
-export { Lighting };
+export default Lighting;
