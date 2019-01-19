@@ -1,9 +1,12 @@
 /**
- ** Control surface and player interface. Handles MKB events.
+ ** Control surface and player interface. Handles user input.
  **/
 
-import { Mouse, Keyboard, OverlayCanvas, FloorPlan } from './ui';
-import { Clamp } from './maths';
+import Canvas2D from './canvas_2d';
+import FloorPlan from './ui/artwork/floor_plan';
+import Mouse from './ui/interaction/mouse';
+import Keyboard from './ui/interaction/keyboard';
+import { Clamp } from './utils/maths';
 
 class Surface {
   constructor(scene, renderer, isMobile) {
@@ -70,8 +73,8 @@ class Surface {
       );
     }
 
-    // 2d canvas
-    this.canvas = new OverlayCanvas(this, this.domElement, renderer.renderer.domElement);
+    // 2d overlay
+    this.canvas = new Canvas2D(this, this.domElement, renderer.renderer.domElement);
 
     // artwork handler
     this.floorPlan = new FloorPlan(this, isMobile);
@@ -260,4 +263,4 @@ class Surface {
   }
 }
 
-export { Surface };
+export default Surface;

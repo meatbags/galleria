@@ -2,7 +2,7 @@
  ** Render the 2d heads-up display.
  **/
 
-class OverlayCanvas {
+class Canvas2D {
   constructor(root, domElement, canvasTarget) {
     this.root = root;
     this.cvs = document.createElement('canvas');
@@ -94,4 +94,4 @@ class OverlayCanvas {
   }
 }
 
-export { OverlayCanvas };
+export default Canvas2D;

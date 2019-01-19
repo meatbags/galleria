@@ -2,7 +2,7 @@
  ** Handle user input and move/ rotate player position.
  **/
 
-import { Blend, MinAngleBetween, TwoPI } from '../maths';
+import { Blend, MinAngleBetween, TwoPI } from '../utils/maths';
 
 class Player {
   constructor(root) {
@@ -234,4 +234,4 @@ class Player {
 	}
 };
 
-export { Player };
+export default Player;

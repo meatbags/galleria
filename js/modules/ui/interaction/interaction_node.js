@@ -1,19 +1,21 @@
 /**
- * Signify view location exists.
+ ** Interaction Node
+ ** Convert UI screenspace interaction to world space. Perform actions.
  **/
 
-import { InteractionNodeBase } from './interaction_node_base';
-import { pointToScreen } from './point_to_screen';
-
-class InteractionNodeView extends InteractionNodeBase {
+class InteractionNode {
   constructor(position, rotation, clipping, root) {
-    super(position, clipping || null);
+    this.onscreen = true;
+    this.position = position;
+    this.rotation = rotation;
+    this.clipping = clipping || null;
+    this.coords = new THREE.Vector2();
+    this.helper = new THREE.Vector3();
 
-    // set artwork root
+    // artwork root
     this.root = root;
 
-    // position caches
-    this.rotation = rotation;
+    // attributes
     this.active = true;
     this.hover = false;
     this.cornersOK = false;
@@ -45,19 +47,22 @@ class InteractionNodeView extends InteractionNodeBase {
     this.corners.world.d.set(p.x - (v.x != 0 ? 0 : s.x * scale) + xo, p.y - s.y * scale, p.z - (v.z != 0 ? 0 : s.z * scale) + zo);
   }
 
+  pointToScreen(p, camera, centre, target) {
+    const point = p.clone();
+    point.project(camera);
+    target.x = (point.x + 1) * centre.x;
+    target.y = (-point.y + 1) * centre.y;
+  }
+
   updateCorners(camera, centre) {
     // calculate 2D corner positions and check for distortion
-    pointToScreen(this.corners.world.a, camera, centre, this.corners.screen.a);
-    pointToScreen(this.corners.world.b, camera, centre, this.corners.screen.b);
-    pointToScreen(this.corners.world.c, camera, centre, this.corners.screen.c);
-    pointToScreen(this.corners.world.d, camera, centre, this.corners.screen.d);
+    this.pointToScreen(this.corners.world.a, camera, centre, this.corners.screen.a);
+    this.pointToScreen(this.corners.world.b, camera, centre, this.corners.screen.b);
+    this.pointToScreen(this.corners.world.c, camera, centre, this.corners.screen.c);
+    this.pointToScreen(this.corners.world.d, camera, centre, this.corners.screen.d);
     const maxSize = this.root.isMobile ? window.innerWidth * 2.0 : window.innerWidth;
     this.cornersOK = (this.corners.screen.a.y < this.corners.screen.c.y && this.corners.screen.b.y < this.corners.screen.d.y) &&
       Math.abs(this.corners.screen.a.x - this.corners.screen.b.x) < window.innerWidth;
-  }
-
-  setIsVideoNode() {
-    this.isVideoNode = true;
   }
 
   disableInfoTag() {
@@ -92,6 +97,30 @@ class InteractionNodeView extends InteractionNodeBase {
 
   isHover() {
     return this.hover && this.active;
+  }
+
+  calculateNodePosition(camera, worldVec, centre) {
+    this.helper.copy(camera.position);
+    this.helper.sub(this.position);
+    this.helper.normalize();
+    if (this.helper.dot(worldVec) <= 0) {
+      this.onscreen = true;
+      this.helper.copy(this.position);
+      this.helper.project(camera);
+      this.coords.x = (this.helper.x + 1) * centre.x;
+      this.coords.y = (-this.helper.y + 1) * centre.y;
+    } else {
+      this.onscreen = false;
+    }
+
+    // clip plane
+    if (this.clipping && this.onscreen) {
+      this.helper.copy(camera.position);
+      this.helper.sub(this.position);
+      if (this.helper.dot(this.clipping) < 0) {
+        this.onscreen = false;
+      }
+    }
   }
 
   update(delta, player, camera, worldVec, centre) {
@@ -144,4 +173,4 @@ class InteractionNodeView extends InteractionNodeBase {
   }
 }
 
-export { InteractionNodeView };
+export default InteractionNode;

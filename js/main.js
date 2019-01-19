@@ -2,7 +2,9 @@
  ** Gallery entry point and main app loop.
  **/
 
-import { Scene, Renderer, Surface } from './modules';
+import Scene from './modules/scene';
+import Renderer from './modules/renderer';
+import Surface from './modules/surface';
 import { detectMobileOnly, detectMobileSafari, detectMobileAndTablet, Menu, Archive } from './utils';
 
 class App {
