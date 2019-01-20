@@ -4,8 +4,8 @@
  **/
 
 class VideoElement {
-  constructor(videoSrc, audioSrc, mesh, camera, radius) {
-    this.radius = radius || 20;
+  constructor(videoSrc, audioSrc, mesh, camera) {
+    this.radius = 15;
     this.refDistance = 1;
     this.rolloff = 1.5;
 
@@ -14,6 +14,7 @@ class VideoElement {
     this.video.src = videoSrc;
     this.video.muted = "muted";
     this.video.loop = true;
+    this.video.load();
 
     // audio element
     if (audioSrc !== '') {
@@ -34,6 +35,7 @@ class VideoElement {
 
     // create audio node
     this.audio = new THREE.PositionalAudio(this.cameraRef.listener);
+    this.audioContext = this.audio.context;
     const audioLoader = new THREE.AudioLoader();
     audioLoader.load(this.audioSrc, buffer => {
       this.audio.setBuffer(buffer);
@@ -41,6 +43,7 @@ class VideoElement {
       this.audio.setRolloffFactor(this.rolloff);
       this.audio.setDistanceModel('exponential');
       this.audio.play();
+      this.syncTracks();
     });
 
     // add sound to mesh
@@ -50,6 +53,27 @@ class VideoElement {
     this.audioRequired = false;
   }
 
+  pauseVideo() {
+    if (!this.video.paused) {
+      this.video.pause();
+    }
+  }
+
+  resumeVideo() {
+    if (this.video.paused) {
+      this.syncTracks();
+      this.video.play();
+    }
+  }
+
+  syncTracks() {
+    // sync video with audio
+    if (this.audioContext) {
+      const t = this.audioContext.currentTime;
+      this.video.currentTime = t > this.video.duration ? t % this.video.duration : t;
+    }
+  }
+
   update(p) {
     if (this.audioRequired) {
       this.initAudio();
@@ -57,13 +81,9 @@ class VideoElement {
 
     // play or pause video
     if (this.meshRef.position.distanceTo(p) > this.radius) {
-      if (!this.video.paused) {
-        this.video.pause();
-      }
+      this.pauseVideo();
     } else {
-      if (this.video.paused) {
-        this.video.play();
-      }
+      this.resumeVideo();
     }
   }
 
