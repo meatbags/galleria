@@ -87,7 +87,6 @@
               data-location='<?php echo $img['location']; ?>'
               data-videofile='<?php echo $img['video_file']; ?>'
               data-audiofile='<?php echo $img['audio_file']; ?>'
-              data-activationradius='<?php echo $img['activation_radius']; ?>'
               >
             </div>
             <?php endforeach;
@@ -160,7 +159,6 @@
                     data-location='<?php echo $img['location']; ?>'
                     data-videofile='<?php echo $img['video_file']; ?>'
                     data-audiofile='<?php echo $img['audio_file']; ?>'
-                    data-activationradius='<?php echo $img['activation_radius']; ?>'
                     >
                   </div>
                   <?php endforeach;

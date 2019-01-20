@@ -2,7 +2,7 @@
  ** Handle individual artwork placement and interaction.
  **/
 
-import InteractionNode from '../interaction/interaction_node';
+import InteractionNode from './interaction_node';
 import VideoElement from './video_element';
 
 class Artwork {
@@ -18,7 +18,6 @@ class Artwork {
     this.direction = new THREE.Vector3();
     this.nearRadius = 5;
     this.thickness = 0.2;
-    this.upstairs = false;
 
     // enable information display
     this.artworkMenuActive = true;
@@ -37,7 +36,6 @@ class Artwork {
       },
       videoUrl: e.dataset.videofile || '',
       audioUrl: e.dataset.audiofile || '',
-      activationRadius: parseInt(e.dataset.activationradius) || '',
       index: (parseInt(e.dataset.location) - 1) || e.dataset.location
     };
   }
@@ -89,7 +87,7 @@ class Artwork {
     // get texture from image file/ or link to video
     let texture;
     if (this.data.videoUrl !== '') {
-      this.videoElement = new VideoElement(this.data.videoUrl, this.data.audioUrl, this.plane, this.root.root.scene.camera, this.data.activationRadius);
+      this.videoElement = new VideoElement(this.data.videoUrl, this.data.audioUrl, this.plane, this.root.root.scene.camera);
 
       // video texture
       texture = new THREE.VideoTexture(this.videoElement.getElement());
