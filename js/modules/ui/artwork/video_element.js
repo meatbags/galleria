@@ -75,6 +75,7 @@ class VideoElement {
   }
 
   update(p) {
+    // defer audio init (browser requirement)
     if (this.audioRequired) {
       this.initAudio();
     }

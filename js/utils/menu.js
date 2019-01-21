@@ -3,7 +3,8 @@
  **/
 
 class Menu {
-  constructor(root) {
+  constructor(root, isMobile) {
+    this.isMobile = isMobile;
     this.isDev = (window.location.host.indexOf('localhost') != -1);
     this.root = root;
     this.openGalleryButton = document.querySelector('#open-gallery');
@@ -21,7 +22,24 @@ class Menu {
     });
     this.initMenus();
 
-    // dev & live modes
+    // mobile warning
+    this.mobileWarning = document.querySelector('#mobile-warning');
+    if (!this.isMobile) {
+      this.mobileWarning.parentNode.removeChild(this.mobileWarning);
+    } else {
+      this.mobileWarning.classList.remove('hidden');
+      this.mobileWarning.classList.add('active');
+      const el = this.mobileWarning.querySelector("#mobile-warning-close");
+      el.addEventListener('touchstart', evt => {
+        evt.preventDefault();
+        this.closeMobileWarning();
+      });
+      el.addEventListener('mousedown', evt => {
+        this.closeMobileWarning();
+      });
+    }
+
+    // development
     if (this.isDev) {
       //this.toggleGallery();
     } else {
@@ -78,6 +96,13 @@ class Menu {
 
     // show controls
     document.querySelector('#gallery-controls').classList.remove('display-none');
+  }
+
+  closeMobileWarning() {
+    this.mobileWarning.classList.add('closing');
+    setTimeout(() => {
+      this.mobileWarning.parentNode.removeChild(this.mobileWarning);
+    }, 500);
   }
 
   onMenuItem(el) {
