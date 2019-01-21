@@ -31,7 +31,7 @@ class Archive {
     this.root.surface.floorPlan.reloadExhibition();
     this.root.scene.reloadExhibition();
   }
-
+  
   reloadCurrentExhibition() {
     // unload the archive and reload featured gallery
     const data = this.featured.querySelector('.exhibition-data');
