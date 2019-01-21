@@ -5,18 +5,18 @@
 import Scene from './modules/scene';
 import Renderer from './modules/renderer';
 import Surface from './modules/surface';
-import { detectMobileOnly, detectMobileSafari, detectMobileAndTablet, Menu, Archive } from './utils';
+import * as Util from './utils';
 
 class App {
   constructor() {
     this.active = false;
-    this.isMobile = detectMobileAndTablet();
-    this.isMobileExclusive = detectMobileOnly();
+    this.isMobile = Util.detectMobileAndTablet();
+    this.isMobileExclusive = Util.detectMobileOnly();
     this.scene = new Scene();
     this.renderer = new Renderer(this, this.scene);
     this.surface = new Surface(this.scene, this.renderer, this.isMobile);
-    this.menu = new Menu(this);
-    this.archive = new Archive(this);
+    this.menu = new Util.Menu(this, this.isMobile);
+    this.archive = new Util.Archive(this);
     this.maxTimeDelta = 1 / 10;
 
     // events
@@ -25,8 +25,8 @@ class App {
       this.resize();
     }, 500); });
 
-    // fix browser quirks
-    if (this.isMobileExclusive && detectMobileSafari()) {
+    // fix browser quirk
+    if (this.isMobileExclusive && Util.detectMobileSafari()) {
       document.querySelectorAll('.fix-safari').forEach(el => { el.classList.add('safari'); });
     }
 

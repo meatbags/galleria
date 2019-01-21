@@ -1,4 +1,5 @@
 <?php get_template_part('wordpress/header'); ?>
+<?php get_template_part('wordpress/mobile-warning'); ?>
 
 <div id='background-grid' class='grid'></div>
 
