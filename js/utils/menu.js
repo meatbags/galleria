@@ -3,7 +3,7 @@
  **/
 
 class Menu {
-  constructor(root, isMobile) {
+  constructor(root, isMobile, mobileActivate) {
     this.isMobile = isMobile;
     this.isDev = (window.location.host.indexOf('localhost') != -1);
     this.root = root;
@@ -33,9 +33,11 @@ class Menu {
       el.addEventListener('touchstart', evt => {
         evt.preventDefault();
         this.closeMobileWarning();
+        mobileActivate();
       });
       el.addEventListener('mousedown', evt => {
         this.closeMobileWarning();
+        mobileActivate();
       });
     }
 

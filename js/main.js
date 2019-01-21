@@ -12,11 +12,12 @@ class App {
     this.active = false;
     this.isMobile = Util.detectMobileAndTablet();
     this.isMobileExclusive = Util.detectMobileOnly();
-    this.scene = new Scene();
-    this.renderer = new Renderer(this, this.scene);
-    this.surface = new Surface(this.scene, this.renderer, this.isMobile);
-    this.menu = new Util.Menu(this, this.isMobile);
-    this.archive = new Util.Archive(this);
+    this.menu = new Util.Menu(this, this.isMobile, () => { this.load(); });
+
+    // load site or defer
+    if (!this.isMobile) {
+      this.load();
+    }
     this.maxTimeDelta = 1 / 10;
 
     // events
@@ -31,6 +32,16 @@ class App {
     }
 
     this.loop();
+  }
+
+  load() {
+    if (!this.loaded) {
+      this.loaded = true;
+      this.scene = new Scene();
+      this.renderer = new Renderer(this, this.scene);
+      this.surface = new Surface(this.scene, this.renderer, this.isMobile);
+      this.archive = new Util.Archive(this);
+    }
   }
 
   resize() {
@@ -52,7 +63,7 @@ class App {
 
   loop() {
     requestAnimationFrame(() => { this.loop(); });
-    if (this.active) {
+    if (this.active && this.loaded) {
       const t = performance.now();
       const delta = Math.min(this.maxTimeDelta, (t - this.now) / 1000);
       this.now = t;
