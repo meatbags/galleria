@@ -1,11 +1,10 @@
-/**
- ** Load, place and manage artworks.
- **/
-
+/** Load, place and manage artworks. */
 import Artwork from './artwork';
 import config from './config';
 
 class FloorPlan {
+
+  /** Read data from DOM and load artworks. */
   constructor(root, isMobile) {
     this.root = root;
     this.isMobile = isMobile;
@@ -35,6 +34,7 @@ class FloorPlan {
     });
   }
 
+  /** Remove current artwork and load next exhibition. */
   reloadExhibition() {
     // remove artworks
     if (this.artworks) {
@@ -55,7 +55,7 @@ class FloorPlan {
     if (target) {
       switch (target.dataset.value) {
         case 'TIYAN':
-          this.artworks.forEach(el => { el.disableArtworkMenu(); });
+          //this.artworks.forEach(el => { el.disableArtworkMenu(); });
           break;
         default:
           break;
@@ -63,8 +63,8 @@ class FloorPlan {
     }
   }
 
+  /** Place artworks in pre-defined positions. (see config.js) */
   placeArtworks() {
-    // place artworks in pre-defined slots
     const slots = [];
 
     for (let i=this.artworks.length-1; i >= 0; i--) {
@@ -91,6 +91,7 @@ class FloorPlan {
     }
   }
 
+  /** Set mouse over state. */
   mouseOver(x, y) {
     var isHovered = [];
     for (var i=0, len=this.artworks.length; i<len; ++i) {
@@ -121,12 +122,14 @@ class FloorPlan {
     }
   }
 
+  /** On click. */
   click(x, y) {
     for (var i=0, len=this.artworks.length; i<len; ++i) {
       this.artworks[i].click(x, y, this.player.position);
     }
   }
 
+  /** Display the artwork menu/ overlay. */
   openArtworkMenu(artwork) {
     // remove control arrows
     document.querySelector('#gallery-controls').classList.add('display-none');
@@ -163,29 +166,32 @@ class FloorPlan {
     this.domElement.classList.add('active');
   }
 
+  /** Remove the artwork overlay/ menu. */
   closeArtworkMenu() {
     document.querySelector('#gallery-controls').classList.remove('display-none');
     this.domElement.classList.remove('active');
   }
 
+  /** Move player toward artwork. */
   moveToArtwork(artwork) {
     this.player.moveToArtwork(artwork);
   }
 
+  /** Update artworks. */
   update(delta) {
-    // update artworks, notes
     this.camera.getWorldDirection(this.cameraDirection);
-    for (var i=0; i<this.artworks.length; ++i) {
+    for (var i=0, lim=this.artworks.length; i<lim; ++i) {
       this.artworks[i].update(delta, this.player, this.camera, this.cameraDirection, this.centre);
     }
   }
 
+  /** Pass draw context to interaction nodes. */
   draw(ctx) {
-    // artwork interaction nodes
     for (var i=0, len=this.artworks.length; i<len; ++i) {
       this.artworks[i].draw(ctx);
     }
   }
+
 }
 
 export default FloorPlan;

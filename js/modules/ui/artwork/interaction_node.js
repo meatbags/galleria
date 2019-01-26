@@ -1,9 +1,8 @@
-/**
- ** Interaction Node
- ** Convert UI screenspace interaction to world space. Perform actions.
- **/
+/** Convert UI screenspace interaction to world space, prform actions. */
 
 class InteractionNode {
+
+  /** Initialise node from parent data. */
   constructor(position, rotation, clipping, root) {
     this.onscreen = true;
     this.position = position;
@@ -33,8 +32,8 @@ class InteractionNode {
     this.distance = -1;
   }
 
+  /** Set 3d artwork corner positions. */
   setCorners() {
-    // set 3D corner positions
     const p = this.root.position;
     const v = this.root.direction;
     const s = this.root.board.scale;
@@ -47,6 +46,7 @@ class InteractionNode {
     this.corners.world.d.set(p.x - (v.x != 0 ? 0 : s.x * scale) + xo, p.y - s.y * scale, p.z - (v.z != 0 ? 0 : s.z * scale) + zo);
   }
 
+  /** Convert 3d point to screen space. */
   pointToScreen(p, camera, centre, target) {
     const point = p.clone();
     point.project(camera);
@@ -54,8 +54,8 @@ class InteractionNode {
     target.y = (-point.y + 1) * centre.y;
   }
 
+  /** calculate 2D corner positions and check for distortion. */
   updateCorners(camera, centre) {
-    // calculate 2D corner positions and check for distortion
     this.pointToScreen(this.corners.world.a, camera, centre, this.corners.screen.a);
     this.pointToScreen(this.corners.world.b, camera, centre, this.corners.screen.b);
     this.pointToScreen(this.corners.world.c, camera, centre, this.corners.screen.c);
@@ -65,17 +65,18 @@ class InteractionNode {
       Math.abs(this.corners.screen.a.x - this.corners.screen.b.x) < window.innerWidth;
   }
 
+  /** Disable. */
   disableInfoTag() {
     this.infoTagDisabled = true;
   }
 
+  /** Prevent clicking through walls using arbitrary quadrants. */
   isCorrectQuadrant(p) {
-    // prevent clicking through walls by using set quadrants
     return ((p.x <= -16 || p.x >= 16 || this.position.x >= 16 || this.position.x <= -16) || ((p.z >= 6 && this.position.z >= 6) || (p.z <= 6 && this.position.z <= 6)));
   }
 
+  /** Check if mouse hover. */
   mouseOver(x, y, player) {
-    // check if mouse hover
     if (this.active && this.onscreen && this.cornersOK) {
       const minX = Math.min(this.corners.screen.a.x, this.corners.screen.b.x, this.corners.screen.c.x, this.corners.screen.d.x) - 10;
       const maxX = Math.max(this.corners.screen.a.x, this.corners.screen.b.x, this.corners.screen.c.x, this.corners.screen.d.x) + 10;
@@ -95,10 +96,12 @@ class InteractionNode {
     }
   }
 
+  /** Return mouse hover state. */
   isHover() {
     return this.hover && this.active;
   }
 
+  /** Calculate screen space position. */
   calculateNodePosition(camera, worldVec, centre) {
     this.helper.copy(camera.position);
     this.helper.sub(this.position);
@@ -123,6 +126,7 @@ class InteractionNode {
     }
   }
 
+  /** Update node. */
   update(delta, player, camera, worldVec, centre) {
     this.calculateNodePosition(camera, worldVec, centre);
     this.distance = player.position.distanceTo(this.position);
@@ -141,6 +145,7 @@ class InteractionNode {
     }
   }
 
+  /** Draw node with supplied context (2d). */
   draw(ctx) {
     if (this.onscreen && this.active && this.hover && this.cornersOK) {
       ctx.globalAlpha = 1;

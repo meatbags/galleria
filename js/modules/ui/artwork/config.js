@@ -1,6 +1,4 @@
-/**
- ** Artwork config.
- **/
+/** Artwork config. TODO: refactor this to CMS. */
 
 const config = {
   artworkPositions: [
