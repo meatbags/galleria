@@ -1,8 +1,8 @@
-/**
- ** Raycaster for three dimensional mouse interaction.
- **/
+/** DEPRECATED Raycaster for 3d mouse interaction. */
 
 class Raycaster {
+
+  /** Create THREE.js raycaster. */
   constructor(domElement, camera) {
     this.domElement = domElement;
     this.camera = camera;
@@ -11,10 +11,12 @@ class Raycaster {
     this.rect = this.domElement.getBoundingClientRect();
   }
 
+  /** Resize target rect. */
   resize() {
     this.rect = this.domElement.getBoundingClientRect();
   }
 
+  /** Perform raycasting. */
   cast(e, objects) {
     this.mouse.x = ((e.clientX - this.rect.left) / this.rect.width) * 2 - 1;
     this.mouse.y = -(((e.clientY - this.rect.top) / this.rect.height) * 2 - 1);

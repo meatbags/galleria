@@ -1,11 +1,11 @@
-/**
- ** Handle individual artwork placement and interaction.
- **/
+/** Handle individual artwork placement and interaction. */
 
 import InteractionNode from './interaction_node';
 import VideoElement from './video_element';
 
 class Artwork {
+
+  /** Extract artwork data via DOM and initialise artwork. */
   constructor(root, id, e, isMobile) {
     this.root = root;
     this.id = id;
@@ -13,7 +13,7 @@ class Artwork {
     this.element = e;
     this.active = false;
 
-    // position attributes
+    // position
     this.position = new THREE.Vector3();
     this.direction = new THREE.Vector3();
     this.nearRadius = 5;
@@ -22,7 +22,7 @@ class Artwork {
     // enable information display
     this.artworkMenuActive = true;
 
-    // get data from DOM node
+    // get data
     this.data = {
       url: e.dataset.url,
       title: e.dataset.title || '',
@@ -40,6 +40,7 @@ class Artwork {
     };
   }
 
+  /** Initialise artwork with position & direction. */
   init(scene, p, v) {
     this.sceneReference = scene;
 
@@ -141,10 +142,12 @@ class Artwork {
     scene.add(this.board);
   }
 
+  /** Mouseover event. */
   mouseOver(x, y, player) {
     this.node.mouseOver(x, y, player);
   }
 
+  /** Click event. */
   click(x, y, player) {
     this.node.mouseOver(x, y, player);
     if (this.node.isHover()) {
@@ -156,11 +159,13 @@ class Artwork {
     }
   }
 
+  /** Flag artwork overlay as disabled. */
   disableArtworkMenu() {
     this.artworkMenuActive = false;
     this.node.disableInfoTag();
   }
 
+  /** Update artwork logic. */
   update(delta, player, camera, cameraDir, centre) {
     this.node.update(delta, player, camera, cameraDir, centre);
 
@@ -169,33 +174,36 @@ class Artwork {
     }
   }
 
+  /** Draw on 2D context. */
   draw(ctx) {
     this.node.draw(ctx);
   }
 
+  /** Remove artwork from scene, unload video. */
   destroy() {
-    // remove artwork from scene
     this.sceneReference.remove(this.plane);
     this.sceneReference.remove(this.board);
-
-    // pause video/ audio
     if (this.videoElement) {
       this.videoElement.destroy();
     }
   }
 
+  /** Force remove hover. */
   removeHover() {
     this.node.hover = false;
   }
 
+  /** Force hover manually. */
   forceHover() {
     this.node.hover = true;
   }
 
+  /** Get the floor coords. */
   getFloorPosition() {
     return this.floorPosition;
   }
 
+  /** Return hover state. */
   isHover() {
     return this.node.isHover();
   }
