@@ -1,7 +1,4 @@
-/**
- ** The webGL renderer. Multiple passes with the effect composer.
- **/
-
+/** The three.js renderer and effect composer. */
 import '../lib/glsl';
 
 class Renderer {
@@ -39,6 +36,7 @@ class Renderer {
     scene.resize();
   }
 
+  /** Calculate size. */
   setSize() {
     const w = Math.min(window.innerWidth, Math.max(this.padding.minX, window.innerWidth - this.padding.x * 2));
     const h = Math.min(window.innerHeight, Math.max(this.padding.minY, window.innerHeight - this.padding.y * 2));
@@ -52,6 +50,7 @@ class Renderer {
     }
   }
 
+  /** Resize composer. */
   resize() {
     this.setSize();
     this.domElement.style.width = `${this.width}px`;
@@ -61,6 +60,7 @@ class Renderer {
     this.passBloom.setSize(this.width, this.height);
   }
 
+  /** Render. */
   draw(delta) {
     this.composer.render(delta);
   }

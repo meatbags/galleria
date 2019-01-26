@@ -1,6 +1,4 @@
-/**
- ** Hook up nav items and menus.
- **/
+/** Hook up navigation and menus. */
 
 class Menu {
   constructor(root, isMobile, mobileActivate) {
@@ -49,6 +47,7 @@ class Menu {
     }
   }
 
+  /** Open or close the gallery pane. */
   toggleGallery() {
     if (!this.lock) {
       this.lock = true;
@@ -89,6 +88,7 @@ class Menu {
     }
   }
 
+  /** Close the gallery menu overlay. */
   closeGalleryMenu() {
     // de-activate nav items & menus
     document.querySelectorAll('#nav-gallery .item.active, .gallery-menu .active').forEach(e => {
@@ -100,6 +100,7 @@ class Menu {
     document.querySelector('#gallery-controls').classList.remove('display-none');
   }
 
+  /** Close the mobile disclaimer. */
   closeMobileWarning() {
     this.mobileWarning.classList.add('closing');
     setTimeout(() => {
@@ -107,6 +108,7 @@ class Menu {
     }, 500);
   }
 
+  /** Handle menu item behaviour. */
   onMenuItem(el) {
     if (el.dataset.active) {
       const target = document.querySelector(el.dataset.active);
@@ -142,8 +144,8 @@ class Menu {
     }
   }
 
+  /** Initialise all menus. */
   initMenus() {
-    // hook up nav item events
     document.querySelectorAll('.pane-content-nav .item').forEach(item => {
       item.addEventListener('click', evt => {
         this.onMenuItem(evt.currentTarget);

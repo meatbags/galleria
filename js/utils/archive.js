@@ -1,6 +1,4 @@
-/**
- ** Handle the gallery archive. Load previous exhibitions.
- **/
+/** Handle the gallery archive, trigger exhibition reloading. */
 
 class Archive {
   constructor(root) {
@@ -22,18 +20,16 @@ class Archive {
     }
   }
 
+  /** Active exhibition. */
   activateGallery(data) {
-    // activate gallery data and reload
     document.querySelectorAll('.active-exhibition-data').forEach(active => { active.classList.remove('active-exhibition-data'); });
     data.classList.add('active-exhibition-data');
-
-    // reload gallery
     this.root.surface.floorPlan.reloadExhibition();
     this.root.scene.reloadExhibition();
   }
-  
+
+  /** Reload the current month's exhibition. */
   reloadCurrentExhibition() {
-    // unload the archive and reload featured gallery
     const data = this.featured.querySelector('.exhibition-data');
     if (!this.lock && this.active && data) {
       this.active = false;
@@ -54,8 +50,8 @@ class Archive {
     }
   }
 
+  /** Unload the current exhibition and load archive exhibtion. */
   loadArchive(e) {
-    // unload the current exhibition and load archive exhibtion
     const data = e.querySelector('.exhibition-data');
     if (!this.lock && data && !data.classList.contains('active-exhibition-data')) {
       this.active = true;

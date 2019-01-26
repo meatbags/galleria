@@ -1,6 +1,4 @@
-/**
- ** Control surface and player interface. Handles user input.
- **/
+/** Control surface and player interface. Handles user input. */
 
 import Canvas2D from './canvas_2d';
 import FloorPlan from './ui/artwork/floor_plan';
@@ -80,8 +78,8 @@ class Surface {
     this.floorPlan = new FloorPlan(this, isMobile);
   }
 
+  /** Get touch event coordinates. */
   processTouch(e) {
-    // touch event -> mouse analogue
     var x = 0;
     var y = 0;
     if (e.targetTouches && e.targetTouches.length) {
@@ -93,6 +91,7 @@ class Surface {
     return {offsetX: x, offsetY: y};
   }
 
+  /** Handle mouse down. */
   onMouseDown(e) {
     // record player rotation
     this.rotation.y = this.player.rotation.y;
@@ -106,6 +105,7 @@ class Surface {
     }
   }
 
+  /** Handle mouse move. */
   onMouseMove(e) {
     this.mouse.move(e);
 
@@ -126,6 +126,7 @@ class Surface {
     }
   }
 
+  /** Handle mouse up. */
   onMouseUp(e) {
     this.mouse.stop();
     if (Date.now() - this.timestamp < this.threshold.click && Math.hypot(this.mouse.delta.x, this.mouse.delta.y) < window.innerWidth * this.threshold.mouseDelta) {
@@ -133,6 +134,7 @@ class Surface {
     }
   }
 
+  /** Handle control (on screen) up. */
   onControlUp(e) {
     switch(e.dataset.dir) {
       case 'up':
@@ -153,6 +155,7 @@ class Surface {
     e.classList.remove('active');
   }
 
+  /** Handle control (on screen) down. */
   onControlDown(e) {
     switch(e.dataset.dir) {
       case 'up':
@@ -173,10 +176,12 @@ class Surface {
     e.classList.add('active');
   }
 
+  /** Handle control (on screen) mouse leave. */
   onControlLeave(e) {
     this.onControlUp(e);
   }
 
+  /** Handle keyboard event. */
   onKeyboard(key) {
     if (!this.domArtworkTarget.classList.contains('active')) {
       switch (key) {
@@ -231,24 +236,25 @@ class Surface {
     }
   }
 
+  /** Find the centre of the canvas. */
   setSize() {
-    // get centre of canvas
     const rect = this.domElement.getBoundingClientRect();
     this.centre.x = rect.width / 2;
     this.centre.y = rect.height / 2;
   }
 
+  /** Resize. */
   resize() {
-    //this.raycaster.resize();
     this.setSize();
     this.canvas.resize();
   }
 
+  /** Update the gallery. */
   update(delta) {
-    // update artwork display
     this.floorPlan.update(delta);
   }
 
+  /** Draw the overlay canvas. */
   draw() {
     this.canvas.clear();
     this.floorPlan.draw(this.canvas.getContext());

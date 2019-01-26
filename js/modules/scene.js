@@ -1,7 +1,4 @@
-/**
- ** Handle interaction logic.
- **/
-
+/** Scene & game logic. */
 import Camera from './world/camera';
 import Player from './world/player';
 import Lighting from './world/lighting';
@@ -20,6 +17,7 @@ class Scene {
     this.map = new Map(this);
   }
 
+  /** Resize the camera. */
   resize() {
     const rect = this.element.getBoundingClientRect();
     this.width = rect.width;
@@ -27,12 +25,14 @@ class Scene {
     this.camera.resize();
   }
 
+  /** Load exhibition data. */
   reloadExhibition() {
     this.map.reloadInstallation();
     this.lighting.reloadExhibition();
     this.player.resetPosition();
   }
 
+  /** Update scene. */
   update(delta) {
     this.player.update(delta);
     this.camera.update(delta);
