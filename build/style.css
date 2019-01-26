@@ -769,23 +769,6 @@ a {
   30% {
     background: #4c474b; } }
 
-/*
-.mobile-logo {
-  @include pad(1, 1);
-  position: fixed;
-  top: $navHeight;
-  width: 100%;
-  z-index: -1;
-  opacity: 0.25;
-  display: flex;
-  justify-content: center;
-
-  img {
-    width: 600px;
-    height: auto;
-  }
-}
-*/
 .logo-main {
   position: fixed;
   top: 0;
@@ -855,6 +838,10 @@ a {
         @media screen and (max-width: 500px) {
           .logo-main .logo-main__inner .logo-main-text .open-gallery-button {
             background-color: #4c474b; } }
+  @media screen and (min-width: 1100px) {
+    .logo-main .logo-main__inner {
+      width: 440px;
+      height: 440px; } }
   @media screen and (max-width: 1100px) {
     .logo-main {
       width: 45%; }

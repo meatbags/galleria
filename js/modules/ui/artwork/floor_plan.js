@@ -31,7 +31,7 @@ class FloorPlan {
       close: this.domElement.querySelector('.close-artwork-menu')
     };
     this.el.close.addEventListener('click', () => {
-      this.closeArtworkMenu();d
+      this.closeArtworkMenu();
     });
   }
 

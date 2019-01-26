@@ -10,24 +10,6 @@
   30% { background: $colourBackground; }
 }
 
-/*
-.mobile-logo {
-  @include pad(1, 1);
-  position: fixed;
-  top: $navHeight;
-  width: 100%;
-  z-index: -1;
-  opacity: 0.25;
-  display: flex;
-  justify-content: center;
-
-  img {
-    width: 600px;
-    height: auto;
-  }
-}
-*/
-
 .logo-main {
   position: fixed;
   top: 0;
@@ -101,6 +83,13 @@
           background-color: $colourBackground;
         }
       }
+    }
+  }
+
+  @media screen and (min-width: $tablet) {
+    .logo-main__inner {
+      width: 440px;
+      height: 440px;
     }
   }
 
