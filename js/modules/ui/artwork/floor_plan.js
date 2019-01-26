@@ -71,7 +71,7 @@ class FloorPlan {
       const artwork = this.artworks[i];
 
       // find artwork slot & init
-      if (typeof(artwork.data.index) == 'number' && artwork.data.index < config.artworkPositions.length) {
+      if (typeof(artwork.data.index) == 'number' && artwork.data.index >= 0 && artwork.data.index < config.artworkPositions.length) {
         const p = config.artworkPositions[artwork.data.index];
 
         // check for duplicates
@@ -86,7 +86,7 @@ class FloorPlan {
       } else {
         // no valid slot: remove artwork reference
         console.log('Warning: no slot found.');
-        this.artworks.splice(i, 1);
+        console.log(this.artworks.splice(i, 1));
       }
     }
   }
