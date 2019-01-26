@@ -36,7 +36,7 @@ class Artwork {
       },
       videoUrl: e.dataset.videofile || '',
       audioUrl: e.dataset.audiofile || '',
-      index: (parseInt(e.dataset.location) - 1) || e.dataset.location
+      index: e.dataset.location ? (parseInt(e.dataset.location) - 1) : -1,
     };
   }
 
