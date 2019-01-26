@@ -1,6 +1,4 @@
-/**
- ** Render the 2d heads-up display.
- **/
+/** 2D heads-up display renderer. */
 
 class Canvas2D {
   constructor(root, domElement, canvasTarget) {
@@ -18,6 +16,7 @@ class Canvas2D {
     this.prompt.click = {alpha: {current: 0, min: 0, max: 1}};
   }
 
+  /** Clear the canvas. */
   clear() {
     this.ctx.clearRect(0, 0, this.cvs.width, this.cvs.height);
     this.ctx.font = '15px Karla';
@@ -27,14 +26,15 @@ class Canvas2D {
     this.ctx.lineCap = 'round';
   }
 
+  /** Resize canvas. */
   resize() {
     //const rect = this.domElement.getBoundingClientRect();
     this.cvs.width = this.canvasTarget.width;
     this.cvs.height = this.canvasTarget.height;
   }
 
+  /** Draw click prompt. */
   promptClick(text, active, x, y) {
-    // animate click prompt
     if (active) {
       this.prompt.click.alpha.current += (this.prompt.click.alpha.max - this.prompt.click.alpha.current) * 0.2;
     } else {
@@ -48,6 +48,7 @@ class Canvas2D {
     }
   }
 
+  /** Draw touchmove prompt. */
   promptTouchMove(active) {
     // animate in/out prompt
     if (active) {
@@ -75,9 +76,10 @@ class Canvas2D {
     }
   }
 
+  /** Signify development mode. */
   promptGodMode() {
     this.ctx.globalAlpha = 1;
-    this.ctx.fillText('fly mode', 20, this.cvs.height - 40);
+    this.ctx.fillText('You can fly', 20, this.cvs.height - 40);
     const x = Math.round(this.root.player.position.x * 10) / 10;
     const y = Math.round(this.root.player.position.y * 10) / 10;
     const z = Math.round(this.root.player.position.z * 10) / 10;
@@ -85,10 +87,12 @@ class Canvas2D {
     this.ctx.fillText(`${x}, ${y}, ${z}, ${rx}`, 20, this.cvs.height - 20);
   }
 
+  /** Development info. */
   drawDevOverlay() {
     //
   }
 
+  /** Get the canvas 2d context. */
   getContext() {
     return this.ctx;
   }
