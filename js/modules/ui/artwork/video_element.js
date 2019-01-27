@@ -8,7 +8,8 @@ class VideoElement {
     this.sceneRef = sceneRef;
     this.radius = 18;
     this.refDistance = 2;
-    this.rolloff = 1.25;
+    this.rolloff = 1.4;
+    this.active = true;
 
     // create video element
     this.video = document.createElement('video');
@@ -39,14 +40,16 @@ class VideoElement {
     // create audio node
     this.audio = new THREE.PositionalAudio(this.cameraRef.listener);
     this.audioContext = this.audio.context;
-    const audioLoader = new THREE.AudioLoader();
-    audioLoader.load(this.audioSrc, buffer => {
-      this.audio.setBuffer(buffer);
-      this.audio.setRefDistance(this.refDistance);
-      this.audio.setRolloffFactor(this.rolloff);
-      this.audio.setDistanceModel('exponential');
-      this.audio.play();
-      this.syncTracks();
+    this.audioLoader = new THREE.AudioLoader();
+    this.audioLoader.load(this.audioSrc, buffer => {
+      if (this.audio) {
+        this.audio.setBuffer(buffer);
+        this.audio.setRefDistance(this.refDistance);
+        this.audio.setRolloffFactor(this.rolloff);
+        this.audio.setDistanceModel('exponential');
+        this.audio.play();
+        this.syncTracks();
+      }
     });
 
     // add sound to mesh
@@ -92,16 +95,22 @@ class VideoElement {
   }
 
   destroy() {
+    this.active = false;
+
+    // destroy
     if (this.video) {
       this.video.pause();
-      this.video = null;
     }
-    if (this.audio && !this.audioRequired) {
+    if (this.audio) {
       this.audio.pause();
     }
     if (this.object3D) {
       this.sceneRef.remove(this.object3D);
     }
+
+    // reference
+    this.audio = null;
+    this.video = null;
   }
 
   getElement() {
