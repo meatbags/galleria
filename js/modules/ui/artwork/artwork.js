@@ -51,7 +51,7 @@ class Artwork {
 
     // cache base
     this.baseY = p.y;
-    
+
     // set position, create node
     p.x += (v.x != 0 ? 0 : 1) * this.data.offset.horizontal;
     p.y += this.data.offset.vertical;
@@ -155,8 +155,14 @@ class Artwork {
   click(x, y, player) {
     this.node.mouseOver(x, y, player);
     if (this.node.isHover()) {
-      this.root.closeArtworkMenu();
       this.root.moveToArtwork(this);
+
+      // close menu if not current artwork
+      if (!this.isArtworkMenuMine()) {
+        this.root.closeArtworkMenu();
+      }
+
+      // open menu
       if (this.artworkMenuActive && this.node.buttonActive && this.node.buttonHover) {
         this.root.openArtworkMenu(this);
       }
@@ -167,6 +173,19 @@ class Artwork {
   disableArtworkMenu() {
     this.artworkMenuActive = false;
     this.node.disableInfoTag();
+  }
+
+  /** Check if artwork menu is for this artwork. */
+  isArtworkMenuMine() {
+    const img = this.root.el.image.querySelector('img');
+    if (img) {
+      return (
+        this.root.domElement.dataset.active == this.id &&
+        img.src == this.data.url
+      );
+    } else {
+      return (this.root.domElement.dataset.active == this.id);
+    }
   }
 
   /** Update artwork logic. */
