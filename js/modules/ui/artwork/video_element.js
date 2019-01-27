@@ -48,8 +48,10 @@ class VideoElement {
         this.audio.setRolloffFactor(this.rolloff);
         this.audio.setDistanceModel('exponential');
         this.audio.loop = true;
+        this.audio.setVolume(0);
         this.audio.play();
         this.syncTracks();
+        this.fadeInRequired = true;
       }
     });
 
@@ -58,6 +60,16 @@ class VideoElement {
 
     // flag
     this.audioRequired = false;
+  }
+
+  fadeInAudio() {
+    if (this.active) {
+      const v = Math.min(1, this.audio.getVolume() + 0.01);
+      if (v == 1) {
+        this.fadeInRequired = false;
+      }
+      this.audio.setVolume(v);
+    }
   }
 
   pauseVideo() {
@@ -85,6 +97,11 @@ class VideoElement {
     // defer audio init (browser requirement)
     if (this.audioRequired) {
       this.initAudio();
+    }
+
+    // fade in
+    if (this.fadeInRequired) {
+      this.fadeInAudio();
     }
 
     // play or pause video
