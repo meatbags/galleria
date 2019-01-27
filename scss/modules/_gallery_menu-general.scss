@@ -19,6 +19,10 @@
       pointer-events: all;
     }
 
+    &.gallery-menu-artwork.active {
+      display: flex;
+    }
+
     .title {
       font-size: $fontHuge;
     }

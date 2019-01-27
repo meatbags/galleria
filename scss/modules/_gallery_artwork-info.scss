@@ -1,13 +1,14 @@
+// NOTE see _galler_menu-general for base styling
 .gallery-menu-artwork {
+  display: flex;
   width: 70vw;
   max-height: 60vh;
   background-color: transparent;
   box-shadow: none;
-  
+
   .content {
     @include pad(2, 2);
-    height: 100%;
-    width: 100%;
+    flex: 1;
     background-color: $colourBackgroundAlt;
     box-shadow: $boxShadow;
     display: flex;
