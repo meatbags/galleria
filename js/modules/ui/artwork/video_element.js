@@ -47,6 +47,7 @@ class VideoElement {
         this.audio.setRefDistance(this.refDistance);
         this.audio.setRolloffFactor(this.rolloff);
         this.audio.setDistanceModel('exponential');
+        this.audio.loop = true;
         this.audio.play();
         this.syncTracks();
       }
@@ -100,6 +101,10 @@ class VideoElement {
     // destroy
     if (this.object3D) {
       this.sceneRef.remove(this.object3D);
+      if (this.audio && this.audio.isPlaying) {
+        this.object3D.remove(this.audio);
+        this.audio.pause();
+      }
     }
     if (this.video) {
       this.video.pause();
