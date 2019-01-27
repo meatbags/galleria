@@ -98,16 +98,14 @@ class VideoElement {
     this.active = false;
 
     // destroy
+    if (this.object3D) {
+      this.sceneRef.remove(this.object3D);
+    }
     if (this.video) {
       this.video.pause();
     }
-    if (this.audio) {
-      console.log(this.audioContext);
-
-      this.audio.pause();
-      if (this.audioContext) {
-        this.audioContext.close();
-      }
+    if (this.audioContext) {
+      this.audioContext.close();
     }
   }
 
