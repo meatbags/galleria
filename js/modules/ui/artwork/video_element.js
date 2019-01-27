@@ -42,13 +42,15 @@ class VideoElement {
     this.audioContext = this.audio.context;
     this.audioLoader = new THREE.AudioLoader();
     this.audioLoader.load(this.audioSrc, buffer => {
-      if (this.audio) {
+      if (this.active) {
         this.audio.setBuffer(buffer);
         this.audio.setRefDistance(this.refDistance);
         this.audio.setRolloffFactor(this.rolloff);
         this.audio.setDistanceModel('exponential');
         this.audio.play();
         this.syncTracks();
+      } else {
+        this.audio.pause();
       }
     });
 
@@ -103,14 +105,11 @@ class VideoElement {
     }
     if (this.audio) {
       this.audio.pause();
+      this.object3D.remove(this.audio);
     }
     if (this.object3D) {
       this.sceneRef.remove(this.object3D);
     }
-
-    // reference
-    this.audio = null;
-    this.video = null;
   }
 
   getElement() {
