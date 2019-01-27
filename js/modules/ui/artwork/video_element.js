@@ -49,8 +49,6 @@ class VideoElement {
         this.audio.setDistanceModel('exponential');
         this.audio.play();
         this.syncTracks();
-      } else {
-        this.audio.pause();
       }
     });
 
@@ -105,10 +103,9 @@ class VideoElement {
     }
     if (this.audio) {
       this.audio.pause();
-      this.object3D.remove(this.audio);
-    }
-    if (this.object3D) {
-      this.sceneRef.remove(this.object3D);
+      if (this.audioContext) {
+        this.audioContext.close();
+      }
     }
   }
 
