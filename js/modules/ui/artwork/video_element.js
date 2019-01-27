@@ -5,6 +5,7 @@
 
 class VideoElement {
   constructor(sceneRef, videoSrc, audioSrc, position, camera) {
+    this.sceneRef = sceneRef;
     this.radius = 18;
     this.refDistance = 2;
     this.rolloff = 1.25;
@@ -20,7 +21,7 @@ class VideoElement {
     if (audioSrc !== '') {
       this.object3D = new THREE.Object3D();
       this.object3D.position.copy(position);
-      sceneRef.add(this.object3D);
+      this.sceneRef.add(this.object3D);
       this.cameraRef = camera;
       this.audioSrc = audioSrc;
       this.audioRequired = true;
@@ -91,9 +92,14 @@ class VideoElement {
   }
 
   destroy() {
-    this.video.pause();
-    if (this.audio) {
+    if (this.video) {
+      this.video.pause();
+    }
+    if (this.audio && !this.audioRequired) {
       this.audio.pause();
+    }
+    if (this.object3D) {
+      this.sceneRef.remove(this.object3D);
     }
 
     // dereference
