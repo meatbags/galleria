@@ -38,11 +38,13 @@ class FloorPlan {
   reloadExhibition() {
     // remove artworks
     if (this.artworks) {
-      try {
-        this.artworks.forEach(e => { e.destroy(); });
-      } catch(err) {
-        console.log(err);
-      }
+      this.artworks.forEach(e => {
+        try {
+          e.destroy();
+        } catch (err) {
+          console.log(err);
+        }
+      });
     }
 
     // create new artworks from data
