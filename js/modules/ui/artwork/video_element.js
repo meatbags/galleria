@@ -4,10 +4,10 @@
  **/
 
 class VideoElement {
-  constructor(videoSrc, audioSrc, mesh, camera) {
-    this.radius = 15;
-    this.refDistance = 1;
-    this.rolloff = 1.5;
+  constructor(sceneRef, videoSrc, audioSrc, position, camera) {
+    this.radius = 20;
+    this.refDistance = 2;
+    this.rolloff = 1.0;
 
     // create video element
     this.video = document.createElement('video');
@@ -18,7 +18,9 @@ class VideoElement {
 
     // audio element
     if (audioSrc !== '') {
-      this.meshRef = mesh;
+      this.object3D = new THREE.Object3D();
+      this.object3D.position.copy(position);
+      sceneRef.add(this.object3D);
       this.cameraRef = camera;
       this.audioSrc = audioSrc;
       this.audioRequired = true;
@@ -47,7 +49,7 @@ class VideoElement {
     });
 
     // add sound to mesh
-    this.meshRef.add(this.audio);
+    this.object3D.add(this.audio);
 
     // flag
     this.audioRequired = false;
@@ -81,7 +83,7 @@ class VideoElement {
     }
 
     // play or pause video
-    if (this.meshRef.position.distanceTo(p) > this.radius) {
+    if (this.object3D.position.distanceTo(p) > this.radius) {
       this.pauseVideo();
     } else {
       this.resumeVideo();

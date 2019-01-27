@@ -20,8 +20,7 @@ class InteractionNode {
     this.cornersOK = false;
     this.buttonActive = false;
     this.buttonRadius = 32;
-    this.buttonRadiusHalf = 16;
-    this.buttonRadiusOffset = 24;
+    this.buttonVerticalOffset = 18;
     this.buttonHover = false;
     this.textColour = Math.abs(position.x) <= 16 && (position.z > 10 || position.z < 0) ? '#884466' : "#fff";
     this.radius = {min: this.root.isMobile ? 10 : 9, max: 32};
@@ -84,8 +83,8 @@ class InteractionNode {
       const maxY = Math.max(this.corners.screen.c.y, this.corners.screen.d.y) + 10;
       let bX = Math.max(this.corners.screen.c.x, this.corners.screen.d.x);
       let bY = (bX == this.corners.screen.c.x) ? this.corners.screen.c.y : this.corners.screen.d.y;
-      bX += this.buttonRadius + 5;
-      bY -= this.buttonRadius / 2;
+      bX -= this.buttonRadius / 2;
+      bY += this.buttonVerticalOffset;
       this.buttonHover = this.buttonActive && Math.hypot(bX - x, bY - y) < this.buttonRadius + 10;
       this.hover = (
         (this.buttonHover || (x >= minX && x <= maxX && y >= minY && y <= maxY)) &&
@@ -160,18 +159,17 @@ class InteractionNode {
       if (this.buttonActive) {
         let bX = Math.max(this.corners.screen.c.x, this.corners.screen.d.x);
         let bY = (bX == this.corners.screen.c.x ? this.corners.screen.c.y : this.corners.screen.d.y);
-        bX += this.buttonRadius + 5;
-        bY -= this.buttonRadius / 2;
+        bY += this.buttonVerticalOffset;
         ctx.fillStyle = this.textColour;
-        ctx.textAlign = 'start';
+        ctx.textAlign = 'right';
         ctx.globalAlpha = this.buttonHover && !this.infoTagDisabled ? 0.6 : 1;
 
         if (!this.infoTagDisabled) {
-          ctx.fillText('[INFO]', bX - this.buttonRadiusOffset, bY + 4);
+          ctx.fillText('[INFO]', bX, bY);
 
-          if (!this.root.isMobile) {
-            ctx.fillText(this.root.data.title, bX - this.buttonRadiusOffset, bY - this.buttonRadiusHalf);
-          }
+          //if (!this.root.isMobile) {
+            //ctx.fillText(this.root.data.title, bX, bY);
+          //}
         }
       }
     }

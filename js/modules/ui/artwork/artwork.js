@@ -88,7 +88,11 @@ class Artwork {
     // get texture from image file/ or link to video
     let texture;
     if (this.data.videoUrl !== '') {
-      this.videoElement = new VideoElement(this.data.videoUrl, this.data.audioUrl, this.plane, this.root.root.scene.camera);
+      const audioPosition = new THREE.Vector3();
+      audioPosition.copy(this.plane.position);
+      audioPosition.x += v.x / 2;
+      audioPosition.z += v.z / 2;
+      this.videoElement = new VideoElement(this.sceneReference, this.data.videoUrl, this.data.audioUrl, audioPosition, this.root.root.scene.camera);
 
       // video texture
       texture = new THREE.VideoTexture(this.videoElement.getElement());
