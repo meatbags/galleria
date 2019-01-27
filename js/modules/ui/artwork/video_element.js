@@ -94,6 +94,7 @@ class VideoElement {
   destroy() {
     if (this.video) {
       this.video.pause();
+      this.video = null;
     }
     if (this.audio && !this.audioRequired) {
       this.audio.pause();
