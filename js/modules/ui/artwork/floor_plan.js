@@ -38,7 +38,11 @@ class FloorPlan {
   reloadExhibition() {
     // remove artworks
     if (this.artworks) {
-      this.artworks.forEach(e => { e.destroy(); });
+      try {
+        this.artworks.forEach(e => { e.destroy(); });
+      } catch(err) {
+        console.log(err);
+      }
     }
 
     // create new artworks from data
@@ -157,7 +161,7 @@ class FloorPlan {
       this.el.subtitle.innerHTML = artwork.data.subtitle;
       this.el.desc.innerHTML = artwork.data.desc;
       this.el.link.innerHTML = artwork.data.link ? `<a href='${artwork.data.link}' target='_blank'>Link</a>` : '';
-      
+
       // comments
       //this.el.comments.innerHTML = '[comments here]';
     }
