@@ -104,9 +104,6 @@ class VideoElement {
     if (this.video) {
       this.video.pause();
     }
-    if (this.audioContext) {
-      this.audioContext.close();
-    }
   }
 
   getElement() {
