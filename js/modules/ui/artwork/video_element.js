@@ -102,6 +102,8 @@ class VideoElement {
       this.video.pause();
     }
     if (this.audio) {
+      console.log(this.audioContext);
+
       this.audio.pause();
       if (this.audioContext) {
         this.audioContext.close();
