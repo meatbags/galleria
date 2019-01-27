@@ -51,7 +51,7 @@ class Artwork {
 
     // cache base
     this.baseY = p.y;
-
+    
     // set position, create node
     p.x += (v.x != 0 ? 0 : 1) * this.data.offset.horizontal;
     p.y += this.data.offset.vertical;
