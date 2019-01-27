@@ -150,14 +150,14 @@ class FloorPlan {
     }
 
     // change info
-    if (this.domElement.dataset.active != artwork.id) {
+    if (!artwork.isArtworkMenuMine()) {
       this.domElement.dataset.active = artwork.id;
       this.el.image.innerHTML = `<img src="${artwork.data.url}"/>`;
       this.el.title.innerHTML = artwork.data.title;
       this.el.subtitle.innerHTML = artwork.data.subtitle;
       this.el.desc.innerHTML = artwork.data.desc;
       this.el.link.innerHTML = artwork.data.link ? `<a href='${artwork.data.link}' target='_blank'>Link</a>` : '';
-
+      
       // comments
       //this.el.comments.innerHTML = '[comments here]';
     }
