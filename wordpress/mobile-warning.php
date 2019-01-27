@@ -9,10 +9,10 @@
     </div>
     <div class='mobile-warning__msg'>
       Dear mobile users,<br /> This website is better viewed on a <em>laptop</em> or <em>desktop computer</em>.
-      For the best experience, please access the site from one of these platforms, or
+      For the best experience, please access the site from one of these platforms, or...
     </div>
     <div id='mobile-warning-close' class='mobile-warning__close'>
-      View site anyway
+      View site anyway #yolo
     </div>
   </div>
 </div>

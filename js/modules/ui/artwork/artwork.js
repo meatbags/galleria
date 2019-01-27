@@ -153,7 +153,7 @@ class Artwork {
     if (this.node.isHover()) {
       this.root.closeArtworkMenu();
       this.root.moveToArtwork(this);
-      if (this.node.buttonActive && this.artworkMenuActive) {
+      if (this.artworkMenuActive && this.node.buttonActive && this.node.buttonHover) {
         this.root.openArtworkMenu(this);
       }
     }
