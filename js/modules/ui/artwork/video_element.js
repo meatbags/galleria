@@ -101,10 +101,6 @@ class VideoElement {
     if (this.object3D) {
       this.sceneRef.remove(this.object3D);
     }
-
-    // dereference
-    this.video = null;
-    this.audio = null;
   }
 
   getElement() {
