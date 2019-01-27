@@ -5,9 +5,9 @@
 
 class VideoElement {
   constructor(sceneRef, videoSrc, audioSrc, position, camera) {
-    this.radius = 20;
+    this.radius = 18;
     this.refDistance = 2;
-    this.rolloff = 1.0;
+    this.rolloff = 1.25;
 
     // create video element
     this.video = document.createElement('video');
