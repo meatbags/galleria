@@ -37,6 +37,9 @@ class InteractionNode {
 
   /** Set 3d artwork corner positions. */
   setCorners() {
+    // A --- B
+    // |     |
+    // D --- C
     const p = this.root.position;
     const v = this.root.direction;
     const s = this.root.board.scale;
@@ -64,8 +67,12 @@ class InteractionNode {
     this.pointToScreen(this.corners.world.c, camera, centre, this.corners.screen.c);
     this.pointToScreen(this.corners.world.d, camera, centre, this.corners.screen.d);
     const maxSize = this.root.isMobile ? window.innerWidth * 2.0 : window.innerWidth;
-    this.cornersOK = (this.corners.screen.a.y < this.corners.screen.c.y && this.corners.screen.b.y < this.corners.screen.d.y) &&
-      Math.abs(this.corners.screen.a.x - this.corners.screen.b.x) < window.innerWidth;
+    this.cornersOK = (
+      (this.corners.screen.a.y < this.corners.screen.c.y && this.corners.screen.b.y < this.corners.screen.d.y) &&
+      Math.abs(this.corners.screen.a.x - this.corners.screen.b.x) < window.innerWidth &&
+      !(this.corners.screen.a.x < 0 && this.corners.screen.c.x < 0) &&
+      !(this.corners.screen.a.x > this.rect.width && this.corners.screen.c.x > this.rect.width)
+    );
 
     // calculate [info] button position
     this.buttonPosition.x = Math.max(this.corners.screen.c.x, this.corners.screen.d.x);
@@ -98,18 +105,17 @@ class InteractionNode {
       const maxY = Math.max(this.corners.screen.c.y, this.corners.screen.d.y) + 10;
 
       // check artwork box & button hover
+      const quadOK = this.isCorrectQuadrant(player);
       this.buttonHover = this.buttonActive && Math.hypot(this.buttonPosition.x - x, this.buttonPosition.y - y) < (this.buttonRadius + 10);
-      this.hover = (
-        (this.buttonHover || (x >= minX && x <= maxX && y >= minY && y <= maxY)) &&
-        this.isCorrectQuadrant(player)
-      );
+      this.hover = (this.buttonHover || (x >= minX && x <= maxX && y >= minY && y <= maxY)) && quadOK;
 
       // check for hover in the space between the artwork and the clamped button
       if (this.buttonPosition.isClamped && !this.hover) {
-        this.hover = (x >= minX && y >= minY);
+        this.hover = (x >= minX && y >= this.rect.height - 50) && quadOK;
       }
     } else {
       this.hover = false;
+      this.buttonHover = false;
     }
   }
 
@@ -148,10 +154,9 @@ class InteractionNode {
     this.calculateNodePosition(camera, worldVec, centre);
     this.distance = player.position.distanceTo(this.position);
 
-    if (this.distance > this.radius.max) {
-      this.active = false;
-    } else {
-      this.active = true;
+    // activate or deactivate
+    this.active = this.distance <= this.radius.max;
+    if (this.active) {
       this.updateCorners(camera, centre);
       this.buttonActive = this.distance <= this.radius.min;
     }

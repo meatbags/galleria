@@ -41,7 +41,7 @@ class Menu {
 
     // development
     if (this.isDev) {
-      //this.toggleGallery();
+      this.toggleGallery();
     } else {
       this.onMenuItem(document.querySelector('#nav-item-controls'));
     }
