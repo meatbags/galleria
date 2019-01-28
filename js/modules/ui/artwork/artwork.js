@@ -154,10 +154,9 @@ class Artwork {
   /** Click event. */
   click(x, y, player) {
     this.node.mouseOver(x, y, player);
-    if (this.node.isHover()) {
-      this.root.moveToArtwork(this);
 
-      console.log(this.node);
+    if (this.node.isClickable()) {
+      this.root.moveToArtwork(this);
 
       // close menu if not current artwork
       if (!this.isArtworkMenuMine()) {
@@ -168,7 +167,10 @@ class Artwork {
       if (this.artworkMenuActive && this.node.buttonActive && this.node.buttonHover) {
         this.root.openArtworkMenu(this);
       }
+
+      return true;
     }
+    return false;
   }
 
   /** Flag artwork overlay as disabled. */
@@ -201,7 +203,7 @@ class Artwork {
 
   /** Draw on 2D context. */
   draw(ctx) {
-    this.node.draw(ctx);
+    return this.node.draw(ctx);
   }
 
   /** Remove artwork from scene, unload video. */
@@ -229,8 +231,8 @@ class Artwork {
   }
 
   /** Return hover state. */
-  isHover() {
-    return this.node.isHover();
+  isClickable() {
+    return this.node.isClickable();
   }
 
   /** Resize. */

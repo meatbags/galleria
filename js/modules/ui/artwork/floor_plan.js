@@ -102,7 +102,7 @@ class FloorPlan {
     var isHovered = [];
     for (var i=0, len=this.artworks.length; i<len; ++i) {
       this.artworks[i].mouseOver(x, y, this.player.position);
-      if (this.artworks[i].isHover()) {
+      if (this.artworks[i].isClickable()) {
         isHovered.push(this.artworks[i]);
       }
     }
@@ -131,7 +131,9 @@ class FloorPlan {
   /** On click. */
   click(x, y) {
     for (var i=0, len=this.artworks.length; i<len; ++i) {
-      this.artworks[i].click(x, y, this.player.position);
+      if (this.artworks[i].click(x, y, this.player.position)) {
+        break;
+      }
     }
   }
 
@@ -191,10 +193,12 @@ class FloorPlan {
     }
   }
 
-  /** Pass draw context to interaction nodes. */
+  /** Draw selected artwork. */
   draw(ctx) {
     for (var i=0, len=this.artworks.length; i<len; ++i) {
-      this.artworks[i].draw(ctx);
+      if (this.artworks[i].draw(ctx)) {
+        break;
+      }
     }
   }
 
