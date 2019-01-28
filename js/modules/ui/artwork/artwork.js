@@ -157,6 +157,8 @@ class Artwork {
     if (this.node.isHover()) {
       this.root.moveToArtwork(this);
 
+      console.log(this.node);
+
       // close menu if not current artwork
       if (!this.isArtworkMenuMine()) {
         this.root.closeArtworkMenu();
