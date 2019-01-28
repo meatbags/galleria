@@ -230,6 +230,12 @@ class Artwork {
   isHover() {
     return this.node.isHover();
   }
+
+  /** Resize. */
+  resize() {
+    this.node.resize();
+  }
+
 }
 
 export default Artwork;

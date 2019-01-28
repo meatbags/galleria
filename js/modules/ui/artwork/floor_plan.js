@@ -198,6 +198,13 @@ class FloorPlan {
     }
   }
 
+  /** Resize. */
+  resize() {
+    this.artworks.forEach(e => {
+      e.resize();
+    });
+  }
+
 }
 
 export default FloorPlan;

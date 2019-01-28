@@ -19,8 +19,9 @@ class InteractionNode {
     this.hover = false;
     this.cornersOK = false;
     this.buttonActive = false;
-    this.buttonRadius = 32;
-    this.buttonVerticalOffset = 18;
+    this.buttonRadius = 50;
+    this.buttonPosition = new THREE.Vector2();
+    this.buttonPosition.isClamped = false;
     this.buttonHover = false;
     this.textColour = Math.abs(position.x) <= 16 && (position.z > 10 || position.z < 0) ? '#884466' : "#fff";
     this.radius = {min: this.root.isMobile ? 10 : 9, max: 32};
@@ -29,6 +30,9 @@ class InteractionNode {
       screen: {a: new THREE.Vector2(), b: new THREE.Vector2(), c: new THREE.Vector2(), d: new THREE.Vector2()}
     };
     this.distance = -1;
+
+    // init
+    this.resize();
   }
 
   /** Set 3d artwork corner positions. */
@@ -62,6 +66,17 @@ class InteractionNode {
     const maxSize = this.root.isMobile ? window.innerWidth * 2.0 : window.innerWidth;
     this.cornersOK = (this.corners.screen.a.y < this.corners.screen.c.y && this.corners.screen.b.y < this.corners.screen.d.y) &&
       Math.abs(this.corners.screen.a.x - this.corners.screen.b.x) < window.innerWidth;
+
+    // calculate [info] button position
+    this.buttonPosition.x = Math.max(this.corners.screen.c.x, this.corners.screen.d.x);
+    this.buttonPosition.y = ((this.buttonPosition.x == this.corners.screen.c.x) ? this.corners.screen.c.y : this.corners.screen.d.y) + 18;
+
+    // clamp to screen
+    this.buttonPosition.isClamped = (this.buttonPosition.x > this.rect.width || this.buttonPosition.y > this.rect.height);
+    if (this.buttonPosition.isClamped) {
+      this.buttonPosition.x = this.rect.width - 16;
+      this.buttonPosition.y = this.rect.height - 16;
+    }
   }
 
   /** Disable. */
@@ -81,15 +96,18 @@ class InteractionNode {
       const maxX = Math.max(this.corners.screen.a.x, this.corners.screen.b.x, this.corners.screen.c.x, this.corners.screen.d.x) + 10;
       const minY = Math.min(this.corners.screen.a.y, this.corners.screen.b.y) - 10;
       const maxY = Math.max(this.corners.screen.c.y, this.corners.screen.d.y) + 10;
-      let bX = Math.max(this.corners.screen.c.x, this.corners.screen.d.x);
-      let bY = (bX == this.corners.screen.c.x) ? this.corners.screen.c.y : this.corners.screen.d.y;
-      bX -= this.buttonRadius / 2;
-      bY += this.buttonVerticalOffset;
-      this.buttonHover = this.buttonActive && Math.hypot(bX - x, bY - y) < this.buttonRadius + 10;
+
+      // check artwork box & button hover
+      this.buttonHover = this.buttonActive && Math.hypot(this.buttonPosition.x - x, this.buttonPosition.y - y) < (this.buttonRadius + 10);
       this.hover = (
         (this.buttonHover || (x >= minX && x <= maxX && y >= minY && y <= maxY)) &&
         this.isCorrectQuadrant(player)
       );
+
+      // check for hover in the space between the artwork and the clamped button
+      if (this.buttonPosition.isClamped && !this.hover) {
+        this.hover = (x >= minX && y >= minY);
+      }
     } else {
       this.hover = false;
     }
@@ -130,16 +148,11 @@ class InteractionNode {
     this.calculateNodePosition(camera, worldVec, centre);
     this.distance = player.position.distanceTo(this.position);
 
-    //this.distance < this.radius.min ||
     if (this.distance > this.radius.max) {
       this.active = false;
     } else {
       this.active = true;
-
-      // calculate 2d corner positions
       this.updateCorners(camera, centre);
-
-      // check if inside min radius
       this.buttonActive = this.distance <= this.radius.min;
     }
   }
@@ -157,23 +170,22 @@ class InteractionNode {
       ctx.stroke();
 
       if (this.buttonActive) {
-        let bX = Math.max(this.corners.screen.c.x, this.corners.screen.d.x);
-        let bY = (bX == this.corners.screen.c.x ? this.corners.screen.c.y : this.corners.screen.d.y);
-        bY += this.buttonVerticalOffset;
         ctx.fillStyle = this.textColour;
         ctx.textAlign = 'right';
         ctx.globalAlpha = this.buttonHover && !this.infoTagDisabled ? 0.6 : 1;
 
         if (!this.infoTagDisabled) {
-          ctx.fillText('[INFO]', bX, bY);
-
-          //if (!this.root.isMobile) {
-            //ctx.fillText(this.root.data.title, bX, bY);
-          //}
+          ctx.fillText('[INFO]', this.buttonPosition.x, this.buttonPosition.y);
         }
       }
     }
   }
+
+  /** Get canvas bounding rect reference. */
+  resize() {
+    this.rect = document.querySelector('#canvas-target').getBoundingClientRect();
+  }
+
 }
 
 export default InteractionNode;

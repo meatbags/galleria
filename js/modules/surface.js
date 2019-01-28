@@ -242,11 +242,12 @@ class Surface {
     this.centre.x = rect.width / 2;
     this.centre.y = rect.height / 2;
   }
-
+  
   /** Resize. */
   resize() {
     this.setSize();
     this.canvas.resize();
+    this.floorPlan.resize();
   }
 
   /** Update the gallery. */
