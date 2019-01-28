@@ -14,10 +14,11 @@ class InteractionNode {
     // artwork root
     this.root = root;
 
-    // attributes
+    // props
     this.active = true;
     this.hover = false;
     this.cornersOK = false;
+    this.clickable = false;
     this.buttonActive = false;
     this.buttonRadius = 50;
     this.buttonPosition = new THREE.Vector2();
@@ -66,7 +67,8 @@ class InteractionNode {
     this.pointToScreen(this.corners.world.b, camera, centre, this.corners.screen.b);
     this.pointToScreen(this.corners.world.c, camera, centre, this.corners.screen.c);
     this.pointToScreen(this.corners.world.d, camera, centre, this.corners.screen.d);
-    const maxSize = this.root.isMobile ? window.innerWidth * 2.0 : window.innerWidth;
+
+    // check if corners are okay
     this.cornersOK = (
       (this.corners.screen.a.y < this.corners.screen.c.y && this.corners.screen.b.y < this.corners.screen.d.y) &&
       Math.abs(this.corners.screen.a.x - this.corners.screen.b.x) < window.innerWidth &&
@@ -79,7 +81,10 @@ class InteractionNode {
     this.buttonPosition.y = ((this.buttonPosition.x == this.corners.screen.c.x) ? this.corners.screen.c.y : this.corners.screen.d.y) + 18;
 
     // clamp to screen
-    this.buttonPosition.isClamped = (this.buttonPosition.x > this.rect.width || this.buttonPosition.y > this.rect.height);
+    this.buttonPosition.isClamped = (
+      (this.buttonPosition.x > this.rect.width || this.buttonPosition.y > this.rect.height) &&
+      (this.rect.width > Math.min(this.corners.screen.a.x, this.corners.screen.b.x) && this.rect.width > Math.min(this.corners.screen.c.x, this.corners.screen.d.x))
+    );
     if (this.buttonPosition.isClamped) {
       this.buttonPosition.x = this.rect.width - 16;
       this.buttonPosition.y = this.rect.height - 16;
@@ -96,32 +101,34 @@ class InteractionNode {
     return ((p.x <= -16 || p.x >= 16 || this.position.x >= 16 || this.position.x <= -16) || ((p.z >= 6 && this.position.z >= 6) || (p.z <= 6 && this.position.z <= 6)));
   }
 
-  /** Check if mouse hover. */
+  /** Check if clickable and activate UI items. */
   mouseOver(x, y, player) {
-    if (this.active && this.onscreen && this.cornersOK) {
+    if (this.active && this.onscreen && this.cornersOK && this.isCorrectQuadrant(player)) {
       const minX = Math.min(this.corners.screen.a.x, this.corners.screen.b.x, this.corners.screen.c.x, this.corners.screen.d.x) - 10;
       const maxX = Math.max(this.corners.screen.a.x, this.corners.screen.b.x, this.corners.screen.c.x, this.corners.screen.d.x) + 10;
       const minY = Math.min(this.corners.screen.a.y, this.corners.screen.b.y) - 10;
       const maxY = Math.max(this.corners.screen.c.y, this.corners.screen.d.y) + 10;
 
       // check artwork box & button hover
-      const quadOK = this.isCorrectQuadrant(player);
       this.buttonHover = this.buttonActive && Math.hypot(this.buttonPosition.x - x, this.buttonPosition.y - y) < (this.buttonRadius + 10);
-      this.hover = (this.buttonHover || (x >= minX && x <= maxX && y >= minY && y <= maxY)) && quadOK;
+      this.hover = (this.buttonHover || (x >= minX && x <= maxX && y >= minY && y <= maxY));
 
       // check for hover in the space between the artwork and the clamped button
       if (this.buttonPosition.isClamped && !this.hover) {
-        this.hover = (x >= minX && y >= this.rect.height - 50) && quadOK;
+        this.hover = (this.buttonPosition.x > maxX && x >= maxX - 100 && y >= this.rect.height - 100);
       }
     } else {
       this.hover = false;
       this.buttonHover = false;
     }
+
+    // set clickable flag
+    this.clickable = this.onscreen && this.active && this.hover && this.cornersOK;
   }
 
   /** Return mouse hover state. */
-  isHover() {
-    return this.hover && this.active;
+  isClickable() {
+    return this.clickable;
   }
 
   /** Calculate screen space position. */
@@ -162,9 +169,9 @@ class InteractionNode {
     }
   }
 
-  /** Draw node with supplied context (2d). */
+  /** Set visible flag & draw node with supplied context (2d). */
   draw(ctx) {
-    if (this.onscreen && this.active && this.hover && this.cornersOK) {
+    if (this.clickable) {
       ctx.globalAlpha = 1;
       ctx.beginPath();
       ctx.moveTo(this.corners.screen.a.x, this.corners.screen.a.y);
@@ -183,7 +190,9 @@ class InteractionNode {
           ctx.fillText('[INFO]', this.buttonPosition.x, this.buttonPosition.y);
         }
       }
+      return true;
     }
+    return false;
   }
 
   /** Get canvas bounding rect reference. */
