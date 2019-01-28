@@ -123,6 +123,11 @@ class InteractionNode {
     }
 
     // set clickable flag
+    this.setClickable();
+  }
+
+  /** Set clickable flag. */
+  setClickable() {
     this.clickable = this.onscreen && this.active && this.hover && this.cornersOK;
   }
 
@@ -167,6 +172,9 @@ class InteractionNode {
       this.updateCorners(camera, centre);
       this.buttonActive = this.distance <= this.radius.min;
     }
+
+    // set clickable flag
+    this.setClickable();
   }
 
   /** Set visible flag & draw node with supplied context (2d). */
