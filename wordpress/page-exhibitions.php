@@ -40,6 +40,13 @@
   }
 
   wp_reset_postdata();
+
+  // clean strings
+  function sanitise($str) {
+    $str = str_replace('"', '&#34;', $str);
+    $str = str_replace("'", '&rsquo;', $str);
+    return $str;
+  }
 ?>
 
 <div id='page-exhibitions' class='page active'>
@@ -74,12 +81,13 @@
         <!-- active exhibition data -->
         <div class='exhibition-data active-exhibition-data' style='display:none'>
           <?php if ($active['images']):
-            foreach ($active['images'] as $img): ?>
+            foreach ($active['images'] as $img):
+              ?>
             <div class='image'
-              data-title='<?php echo $img['title']; ?>'
+              data-title='<?php echo sanitise($img['title']); ?>'
               data-url='<?php echo $img['image_file']['sizes']['large']; ?>'
-              data-subtitle='<?php echo $img['sub_title']; ?>'
-              data-desc='<?php echo $img['description']; ?>'
+              data-subtitle='<?php echo sanitise($img['sub_title']); ?>'
+              data-desc='<?php echo sanitise($img['description']); ?>'
               data-hoff='<?php echo $img['horizontal_offset']; ?>'
               data-voff='<?php echo $img['vertical_offset'] ?>'
               data-width='<?php echo $img['width']; ?>'
@@ -146,12 +154,13 @@
               <!-- archival exhibition data -->
               <div class='exhibition-data' style='display:none'>
                 <?php if ($g['images']):
-                  foreach ($g['images'] as $img): ?>
+                  foreach ($g['images'] as $img):
+                    ?>
                   <div class='image'
-                    data-title='<?php echo $img['title']; ?>'
+                    data-title='<?php echo sanitise($img['title']); ?>'
                     data-url='<?php echo $img['image_file']['sizes']['large']; ?>'
-                    data-subtitle='<?php echo $img['sub_title']; ?>'
-                    data-desc='<?php echo $img['description']; ?>'
+                    data-subtitle='<?php echo sanitise($img['sub_title']); ?>'
+                    data-desc='<?php echo sanitise($img['description']); ?>'
                     data-hoff='<?php echo $img['horizontal_offset']; ?>'
                     data-voff='<?php echo $img['vertical_offset'] ?>'
                     data-width='<?php echo $img['width']; ?>'
