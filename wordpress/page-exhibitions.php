@@ -1,4 +1,7 @@
 <?php
+  // set australia timezone
+  date_default_timezone_set('Australia/Sydney');
+
   // get upcoming & current exhibitions
   $query = new wp_Query(array("post_type" => "gallery", "posts_per_page" => -1, "order_by" => "menu_order"));
   $timeNow = time();
