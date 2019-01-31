@@ -13,6 +13,8 @@
 	<meta property="og:image" content="<?php echo get_template_directory_uri(); ?>/img/com_og_image.jpg">
 	<meta property="og:site_name" content="Closed On Monday">
 	<meta property="og:description" content="Closed On Monday is an online 3D space that hosts monthly exhibitions.">
+	<?php date_default_timezone_set('Australia/Sydney'); ?>
+	<meta property="timeref" content="<?php echo date('d-m-Y', time()); ?>">
 	<?php wp_head(); ?>
 	<link href="https://fonts.googleapis.com/css?family=Karla" rel="stylesheet">
 	<script type="text/javascript">
