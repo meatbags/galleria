@@ -24,7 +24,7 @@ class InteractionNode {
     this.buttonPosition = new THREE.Vector2();
     this.buttonPosition.isClamped = false;
     this.buttonHover = false;
-    this.textColour = Math.abs(position.x) <= 16 && (position.z > 10 || position.z < 0) ? '#884466' : "#fff";
+    this.textColour = Math.abs(position.x) <= 16 && (position.z > 10 || position.z < 0) ? '#000' : "#fff";
     this.radius = {min: this.root.isMobile ? 10 : 9, max: 32};
     this.corners = {
       world: {a: new THREE.Vector3(), b: new THREE.Vector3(), c: new THREE.Vector3(), d: new THREE.Vector3()},
