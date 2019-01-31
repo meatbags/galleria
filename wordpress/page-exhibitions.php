@@ -21,7 +21,7 @@
       // add gallery to upcoming, active, or archive
       if ($start && strtotime($start) > $timeNow) {
         $upcoming[get_the_ID()] = $fields;
-      } else if ($start && $end && strtotime($start) < $timeNow && strtotime($end) > $timeNow) {
+      } else if ($start && $end && strtotime($start) < $timeNow && strtotime($end) >= $timeNow) {
         $active = $fields;
       } else if ($start && $end && strtotime($end) < $timeNow) {
         $archive[get_the_ID()] = $fields;
