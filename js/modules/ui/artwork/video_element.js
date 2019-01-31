@@ -6,7 +6,7 @@
 class VideoElement {
   constructor(sceneRef, videoSrc, audioSrc, position, camera) {
     this.sceneRef = sceneRef;
-    this.radius = 18;
+    this.radius = 17;
     this.refDistance = 2;
     this.rolloff = 1.4;
     this.active = true;
