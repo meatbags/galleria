@@ -180,6 +180,24 @@ class Map {
           this.customExhibitionActive = true;
           //this.updateCustomExhibition = (delta) => {};
           break;
+        case 'DOUGLAS':
+          this.installation = [{
+            src: 'douglas/tree'
+          }, {
+            src: 'douglas/leaves'
+          }, {
+            src: 'douglas/pollen'
+          }];
+
+          this.installation.forEach(el => {
+            this.loader.loadFBX(el.src).then(obj => {
+              this.materials.conformGroup(obj);
+              this.scene.add(obj);
+              el.object = obj;
+            });
+          });
+
+          break;
         default:
           break;
       }
