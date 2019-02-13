@@ -59,6 +59,9 @@ class Lighting {
       });
     });
 
+    // remove fog
+    this.scene.fog = new THREE.FogExp2(0x000000, 0);
+
     // alter lighting
     const target = document.querySelector('.active-exhibition-data .custom-exhibition-installation');
     if (target) {
@@ -75,6 +78,9 @@ class Lighting {
           this.lights.point.a.distance = 26;
           this.lights.point.c.position.set(-22, 8, 18);
           this.lights.hemisphere.a.intensity = 0.01;
+          break;
+        case 'DOUGLAS':
+          this.scene.fog = new THREE.FogExp2(0x445522, 0.02);
           break;
         case 'JACK_DE_LACY':
         default:
