@@ -4,10 +4,11 @@
 
 import Materials from './materials';
 import Loader from '../utils/loader';
+import { Clamp } from '../utils/maths';
 
 class Map {
   constructor(root) {
-    this.root = root;
+    this.root = root; // Scene
     this.scene = root.scene;
     this.colliderSystem = root.colliderSystem;
     this.materials = new Materials('assets');
@@ -197,6 +198,78 @@ class Map {
             });
           });
 
+          break;
+        case 'BRENTON':
+          this.installation = [{
+            src: 'brenton/car_1'
+          }];
+
+          const setInstallation = (child) => {
+            // set material
+            if (child.material.name.indexOf('neon') == -1) {
+              const mat = new THREE.MeshPhysicalMaterial({});
+              mat.map = child.material.map ? child.material.map : null;
+              mat.envMap = child.material.envMap ? child.material.envMap : null;
+              mat.envMapIntensity = 0.1;
+              mat.normalMap = child.material.normalMap ? child.material.normalMap : null;
+              mat.metalness = 0.8;
+              mat.roughness = 0.5;
+              mat.side = THREE.DoubleSide;
+              child.material = mat;
+            }
+
+            // limit position
+            const rad = 0.25;
+            child.customPos = {};
+            child.customPos.x = {max: child.position.x + rad, min: child.position.x - rad};
+            child.customPos.y = {max: child.position.y + rad, min: child.position.y - rad};
+            child.customPos.z = {max: child.position.z + rad, min: child.position.z - rad};
+          };
+
+          this.installation.forEach(el => {
+            this.loader.loadFBX(el.src).then(obj => {
+              this.materials.conformGroup(obj);
+              this.scene.add(obj);
+              el.object = obj;
+              el.children = [];
+
+              // reposition car
+              obj.position.set(-22, 0.8, 1);
+              obj.scale.set(0.6, 0.6, 0.6);
+              obj.rotation.y = Math.PI * 0.4;
+
+              // set children
+              obj.children.forEach(child => {
+                if (child.type == 'Mesh') {
+                  setInstallation(child);
+                  el.children.push(child);
+                } else if (child.type == 'Group') {
+                  child.children.forEach(child => {
+                    if (child.type == 'Mesh') {
+                      setInstallation(child);
+                      el.children.push(child);
+                    }
+                  })
+                }
+              });
+            });
+          });
+
+          this.customExhibitionActive = true;
+          this.updateCustomExhibition = (delta) => {
+            if (this.installation[0].children) {
+              const threshold = 3;
+              const radius = 25;
+              const dist = this.root.player.position.distanceTo(this.installation[0].object.position);
+              const f = dist < threshold ? 1 : Math.max(0, 1 - ((dist - threshold) / (radius - threshold)));
+              const amt = 0.025;
+              this.installation[0].children.forEach(child => {
+                child.position.x = Clamp(child.position.x + f * (Math.random() * 2 - 1) * amt, child.customPos.x.min, child.customPos.x.max);
+                child.position.y = Clamp(child.position.y + f * (Math.random() * 2 - 1) * amt, child.customPos.y.min, child.customPos.y.max);
+                child.position.z = Clamp(child.position.z + f * (Math.random() * 2 - 1) * amt, child.customPos.z.min, child.customPos.z.max);
+              });
+            }
+          };
           break;
         default:
           break;
