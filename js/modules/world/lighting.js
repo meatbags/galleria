@@ -47,6 +47,10 @@ class Lighting {
     this.lights.point.a.distance = 24;
     this.lights.hemisphere.a.intensity = 0.25;
     this.lights.ambient.a.intensity = 0.3;
+    this.lights.spot.a.intensity = 1;
+    this.lights.spot.a.distance = 32;
+    this.lights.spot.a.angle = Math.PI / 3;
+    this.lights.spot.a.penumbra = 0.25;
 
     // add all lights
     Object.keys(this.lights).forEach(type => {
@@ -81,6 +85,12 @@ class Lighting {
           break;
         case 'DOUGLAS':
           this.scene.fog = new THREE.FogExp2(0x445522, 0.02);
+          break;
+        case 'BRENTON':
+          this.lights.spot.a.position.set(-26, 10, 1);
+          this.lights.spot.a.target.position.set(-22, 0, 1);
+          this.lights.spot.a.angle = Math.PI / 6;
+          this.lights.spot.a.penumbra = 0.1;
           break;
         case 'JACK_DE_LACY':
         default:

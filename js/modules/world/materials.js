@@ -58,7 +58,7 @@ class Materials {
         break;
       case 'gold':
         break;
-      case 'neon': case 'neon1':
+      case 'neon': case 'neon1': case 'neon2':
         mat.emissive = new THREE.Color(1, 1, 1);
         mat.emissiveIntensity = 1.0;
         //mat.fog = false;
