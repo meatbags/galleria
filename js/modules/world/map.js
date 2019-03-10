@@ -76,7 +76,7 @@ class Map {
 
   reloadInstallation() {
     // remove current installation
-    if (this.customExhibitionActive && this.installation) {
+    if (this.installation && this.installation.length) {
       this.installation.forEach(obj => {
         if (obj.object) {
           this.scene.remove(obj.object);
@@ -201,22 +201,24 @@ class Map {
           break;
         case 'BRENTON':
           this.installation = [{
-            src: 'brenton/car_1'
+            src: 'brenton/car1/car_1'
+          }, {
+            src: 'brenton/car2/car_2'
+          }, {
+            src: 'brenton/car2/car_3'
           }];
 
           const setInstallation = (child) => {
             // set material
-            if (child.material.name.indexOf('neon') == -1) {
-              const mat = new THREE.MeshPhysicalMaterial({});
-              mat.map = child.material.map ? child.material.map : null;
-              mat.envMap = child.material.envMap ? child.material.envMap : null;
-              mat.envMapIntensity = 0.1;
-              mat.normalMap = child.material.normalMap ? child.material.normalMap : null;
-              mat.metalness = 0.8;
-              mat.roughness = 0.5;
-              mat.side = THREE.DoubleSide;
-              child.material = mat;
-            }
+            const mat = new THREE.MeshPhysicalMaterial({});
+            mat.map = child.material.map ? child.material.map : null;
+            mat.envMap = child.material.envMap ? child.material.envMap : null;
+            mat.envMapIntensity = 0.1;
+            mat.normalMap = child.material.normalMap ? child.material.normalMap : null;
+            mat.metalness = 0.8;
+            mat.roughness = 0.5;
+            mat.side = THREE.DoubleSide;
+            child.material = mat;
 
             // limit position
             const rad = 0.25;
@@ -224,6 +226,10 @@ class Map {
             child.customPos.x = {max: child.position.x + rad, min: child.position.x - rad};
             child.customPos.y = {max: child.position.y + rad, min: child.position.y - rad};
             child.customPos.z = {max: child.position.z + rad, min: child.position.z - rad};
+
+            // animation type
+            child.animType = Math.random() > 0.3 ? 'jitter' : 'rotate';
+            child.rotationAxis = Math.random() > 0.5 ? 'y' : 'x';
           };
 
           this.installation.forEach(el => {
@@ -232,17 +238,20 @@ class Map {
               this.scene.add(obj);
               el.object = obj;
               el.children = [];
+              el.sparks = [];
+              el.smokeMat = new THREE.MeshPhongMaterial({transparent: true, side: THREE.DoubleSide, opacity: 0.25});
+              const tex = this.materials.getTexture('brenton/smoke.png');
+              el.smokeMat.map = tex;
 
-              // reposition car
-              obj.position.set(-22, 0.8, 1);
-              obj.scale.set(0.6, 0.6, 0.6);
-              obj.rotation.y = Math.PI * 0.4;
-
-              // set children
+              // set children, find centre
+              let n = 0;
+              let p = new THREE.Vector3();
               obj.children.forEach(child => {
                 if (child.type == 'Mesh') {
                   setInstallation(child);
                   el.children.push(child);
+                  p.add(child.position);
+                  n += 1;
                 } else if (child.type == 'Group') {
                   child.children.forEach(child => {
                     if (child.type == 'Mesh') {
@@ -252,22 +261,95 @@ class Map {
                   })
                 }
               });
+
+              // set centre
+              if (n != 0) {
+                p.divideScalar(n);
+              }
+              el.position = p;
             });
           });
 
           this.customExhibitionActive = true;
           this.updateCustomExhibition = (delta) => {
-            if (this.installation[0].children) {
-              const threshold = 3;
-              const radius = 25;
-              const dist = this.root.player.position.distanceTo(this.installation[0].object.position);
-              const f = dist < threshold ? 1 : Math.max(0, 1 - ((dist - threshold) / (radius - threshold)));
-              const amt = 0.025;
-              this.installation[0].children.forEach(child => {
-                child.position.x = Clamp(child.position.x + f * (Math.random() * 2 - 1) * amt, child.customPos.x.min, child.customPos.x.max);
-                child.position.y = Clamp(child.position.y + f * (Math.random() * 2 - 1) * amt, child.customPos.y.min, child.customPos.y.max);
-                child.position.z = Clamp(child.position.z + f * (Math.random() * 2 - 1) * amt, child.customPos.z.min, child.customPos.z.max);
-              });
+            for (var i=0; i < this.installation.length; i++) {
+              if (this.installation[i].children) {
+                const target = this.installation[i];
+                const threshold = 3;
+                const radius = 25;
+                const dist = this.root.player.position.distanceTo(target.position);
+                const f = dist < threshold ? 1 : Math.max(0, 1 - ((dist - threshold) / (radius - threshold)));
+                const amt = 0.025;
+
+                // animate parts
+                target.children.forEach(child => {
+                  if (child.animType == 'jitter') {
+                    child.position.x = Clamp(child.position.x + f * (Math.random() * 2 - 1) * amt, child.customPos.x.min, child.customPos.x.max);
+                    child.position.y = Clamp(child.position.y + f * (Math.random() * 2 - 1) * amt, child.customPos.y.min, child.customPos.y.max);
+                    child.position.z = Clamp(child.position.z + f * (Math.random() * 2 - 1) * amt, child.customPos.z.min, child.customPos.z.max);
+                  } else if (child.animType == 'rotate') {
+                    child.rotation[child.rotationAxis] += (Math.random() * 2 - 1) * amt * f;
+                  }
+                });
+
+                // create particles
+                if (target.sparks.length < 25 && Math.random() < f * 2) {
+                  const spark = {};
+
+                  if (Math.random() > 0.45) {
+                    // SPARK
+                    spark.object = new THREE.Mesh(new THREE.BoxBufferGeometry(0.02, 0.02, 0.04 + Math.random() * 0.5), new THREE.MeshBasicMaterial({color: 0xffffff}));
+                    spark.object.position.copy(target.position);
+                    spark.object.position.x += (Math.random() * 4 - 2);
+                    spark.object.position.y += 2 + (Math.random() * 3 - 1.5);
+                    spark.object.position.z += (Math.random() * 4 - 2);
+                    spark.vec = new THREE.Vector3(Math.random() * 2 - 1, Math.random() * 2 - 1, Math.random() * 2 - 1);
+                    spark.vec.normalize();
+                    spark.vec.multiplyScalar(5 + Math.random() * 15);
+
+                    // align spark
+                    var p = new THREE.Vector3();
+                    p.addVectors(spark.object.position, spark.vec);
+                    spark.object.lookAt(p);
+
+                    // set age
+                    spark.age = 0;
+                    spark.maxAge = 0.125 + Math.random() * 0.25;
+                  } else {
+                    // SMOKE
+                    spark.object = new THREE.Mesh(new THREE.PlaneBufferGeometry(2, 2), target.smokeMat);
+                    spark.object.position.copy(target.position);
+                    spark.object.position.x += (Math.random() * 1 - 0.5);
+                    spark.object.position.y += 2 + (Math.random() * 1 - 0.5);
+                    spark.object.position.z += (Math.random() * 1 - 0.5);
+                    spark.vec = new THREE.Vector3(Math.random() * 2 - 1, Math.random() * 2 - 1, Math.random() * 2 - 1);
+                    spark.vec.normalize();
+                    spark.vec.multiplyScalar(2 + Math.random() * 4);
+                    spark.object.rotation.set(Math.random(), Math.random(), Math.random());
+
+                    // set age
+                    spark.age = 0;
+                    spark.maxAge = 0.25 + Math.random() * 0.5;
+                  }
+
+                  // add to scene, animation array
+                  this.scene.add(spark.object);
+                  target.sparks.push(spark);
+                }
+
+                // animate particles
+                for (var j=target.sparks.length-1, lim=-1; j>lim; j--) {
+                  const spark = target.sparks[j];
+                  spark.object.position.x += spark.vec.x * delta;
+                  spark.object.position.y += spark.vec.y * delta;
+                  spark.object.position.z += spark.vec.z * delta;
+                  spark.age += delta;
+                  if (spark.age > spark.maxAge) {
+                    this.scene.remove(spark.object);
+                    target.sparks.splice(j, 1);
+                  }
+                }
+              }
             }
           };
           break;
