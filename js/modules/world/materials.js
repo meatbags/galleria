@@ -31,6 +31,11 @@ class Materials {
     this.loaded = {};
   }
 
+  getTexture(path) {
+    const texture = new THREE.TextureLoader().load(this.path + path);
+    return texture;
+  }
+
   conformGroup(obj) {
     // recursively conform object groups
     if (obj.type === 'Mesh') {
