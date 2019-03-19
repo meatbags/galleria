@@ -12,7 +12,7 @@
       For the best experience, please access the site from one of these platforms, or...
     </div>
     <div id='mobile-warning-close' class='mobile-warning__close'>
-      View site anyway #yolo
+      View site anyway
     </div>
   </div>
 </div>

@@ -13,9 +13,9 @@ class App {
     this.maxTimeDelta = 0.1;
 
     // load site or defer load (mobile)
-    if (!this.isMobile) {
+    //if (!this.isMobile) {
       this.load();
-    }
+    //}
 
     // events
     window.addEventListener('resize', () => { this.resize(); });
