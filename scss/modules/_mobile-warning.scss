@@ -11,6 +11,7 @@
   transition: $transition;
   font-size: 26px;
   @include pad(3, 3);
+  display: none;
 
   .mobile-warning__inner {
     border: 1px solid $white;

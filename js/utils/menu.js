@@ -20,8 +20,9 @@ class Menu {
     });
     this.initMenus();
 
-    // mobile warning
+    // mobile warning -- disabled temporarily
     this.mobileWarning = document.querySelector('#mobile-warning');
+    /*
     if (!this.isMobile) {
       this.mobileWarning.parentNode.removeChild(this.mobileWarning);
     } else {
@@ -38,6 +39,7 @@ class Menu {
         mobileActivate();
       });
     }
+    */
 
     // development
     if (this.isDev) {

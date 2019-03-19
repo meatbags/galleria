@@ -985,7 +985,8 @@ a {
   padding-left: 24px;
   padding-right: 24px;
   padding-top: 24px;
-  padding-bottom: 24px; }
+  padding-bottom: 24px;
+  display: none; }
   .mobile-warning .mobile-warning__inner {
     border: 1px solid #eee;
     transition: 0.5s;
