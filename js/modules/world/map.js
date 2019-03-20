@@ -279,7 +279,7 @@ class Map {
               el.smokeMat.map = tex;
 
               // particle flag
-              if (el.src == 'brenton/crash12/crash12') {
+              if (el.src.indexOf('12') != -1) {
                 el.isLong = true;
                 el.radius = 40;
               }
