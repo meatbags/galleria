@@ -3,3 +3,7 @@ assets_old
 legacy
 assets/**.mb
 docs
+**.blend
+**.dds
+**.mb
+blender resources

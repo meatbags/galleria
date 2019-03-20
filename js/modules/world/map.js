@@ -200,24 +200,51 @@ class Map {
 
           break;
         case 'BRENTON':
-          this.installation = [{
-            src: 'brenton/car1/car_1'
-          }, {
-            src: 'brenton/car2/car_2'
-          }, {
-            src: 'brenton/car2/car_3'
-          }];
+          this.installation = [
+            'crash7/crash7',
+            'crash8/crash8',
+            'crash9/crash9',
+            'crash10/crash10',
+            'crash11/crash11',
+            'crash12/crash12',
+            'crash13/crash_13',
+            'hang/hang',
+          ].map(str => {
+            return {src: `brenton/${str}`};
+          });
 
           const setInstallation = (child) => {
             // set material
             const mat = new THREE.MeshPhysicalMaterial({});
             mat.map = child.material.map ? child.material.map : null;
-            mat.envMap = child.material.envMap ? child.material.envMap : null;
-            mat.envMapIntensity = 0.1;
+            if (!mat.map) {
+              mat.color = child.material.color;
+              mat.emissive = child.material.color;
+              mat.emissiveIntensity = 0.1;
+            }
+            //mat.envMap = child.material.envMap ? child.material.envMap : null;
+            mat.envMap = this.materials.envMap;
+            mat.envMapIntensity = 0.5;
             mat.normalMap = child.material.normalMap ? child.material.normalMap : null;
-            mat.metalness = 0.8;
-            mat.roughness = 0.5;
+            mat.metalness = child.material.metalness ? child.material.metalness : 0.75;
+            mat.roughness = child.material.roughness ? child.material.roughness : 0.5;
             mat.side = THREE.DoubleSide;
+            if (child.material.transparent) {
+              mat.transparent = true;
+              mat.opacity = child.material.opacity;
+            }
+
+            // npot
+            if (mat.map) {
+              mat.map.wrapS = mat.map.wrapT = THREE.ClampToEdgeWrapping;
+              mat.map.minFilter = THREE.LinearFilter;
+            }
+            if (mat.normalMap) {
+              mat.normalMap.wrapS = mat.normalMap.wrapT = THREE.ClampToEdgeWrapping;
+              mat.normalMap.minFilter = THREE.LinearFilter;
+            }
+
+            // set new material
             child.material = mat;
 
             // limit position
@@ -228,8 +255,17 @@ class Map {
             child.customPos.z = {max: child.position.z + rad, min: child.position.z - rad};
 
             // animation type
-            child.animType = Math.random() > 0.3 ? 'jitter' : 'rotate';
+            const box = new THREE.Box3();
+            box.setFromObject(child);
+            const size = box.getSize();
+            const sizeMax = 4;
+            const oversize = (size.x > sizeMax || size.y > sizeMax || size.z > sizeMax);
+            child.animType = Math.random() > 0.3 || oversize ? 'jitter' : 'rotate';
             child.rotationAxis = Math.random() > 0.5 ? 'y' : 'x';
+            if (child.name && child.name.indexOf('spin') != -1) {
+              child.animType = 'rotate';
+              child.rotationAxis = 'y';
+            }
           };
 
           this.installation.forEach(el => {
@@ -242,6 +278,12 @@ class Map {
               el.smokeMat = new THREE.MeshPhongMaterial({transparent: true, side: THREE.DoubleSide, opacity: 0.25});
               const tex = this.materials.getTexture('brenton/smoke.png');
               el.smokeMat.map = tex;
+
+              // particle flag
+              if (el.src == 'brenton/crash12/crash12') {
+                el.isLong = true;
+                el.radius = 40;
+              }
 
               // set children, find centre
               let n = 0;
@@ -276,7 +318,7 @@ class Map {
               if (this.installation[i].children) {
                 const target = this.installation[i];
                 const threshold = 3;
-                const radius = 25;
+                const radius = target.radius ? target.radius : 25;
                 const dist = this.root.player.position.distanceTo(target.position);
                 const f = dist < threshold ? 1 : Math.max(0, 1 - ((dist - threshold) / (radius - threshold)));
                 const amt = 0.025;
@@ -300,8 +342,8 @@ class Map {
                     // SPARK
                     spark.object = new THREE.Mesh(new THREE.BoxBufferGeometry(0.02, 0.02, 0.04 + Math.random() * 0.5), new THREE.MeshBasicMaterial({color: 0xffffff}));
                     spark.object.position.copy(target.position);
-                    spark.object.position.x += (Math.random() * 4 - 2);
-                    spark.object.position.y += 2 + (Math.random() * 3 - 1.5);
+                    spark.object.position.x += target.isLong ? (Math.random() * 20 - 10) : (Math.random() * 4 - 2);
+                    spark.object.position.y += (Math.random() * 3 - 1.5);
                     spark.object.position.z += (Math.random() * 4 - 2);
                     spark.vec = new THREE.Vector3(Math.random() * 2 - 1, Math.random() * 2 - 1, Math.random() * 2 - 1);
                     spark.vec.normalize();
@@ -319,7 +361,7 @@ class Map {
                     // SMOKE
                     spark.object = new THREE.Mesh(new THREE.PlaneBufferGeometry(2, 2), target.smokeMat);
                     spark.object.position.copy(target.position);
-                    spark.object.position.x += (Math.random() * 1 - 0.5);
+                    spark.object.position.x += target.isLong ? (Math.random() * 6 - 3) : (Math.random() * 1 - 0.5);
                     spark.object.position.y += 2 + (Math.random() * 1 - 0.5);
                     spark.object.position.z += (Math.random() * 1 - 0.5);
                     spark.vec = new THREE.Vector3(Math.random() * 2 - 1, Math.random() * 2 - 1, Math.random() * 2 - 1);
