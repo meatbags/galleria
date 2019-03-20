@@ -207,8 +207,7 @@ class Map {
             'crash10/crash_10',
             'crash11/crash_11',
             'crash12/crash_12',
-            'crash13/crash_13',
-            'hang/hang',
+            'crash13/crash_13'
           ].map(str => {
             return {src: `brenton/${str}`};
           });
@@ -321,7 +320,7 @@ class Map {
                 const radius = target.radius ? target.radius : 25;
                 const dist = this.root.player.position.distanceTo(target.position);
                 const f = dist < threshold ? 1 : Math.max(0, 1 - ((dist - threshold) / (radius - threshold)));
-                const amt = 0.025;
+                const amt = 0.0125;
 
                 // animate parts
                 target.children.forEach(child => {
