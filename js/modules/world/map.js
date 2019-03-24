@@ -207,7 +207,8 @@ class Map {
             //'crash10/crash_10',
             'crash11/crash_11',
             'crash12/crash_12',
-            'crash13/crash_13'
+            'crash13/crash_13',
+            'new_crashform/new_crashform'
           ].map(str => {
             return {src: `brenton/${str}`};
           });
