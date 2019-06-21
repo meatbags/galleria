@@ -195,7 +195,7 @@ class Artwork {
   /** Update artwork logic. */
   update(delta, player, camera, cameraDir, centre) {
     this.node.update(delta, player, camera, cameraDir, centre);
-
+    
     if (this.videoElement) {
       this.videoElement.update(player.position);
     }

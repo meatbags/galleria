@@ -1,10 +1,9 @@
 /** Load, place and manage artworks. */
+
 import Artwork from './artwork';
 import config from './config';
 
 class FloorPlan {
-
-  /** Read data from DOM and load artworks. */
   constructor(root, isMobile) {
     this.root = root;
     this.isMobile = isMobile;
@@ -18,7 +17,7 @@ class FloorPlan {
 
     // get artworks
     this.reloadExhibition();
-
+    
     // dom target
     this.domElement = document.querySelector('#artwork-target');
     this.el = {
@@ -34,7 +33,6 @@ class FloorPlan {
     });
   }
 
-  /** Remove current artwork and load next exhibition. */
   reloadExhibition() {
     // remove artworks
     if (this.artworks) {
@@ -69,7 +67,6 @@ class FloorPlan {
     }
   }
 
-  /** Place artworks in pre-defined positions. (see config.js) */
   placeArtworks() {
     const slots = [];
 
@@ -97,7 +94,6 @@ class FloorPlan {
     }
   }
 
-  /** Set mouse over state. */
   mouseOver(x, y) {
     var isHovered = [];
     for (var i=0, len=this.artworks.length; i<len; ++i) {
@@ -128,7 +124,6 @@ class FloorPlan {
     }
   }
 
-  /** On click. */
   click(x, y) {
     for (var i=0, len=this.artworks.length; i<len; ++i) {
       if (this.artworks[i].click(x, y, this.player.position)) {
@@ -137,7 +132,6 @@ class FloorPlan {
     }
   }
 
-  /** Display the artwork menu/ overlay. */
   openArtworkMenu(artwork) {
     // remove control arrows
     document.querySelector('#gallery-controls').classList.add('display-none');
@@ -174,18 +168,15 @@ class FloorPlan {
     this.domElement.classList.add('active');
   }
 
-  /** Remove the artwork overlay/ menu. */
   closeArtworkMenu() {
     document.querySelector('#gallery-controls').classList.remove('display-none');
     this.domElement.classList.remove('active');
   }
 
-  /** Move player toward artwork. */
   moveToArtwork(artwork) {
     this.player.moveToArtwork(artwork);
   }
 
-  /** Update artworks. */
   update(delta) {
     this.camera.getWorldDirection(this.cameraDirection);
     for (var i=0, lim=this.artworks.length; i<lim; ++i) {
@@ -193,7 +184,6 @@ class FloorPlan {
     }
   }
 
-  /** Draw selected artwork. */
   draw(ctx) {
     for (var i=0, len=this.artworks.length; i<len; ++i) {
       if (this.artworks[i].draw(ctx)) {
@@ -202,13 +192,11 @@ class FloorPlan {
     }
   }
 
-  /** Resize. */
   resize() {
     this.artworks.forEach(e => {
       e.resize();
     });
   }
-
 }
 
 export default FloorPlan;
