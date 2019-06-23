@@ -11,7 +11,7 @@ class Renderer {
     this.renderer.gammaInput = true;
     this.renderer.gammaOutput = true;
     this.renderer.gammaFactor = 2.25;
-    this.padding = {x: 64, y: 96, minX: 768, minY: 700}; // 480
+    this.padding = {x: 64, y: 96, minX: 768, minY: 700}; 
     this.setSize();
 
     // render passes

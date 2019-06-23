@@ -13,11 +13,15 @@
     border: $border;
     text-transform: uppercase;
     user-select: none;
+    font-family: $fontStackSerif;
   }
 
   h1 {
     @include pad(0, 1);
     font-size: $fontHuge;
+
+    font-family: $fontStackSerif;
+    
   }
 
   h2 {

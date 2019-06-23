@@ -1,14 +1,9 @@
 <?php
 function ajaxComment($comment_ID, $comment_status) {
-	// If it's an AJAX-submitted comment
 	if(isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest'){
-		// Get the comment data
 		$comment = get_comment($comment_ID);
-		// Allow the email to the author to be sent
 		wp_notify_postauthor($comment_ID, $comment->comment_type);
-		// Get the comment HTML from my custom comment HTML function
 		$commentContent = getCommentHTML($comment);
-		// Kill the script, returning the comment HTML
 		die($commentContent);
 	}
 }
@@ -70,7 +65,7 @@ function gallery_load_scripts() {
 	wp_enqueue_script('gallery_inflate', $dir . '/build/inflate.min.js');
 	wp_enqueue_script('gallery_collider', $dir . '/build/collider.min.js');
 	wp_enqueue_script('gallery_app', $dir . '/build/app.min.js');
-	wp_register_style('gallery_style', get_template_directory_uri() . '/build/style.css' );
+	wp_register_style('gallery_style', get_template_directory_uri() . '/build/style.min.css' );
 	wp_enqueue_style('gallery_style' );
 }
 

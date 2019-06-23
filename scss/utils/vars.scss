@@ -1,14 +1,14 @@
 // colours
-$colourPrimary: #e8e8e8;
+$black: #111;
+$white: #fff;
+$colourPrimary: #4c474b;
 $colourSecondary: #444;
-$colourBackground: #4c474b;
+$colourBackground: #e8e8e8;
 $colourBackgroundAlt: #2c272b;
-$colourAlt: #ff89da;
+$colourAlt: red;//#ff89da;
 $colourAltBlue: #89daff;
 $transparent: rgba($colourBackground, 0.5);
-$black: #000;
-$white: #eee;
-$colourGrid: rgba($white, 0.025);
+$colourGrid: rgba($black, 0.025);
 
 // sizes
 $space: 8px;
@@ -20,7 +20,8 @@ $tabletPortrait: 820px;
 $tablet: 1100px;
 
 // style
-$border: 1px solid $white;
+$border: 1px solid $black;
+$borderThick: $space solid $black;
 $borderAlt: 3px double $white;
 $boxShadow: 5px 5px 20px rgba($colourAlt, 0.4);
 $boxShadowAlt: 0px 15px 22px -8px rgba($colourAlt, 0.4);

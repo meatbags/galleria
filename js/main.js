@@ -32,7 +32,6 @@ class App {
     this.loop();
   }
 
-  /** Load the gallery. */
   load() {
     if (!this.loaded) {
       this.loaded = true;
@@ -43,7 +42,6 @@ class App {
     }
   }
 
-  /** Resize render surface and UI. */
   resize() {
     if (!this.isMobileExclusive) {
       this.renderer.resize();
@@ -52,18 +50,15 @@ class App {
     }
   }
 
-  /** Pause rendering. */
   deactivate() {
     this.active = false;
   }
 
-  /** Resume rendering. */
   activate() {
     this.active = true;
     this.now = performance.now();
   }
 
-  /** The main loop. */
   loop() {
     requestAnimationFrame(() => { this.loop(); });
     if (this.active && this.loaded) {

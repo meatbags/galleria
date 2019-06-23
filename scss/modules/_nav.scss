@@ -8,6 +8,9 @@
   z-index: $indexNav;
   pointer-events: none;
 
+  font-family: $fontStackSerif;
+  
+
   .nav__inner {
     @extend .ext-grid;
     background-color: $colourBackground;
