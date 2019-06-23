@@ -1,14 +1,13 @@
-/** 2D heads-up display renderer. */
+/** Render 2D Overlays */
+
+import Config from './config';
 
 class Canvas2D {
   constructor(root, domElement, canvasTarget) {
-    this.root = root;
     this.cvs = document.createElement('canvas');
     this.ctx = this.cvs.getContext('2d');
-    this.domElement = domElement;
-    this.canvasTarget = canvasTarget;
+    document.querySelector('#canvas-target').appendChild(this.cvs);
     this.resize();
-    this.domElement.appendChild(this.cvs);
 
     // draw settings
     this.prompt = {};
@@ -16,7 +15,15 @@ class Canvas2D {
     this.prompt.click = {alpha: {current: 0, min: 0, max: 1}};
   }
 
-  /** Clear the canvas. */
+  bind(root) {
+    this.ref = {};
+    this.ref.player = root.modules.player;
+    this.ref.renderer = root.modules.renderer;
+
+    // bind events
+    window.addEventListener('resize', () => { this.resize(); });
+  }
+
   clear() {
     this.ctx.clearRect(0, 0, this.cvs.width, this.cvs.height);
     this.ctx.font = '15px Karla';
@@ -26,29 +33,22 @@ class Canvas2D {
     this.ctx.lineCap = 'round';
   }
 
-  /** Resize canvas. */
   resize() {
-    //const rect = this.domElement.getBoundingClientRect();
-    this.cvs.width = this.canvasTarget.width;
-    this.cvs.height = this.canvasTarget.height;
+    this.cvs.width = window.innerWidth * Config.renderer.width;
+    this.cvs.height = window.innerHeight * Config.renderer.height;
   }
 
-  /** Draw click prompt. */
   promptClick(text, active, x, y) {
-    if (active) {
-      this.prompt.click.alpha.current += (this.prompt.click.alpha.max - this.prompt.click.alpha.current) * 0.2;
-    } else {
-      this.prompt.click.alpha.current += (this.prompt.click.alpha.min - this.prompt.click.alpha.current) * 0.2;
-    }
+    this.prompt.click.alpha.current += active
+      ? (this.prompt.click.alpha.max - this.prompt.click.alpha.current) * 0.2
+      : (this.prompt.click.alpha.min - this.prompt.click.alpha.current) * 0.2;
 
-    // draw
     if (this.prompt.click.alpha.current > 0) {
       this.ctx.globalAlpha = this.prompt.click.alpha.current;
       this.ctx.fillText(text, x + 12, y + 12);
     }
   }
 
-  /** Draw touchmove prompt. */
   promptTouchMove(active) {
     // animate in/out prompt
     if (active) {
@@ -76,23 +76,20 @@ class Canvas2D {
     }
   }
 
-  /** Signify development mode. */
   promptGodMode() {
     this.ctx.globalAlpha = 1;
     this.ctx.fillText('You can fly', 20, this.cvs.height - 40);
-    const x = Math.round(this.root.player.position.x * 10) / 10;
-    const y = Math.round(this.root.player.position.y * 10) / 10;
-    const z = Math.round(this.root.player.position.z * 10) / 10;
-    const rx = Math.round(this.root.player.rotation.x * 100) / 100;
+    const x = Math.round(this.ref.player.position.x * 10) / 10;
+    const y = Math.round(this.ref.player.position.y * 10) / 10;
+    const z = Math.round(this.ref.player.position.z * 10) / 10;
+    const rx = Math.round(this.ref.player.rotation.x * 100) / 100;
     this.ctx.fillText(`${x}, ${y}, ${z}, ${rx}`, 20, this.cvs.height - 20);
   }
 
-  /** Development info. */
   drawDevOverlay() {
     //
   }
 
-  /** Get the canvas 2d context. */
   getContext() {
     return this.ctx;
   }

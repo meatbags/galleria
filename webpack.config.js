@@ -4,8 +4,8 @@ var MiniCssExtract = require("mini-css-extract-plugin");
 var UglifyJs = require("uglifyjs-webpack-plugin");
 var TerserJs = require("terser-webpack-plugin");
 var OptimizeCSSAssets = require("optimize-css-assets-webpack-plugin");
-var appName = 'CLM';
-var pathJS = './js/main.js';
+var appName = 'COMGALLERY';
+var pathJS = './js/app.js';
 var pathSCSS = './scss/main.js';
 var pathOutput = 'build';
 

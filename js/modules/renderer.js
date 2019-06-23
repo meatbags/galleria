@@ -1,67 +1,58 @@
-/** The three.js renderer and effect composer. */
-import '../lib/glsl';
+/** Renderer */
+
+import '../glsl';
+import Config from './config';
 
 class Renderer {
-  constructor(root, scene) {
-    this.root = scene;
-    this.scene = scene.scene;
-    this.camera = scene.camera.camera;
+  constructor() {
     this.renderer = new THREE.WebGLRenderer({});
     this.renderer.setClearColor(0x444444, 1);
     this.renderer.gammaInput = true;
     this.renderer.gammaOutput = true;
     this.renderer.gammaFactor = 2.25;
-    this.padding = {x: 64, y: 96, minX: 768, minY: 700}; 
-    this.setSize();
+
+    // add to doc
+    document.querySelector('#canvas-target').appendChild(this.renderer.domElement);
+  }
+
+  bind(root) {
+    this.ref = {};
+    this.ref.scene = root.modules.scene.scene;
+    this.ref.camera = root.modules.camera.camera;
 
     // render passes
+    this.width = window.innerWidth * Config.renderer.width;
+    this.height = window.innerHeight * Config.renderer.height;
+    this.size = new THREE.Vector2(this.width, this.height);
     const strength = 0.5;
     const radius = 0.125;
     const threshold = 0.96;
-    this.passRender = new THREE.RenderPass(this.scene, this.camera);
+    this.passRender = new THREE.RenderPass(this.ref.scene, this.ref.camera);
     this.passPoster = new THREE.PosterPass(this.size);
     this.passBloom = new THREE.UnrealBloomPass(this.size, strength, radius, threshold);
     this.passBloom.renderToScreen = true;
 
-    // compose
+    // composer
     this.composer = new THREE.EffectComposer(this.renderer);
     this.composer.addPass(this.passRender);
     this.composer.addPass(this.passPoster);
     this.composer.addPass(this.passBloom);
 
-    // events, doc
-    this.domElement = document.querySelector('#canvas-target');
-    this.domElement.appendChild(this.renderer.domElement);
+    // bind events
     this.resize();
-    scene.resize();
+    window.addEventListener('resize', () => { this.resize(); });
   }
 
-  /** Calculate size. */
-  setSize() {
-    const w = Math.min(window.innerWidth, Math.max(this.padding.minX, window.innerWidth - this.padding.x * 2));
-    const h = Math.min(window.innerHeight, Math.max(this.padding.minY, window.innerHeight - this.padding.y * 2));
-    this.width = w;
-    this.height = h;
-    if (!this.size) {
-      this.size = new THREE.Vector2(this.width, this.height);
-    } else {
-      this.size.x = this.width;
-      this.size.y = this.height;
-    }
-  }
-
-  /** Resize composer. */
   resize() {
-    this.setSize();
-    this.domElement.style.width = `${this.width}px`;
-    this.domElement.style.height = `${this.height}px`;
+    this.width = window.innerWidth * Config.renderer.width;
+    this.height = window.innerHeight * Config.renderer.height;
+    this.size.set(this.width, this.height);
     this.renderer.setSize(this.width, this.height);
     this.composer.setSize(this.width, this.height);
     this.passBloom.setSize(this.width, this.height);
   }
 
-  /** Render. */
-  draw(delta) {
+  render(delta) {
     this.composer.render(delta);
   }
 }

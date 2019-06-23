@@ -1,22 +1,18 @@
-/** Control surface and player interface. Handles user input. */
+/** UI surface */
 
-import Canvas2D from './canvas_2d';
-import FloorPlan from './ui/artwork/floor_plan';
-import Mouse from './ui/interaction/mouse';
-import Keyboard from './ui/interaction/keyboard';
-import { Clamp } from './utils/maths';
+import Config from './config';
+import Mouse from '../ui/mouse';
+import Keyboard from '../ui/keyboard';
+import Clamp from '../maths/clamp';
+import IsMobileDevice from '../utils/is_mobile_device';
 
 class Surface {
-  constructor(scene, renderer, isMobile) {
-    this.scene = scene;
-    this.isMobile = isMobile;
-    this.player = this.scene.player;
+  constructor() {
     this.domElement = document.querySelector('#canvas-target');
     this.domArtworkTarget = document.querySelector('#artwork-target');
-    this.centre = {x:0, y:0};
-    this.setSize();
     this.rotation = new THREE.Vector2();
     this.timestamp = null;
+    const isMobile = IsMobileDevice();
     this.threshold = {click: 225, pan: 200, mouseDelta: isMobile ? 0.5 : 0.25};
     this.scaleRotation = {x: isMobile ? 0.75 : 1, y: 1};
 
@@ -44,187 +40,117 @@ class Surface {
       right: document.querySelector('#ctrl-R')
     };
     this.keyboard = new Keyboard((key) => { this.onKeyboard(key); });
-    if (!this.isMobile) {
-      this.mouse = new Mouse(
-        this.domElement,
-        (e) => { this.onMouseDown(e); },
-        (e) => { this.onMouseMove(e); },
-        (e) => { this.onMouseUp(e); },
-        this.isMobile
-      );
-    } else {
-      this.mouse = new Mouse(
-        this.domElement,
-        (e) => {
-          e.preventDefault();
-          this.onMouseDown(this.processTouch(e));
-        },
-        (e) => {
-          e.preventDefault();
-          this.onMouseMove(this.processTouch(e));
-        },
-        (e) => {
-          e.preventDefault();
-          this.onMouseUp(this.processTouch(e));
-        },
-        this.isMobile
-      );
-    }
-
-    // 2d overlay
-    this.canvas = new Canvas2D(this, this.domElement, renderer.renderer.domElement);
-
-    // artwork handler
-    this.floorPlan = new FloorPlan(this, isMobile);
+    this.mouse = new Mouse({
+      domTarget: this.domElement,
+      onMouseDown: evt => { this.onMouseDown(evt); },
+      onMouseMove: evt => { this.onMouseMove(evt); },
+      onMouseUp: evt => { this.onMouseUp(evt); },
+    });
   }
 
-  /** Get touch event coordinates. */
-  processTouch(e) {
-    var x = 0;
-    var y = 0;
-    if (e.targetTouches && e.targetTouches.length) {
-      const rect = this.domElement.getBoundingClientRect();
-      const touch = e.targetTouches[0];
-      x = touch.pageX - rect.left;
-      y = touch.pageY - rect.top;
-    }
-    return {offsetX: x, offsetY: y};
+  bind(root) {
+    this.ref = {};
+    this.ref.scene = root.modules.scene;
+    this.ref.player = root.modules.player;
+    this.ref.canvas2d = root.modules.canvas2d;
+    this.ref.floorPlan = root.modules.floorPlan;
+
+    this.resize();
+    window.addEventListener('resize', () => { this.resize(); });
   }
 
-  /** Handle mouse down. */
-  onMouseDown(e) {
+  onMouseDown(evt) {
     // record player rotation
-    this.rotation.y = this.player.rotation.y;
-    this.rotation.x = this.player.rotation.x;
-    this.timestamp = Date.now();
-    this.mouse.start(e);
-
-    // set cursor position mobile
-    if (this.isMobile) {
-      this.onMouseMove(e);
-    }
+    this.rotation.y = this.ref.player.rotation.y;
+    this.rotation.x = this.ref.player.rotation.x;
+    this.timestamp = performance.now();
   }
 
-  /** Handle mouse move. */
-  onMouseMove(e) {
-    this.mouse.move(e);
-
+  onMouseMove(evt) {
     if (this.mouse.active) {
       // update player rotation
-      if (!(this.player.keys.left || this.player.keys.right)) {
+      if (!(this.ref.player.keys.left || this.ref.player.keys.right)) {
         const yaw = this.rotation.x + (this.mouse.delta.x / this.centre.x) * this.scaleRotation.x;
-        const pitch = Clamp(this.rotation.y + (this.mouse.delta.y / this.centre.y) * this.scaleRotation.y, this.player.minPitch, this.player.maxPitch);
-        if (pitch == this.player.minPitch || pitch == this.player.maxPitch) {
-          this.mouse.origin.y = e.offsetY;
+        const pitch = Clamp(this.rotation.y + (this.mouse.delta.y / this.centre.y) * this.scaleRotation.y, this.ref.player.minPitch, this.ref.player.maxPitch);
+
+        // reset pitch origin if clamped
+        if (pitch == this.ref.player.minPitch || pitch == this.ref.player.maxPitch) {
+          this.mouse.origin.y = evt.clientY;
           this.rotation.y = pitch;
         }
-        this.player.setRotation(pitch, yaw);
+
+        this.ref.player.setRotation(pitch, yaw);
       }
     } else {
       // update artwork nodes
-      this.floorPlan.mouseOver(this.mouse.x, this.mouse.y);
+      this.ref.floorPlan.mouseOver(this.mouse.position.x, this.mouse.position.y);
     }
   }
 
-  /** Handle mouse up. */
-  onMouseUp(e) {
-    this.mouse.stop();
-    if (Date.now() - this.timestamp < this.threshold.click && Math.hypot(this.mouse.delta.x, this.mouse.delta.y) < window.innerWidth * this.threshold.mouseDelta) {
-       this.floorPlan.click(this.mouse.x, this.mouse.y);
+  onMouseUp(evt) {
+    const dt = performance.now() - this.timestamp;
+    const dx = Math.hypot(this.mouse.delta.x, this.mouse.delta.y);
+    if (dt < this.threshold.click &&  dx < window.innerWidth * this.threshold.mouseDelta) {
+      console.log('click!')
+      this.ref.floorPlan.click(this.mouse.position.x, this.mouse.position.y);
     }
   }
 
-  /** Handle control (on screen) up. */
-  onControlUp(e) {
-    switch(e.dataset.dir) {
-      case 'up':
-        this.player.keys.up = false;
-        break;
-      case 'down':
-        this.player.keys.down = false;
-        break;
-      case 'left':
-        this.player.keys.left = false;
-        break;
-      case 'right':
-        this.player.keys.right = false;
-        break;
-      default:
-        break;
-    }
+  onControlUp(el) {
+    // up, down, left, right
+    this.ref.players.keys[el.dataset.dir] = false;
     e.classList.remove('active');
   }
 
-  /** Handle control (on screen) down. */
   onControlDown(e) {
-    switch(e.dataset.dir) {
-      case 'up':
-        this.player.keys.up = true;
-        break;
-      case 'down':
-        this.player.keys.down = true;
-        break;
-      case 'left':
-        this.player.keys.left = true;
-        break;
-      case 'right':
-        this.player.keys.right = true;
-        break;
-      default:
-        break;
-    }
+    // up, down, left, right
+    this.ref.players.keys[el.dataset.dir] = true;
     e.classList.add('active');
   }
 
-  /** Handle control (on screen) mouse leave. */
   onControlLeave(e) {
     this.onControlUp(e);
   }
 
-  /** Handle keyboard event. */
   onKeyboard(key) {
     if (!this.domArtworkTarget.classList.contains('active')) {
       switch (key) {
         case 'a': case 'A': case 'ArrowLeft':
-          this.player.keys.left = this.keyboard.keys[key];
-          if (this.player.keys.left) {
-            this.controls.left.classList.add('active');
-          } else {
-            this.controls.left.classList.remove('active');
-          }
+          this.ref.player.keys.left = this.keyboard.keys[key];
+          this.controls.left.classList[this.ref.player.keys.left ? 'add' : 'remove']('active');
           break;
         case 'd': case 'D': case 'ArrowRight':
-          this.player.keys.right = this.keyboard.keys[key];
-          if (this.player.keys.right) {
+          this.ref.player.keys.right = this.keyboard.keys[key];
+          if (this.ref.player.keys.right) {
             this.controls.right.classList.add('active');
           } else {
             this.controls.right.classList.remove('active');
           }
           break;
         case 'w': case 'W': case 'ArrowUp':
-          this.player.keys.up = this.keyboard.keys[key];
-          if (this.player.keys.up) {
+          this.ref.player.keys.up = this.keyboard.keys[key];
+          if (this.ref.player.keys.up) {
             this.controls.up.classList.add('active');
           } else {
             this.controls.up.classList.remove('active');
           }
           break;
         case 's': case 'S': case 'ArrowDown':
-          this.player.keys.down = this.keyboard.keys[key];
-          if (this.player.keys.down) {
+          this.ref.player.keys.down = this.keyboard.keys[key];
+          if (this.ref.player.keys.down) {
             this.controls.down.classList.add('active');
           } else {
             this.controls.down.classList.remove('active');
           }
           break;
         case ' ':
-          this.player.keys.jump = this.keyboard.keys[key];
+          this.ref.player.keys.jump = this.keyboard.keys[key];
           break;
         case 'x': case 'X':
           // toggle noclip on ctrl+x
           if (this.keyboard.keys['x'] || this.keyboard.keys['X']) {
             if (this.keyboard.isControl()) {
-              this.player.toggleNoclip();
+              this.ref.player.toggleNoclip();
             }
             this.keyboard.release('x');
             this.keyboard.release('X');
@@ -236,36 +162,31 @@ class Surface {
     }
   }
 
-  /** Find the centre of the canvas. */
-  setSize() {
-    const rect = this.domElement.getBoundingClientRect();
-    this.centre.x = rect.width / 2;
-    this.centre.y = rect.height / 2;
-  }
-  
-  /** Resize. */
   resize() {
-    this.setSize();
-    this.canvas.resize();
-    this.floorPlan.resize();
+    this.width = window.innerWidth * Config.renderer.width;
+    this.height = window.innerHeight * Config.renderer.height;
+    this.centre = {
+      x: this.width / 2,
+      y: this.height / 2,
+    };
+    this.domElement.style.width = `${this.width}px`;
+    this.domElement.style.height = `${this.height}px`;
   }
 
-  /** Update the gallery. */
   update(delta) {
-    this.floorPlan.update(delta);
+    this.ref.floorPlan.update(delta);
   }
 
-  /** Draw the overlay canvas. */
-  draw() {
-    this.canvas.clear();
-    this.floorPlan.draw(this.canvas.getContext());
-    this.canvas.promptTouchMove((this.mouse.active && (Date.now() - this.timestamp > this.threshold.pan)));
-    //this.canvas.promptClick(this.activeTitle, (!this.mouse.active && this.floorPlan.activeArtwork != null), this.mouse.x, this.mouse.y);
-    if (this.player.noclip) {
-      this.canvas.promptGodMode();
-      this.canvas.drawDevOverlay();
+  render() {
+    this.ref.canvas2d.clear();
+    this.ref.floorPlan.draw(this.ref.canvas2d.getContext());
+    this.ref.canvas2d.promptTouchMove((this.mouse.active && (Date.now() - this.timestamp > this.threshold.pan)));
+
+    if (this.ref.player.noclip) {
+      this.ref.canvas2d.promptGodMode();
+      this.ref.canvas2d.drawDevOverlay();
     } else {
-      this.canvas.drawDevOverlay();
+      this.ref.canvas2d.drawDevOverlay();
     }
   }
 }
