@@ -1,0 +1,30 @@
+div, * {
+	box-sizing: border-box;
+	outline: 1px dashed rgba(black, 0.25);
+}
+
+html {
+	&.freeze {
+		position: fixed;
+		overflow-y: scroll;
+    width: 100%;
+	}
+}
+
+body {
+	font-family: $fontStack;
+	font-size: $fontSize;
+	line-height: $lineHeight;
+	letter-spacing: $letterSpacing;
+	color: $colour;
+	overflow-x: hidden;
+	touch-action: none;
+}
+
+.admin-notify {
+	z-index: 9999;
+	position: fixed;
+	top: 0;
+	left: 0;
+	@include padding(1, 1);
+}

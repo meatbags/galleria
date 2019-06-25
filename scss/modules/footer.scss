@@ -1,0 +1,17 @@
+.footer {
+  height: $heightFooter;
+
+  .footer__inner {
+    width: 100%;
+    height: 100%;
+    display: flex;
+
+    .footer__social-media {
+      width: 50%;
+    }
+
+    .footer__newsletter {
+      width: 50%;
+    }
+  }
+}

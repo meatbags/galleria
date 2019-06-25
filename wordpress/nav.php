@@ -1,15 +1,13 @@
-<div class='nav pane-content-nav'>
-  <div class='nav__inner'>
-    <div id='nav-content' class='list'>
-      <div data-active='#page-exhibitions' class='item active'><span class='mobile-hide'>Exhibitions</span><span class='mobile-show'>Exhibit</span></div>
-      <div data-active='#page-archive' class='item'>Archive</div>
-      <div data-active='#page-about' class='item'>About</div>
-      <div data-active='#page-contact' class='item'><span class='mobile-hide'>Submissions</span><span class='mobile-show'>Contact</span></div>
-    </div>
-    <div id='nav-gallery' class='list'>
-      <div id='nav-item-gallery' class='item active close-gallery-menu'>The Gallery</div>
-      <div id='nav-item-controls' data-active='#menu-controls' class='item'>Controls</div>
-      <div class='item close-gallery'>Home</div>
-    </div>
+<nav class='nav'>
+  <div id='nav-content' class='nav__inner active'>
+    <div class='nav__item' data-target='#page-home'>Featured</div>
+    <div class='nav__item' data-target='#page-archive'>Archive</div>
+    <div class='nav__item' data-target='#page-about'>About</div>
+    <div class='nav__item' data-target='#page-submissions'>Submissions</div>
   </div>
-</div>
+  <div id='nav-gallery' class='nav__inner'>
+    <div class='nav__item'>Gallery</div>
+    <div class='nav__item'>Controls</div>
+    <div class='nav__item'>Home</div>
+  </div>
+</nav>

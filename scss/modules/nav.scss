@@ -1,0 +1,38 @@
+.nav {
+  position: absolute;
+  width: 100%;
+  height: $heightNav;
+  font-family: $fontStackSerif;
+  user-select: none;
+
+  .nav__inner {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    transition: transform $transitionMedium;
+
+    .nav__item {
+      @include padding(2, 1);
+      cursor: pointer;
+    }
+  }
+
+  #nav-gallery {
+    transform: translateX(-100%);
+    &.active {
+      transform: translateX(0);
+    }
+  }
+
+  #nav-content {
+    transform: translateX(100%);
+    &.active {
+      transform: translateX(0);
+    }
+  }
+}

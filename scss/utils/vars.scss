@@ -1,45 +1,20 @@
-// colours
+// colour
 $black: #111;
 $white: #fff;
-$colourPrimary: #4c474b;
-$colourSecondary: #444;
-$colourBackground: #e8e8e8;
-$colourBackgroundAlt: #2c272b;
-$colourAlt: red;//#ff89da;
-$colourAltBlue: #89daff;
-$transparent: rgba($colourBackground, 0.5);
-$colourGrid: rgba($black, 0.025);
+$colour: #4c474b;
 
-// sizes
+// size
 $space: 8px;
-$gridSize: $space * 2;
-$navHeight: $space * 6;
-$mobile: 500px;
-$mobileLandscape: 720px;
-$tabletPortrait: 820px;
-$tablet: 1100px;
+$heightNav: 40px;
+$heightFooter: 200px;
 
-// style
-$border: 1px solid $black;
-$borderThick: $space solid $black;
-$borderAlt: 3px double $white;
-$boxShadow: 5px 5px 20px rgba($colourAlt, 0.4);
-$boxShadowAlt: 0px 15px 22px -8px rgba($colourAlt, 0.4);
-$backgroundGrid: linear-gradient(to right, $colourGrid 1px, transparent 1px), linear-gradient(to bottom, $colourGrid 1px, transparent 1px);
-
-// index
-$indexBody: 1;
-$indexGrid: 3;
-$indexPaneContent: 4;
-$indexControls: 8;
-$indexLogo: 9;
-$indexNav: 9;
-$indexMobileLogo: 10;
-$indexAdmin: 20;
-$indexMobileWarning: 50;
+// breakpoints
+$siteWidth: 1160px;
+$tablet: 1024px;
+$tabletPortrait: 800px;
+$mobile: 700px;
 
 // animation
-$transitionFast: 0.35s;
-$transition: 0.5s;
-$transitionSlow: 1.25s;
-$transitionVerySlow: 2.5s;
+$transition: 0.35s;
+$transitionMedium: 0.7s;
+$transitionSlow: 1s;
