@@ -6,6 +6,7 @@ import VideoElement from './video_element';
 class Artwork {
   constructor(root, index, data, isMobile) {
     this.root = root;
+    this.ref = { nav: root.ref.nav };
     this.id = 'artwork-' + index;
     this.index = index;
     this.data = data;
@@ -137,12 +138,12 @@ class Artwork {
 
       // close menu if not current artwork
       if (!this.isArtworkMenuMine()) {
-        this.root.closeArtworkMenu();
+        this.ref.nav.closeArtworkInfo();
       }
 
       // open menu
       if (this.artworkMenuActive && this.node.buttonActive && this.node.buttonHover) {
-        this.root.openArtworkMenu(this);
+        this.ref.nav.openArtworkInfo(this);
       }
 
       return true;
@@ -156,13 +157,14 @@ class Artwork {
   }
 
   isArtworkMenuMine() {
-    const img = this.root.el.image.querySelector('img');
+    const target = this.ref.nav.el.gallery.artworkInfoPopup;
+    const img = target.querySelector('img');
     if (img) {
       return (
-        this.root.domElement.dataset.active == this.id && img.src == this.data.url
+        target.dataset.id === this.id && img.src === this.data.url
       );
     } else {
-      return (this.root.domElement.dataset.active == this.id);
+      return (target.dataset.id === this.id);
     }
   }
 

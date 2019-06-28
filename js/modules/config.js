@@ -3,7 +3,7 @@
 const Config = {
   renderer: {
     width: 1.0,
-    height: 0.8,
+    height: 0.82,
   },
   floorPlan: {
     artworkPositions: [

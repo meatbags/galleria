@@ -4,6 +4,8 @@ div, * {
 }
 
 html {
+	touch-action: manipulation;
+
 	&.freeze {
 		position: fixed;
 		overflow-y: scroll;
@@ -30,17 +32,18 @@ body {
 .admin-notify {
 	z-index: 999;
 	position: fixed;
-	top: calc(100vh - #{$space * 4});
+	top: 0;
 	left: 0;
-	width: 100%;
+	width: 25%;
 	height: $space * 4;
 	@include padding(2, 0);
 	display: flex;
 	align-items: center;
 	font-size: $fontSizeSmall;
-	background: $colour;
+	background: linear-gradient(to right, $black, transparent);
 	color: $backgroundColour;
 	opacity: 0.5;
+	pointer-events: none;
 }
 
 a {

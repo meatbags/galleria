@@ -17,7 +17,7 @@ $sizeLogo: 300px;
 // style
 $border: 1px solid $black;
 $borderThick: $space solid $black;
-$boxShadow: 2px 2px 5px rgba(blue, 0.75);
+$boxShadow: 5px 5px 0px black;
 
 // breakpoints
 $siteWidth: 1160px;
@@ -34,5 +34,5 @@ $indexLoadingScreen: 200;
 // animation
 $transition: 0.35s;
 $transitionFast: 0.25s;
-$transitionMedium: 0.7s;
-$transitionSlow: 1s;
+$transitionMedium: 1.1s;
+$transitionSlow: 1.5s;

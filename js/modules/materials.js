@@ -72,24 +72,6 @@ class Materials {
         mat.normalScale.x = 0.25;
         mat.normalScale.y = 0.25;
         break;
-      case 'plastic':
-        //mat.emissive = new THREE.Color(1, .95, .95);
-        //mat.emissiveIntensity = .75;
-        break;
-      case 'tree_trunk_1':
-        mat.vertexColors = THREE.NoColors;
-        //mat.normalScale.x = 0.1;
-        //mat.normalScale.y = 0.1;
-        break;
-      case 'tree_leaves_1':
-        mat.vertexColors = THREE.NoColors;
-        console.log(mat);
-        break;
-      case 'pollen_1':
-        mat.side = THREE.DoubleSide;
-        //mat.lights = false;
-        mat.depthWrite = false;
-        break;
       default:
         break;
     }

@@ -63,8 +63,7 @@ class Player {
     this.ref.scene.scene.add(this.group);
   }
 
-  onReload() {
-    // reset position
+  reset() {
     this.position.set(-24, 1, 16);
     this.rotation.set(Math.PI * 0.55, Math.PI * -0.05);
     this.target.position.copy(this.position);
@@ -219,7 +218,7 @@ class Player {
       this.position.y = Blend(this.position.y, this.target.position.y, this.adjust.maximum);
       this.position.z = Blend(this.position.z, this.target.position.z, this.adjust.maximum);
     }
-    
+
     if (!this.automove.active.rotation) {
       this.rotation.x += MinAngleBetween(this.rotation.x, this.target.rotation.x) * this.adjust.normal;
       this.rotation.y = Blend(this.rotation.y, this.target.rotation.y, this.adjust.normal);

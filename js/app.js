@@ -6,8 +6,8 @@ import Gallery from './modules/gallery';
 class App {
   constructor() {
     this.modules = {
-      nav: new Nav(),
       gallery: new Gallery(),
+      nav: new Nav(),
     };
 
     Object.keys(this.modules).forEach(key => {

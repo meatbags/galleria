@@ -128,10 +128,12 @@ template {
 div, * {
   box-sizing: border-box; }
 
-html.freeze {
-  position: fixed;
-  overflow-y: scroll;
-  width: 100%; }
+html {
+  touch-action: manipulation; }
+  html.freeze {
+    position: fixed;
+    overflow-y: scroll;
+    width: 100%; }
 
 html, body {
   width: 100%; }
@@ -150,9 +152,9 @@ body {
 .admin-notify {
   z-index: 999;
   position: fixed;
-  top: calc(100vh - 32px);
+  top: 0;
   left: 0;
-  width: 100%;
+  width: 25%;
   height: 32px;
   padding-left: 16px;
   padding-right: 16px;
@@ -161,9 +163,10 @@ body {
   display: flex;
   align-items: center;
   font-size: 12px;
-  background: #2c272b;
+  background: linear-gradient(to right, #111, transparent);
   color: #fff;
-  opacity: 0.5; }
+  opacity: 0.5;
+  pointer-events: none; }
 
 a {
   color: red; }
@@ -203,11 +206,14 @@ ul {
 
 .nav {
   position: absolute;
+  top: 0;
+  left: 0;
   width: 100%;
   height: 40px;
   font-family: "Playfair Display", sans-serif;
   user-select: none;
-  z-index: 100; }
+  z-index: 100;
+  pointer-events: all; }
   .nav .nav__inner {
     position: absolute;
     top: 0;
@@ -217,7 +223,6 @@ ul {
     display: flex;
     justify-content: flex-end;
     align-items: flex-end;
-    transition: transform 0.7s;
     padding-left: 32px;
     padding-right: 32px;
     padding-top: 0px;
@@ -237,14 +242,6 @@ ul {
       .nav .nav__inner .nav__item.active {
         color: red;
         border-color: red; }
-  .nav #nav-gallery {
-    transform: translateX(-100%); }
-    .nav #nav-gallery.active {
-      transform: translateX(0); }
-  .nav #nav-content {
-    transform: translateX(100%); }
-    .nav #nav-content.active {
-      transform: translateX(0); }
 
 .wrapper {
   top: 0;
@@ -253,19 +250,162 @@ ul {
   min-height: 100vh;
   padding-top: 40px;
   z-index: 10;
+  pointer-events: none;
   position: relative;
-  pointer-events: none; }
+  transform: translateX(100vw);
+  transition: transform 1.1s; }
+  .wrapper.active {
+    transform: translateX(0); }
+
+.gallery {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  transform: translateX(-100vw);
+  transition: transform 1.1s; }
+  .gallery.active {
+    transform: translateX(0); }
+  .gallery .gallery__inner .canvas-wrapper .canvas-wrapper__inner.clickable {
+    cursor: pointer; }
+  .gallery .gallery__inner .canvas-wrapper .canvas-wrapper__inner canvas {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%); }
+  .gallery .gallery__popup-artwork-info {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 80vw;
+    height: 60vh;
+    opacity: 0;
+    pointer-events: none;
+    display: flex;
+    align-items: flex-end;
+    background: linear-gradient(to top, #fff, #ffdede); }
+    .gallery .gallery__popup-artwork-info.active {
+      opacity: 1;
+      pointer-events: all; }
+    .gallery .gallery__popup-artwork-info .popup-artwork-info__image {
+      width: 60%;
+      height: 100%;
+      padding-left: 32px;
+      padding-right: 32px;
+      padding-top: 16px;
+      padding-bottom: 16px;
+      background: linear-gradient(to top, #fff, #ffdede); }
+      .gallery .gallery__popup-artwork-info .popup-artwork-info__image .image {
+        width: 100%;
+        height: 100%; }
+        .gallery .gallery__popup-artwork-info .popup-artwork-info__image .image img {
+          width: 100%;
+          height: 100%;
+          object-fit: contain; }
+    .gallery .gallery__popup-artwork-info .popup-artwork-info__details {
+      width: 40%;
+      height: 100%;
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      flex-direction: column;
+      padding-left: 16px;
+      padding-right: 16px;
+      padding-top: 16px;
+      padding-bottom: 16px; }
+      .gallery .gallery__popup-artwork-info .popup-artwork-info__details .title {
+        font-size: 40px;
+        font-family: "Playfair Display", sans-serif; }
+      .gallery .gallery__popup-artwork-info .popup-artwork-info__details .subtitle {
+        text-transform: uppercase;
+        font-size: 12px; }
+      .gallery .gallery__popup-artwork-info .popup-artwork-info__details .link {
+        text-transform: uppercase;
+        font-size: 12px; }
+    .gallery .gallery__popup-artwork-info .close {
+      position: absolute;
+      top: 0;
+      right: 0;
+      font-size: 40px;
+      padding-left: 8px;
+      padding-right: 8px;
+      padding-top: 0px;
+      padding-bottom: 0px;
+      cursor: pointer; }
+  .gallery .gallery__popup-gallery-controls {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: #fff;
+    opacity: 0;
+    pointer-events: none; }
+    .gallery .gallery__popup-gallery-controls.active {
+      opacity: 1;
+      pointer-events: all; }
+  .gallery .gallery__controls {
+    position: absolute;
+    bottom: 10%;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+    pointer-events: none; }
+    .gallery .gallery__controls.active {
+      opacity: 1;
+      pointer-events: all; }
+    .gallery .gallery__controls .gallery__control-block {
+      padding-left: 0px;
+      padding-right: 0px;
+      padding-top: 0px;
+      padding-bottom: 0px; }
+      .gallery .gallery__controls .gallery__control-block .control {
+        cursor: pointer;
+        padding-left: 8px;
+        padding-right: 8px;
+        padding-top: 4px;
+        padding-bottom: 4px; }
+        .gallery .gallery__controls .gallery__control-block .control svg {
+          transition: 0.25s;
+          fill: transparent; }
+        .gallery .gallery__controls .gallery__control-block .control.active svg {
+          transform: scale(1.2, 1.2);
+          fill: red; }
 
 .logo {
   border: 1px solid #111;
   position: fixed;
   width: 300px;
   height: 300px;
-  top: 50%;
-  left: 25%;
-  transform: translate(-50%, -50%);
+  top: calc(50% - 150px);
+  left: calc(25% - 150px);
+  transform: translateX(100vw);
   z-index: 5;
-  cursor: pointer; }
+  cursor: pointer;
+  transition: transform 1.1s; }
+  .logo.active {
+    transform: translateX(0); }
+  .logo .logo__prompt {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    padding-left: 8px;
+    padding-right: 8px;
+    padding-top: 8px;
+    padding-bottom: 8px;
+    font-family: "Playfair Display", sans-serif; }
+    .logo .logo__prompt .logo__prompt-loading {
+      display: none; }
+    .logo .logo__prompt.loading .logo__prompt-loading {
+      display: block; }
+    .logo .logo__prompt.loading .logo__prompt-ready {
+      display: none; }
 
 .page {
   display: none;

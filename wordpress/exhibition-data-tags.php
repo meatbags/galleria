@@ -43,7 +43,5 @@ function getExhibitionDataTags($fields) { ?>
     <?php endforeach; ?>
   </div>
   <?php $custom = get_field('custom_section_installation'); ?>
-  <?php if ($custom): ?>
   <div class='section__custom-value' data-custom-value='<?php echo $custom; ?>' style='display:none'></div>
-  <?php endif; ?>
 <?php } ?>

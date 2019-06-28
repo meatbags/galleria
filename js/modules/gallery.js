@@ -1,5 +1,16 @@
 /** Gallery entry point */
 
+import Camera from './camera';
+import Canvas2D from './canvas_2d';
+import FloorPlan from './floor_plan';
+import Lighting from './lighting';
+import Map from './map';
+import Materials from './materials';
+import Player from './player';
+import Renderer from './renderer';
+import Scene from './scene';
+import Surface from './surface';
+
 class Gallery {
   constructor() {
     this.modules = {
@@ -15,6 +26,12 @@ class Gallery {
       canvas2d: new Canvas2D(),
     };
 
+  }
+
+  bind(root) {
+    this.ref = {};
+    this.ref.nav = root.modules.nav;
+
     // bind modules
     Object.keys(this.modules).forEach(key => {
       this.modules[key].bind(this);
@@ -24,12 +41,19 @@ class Gallery {
     this.loop();
   }
 
-  bind(root) {
-    this.ref = {};
-  }
-
   load(data) {
-    console.log(data);
+    this.modules.player.reset();
+    this.modules.scene.reset();
+    this.modules.map.load(data).then(() => {
+      this.modules.floorPlan.load(data);
+      this.modules.lighting.load(data);
+
+      const target = document.querySelector('#open-gallery-prompt');
+      if (target) {
+        target.classList.remove('loading');
+        target.classList.add('prompt-action');
+      }
+    });
   }
 
   start() {

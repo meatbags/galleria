@@ -8,8 +8,10 @@ import IsMobileDevice from '../utils/is_mobile_device';
 
 class Surface {
   constructor() {
-    this.domElement = document.querySelector('#canvas-target');
-    this.domArtworkTarget = document.querySelector('#artwork-target');
+    this.el = {
+      canvasTarget: document.querySelector('#canvas-target'),
+      artworkInfo: document.querySelector('#popup-artwork-info'),
+    };
     this.rotation = new THREE.Vector2();
     this.timestamp = null;
     const isMobile = IsMobileDevice();
@@ -17,7 +19,7 @@ class Surface {
     this.scaleRotation = {x: isMobile ? 0.75 : 1, y: 1};
 
     // events
-    document.querySelectorAll('#gallery-controls .controls__inner .control').forEach(e => {
+    document.querySelectorAll('#gallery-controls .control').forEach(e => {
       if (!isMobile) {
         e.addEventListener('mousedown', evt => { this.onControlDown(evt.currentTarget); });
         e.addEventListener('mouseup', evt => { this.onControlUp(evt.currentTarget); });
@@ -41,7 +43,7 @@ class Surface {
     };
     this.keyboard = new Keyboard((key) => { this.onKeyboard(key); });
     this.mouse = new Mouse({
-      domTarget: this.domElement,
+      domTarget: this.el.canvasTarget,
       onMouseDown: evt => { this.onMouseDown(evt); },
       onMouseMove: evt => { this.onMouseMove(evt); },
       onMouseUp: evt => { this.onMouseUp(evt); },
@@ -71,12 +73,14 @@ class Surface {
       // update player rotation
       if (!(this.ref.player.keys.left || this.ref.player.keys.right)) {
         const yaw = this.rotation.x + (this.mouse.delta.x / this.centre.x) * this.scaleRotation.x;
-        const pitch = Clamp(this.rotation.y + (this.mouse.delta.y / this.centre.y) * this.scaleRotation.y, this.ref.player.minPitch, this.ref.player.maxPitch);
+        let pitch = this.rotation.y + (this.mouse.delta.y / this.centre.y) * this.scaleRotation.y;
+        pitch = Clamp(pitch, this.ref.player.minPitch, this.ref.player.maxPitch);
 
         // reset pitch origin if clamped
-        if (pitch == this.ref.player.minPitch || pitch == this.ref.player.maxPitch) {
-          this.mouse.origin.y = evt.clientY;
+        if (pitch === this.ref.player.minPitch || pitch === this.ref.player.maxPitch) {
+          this.mouse.origin.y = evt.offsetY;
           this.rotation.y = pitch;
+          console.log( pitch );
         }
 
         this.ref.player.setRotation(pitch, yaw);
@@ -98,22 +102,22 @@ class Surface {
 
   onControlUp(el) {
     // up, down, left, right
-    this.ref.players.keys[el.dataset.dir] = false;
-    e.classList.remove('active');
+    this.ref.player.keys[el.dataset.dir] = false;
+    el.classList.remove('active');
   }
 
-  onControlDown(e) {
+  onControlDown(el) {
     // up, down, left, right
-    this.ref.players.keys[el.dataset.dir] = true;
-    e.classList.add('active');
+    this.ref.player.keys[el.dataset.dir] = true;
+    el.classList.add('active');
   }
 
-  onControlLeave(e) {
-    this.onControlUp(e);
+  onControlLeave(el) {
+    this.onControlUp(el);
   }
 
   onKeyboard(key) {
-    if (!this.domArtworkTarget.classList.contains('active')) {
+    if (!this.el.artworkInfo.classList.contains('active')) {
       switch (key) {
         case 'a': case 'A': case 'ArrowLeft':
           this.ref.player.keys.left = this.keyboard.keys[key];
@@ -169,8 +173,8 @@ class Surface {
       x: this.width / 2,
       y: this.height / 2,
     };
-    this.domElement.style.width = `${this.width}px`;
-    this.domElement.style.height = `${this.height}px`;
+    this.el.canvasTarget.style.width = `${this.width}px`;
+    this.el.canvasTarget.style.height = `${this.height}px`;
   }
 
   update(delta) {

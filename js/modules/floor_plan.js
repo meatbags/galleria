@@ -9,14 +9,6 @@ class FloorPlan {
     this.isMobile = IsMobileDevice();
     this.artworks = [];
     this.artworkActiveRadius = 10;
-    this.el = {}
-    this.el.popup = document.querySelector('#artwork-target');
-    this.el.image = this.el.popup.querySelector('.image');
-    this.el.title = this.el.popup.querySelector('.title');
-    this.el.subtitle = this.el.popup.querySelector('.subtitle');
-    this.el.desc = this.el.popup.querySelector('.desc');
-    this.el.link = this.el.popup.querySelector('.link');
-    this.el.close = this.el.popup.querySelector('.close-artwork-menu');
   }
 
   bind(root) {
@@ -26,12 +18,7 @@ class FloorPlan {
     this.ref.scene = root.modules.scene.scene;
     this.ref.surface = root.modules.surface;
     this.ref.cameraDirection = new THREE.Vector3();
-
-    // close popup
-    this.el.close.addEventListener('click', () => {
-      document.querySelector('#gallery-controls').classList.remove('display-none');
-      this.el.popup.classList.remove('active');
-    });
+    this.ref.nav = root.ref.nav;
   }
 
   load(data) {
@@ -42,28 +29,29 @@ class FloorPlan {
       const slots = [];
       data.images.forEach(imageData => {
         const artwork = new Artwork(this, this.artworks.length, imageData, this.isMobile);
+        const slot = artwork.data.location - 1;
 
         // placement
-        if (artwork.data.location < Config.floorPlan.artworkPositions.length) {
-          const pos = Config.floorPlan.artworkPositions[artwork.data.location];
+        if (slot < Config.floorPlan.artworkPositions.length) {
+          const pos = Config.floorPlan.artworkPositions[slot];
 
           // check for duplicate location
-          if (slots.indexOf(artwork.location) === -1) {
-            slots.push(artwork.location);
+          if (slots.indexOf(slot) == -1) {
+            slots.push(slot);
           } else {
-            console.log('Warning: Duplicate slot reference');
+            console.log('Warning: Duplicate slot reference:', slot);
           }
 
           // load artwork
-          artwork.init(this.ref.scene, new THREE.Vector3(p.x, p.y, p.z), new THREE.Vector3(p.nx, 0, p.nz));
+          artwork.init(this.ref.scene, new THREE.Vector3(pos.x, pos.y, pos.z), new THREE.Vector3(pos.nx, 0, pos.nz));
           this.artworks.push(artwork);
         } else {
-          console.log('Warning: No valid slot', imageData);
+          console.log('Warning: No valid slot:', slot);
         }
       });
     }
   }
-  
+
   unload() {
     // remove all artworks
     this.artworks.forEach(artwork => {
@@ -96,9 +84,9 @@ class FloorPlan {
     }
 
     if (isHovered.length) {
-      this.ref.surface.domElement.classList.add('clickable');
+      this.ref.surface.el.canvasTarget.classList.add('clickable');
     } else {
-      this.ref.surface.domElement.classList.remove('clickable');
+      this.ref.surface.el.canvasTarget.classList.remove('clickable');
     }
   }
 
@@ -108,42 +96,6 @@ class FloorPlan {
         break;
       }
     }
-  }
-
-  openArtworkMenu(artwork) {
-    // remove control arrows
-    document.querySelector('#gallery-controls').classList.add('display-none');
-
-    // remove open menus and remove sub active elements
-    document.querySelectorAll('.gallery-menu .menu.active').forEach(e => {
-      e.classList.remove('active');
-      e.querySelectorAll('.requires-activate').forEach(f => {
-        f.classList.remove('active');
-      });
-    });
-
-    // change nav to gallery main
-    const navItem = document.querySelector('#nav-item-gallery');
-    if (!navItem.classList.contains('active')) {
-      navItem.parentNode.querySelectorAll('.active').forEach(e => { e.classList.remove('active'); });
-      navItem.classList.add('active');
-    }
-
-    // change info
-    if (!artwork.isArtworkMenuMine()) {
-      this.el.popup.dataset.active = artwork.id;
-      this.el.image.innerHTML = `<img src="${artwork.data.url}"/>`;
-      this.el.title.innerHTML = artwork.data.title;
-      this.el.subtitle.innerHTML = artwork.data.subTitle;
-      this.el.desc.innerHTML = artwork.data.description;
-      this.el.link.innerHTML = artwork.data.link ? `<a href='${artwork.data.link}' target='_blank'>Link</a>` : '';
-
-      // comments
-      //this.el.comments.innerHTML = '[comments here]';
-    }
-
-    // show
-    this.el.popup.classList.add('active');
   }
 
   moveToArtwork(artwork) {

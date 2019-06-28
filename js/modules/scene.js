@@ -3,14 +3,13 @@
 class Scene {
   constructor() {
     this.scene = new THREE.Scene();
-    this.colliderSystem = new Collider.System();
   }
 
   bind(root) {
     this.ref = {};
   }
 
-  onReload() {
+  reset() {
     this.colliderSystem = new Collider.System();
   }
 }

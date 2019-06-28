@@ -3,9 +3,38 @@
   position: fixed;
   width: $sizeLogo;
   height: $sizeLogo;
-  top: 50%;
-  left: 25%;
-  transform: translate(-50%, -50%);
+  top: calc(50% - #{$sizeLogo / 2});
+  left: calc(25% - #{$sizeLogo / 2});
+  transform: translateX(100vw);
   z-index: $indexLogo;
   cursor: pointer;
+  transition: transform $transitionMedium;
+
+  &.active {
+    transform: translateX(0);
+  }
+
+  .logo__prompt {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    @include padding(1, 1);
+    font-family: $fontStackSerif;
+
+    .logo__prompt-loading {
+      display: none;
+    }
+
+    &.loading {
+      .logo__prompt-loading {
+        display: block;
+      }
+
+      .logo__prompt-ready {
+        display: none;
+      }
+    }
+
+    &.prompt-action {}
+  }
 }
