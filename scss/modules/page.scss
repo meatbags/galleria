@@ -1,7 +1,46 @@
 .page {
   display: none;
+  flex-direction: column;
+  align-items: flex-end;
+  @include margin(0, 2);
+  @include padding(4, 0);
+
+  .page__header {
+    width: 100%;
+    display: flex;
+    justify-content: flex-end;
+    @include padding(2, 0);
+    display: none;
+    width: $widthPage;
+
+    .page__title {
+      @include padding(2, 1);
+      margin-top: $space;
+      margin-bottom: 0;
+      display: inline-block;
+      text-transform: uppercase;
+      font-size: $fontSizeSmall;
+      color: $backgroundColour;
+      background: $colour;
+    }
+  }
+
+  .page__content {
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    width: $widthPage;
+  }
 
   &.active {
-    display: block;
+    display: flex;
+  }
+
+  &#page-archive {
+    align-items: flex-start;
+
+    .page__content, .page__header {
+      width: 100%;
+    }
   }
 }

@@ -1,20 +1,7 @@
 /** Lighting handler */
 
-import '../glsl/SkyShader.js';
-
 class Lighting {
   constructor() {
-    // skybox
-    this.sky = new THREE.Sky();
-    this.sky.scale.setScalar(450000);
-    const d = 400000;
-    const azimuth = 0.25;
-    const inclination = 0.4875;
-    const theta = Math.PI * (inclination - 0.5);
-    const phi = Math.PI * 2 * (azimuth - 0.5);
-    const sunPos = new THREE.Vector3(d * Math.cos(phi), d * Math.sin(phi) * Math.sin(theta), d * Math.sin(phi) * Math.cos(theta));
-    this.sky.material.uniforms.sunPosition.value.copy(sunPos);
-
     // lights
     this.lights = {point: {}, ambient: {}, directional: {}, hemisphere: {}, spot: {}};
     this.lights.point.a = new THREE.PointLight(0xffffff, 1, 24, 2);
@@ -28,12 +15,7 @@ class Lighting {
 
   bind(root) {
     this.ref = {};
-
-    console.log(root.modules.scene);
     this.ref.scene = root.modules.scene.scene;
-
-    // add sky
-    this.ref.scene.add(this.sky);
 
     // apply exhibition settings
     this.onReload();

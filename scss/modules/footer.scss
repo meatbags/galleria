@@ -1,17 +1,92 @@
 .footer {
   height: $heightFooter;
+  //background: linear-gradient(to right, $white, rgba(red, 0.125));
 
   .footer__inner {
     width: 100%;
     height: 100%;
     display: flex;
+    flex-direction: column;
 
     .footer__social-media {
-      width: 50%;
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      @include padding(0, 1);
+
+      .section__links {
+        display: flex;
+        justify-content: center;
+
+        .section__link-item {
+          @include padding(0, 0.5);
+          @include margin(2, 0);
+          text-transform: uppercase;
+          font-family: $fontStackSerif;
+          border-bottom: $border;
+
+          a {
+            color: $black;
+            text-decoration: none;
+          }
+        }
+      }
     }
 
     .footer__newsletter {
-      width: 50%;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      @include padding(0, 2);
+
+      .footer__newsletter-title {
+        text-transform: uppercase;
+        font-size: $fontSizeSmall;
+      }
+
+      .footer__newsletter-form {
+        @include padding(0, 1);
+        display: flex;
+
+
+        input {
+          border: none;
+          outline: none;
+          border-bottom: $border;
+          color: $black;
+          @include padding(0, 0.5);
+          margin-right: $space;
+          background: none;
+          //font-family: $fontStackSerif;
+        }
+
+        button {
+          @include padding(1, 0.5);
+          background: none;
+          border: $border;
+          outline: none;
+          //font-family: $fontStackSerif;
+          text-transform: uppercase;
+          font-size: $fontSizeSmall;
+          cursor: pointer;
+
+          &:active {
+            background: $black;
+            color: $backgroundColour;
+          }
+        }
+      }
+
+      .footer__newsletter-msg {
+        text-transform: uppercase;
+        font-size: $fontSizeSmall;
+        display: none;
+
+        &.active {
+          display: block;
+        }
+      }
     }
   }
 }

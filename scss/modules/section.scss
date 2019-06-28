@@ -1,0 +1,104 @@
+.section {
+  @include padding(4, 4);
+  @include margin(2, 2);
+  width: 100%;
+  background: $backgroundColour;
+  position: relative;
+  pointer-events: all;
+
+  .section__heading {
+    font-size: $fontSizeHuge;
+    font-family: $fontStackSerif;
+    user-select: text;
+  }
+
+  .section__title {
+    font-size: $fontSizeLarge;
+    text-decoration: underline;
+    text-transform: uppercase;
+    user-select: text;
+  }
+
+  .section__date {
+    padding-top: $space;
+    padding-bottom: $space * 2;
+    font-size: $fontSizeSmall;
+  }
+
+  .section__description {
+    //max-height: 200px;
+    //overflow: hidden;
+    user-select: text;
+  }
+
+  .section__description, .section__description-short {
+    @include padding(4, 0);
+    @include margin(0, 2);
+    border-left: $borderThick;
+    user-select: text;
+  }
+
+  .section__links {
+    display: flex;
+    @include padding(0, 2);
+
+    .section__link-item {
+      @include padding(1, 0);
+      font-size: $fontSizeSmall;
+      text-transform: uppercase;
+    }
+  }
+  .section__images {
+    .section__image {}
+  }
+  .section__custom-value {}
+
+  &.section--featured, &.section--preview, &.section--default {
+    .section__description-short {
+      display: none;
+    }
+  }
+
+  &.section--archive {
+    width: calc(50% - #{$space * 4});
+    cursor: pointer;
+    overflow: hidden;
+
+    .section--archive__prompt {
+      @include margin(1, 1);
+      @include padding(1.5, 0.5);
+      position: absolute;
+      top: 0;
+      left: 0;
+      background: $colour;
+      color: $backgroundColour;
+      font-size: $fontSizeSmall;
+      text-transform: uppercase;
+      cursor: pointer;
+      opacity: 0;
+      transform: translateX(-100%);
+      //transition: transform $transitionFast, opacity $transitionFast;
+
+      &:hover {
+        color: $colourLink;
+      }
+    }
+
+    .section__description {
+      display: none;
+    }
+
+    &:hover {
+      outline: $border;
+
+      .section--archive__prompt {
+        opacity: 1;
+        transform: translateX(0%);
+      }
+    }
+  }
+
+  &.hidden {
+    display: none;
+  }
+}

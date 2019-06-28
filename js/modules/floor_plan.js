@@ -2,28 +2,21 @@
 
 import Config from './config';
 import Artwork from './artwork/artwork';
+import IsMobileDevice from '../utils/is_mobile_device';
 
 class FloorPlan {
   constructor() {
+    this.isMobile = IsMobileDevice();
+    this.artworks = [];
     this.artworkActiveRadius = 10;
-    this.isDev = window.location.host.indexOf('localhost') != -1;
-
-    // load exhibition artworks
-    this.onReload();
-
-    // dom target
-    this.domElement = document.querySelector('#artwork-target');
-    this.el = {
-      image: this.domElement.querySelector('.image'),
-      title: this.domElement.querySelector('.title'),
-      subtitle: this.domElement.querySelector('.subtitle'),
-      desc: this.domElement.querySelector('.desc'),
-      link: this.domElement.querySelector('.link'),
-      close: this.domElement.querySelector('.close-artwork-menu')
-    };
-    this.el.close.addEventListener('click', () => {
-      this.closeArtworkMenu();
-    });
+    this.el = {}
+    this.el.popup = document.querySelector('#artwork-target');
+    this.el.image = this.el.popup.querySelector('.image');
+    this.el.title = this.el.popup.querySelector('.title');
+    this.el.subtitle = this.el.popup.querySelector('.subtitle');
+    this.el.desc = this.el.popup.querySelector('.desc');
+    this.el.link = this.el.popup.querySelector('.link');
+    this.el.close = this.el.popup.querySelector('.close-artwork-menu');
   }
 
   bind(root) {
@@ -33,71 +26,50 @@ class FloorPlan {
     this.ref.scene = root.modules.scene.scene;
     this.ref.surface = root.modules.surface;
     this.ref.cameraDirection = new THREE.Vector3();
+
+    // close popup
+    this.el.close.addEventListener('click', () => {
+      document.querySelector('#gallery-controls').classList.remove('display-none');
+      this.el.popup.classList.remove('active');
+    });
   }
 
-  onReload() {
-    // remove artworks
-    if (this.artworks) {
-      this.artworks.forEach(e => {
-        try {
-          e.destroy();
-        } catch (err) {
-          console.log(err);
+  load(data) {
+    this.unload();
+
+    if (data.images) {
+      // create new artworks
+      const slots = [];
+      data.images.forEach(imageData => {
+        const artwork = new Artwork(this, this.artworks.length, imageData, this.isMobile);
+
+        // placement
+        if (artwork.data.location < Config.floorPlan.artworkPositions.length) {
+          const pos = Config.floorPlan.artworkPositions[artwork.data.location];
+
+          // check for duplicate location
+          if (slots.indexOf(artwork.location) === -1) {
+            slots.push(artwork.location);
+          } else {
+            console.log('Warning: Duplicate slot reference');
+          }
+
+          // load artwork
+          artwork.init(this.ref.scene, new THREE.Vector3(p.x, p.y, p.z), new THREE.Vector3(p.nx, 0, p.nz));
+          this.artworks.push(artwork);
+        } else {
+          console.log('Warning: No valid slot', imageData);
         }
       });
     }
-
-    // create new artworks from data
-    this.domTarget = '.active-exhibition-data';
-    this.artworks = [];
-    var count = 0;
-    document.querySelectorAll(`${this.domTarget} .image`).forEach(e => {
-      this.artworks.push(new Artwork(this, ++count, e, this.isMobile));
-    });
-    this.placeArtworks();
-
-    // exhibition-specific changes
-    const target = document.querySelector('.active-exhibition-data .custom-exhibition-installation');
-    if (target) {
-      switch (target.dataset.value) {
-        case 'TIYAN':
-          //this.artworks.forEach(el => { el.disableArtworkMenu(); });
-          break;
-        default:
-          break;
-      }
-    }
   }
-
-  placeArtworks() {
-    const slots = [];
-
-    for (let i=this.artworks.length-1; i >= 0; i--) {
-      const artwork = this.artworks[i];
-
-      // find artwork slot & init
-      if (
-        typeof(artwork.data.index) == 'number' &&
-        artwork.data.index >= 0 &&
-        artwork.data.index < Config.floorPlan.artworkPositions.length
-      ){
-        const p = Config.floorPlan.artworkPositions[artwork.data.index];
-
-        // check for duplicates
-        if (slots.indexOf(artwork.data.index) != -1) {
-          console.log('Warning: duplicate slot reference');
-        } else {
-          slots.push(artwork.data.index);
-        }
-
-        // initialise artwork
-        artwork.init(this.ref.scene, new THREE.Vector3(p.x, p.y, p.z), new THREE.Vector3(p.nx, 0, p.nz));
-      } else {
-        // no valid slot: remove artwork reference
-        console.log('Warning: no slot found.');
-        console.log(this.artworks.splice(i, 1));
-      }
-    }
+  
+  unload() {
+    // remove all artworks
+    this.artworks.forEach(artwork => {
+      try { artwork.destroy() } catch(err) { console.log(err); }
+    });
+    this.artworks = [];
   }
 
   mouseOver(x, y) {
@@ -159,11 +131,11 @@ class FloorPlan {
 
     // change info
     if (!artwork.isArtworkMenuMine()) {
-      this.domElement.dataset.active = artwork.id;
+      this.el.popup.dataset.active = artwork.id;
       this.el.image.innerHTML = `<img src="${artwork.data.url}"/>`;
       this.el.title.innerHTML = artwork.data.title;
-      this.el.subtitle.innerHTML = artwork.data.subtitle;
-      this.el.desc.innerHTML = artwork.data.desc;
+      this.el.subtitle.innerHTML = artwork.data.subTitle;
+      this.el.desc.innerHTML = artwork.data.description;
       this.el.link.innerHTML = artwork.data.link ? `<a href='${artwork.data.link}' target='_blank'>Link</a>` : '';
 
       // comments
@@ -171,12 +143,7 @@ class FloorPlan {
     }
 
     // show
-    this.domElement.classList.add('active');
-  }
-
-  closeArtworkMenu() {
-    document.querySelector('#gallery-controls').classList.remove('display-none');
-    this.domElement.classList.remove('active');
+    this.el.popup.classList.add('active');
   }
 
   moveToArtwork(artwork) {

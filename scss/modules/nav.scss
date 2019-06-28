@@ -4,26 +4,37 @@
   height: $heightNav;
   font-family: $fontStackSerif;
   user-select: none;
+  z-index: $indexNav;
 
   .nav__inner {
     position: absolute;
     top: 0;
-    left: 0;
-    width: 100%;
+    right: 0;
     height: 100%;
+    width: 100%;
     display: flex;
-    justify-content: center;
+    justify-content: flex-end;//center;
     align-items: flex-end;
     transition: transform $transitionMedium;
+    @include padding(4, 0);
 
     .nav__item {
-      @include padding(2, 1);
+      @include padding(0, 0.5);
+      @include margin(2, 0);
       cursor: pointer;
+      text-transform: uppercase;
+      border-bottom: $border;
+
+      &.active {
+        color: $colourLink;
+        border-color: $colourLink;
+      }
     }
   }
 
   #nav-gallery {
     transform: translateX(-100%);
+
     &.active {
       transform: translateX(0);
     }
@@ -31,6 +42,7 @@
 
   #nav-content {
     transform: translateX(100%);
+
     &.active {
       transform: translateX(0);
     }

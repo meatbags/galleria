@@ -4,4 +4,7 @@
   width: 100%;
   min-height: 100vh;
   padding-top: $heightNav;
+  z-index: $indexWrapper;
+  position: relative;
+  pointer-events: none;
 }

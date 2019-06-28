@@ -1,6 +1,6 @@
 div, * {
 	box-sizing: border-box;
-	outline: 1px dashed rgba(black, 0.25);
+	//outline: 1px dashed rgba(black, 0.25);
 }
 
 html {
@@ -11,6 +11,10 @@ html {
 	}
 }
 
+html, body {
+	width: 100%;
+}
+
 body {
 	font-family: $fontStack;
 	font-size: $fontSize;
@@ -19,12 +23,30 @@ body {
 	color: $colour;
 	overflow-x: hidden;
 	touch-action: none;
+	user-select: none;
+	background: $backgroundGradient;
 }
 
 .admin-notify {
-	z-index: 9999;
+	z-index: 999;
 	position: fixed;
-	top: 0;
+	top: calc(100vh - #{$space * 4});
 	left: 0;
-	@include padding(1, 1);
+	width: 100%;
+	height: $space * 4;
+	@include padding(2, 0);
+	display: flex;
+	align-items: center;
+	font-size: $fontSizeSmall;
+	background: $colour;
+	color: $backgroundColour;
+	opacity: 0.5;
+}
+
+a {
+	color: $colourLink;
+}
+
+ul {
+	list-style: square;
 }

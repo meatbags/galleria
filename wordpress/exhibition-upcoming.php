@@ -18,7 +18,7 @@ if ($query->have_posts()):
   while ($query->have_posts()):
     $query->the_post(); ?>
 
-<div class='exhibition exhibition--upcoming'>
+<div class='section section--upcoming'>
   <?php getExhibitionDataTags(get_fields()); ?>
 </div>
 

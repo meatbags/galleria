@@ -29,6 +29,8 @@ class Materials {
     this.loaded = {};
   }
 
+  bind(root) {}
+
   getTexture(path) {
     const texture = new THREE.TextureLoader().load(this.path + path);
     return texture;

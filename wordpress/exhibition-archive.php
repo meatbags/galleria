@@ -18,10 +18,13 @@ if ($query->have_posts()):
   while ($query->have_posts()):
     $query->the_post(); ?>
 
-    <div class='exhibition exhibition--archive'>
+    <div class='section section--archive'>
       <?php getExhibitionDataTags(get_fields()); ?>
+      <div class='section--archive__prompt'>
+        Open
+      </div>
     </div>
-    
+
 <?php
   endwhile;
 endif;

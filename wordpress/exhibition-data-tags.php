@@ -6,27 +6,28 @@ function sanitiseQuotes($str) {
   return $str;
 }
 
-// get formatted exhibition data
+// get formatted section data
 function getExhibitionDataTags($fields) { ?>
-  <div class='exhibition__name'><?php echo get_field('artist_name'); ?></div>
-  <div class='exhibition__title'><?php echo get_field('exhibition_title'); ?></div>
-  <div class='exhibition__date'><?php echo get_field('start_date'); ?>&rarr;<?php echo get_field('end_date'); ?></div>
-  <div class='exhibition__description'><?php echo get_field('artist_description'); ?></div>
-  <div class='exhibition__description-short'><?php echo get_field('artist_short_description'); ?></div>
+  <div class='section__id' data-id='exhibition-<?php echo get_the_ID(); ?>' style='display:none'></div>
+  <div class='section__heading'><?php echo get_field('artist_name'); ?></div>
+  <div class='section__title'><?php echo get_field('exhibition_title'); ?></div>
+  <div class='section__date'><?php echo get_field('start_date'); ?> &mdash; <?php echo get_field('end_date'); ?></div>
+  <div class='section__description'><?php echo get_field('artist_description'); ?></div>
+  <div class='section__description-short'><?php echo get_field('artist_short_description'); ?></div>
   <?php $links = get_field('artist_social_media_links'); ?>
   <?php if ($links): ?>
-    <div class='exhibition__links'>
+    <div class='section__links'>
       <?php foreach ($links as $link): ?>
-        <div class='exhibition__link-item'>
+        <div class='section__link-item'>
           <a href='<?php echo $link['url']; ?>' target='_blank'><?php echo $link['link_label']; ?></a>
         </div>
       <?php endforeach; ?>
     </div>
   <?php endif; ?>
   <?php $images = get_field('images'); ?>
-  <div class='exhibition__images' style='display:none'>
+  <div class='section__images' style='display:none'>
     <?php foreach ($images as $img): ?>
-      <div class='exhibition__image'
+      <div class='section__image'
         data-title='<?php echo sanitiseQuotes($img['title']); ?>'
         data-url='<?php echo $img['image_file']['sizes']['large']; ?>'
         data-sub-title='<?php echo sanitiseQuotes($img['sub_title']); ?>'
@@ -41,8 +42,8 @@ function getExhibitionDataTags($fields) { ?>
         ></div>
     <?php endforeach; ?>
   </div>
-  <?php $custom = get_field('custom_exhibition_installation'); ?>
+  <?php $custom = get_field('custom_section_installation'); ?>
   <?php if ($custom): ?>
-  <div class='exhibition__custom-value' data-custom-value='<?php echo $custom; ?>' style='display:none'></div>
+  <div class='section__custom-value' data-custom-value='<?php echo $custom; ?>' style='display:none'></div>
   <?php endif; ?>
 <?php } ?>

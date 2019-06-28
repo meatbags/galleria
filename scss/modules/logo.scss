@@ -1,0 +1,11 @@
+.logo {
+  border: $border;
+  position: fixed;
+  width: $sizeLogo;
+  height: $sizeLogo;
+  top: 50%;
+  left: 25%;
+  transform: translate(-50%, -50%);
+  z-index: $indexLogo;
+  cursor: pointer;
+}

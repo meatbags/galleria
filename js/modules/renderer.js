@@ -6,7 +6,7 @@ import Config from './config';
 class Renderer {
   constructor() {
     this.renderer = new THREE.WebGLRenderer({});
-    this.renderer.setClearColor(0x444444, 1);
+    this.renderer.setClearColor(0xffdede, 1);
     this.renderer.gammaInput = true;
     this.renderer.gammaOutput = true;
     this.renderer.gammaFactor = 2.25;

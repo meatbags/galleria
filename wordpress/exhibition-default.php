@@ -7,8 +7,8 @@ if (is_user_logged_in()):
     'order_by' => 'menu_order',
     'meta_query' => array(
       array(
-        'key' => 'preview_as_admin',
-        'value' => 'preview',
+        'key' => 'default_exhibition',
+        'value' => 'default',
         'compare' => 'LIKE'
       )
     )
@@ -18,7 +18,7 @@ if (is_user_logged_in()):
     while ($query->have_posts()):
       $query->the_post(); ?>
 
-  <div class='section section--preview'>
+  <div class='section section--default hidden'>
     <?php getExhibitionDataTags(get_fields()); ?>
   </div>
 

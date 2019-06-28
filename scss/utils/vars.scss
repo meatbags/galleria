@@ -1,12 +1,23 @@
 // colour
 $black: #111;
 $white: #fff;
-$colour: #4c474b;
+$colour: #2c272b;
+$colourLink: red;
+$backgroundColour: $white;
+$pink: #ffdede; //rgba(red, 0.125);
+$backgroundGradient: linear-gradient(to top, $white, $pink);
 
 // size
 $space: 8px;
 $heightNav: 40px;
 $heightFooter: 200px;
+$widthPage: 50%;
+$sizeLogo: 300px;
+
+// style
+$border: 1px solid $black;
+$borderThick: $space solid $black;
+$boxShadow: 2px 2px 5px rgba(blue, 0.75);
 
 // breakpoints
 $siteWidth: 1160px;
@@ -14,7 +25,14 @@ $tablet: 1024px;
 $tabletPortrait: 800px;
 $mobile: 700px;
 
+// height
+$indexLogo: 5;
+$indexWrapper: 10;
+$indexNav: 100;
+$indexLoadingScreen: 200;
+
 // animation
 $transition: 0.35s;
+$transitionFast: 0.25s;
 $transitionMedium: 0.7s;
 $transitionSlow: 1s;
