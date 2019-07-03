@@ -1,11 +1,10 @@
 // colour
-$black: #111;
+$black: #3f3f3f;
 $white: #fff;
-$colour: #2c272b;
-$colourLink: red;
-$backgroundColour: $white;
-$pink: #ffdede; //rgba(red, 0.125);
-$backgroundGradient: linear-gradient(to top, $white, $pink);
+$colour: $black;
+$colourLink: #ff6f61;
+$backgroundColour: #eee;
+$backgroundGradient: linear-gradient(to top, $white, $backgroundColour);
 
 // size
 $space: 8px;

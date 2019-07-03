@@ -26,7 +26,7 @@ class Canvas2D {
 
   clear() {
     this.ctx.clearRect(0, 0, this.cvs.width, this.cvs.height);
-    this.ctx.font = '15px Karla';
+    this.ctx.font = '16px Karla';
     this.ctx.strokeStyle = '#fff';
     this.ctx.fillStyle = '#fff';
     this.ctx.lineWidth = 1.5;
@@ -59,19 +59,27 @@ class Canvas2D {
       this.prompt.touchMove.size.current += (this.prompt.touchMove.size.min - this.prompt.touchMove.size.current) * 0.2;
     }
 
-    // draw
+    // draw touchmove prompt
     if (this.prompt.touchMove.alpha.current > 0) {
-      const s1 = this.prompt.touchMove.size.current;
-      const s2 = s1 * 2;
       const cx = this.cvs.width / 2;
       const cy = this.cvs.height / 2;
+      const s1 = this.prompt.touchMove.size.current;
+      const s2 = s1 * 2;
       this.ctx.globalAlpha = this.prompt.touchMove.alpha.current;
       this.ctx.beginPath();
-      this.ctx.arc(cx, cy, s1, 0, Math.PI * 2, false);
-      this.ctx.moveTo(cx - s1, cy);
-      this.ctx.lineTo(cx + s1, cy);
-      this.ctx.moveTo(cx, cy - 4);
-      this.ctx.lineTo(cx, cy + 4);
+      //this.ctx.arc(cx, cy, s1 / 2, 0, Math.PI * 2, false);
+      this.ctx.moveTo(cx - s2, cy - s2 + s1);
+      this.ctx.lineTo(cx - s2, cy - s2);
+      this.ctx.lineTo(cx - s2 + s1, cy - s2);
+      this.ctx.moveTo(cx + s2, cy + s2 - s1);
+      this.ctx.lineTo(cx + s2, cy + s2);
+      this.ctx.lineTo(cx + s2 - s1, cy + s2);
+      this.ctx.moveTo(cx - s2, cy + s2 - s1);
+      this.ctx.lineTo(cx - s2, cy + s2);
+      this.ctx.lineTo(cx - s2 + s1, cy + s2);
+      this.ctx.moveTo(cx + s2, cy - s2 + s1);
+      this.ctx.lineTo(cx + s2, cy - s2);
+      this.ctx.lineTo(cx + s2 - s1, cy - s2);
       this.ctx.stroke();
     }
   }

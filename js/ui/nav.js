@@ -89,7 +89,8 @@ class Nav {
     this.el.archiveItems.forEach(el => {
       el.addEventListener('click', evt => {
         if (evt.target.tagName !== 'A') {
-          this.onArchive(el);
+          const data = this.parseExhibitionDataTags(el);
+          this.ref.gallery.load(data);
         }
       });
     });
@@ -174,11 +175,9 @@ class Nav {
     }
     this.el.gallery.artworkInfoPopup.classList.add('active');
 
-    // rm controls & controls help
+    // rm controls & controls help, update nav
     this.el.gallery.controls.classList.remove('active');
     this.el.gallery.controlsPopup.classList.remove('active');
-
-    // update nav
     this.el.gallery.navItemControls.classList.remove('active');
     this.el.gallery.navItemGallery.classList.add('active');
   }
@@ -189,25 +188,17 @@ class Nav {
   }
 
   openControlsPopup() {
-    // open controls popup
+    // open controls popup, rm controls, update nav
     this.el.gallery.controlsPopup.classList.add('active');
-
-    // rm controls
     this.el.gallery.controls.classList.remove('active');
-
-    // update nav
     this.el.gallery.navItemControls.classList.add('active');
     this.el.gallery.navItemGallery.classList.remove('active');
   }
 
   closeControlsPopup() {
-    // rm controls popup
+    // rm controls popup, show controls, update nav
     this.el.gallery.controlsPopup.classList.remove('active');
-
-    // show controls
     this.el.gallery.controls.classList.add('active');
-
-    // update nav
     this.el.gallery.navItemControls.classList.remove('active');
     this.el.gallery.navItemGallery.classList.add('active');
   }
@@ -222,10 +213,6 @@ class Nav {
         window.location.hash = `${el.dataset.target.split('-')[1]}`;
       }
     }
-  }
-
-  onArchive(el) {
-    console.log(el);
   }
 }
 

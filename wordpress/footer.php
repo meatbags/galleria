@@ -4,7 +4,7 @@
         <?php get_template_part('wordpress/social-media'); ?>
       </div>
       <div class='footer__newsletter'>
-        <div class='footer__newsletter-title'>Sign up to our newsletter:</div>
+        <div class='footer__newsletter-title'>Sign up to our newsletter</div>
         <form class='footer__newsletter-form'>
           <input type='text' name='comFormField' placeholder='Your Email'/>
           <button type='submit'>Submit</button>

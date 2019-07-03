@@ -10,8 +10,9 @@
     display: flex;
     justify-content: flex-end;
     @include padding(2, 0);
-    display: none;
     width: $widthPage;
+
+    display: none;
 
     .page__title {
       @include padding(2, 1);
@@ -37,10 +38,10 @@
   }
 
   &#page-archive {
-    align-items: flex-start;
+    //align-items: flex-start;
 
     .page__content, .page__header {
-      width: 100%;
+      //width: 100%;
     }
   }
 }

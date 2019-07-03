@@ -2,7 +2,6 @@
   <nav class='nav'>
     <div id='nav-content' class='nav__inner'>
       <div class='nav__item active' data-target='#page-home'>Featured</div>
-      <div class='nav__item' data-target='#page-upcoming'>Upcoming</div>
       <div class='nav__item' data-target='#page-archive'>Archive</div>
       <div class='nav__item' data-target='#page-submissions'>Submissions</div>
       <div class='nav__item' data-target='#page-about'>About</div>
@@ -17,13 +16,6 @@
       <?php get_template_part('wordpress/exhibition-preview'); ?>
       <?php get_template_part('wordpress/exhibition-current'); ?>
       <?php get_template_part('wordpress/exhibition-default'); ?>
-    </div>
-  </div>
-  <div id='page-upcoming' class='page'>
-    <div class='page__header'>
-      <div class='page__title'>Upcoming</div>
-    </div>
-    <div class='page__content'>
       <?php get_template_part('wordpress/exhibition-upcoming'); ?>
     </div>
   </div>

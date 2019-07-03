@@ -2,9 +2,10 @@
   @include padding(4, 4);
   @include margin(2, 2);
   width: 100%;
-  background: $backgroundColour;
+  background: $white;
   position: relative;
   pointer-events: all;
+  //box-shadow: 10px 10px $black;
 
   .section__heading {
     font-size: $fontSizeHuge;
@@ -16,6 +17,7 @@
     font-size: $fontSizeLarge;
     text-decoration: underline;
     text-transform: uppercase;
+    //text-transform: capitalize;
     user-select: text;
   }
 
@@ -43,9 +45,12 @@
     @include padding(0, 2);
 
     .section__link-item {
-      @include padding(1, 0);
-      font-size: $fontSizeSmall;
-      text-transform: uppercase;
+      padding-right: $space;
+      font-size: $fontSize;
+      //text-transform: uppercase;
+      a {
+        color: $colour;
+      }
     }
   }
   .section__images {
@@ -60,7 +65,7 @@
   }
 
   &.section--archive {
-    width: calc(50% - #{$space * 4});
+    //width: calc(50% - #{$space * 4});
     cursor: pointer;
     overflow: hidden;
 
@@ -89,11 +94,21 @@
     }
 
     &:hover {
-      outline: $border;
+      //outline: $border;
+      box-shadow: 10px 10px $colourLink;
+      color: $colourLink;
 
       .section--archive__prompt {
-        opacity: 1;
+        //opacity: 1;
         transform: translateX(0%);
+      }
+
+      .section__description, .section__description-short {
+        border-color: $colourLink;
+      }
+
+      .section__links .section__link-item a {
+        color: $colourLink;
       }
     }
   }

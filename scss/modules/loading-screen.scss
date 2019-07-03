@@ -9,8 +9,8 @@
   opacity: 0;
   pointer-events: none;
   transition: opacity $transition;
-  
-  display: none;
+
+  //display: none;
 
   &.active {
     opacity: 1;

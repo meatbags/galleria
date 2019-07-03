@@ -42,12 +42,16 @@ class Gallery {
   }
 
   load(data) {
+    // reset player position & scene
     this.modules.player.reset();
     this.modules.scene.reset();
+
+    // load map
     this.modules.map.load(data).then(() => {
       this.modules.floorPlan.load(data);
       this.modules.lighting.load(data);
 
+      // reset "open" prompt
       const target = document.querySelector('#open-gallery-prompt');
       if (target) {
         target.classList.remove('loading');

@@ -1,10 +1,10 @@
 .logo {
   border: $border;
-  position: fixed;
+  position: absolute;
   width: $sizeLogo;
   height: $sizeLogo;
-  top: calc(50% - #{$sizeLogo / 2});
-  left: calc(25% - #{$sizeLogo / 2});
+  top: calc(50vh - #{$sizeLogo / 2});
+  left: calc(25vw - #{$sizeLogo / 2});
   transform: translateX(100vw);
   z-index: $indexLogo;
   cursor: pointer;
@@ -20,6 +20,12 @@
     right: 0;
     @include padding(1, 1);
     font-family: $fontStackSerif;
+    font-size: $fontSizeHuge;
+    transform: translate(33.33%, 0);
+
+    &:hover {
+      color: $colourLink;
+    }
 
     .logo__prompt-loading {
       display: none;

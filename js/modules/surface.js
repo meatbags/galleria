@@ -80,7 +80,6 @@ class Surface {
         if (pitch === this.ref.player.minPitch || pitch === this.ref.player.maxPitch) {
           this.mouse.origin.y = evt.offsetY;
           this.rotation.y = pitch;
-          console.log( pitch );
         }
 
         this.ref.player.setRotation(pitch, yaw);
