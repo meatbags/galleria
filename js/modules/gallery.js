@@ -25,7 +25,6 @@ class Gallery {
       surface: new Surface(),
       canvas2d: new Canvas2D(),
     };
-
   }
 
   bind(root) {

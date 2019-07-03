@@ -1,6 +1,7 @@
 /** Custom exhibition handler */
 
 import Loader from '../loader/loader';
+import Clamp from '../maths/clamp';
 
 class CustomExhibition {
   constructor() {
@@ -11,18 +12,28 @@ class CustomExhibition {
   bind(root) {
     this.ref = {};
     this.ref.scene = root.modules.scene;
-    this.ref.materaisl = root.modules.materials;
+    this.ref.materials = root.modules.materials;
+    this.ref.player = root.modules.player;
   }
 
   load(data) {
-    // remove any current exhibition assets from scene
-    this.assets.forEach(asset => {
-      this.ref.scene.scene.remove(asset);
-    });
-    this.assets = [];
-
     // reset update callback
     this.updateCallback = null;
+
+    // remove any current exhibition assets from scene
+    this.assets.forEach(asset => {
+      if (asset.isMesh) {
+        this.ref.scene.scene.remove(asset);
+      } else if (asset.object) {
+        this.ref.scene.scene.remove(asset.object);
+        if (asset.sparks) {
+          asset.sparks.forEach(spark => {
+            this.ref.scene.scene.remove(spark.object);
+          });
+        }
+      }
+    });
+    this.assets = [];
 
     // new installation
     switch (data.customValue) {
@@ -42,7 +53,7 @@ class CustomExhibition {
 
   loadJack() {
     // jack's assets
-    const assets = [
+    this.assets = [
       {src: 'jack_de_lacy/sculpture_1', scale: 0.6, rot: Math.PI / 32, orientZ: Math.PI / 4},
       {src: 'jack_de_lacy/sculpture_2', scale: 0.5, rot: -Math.PI / 32, orientZ: 0},
       {src: 'jack_de_lacy/sculpture_3', scale: 0.5, rot: Math.PI / 32, orientZ: 0}
@@ -50,18 +61,19 @@ class CustomExhibition {
 
     // callback
     this.updateCallback = (delta) => {
-      assets.forEach(asset => {
+      this.assets.forEach(asset => {
         if (asset.object) {
-          asset.object.rotation.y += obj.rot * delta;
+          asset.object.rotation.y += asset.rot * delta;
         }
       });
     };
 
     // load
-    for (var i=0; i<assets.length; ++i) {
+    for (var i=0; i<this.assets.length; ++i) {
       const index = i;
-      this.loader.loadFBX(assets[index].src).then(obj => {
-        const assets = assets[index];
+
+      // load object & add references
+      this.loader.loadFBX(this.assets[index].src).then(obj => {
         obj.children.forEach(child => {
           this.ref.materials.conformMaterial(child.material);
           child.material = this.ref.materials.getCustomMaterial(child.material);
@@ -70,14 +82,15 @@ class CustomExhibition {
             child.material.side = THREE.DoubleSide;
           }
         });
-        obj.scale.multiplyScalar(asset.scale);
-        obj.rotation.z = asset.orientZ;
+
+        // initial position
+        obj.scale.multiplyScalar(this.assets[index].scale);
+        obj.rotation.z = this.assets[index].orientZ;
         obj.position.set(-12 + index * 12, 14, 6);
 
         // add to scene & asset reference list
         this.ref.scene.scene.add(obj);
-        this.assets.push(obj);
-        asset.object = obj;
+        this.assets[index].object = obj;
       }, err => { console.log(err); });
     }
   }
@@ -87,7 +100,9 @@ class CustomExhibition {
     this.loader.loadFBX('tiyan/separators').then(obj => {
       this.ref.materials.conformGroup(obj);
       this.ref.scene.scene.add(obj);
-      this.assets.push(obj);
+      this.assets.push({
+        object: obj
+      });
     });
 
     // add separator collisions
@@ -100,11 +115,13 @@ class CustomExhibition {
   }
 
   loadBrenton() {
-    const assets = [
+    this.assets = [
       'brenton/crash7/crash_7', 'brenton/crash8/crash_8', 'brenton/crash9/crash_9',
       'brenton/crash11/crash_11', 'brenton/crash12/crash_12', 'brenton/crash13/crash_13',
       'brenton/new_crashform/new_crashform'
-    ].map(str => ({src: str}));
+    ].map(str => {
+      return { src: str };
+    });
 
     const setInstallation = (child) => {
       // set material
@@ -127,7 +144,7 @@ class CustomExhibition {
         mat.opacity = child.material.opacity;
       }
 
-      // npot
+      // NPOT
       if (mat.map) {
         mat.map.wrapS = mat.map.wrapT = THREE.ClampToEdgeWrapping;
         mat.map.minFilter = THREE.LinearFilter;
@@ -162,17 +179,16 @@ class CustomExhibition {
       }
     };
 
-    assets.forEach(el => {
+    this.assets.forEach(el => {
       this.loader.loadFBX(el.src).then(obj => {
         // add to scene and asset reference
         this.ref.materials.conformGroup(obj);
         this.ref.scene.scene.add(obj);
-        this.assets.push(obj);
 
         // set car containers
         el.object = obj;
-        el.children = [];
         el.sparks = [];
+        el.children = [];
         el.smokeMat = new THREE.MeshPhongMaterial({transparent: true, side: THREE.DoubleSide, opacity: 0.25});
         const tex = this.ref.materials.getTexture('brenton/smoke.png');
         el.smokeMat.map = tex;
@@ -211,9 +227,9 @@ class CustomExhibition {
     });
 
     this.updateCallback = delta => {
-      for (var i=0; i < assets.length; i++) {
-        if (assets[i].children) {
-          const target = assets[i];
+      for (let i=0, lim=this.assets.length; i<lim; ++i) {
+        if (this.assets[i].children) {
+          const target = this.assets[i];
           const threshold = 3;
           const radius = target.radius ? target.radius : 25;
           const dist = this.ref.player.position.distanceTo(target.position);
@@ -274,11 +290,10 @@ class CustomExhibition {
             // add to scene, animation array, asset reference
             this.ref.scene.scene.add(spark.object);
             target.sparks.push(spark);
-            this.assets.push(spark.object);
           }
 
           // animate particles
-          for (var j=target.sparks.length-1, lim=-1; j>lim; j--) {
+          for (let j=target.sparks.length-1, jlim=-1; j>jlim; j--) {
             const spark = target.sparks[j];
             spark.object.position.x += spark.vec.x * delta;
             spark.object.position.y += spark.vec.y * delta;
@@ -287,12 +302,6 @@ class CustomExhibition {
             if (spark.age > spark.maxAge) {
               this.ref.scene.scene.remove(spark.object);
               target.sparks.splice(j, 1);
-
-              // dereference
-              const index = this.assets.find(asset => asset.id === spark.object.id);
-              if (index !== -1) {
-                this.assets.splice(index, 1);
-              }
             }
           }
         }

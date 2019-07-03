@@ -7,8 +7,8 @@ import CustomExhibition from './custom_exhibition';
 class Map {
   constructor() {
     this.assets = {};
-    this.customExhibition = new CustomExhibition();
     this.loader = new Loader('assets');
+    this.customExhibition = new CustomExhibition();
   }
 
   bind(root) {
@@ -17,13 +17,17 @@ class Map {
     this.ref.scene = root.modules.scene;
     this.ref.player = root.modules.player;
     this.ref.materials = root.modules.materials;
+
+    // bind custom exhibition handler
     this.customExhibition.bind(root);
   }
 
   load(data) {
     return new Promise((resolve, reject) => {
       this.customExhibition.load(data);
-      this.loadDefaultExhibition(resolve);
+      this.loadDefaultExhibition(() => {
+        resolve();
+      });
     });
   }
 
