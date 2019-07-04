@@ -11,7 +11,7 @@ class Canvas2D {
 
     // draw settings
     this.prompt = {};
-    this.prompt.touchMove = {alpha: {current: 0, min: 0, max: 1}, size: {current: 12, min: 12, max: 24}};
+    this.prompt.touchMove = {alpha: {current: 0, min: 0, max: 1}, size: {current: 22, min: 22, max: 24}};
     this.prompt.click = {alpha: {current: 0, min: 0, max: 1}};
   }
 
@@ -34,8 +34,8 @@ class Canvas2D {
   }
 
   resize() {
-    this.cvs.width = window.innerWidth * Config.renderer.width;
-    this.cvs.height = window.innerHeight * Config.renderer.height;
+    this.cvs.width = Config.renderer.getWidth();
+    this.cvs.height = Config.renderer.getHeight();
   }
 
   promptClick(text, active, x, y) {

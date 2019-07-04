@@ -6,6 +6,7 @@
   <div id='open-gallery-prompt' class='logo__prompt loading'>
     <span class='logo__prompt-loading'>Loading</span>
     <span class='logo__prompt-ready'>Open Gallery</span>
+    <div id='open-gallery-artist'></div>
   </div>
 </div>
 

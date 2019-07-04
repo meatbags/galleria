@@ -94,7 +94,6 @@ class Surface {
     const dt = performance.now() - this.timestamp;
     const dx = Math.hypot(this.mouse.delta.x, this.mouse.delta.y);
     if (dt < this.threshold.click &&  dx < window.innerWidth * this.threshold.mouseDelta) {
-      console.log('click!')
       this.ref.floorPlan.click(this.mouse.position.x, this.mouse.position.y);
     }
   }
@@ -166,8 +165,8 @@ class Surface {
   }
 
   resize() {
-    this.width = window.innerWidth * Config.renderer.width;
-    this.height = window.innerHeight * Config.renderer.height;
+    this.width = Config.renderer.getWidth();
+    this.height = Config.renderer.getHeight();
     this.centre = {
       x: this.width / 2,
       y: this.height / 2,

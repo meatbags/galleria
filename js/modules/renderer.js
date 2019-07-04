@@ -21,8 +21,8 @@ class Renderer {
     this.ref.camera = root.modules.camera.camera;
 
     // render passes
-    this.width = window.innerWidth * Config.renderer.width;
-    this.height = window.innerHeight * Config.renderer.height;
+    this.width = Config.renderer.getWidth();
+    this.height = Config.renderer.getHeight();
     this.size = new THREE.Vector2(this.width, this.height);
     const strength = 0.5;
     const radius = 0.125;
@@ -31,11 +31,12 @@ class Renderer {
     this.passPoster = new THREE.PosterPass(this.size);
     this.passBloom = new THREE.UnrealBloomPass(this.size, strength, radius, threshold);
     this.passBloom.renderToScreen = true;
+    //this.passPoster.renderToScreen = true;
 
     // composer
     this.composer = new THREE.EffectComposer(this.renderer);
     this.composer.addPass(this.passRender);
-    this.composer.addPass(this.passPoster);
+    //this.composer.addPass(this.passPoster);
     this.composer.addPass(this.passBloom);
 
     // bind events
@@ -44,8 +45,8 @@ class Renderer {
   }
 
   resize() {
-    this.width = window.innerWidth * Config.renderer.width;
-    this.height = window.innerHeight * Config.renderer.height;
+    this.width = Config.renderer.getWidth();
+    this.height =  Config.renderer.getHeight();
     this.size.set(this.width, this.height);
     this.renderer.setSize(this.width, this.height);
     this.composer.setSize(this.width, this.height);

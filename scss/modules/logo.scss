@@ -1,10 +1,12 @@
 .logo {
-  border: $border;
-  position: absolute;
+  border: 1px dashed rgba(0, 0, 0, 0.25);
+  border-radius: $sizeLogo;
+  //position: absolute;
+  position: fixed;
   width: $sizeLogo;
   height: $sizeLogo;
-  top: calc(50vh - #{$sizeLogo / 2});
-  left: calc(25vw - #{$sizeLogo / 2});
+  top: calc(45vh - #{$sizeLogo / 2});
+  left: calc(23vw - #{$sizeLogo / 2});
   transform: translateX(100vw);
   z-index: $indexLogo;
   cursor: pointer;
@@ -21,7 +23,14 @@
     @include padding(1, 1);
     font-family: $fontStackSerif;
     font-size: $fontSizeHuge;
-    transform: translate(33.33%, 0);
+    transform: translate(50%, 42%);
+
+    #open-gallery-artist {
+      font-size: $fontSizeLarge;
+      text-transform: uppercase;
+      white-space: nowrap;
+      overflow: visible;
+    }
 
     &:hover {
       color: $colourLink;

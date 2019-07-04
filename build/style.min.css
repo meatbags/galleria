@@ -268,13 +268,15 @@ ul {
   transition: transform 1.1s; }
   .gallery.active {
     transform: translateX(0); }
-  .gallery .gallery__inner .canvas-wrapper .canvas-wrapper__inner.clickable {
-    cursor: pointer; }
-  .gallery .gallery__inner .canvas-wrapper .canvas-wrapper__inner canvas {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%); }
+  .gallery .gallery__inner .canvas-wrapper .canvas-wrapper__inner {
+    cursor: crosshair; }
+    .gallery .gallery__inner .canvas-wrapper .canvas-wrapper__inner.clickable {
+      cursor: pointer; }
+    .gallery .gallery__inner .canvas-wrapper .canvas-wrapper__inner canvas {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%); }
   .gallery .gallery__popup-artwork-info {
     position: absolute;
     top: 50%;
@@ -378,12 +380,13 @@ ul {
           fill: #ff6f61; }
 
 .logo {
-  border: 1px solid #3f3f3f;
-  position: absolute;
+  border: 1px dashed rgba(0, 0, 0, 0.25);
+  border-radius: 300px;
+  position: fixed;
   width: 300px;
   height: 300px;
-  top: calc(50vh - 150px);
-  left: calc(25vw - 150px);
+  top: calc(45vh - 150px);
+  left: calc(23vw - 150px);
   transform: translateX(100vw);
   z-index: 5;
   cursor: pointer;
@@ -400,7 +403,12 @@ ul {
     padding-bottom: 8px;
     font-family: "Playfair Display", sans-serif;
     font-size: 40px;
-    transform: translate(33.33%, 0); }
+    transform: translate(50%, 42%); }
+    .logo .logo__prompt #open-gallery-artist {
+      font-size: 20px;
+      text-transform: uppercase;
+      white-space: nowrap;
+      overflow: visible; }
     .logo .logo__prompt:hover {
       color: #ff6f61; }
     .logo .logo__prompt .logo__prompt-loading {

@@ -19,7 +19,7 @@ if ($query->have_posts()):
     $query->the_post(); ?>
 
 <div class='section section--upcoming'>
-  <?php getExhibitionDataTags(get_fields()); ?>
+  <?php getExhibitionDataTags(get_fields(), true); ?>
 </div>
 
 <?php

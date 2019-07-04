@@ -45,17 +45,19 @@ class Gallery {
     this.modules.player.reset();
     this.modules.scene.reset();
 
+    // add artist name
+    document.querySelector('#open-gallery-artist').innerText = data.artistName || '';
+    document.querySelector('#open-gallery-prompt').classList.add('loading');
+
     // load map
     this.modules.map.load(data).then(() => {
       this.modules.floorPlan.load(data);
       this.modules.lighting.load(data);
 
       // reset "open" prompt
-      const target = document.querySelector('#open-gallery-prompt');
-      if (target) {
-        target.classList.remove('loading');
-        target.classList.add('prompt-action');
-      }
+      const prompt = document.querySelector('#open-gallery-prompt');
+      prompt.classList.remove('loading');
+      prompt.classList.add('prompt-action');
     });
   }
 

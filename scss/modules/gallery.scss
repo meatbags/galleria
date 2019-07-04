@@ -17,6 +17,8 @@
     .canvas-wrapper {
       // NOTE: #canvas-target
       .canvas-wrapper__inner {
+        cursor: crosshair;
+
         &.clickable {
           cursor: pointer;
         }

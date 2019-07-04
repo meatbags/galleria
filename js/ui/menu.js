@@ -1,4 +1,4 @@
-/** Menu */
+/** Menu -- TODO: delete */
 
 import IsMobileDevice from '../utils/is_mobile_device';
 

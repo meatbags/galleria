@@ -5,7 +5,7 @@ import Config from './config';
 class Camera {
   constructor(root) {
     this.fov = 65;
-    this.aspectRatio = (window.innerWidth * Config.renderer.width) / (window.innerHeight * Config.renderer.height);
+    this.aspectRatio = Config.renderer.getWidth() / Config.renderer.getHeight();
     this.offset = 0.1;
     this.camera = new THREE.PerspectiveCamera(this.fov, this.aspectRatio, 0.1, 2000000);
     this.camera.up = new THREE.Vector3(0, 1, 0);
@@ -24,7 +24,7 @@ class Camera {
   }
 
   resize() {
-    this.aspectRatio = (window.innerWidth * Config.renderer.width) / (window.innerHeight * Config.renderer.height);
+    this.aspectRatio = Config.renderer.getWidth() / Config.renderer.getHeight();
     this.camera.aspect = this.aspectRatio;
     this.camera.updateProjectionMatrix();
   }

@@ -7,7 +7,7 @@ function sanitiseQuotes($str) {
 }
 
 // get formatted section data
-function getExhibitionDataTags($fields) { ?>
+function getExhibitionDataTags($fields, $limited = false) { ?>
   <div class='section__id' data-id='exhibition-<?php echo get_the_ID(); ?>' style='display:none'></div>
   <div class='section__heading'><?php echo get_field('artist_name'); ?></div>
   <div class='section__title'><?php echo get_field('exhibition_title'); ?></div>
@@ -24,24 +24,26 @@ function getExhibitionDataTags($fields) { ?>
       <?php endforeach; ?>
     </div>
   <?php endif; ?>
-  <?php $images = get_field('images'); ?>
-  <div class='section__images' style='display:none'>
-    <?php foreach ($images as $img): ?>
-      <div class='section__image'
-        data-title='<?php echo sanitiseQuotes($img['title']); ?>'
-        data-url='<?php echo $img['image_file']['sizes']['large']; ?>'
-        data-sub-title='<?php echo sanitiseQuotes($img['sub_title']); ?>'
-        data-description='<?php echo sanitiseQuotes($img['description']); ?>'
-        data-horizontal-offset='<?php echo $img['horizontal_offset']; ?>'
-        data-vertical-offset='<?php echo $img['vertical_offset'] ?>'
-        data-width='<?php echo $img['width']; ?>'
-        data-link='<?php echo $img['link']; ?>'
-        data-location='<?php echo $img['location']; ?>'
-        data-video-file='<?php echo $img['video_file']; ?>'
-        data-audio-file='<?php echo $img['audio_file']; ?>'
-        ></div>
-    <?php endforeach; ?>
-  </div>
+  <?php if (!$limited): ?>
+    <div class='section__images' style='display:none'>
+      <?php $images = get_field('images'); ?>
+      <?php foreach ($images as $img): ?>
+        <div class='section__image'
+          data-title='<?php echo sanitiseQuotes($img['title']); ?>'
+          data-url='<?php echo $img['image_file']['sizes']['large']; ?>'
+          data-sub-title='<?php echo sanitiseQuotes($img['sub_title']); ?>'
+          data-description='<?php echo sanitiseQuotes($img['description']); ?>'
+          data-horizontal-offset='<?php echo $img['horizontal_offset']; ?>'
+          data-vertical-offset='<?php echo $img['vertical_offset'] ?>'
+          data-width='<?php echo $img['width']; ?>'
+          data-link='<?php echo $img['link']; ?>'
+          data-location='<?php echo $img['location']; ?>'
+          data-video-file='<?php echo $img['video_file']; ?>'
+          data-audio-file='<?php echo $img['audio_file']; ?>'
+          ></div>
+      <?php endforeach; ?>
+    </div>
+  <?php endif; ?>
   <?php $custom = get_field('custom_exhibition_installation'); ?>
   <div class='section__custom-value' data-custom-value='<?php echo $custom; ?>' style='display:none'></div>
 <?php } ?>

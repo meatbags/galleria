@@ -1,13 +1,14 @@
 /** Config */
 
+const space = 8;
 const Config = {
   renderer: {
-    width: 1.0,
-    height: 0.82,
+    getWidth: () => { return Math.max(100, window.innerWidth - space * 14); },
+    getHeight: () => { return Math.max(100, window.innerHeight - space * 16); },
   },
   floorPlan: {
     artworkPositions: [
-      // 32 Artworks in total
+      // 32 in total
       // brick wall (8)
       {x: -24, y: 4, z: 23, nx: 0, nz: -1}, {x: -10.5, y: 3.5, z: 23, nx: 0, nz: -1}, {x: -8, y: 3.5, z: 23, nx: 0, nz: -1},
       {x: -5.5, y: 3.5, z: 23, nx: 0, nz: -1}, {x: 5.5, y: 3.5, z: 23, nx: 0, nz: -1}, {x: 8, y: 3.5, z: 23, nx: 0, nz: -1},

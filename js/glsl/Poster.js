@@ -55,7 +55,10 @@ THREE.PosterPass.prototype = Object.assign(Object.create(THREE.Pass.prototype), 
     constructor: THREE.PosterPass,
     render: function(renderer, writeBuffer, readBuffer, delta, maskActive) {
       this.shader.uniforms['tDiffuse'].value = readBuffer.texture;
+
       if (this.renderToScreen) {
+        renderer.setRenderTarget(null);
+        renderer.clear();
         renderer.render(this.scene, this.camera);
       } else {
         renderer.setRenderTarget(writeBuffer);
