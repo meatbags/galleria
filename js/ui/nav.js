@@ -145,13 +145,16 @@ class Nav {
     if (!this.el.openGallery.classList.contains('loading')) {
       this.el.openGallery.classList.remove('prompt-action');
       document.querySelector('html').classList.add('freeze');
-      document.querySelector('.gallery').classList.add('active');
       document.querySelector('.wrapper').classList.remove('active');
       document.querySelector('.logo').classList.remove('active');
       document.documentElement.scrollTop = 0;
+      document.querySelector('.gallery').classList.add('transition');
+      setTimeout(() => {
+        document.querySelector('.gallery').classList.add('active');
+      }, 100);
       setTimeout(() => {
         this.ref.gallery.start();
-      }, 500);
+      }, 1000);
     }
   }
 
@@ -161,6 +164,9 @@ class Nav {
     document.querySelector('.gallery').classList.remove('active');
     document.querySelector('.wrapper').classList.add('active');
     document.querySelector('.logo').classList.add('active');
+    setTimeout(() => {
+      document.querySelector('.gallery').classList.remove('transition');
+    }, 1100);
   }
 
   openArtworkInfo(artwork) {

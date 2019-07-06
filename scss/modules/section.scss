@@ -7,6 +7,13 @@
   pointer-events: all;
   //box-shadow: 10px 10px $black;
 
+  .section__note {
+    font-family: $fontStackSerif;
+    text-transform: uppercase;
+    line-height: 1;
+    font-size: $fontSizeSmall;
+  }
+
   .section__heading {
     font-size: $fontSizeHuge;
     font-family: $fontStackSerif;

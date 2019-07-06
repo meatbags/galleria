@@ -1,6 +1,4 @@
 .logo {
-  border: 1px dashed rgba(0, 0, 0, 0.25);
-  border-radius: $sizeLogo;
   //position: absolute;
   position: fixed;
   width: $sizeLogo;
@@ -11,29 +9,40 @@
   z-index: $indexLogo;
   cursor: pointer;
   transition: transform $transitionMedium;
+  border: 2px solid $colourLink;
 
   &.active {
     transform: translateX(0);
   }
 
+  // NOTE: #canvas-logo-target
+  .logo__inner {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    pointer-events: none;
+
+    canvas {
+      //outline: $border;
+    }
+  }
+
   .logo__prompt {
     position: absolute;
-    bottom: 0;
-    right: 0;
     @include padding(1, 1);
     font-family: $fontStackSerif;
     font-size: $fontSizeHuge;
-    transform: translate(50%, 42%);
+    //top: 50%; left: 50%; transform: translate(-50%, -50%);
+    bottom: 0; right: 0; transform: translate(66%, 45%);
+    //mix-blend-mode: difference;
 
     #open-gallery-artist {
       font-size: $fontSizeLarge;
       text-transform: uppercase;
       white-space: nowrap;
       overflow: visible;
-    }
-
-    &:hover {
-      color: $colourLink;
     }
 
     .logo__prompt-loading {
@@ -51,5 +60,11 @@
     }
 
     &.prompt-action {}
+  }
+
+  &:hover {
+    .logo__prompt {
+      color: $colourLink;
+    }
   }
 }

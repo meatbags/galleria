@@ -52,29 +52,37 @@ class Materials {
       this.loaded[mat.name] = mat;
     }
 
-    mat.envMap = this.envMap;
-    mat.envMapIntensity = 0.5;
+    // temp
+    mat.map = null;
+    mat.normalMap = null;
+    mat.color = new THREE.Color(0xffffff);
+    mat.emissive = new THREE.Color(0x888888);
+    mat.needsUpdate = true;
 
-    // material specific
-    switch (mat.name) {
-      case 'concrete':
+    // update material
+    this.addEnvironmentMap(mat);
+    this.applyMaterialSettings(mat);
+  }
+
+  applyMaterialSettings(mat) {
+    if (mat.name) {
+      if (mat.name === 'conrete') {
         mat.normalScale.x = 0.25;
         mat.normalScale.y = 0.25;
-        break;
-      case 'gold':
-        break;
-      case 'neon': case 'neon1': case 'neon2':
+      } else if (mat.name.indexOf('neon') !== -1) {
         mat.emissive = new THREE.Color(1, 1, 1);
         mat.emissiveIntensity = 1.0;
-        //mat.fog = false;
-        break;
-      case 'nu_metal':
+      } else if (mat.name === 'nu_metal') {
         mat.normalScale.x = 0.25;
         mat.normalScale.y = 0.25;
-        break;
-      default:
-        break;
+      }
     }
+    // others: gold, wood, silver, wood2, metal, brick, painted_brick
+  }
+
+  addEnvironmentMap(mat) {
+    mat.envMap = this.envMap;
+    mat.envMapIntensity = 0.5;
   }
 
   getCustomMaterial(matSource) {
@@ -88,7 +96,7 @@ class Materials {
         float s = sin(theta);
         float off = 1.0 * sin(time + position.x * 200.0);
         mat3 roty = mat3(c, 0, s, 0, 1, 0, -s, 0, c);
-        //mat4 m = mat4(1, 0, 0, 0, 0, 1, 0, s * off * 2.0, 0, 0, 1, s * off, 0, 0, 0, 1);
+        // mat4 m = mat4(1, 0, 0, 0, 0, 1, 0, s * off * 2.0, 0, 0, 1, s * off, 0, 0, 0, 1);
         vec3 p = position;
         vec4 t = vec4(p.x + 0.25 * sin(time + p.y), p.y, p.z + 0.25 * cos(time + p.y), 1.0);
         vec3 transformed = vec3(t.x, t.y, t.z);

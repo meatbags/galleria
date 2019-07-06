@@ -64,10 +64,12 @@ class Gallery {
   start() {
     this.timer = { previous: performance.now() };
     this.active = true;
+    document.querySelector('#canvas-target').classList.add('active');
   }
 
   pause() {
     this.active = false;
+    document.querySelector('#canvas-target').classList.remove('active');
   }
 
   loop() {
