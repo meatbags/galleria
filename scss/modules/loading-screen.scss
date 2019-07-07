@@ -1,3 +1,8 @@
+@keyframes loading-flash {
+  0% { opacity: 0.25; }
+  100% { opacity: 1; }
+}
+
 .loading-screen {
   position: fixed;
   background: $white;
@@ -19,19 +24,30 @@
 
   .loading-screen__bar {
     width: 50%;
-    border-bottom: $border;
+    height: $space;
+    background: $colour;
     position: absolute;
     top: 50%;
     left: 0;
     transform: translateY(-50%);
+    display: none;
   }
 
   .loading-screen__msg {
     position: absolute;
     top: 50%;
     left: 50%;
-    transform: translate(-50%, -100%);
+    transform: translate(-50%, -50%);
     font-family: $fontStackSerif;
     font-size: $fontSizeHuge;
+    //animation: loading-flash;
+    //animation-duration: $transitionMedium;
+    //animation-iteration-count: infinite;
+    //animation-direction: alternate;
+
+    img {
+      width: 150px;
+      height: 150px;
+    }
   }
 }

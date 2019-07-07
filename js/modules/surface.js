@@ -66,6 +66,12 @@ class Surface {
     this.rotation.y = this.ref.player.rotation.y;
     this.rotation.x = this.ref.player.rotation.x;
     this.timestamp = performance.now();
+    this.touchMoveTimeout = false;
+    setTimeout(() => {
+      if (this.mouse.active) {
+        this.touchMoveTimeout = true;
+      }
+    }, 100);
   }
 
   onMouseMove(evt) {
@@ -182,7 +188,7 @@ class Surface {
   render() {
     this.ref.canvas2d.clear();
     this.ref.floorPlan.draw(this.ref.canvas2d.getContext());
-    this.ref.canvas2d.promptTouchMove((this.mouse.active && (Date.now() - this.timestamp > this.threshold.pan)));
+    this.ref.canvas2d.promptTouchMove((this.mouse.active && this.touchMoveTimeout && (Date.now() - this.timestamp > this.threshold.pan)));
 
     if (this.ref.player.noclip) {
       this.ref.canvas2d.promptGodMode();

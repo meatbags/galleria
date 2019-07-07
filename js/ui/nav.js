@@ -6,7 +6,7 @@ import IsSafariMobile from '../utils/is_safari_mobile';
 class Nav {
   constructor() {
     this.el = {
-      openGallery: document.querySelector('#open-gallery-prompt'),
+      openGallery: document.querySelector('.open-gallery-prompt'),
       archiveItems: document.querySelectorAll('.section--archive'),
       preview: document.querySelector('.section--preview'),
       featured: document.querySelector('.section--featured'),
@@ -18,6 +18,8 @@ class Nav {
         navItemGallery: document.querySelector('#nav-item-gallery'),
         navItemControls: document.querySelector('#nav-item-controls'),
         artworkInfoPopup: document.querySelector('#popup-artwork-info'),
+        artworkInfoPopupInner: document.querySelector('#popup-artwork-info .popup-artwork-info__inner'),
+        artworkInfoPopupDetails: document.querySelector('#popup-artwork-info .popup-artwork-info__details'),
         artworkInfoPopupImage: document.querySelector('#popup-artwork-info .image'),
         artworkInfoPopupTitle: document.querySelector('#popup-artwork-info .title'),
         artworkInfoPopupSubtitle: document.querySelector('#popup-artwork-info .subtitle'),
@@ -36,6 +38,7 @@ class Nav {
   bind(root) {
     this.ref = {};
     this.ref.gallery = root.modules.gallery;
+    this.ref.logo = root.modules.logo;
 
     // load initial exhibition
     const exhibition = this.el.preview ? this.el.preview : this.el.featured ? this.el.featured : this.el.default;
@@ -61,10 +64,12 @@ class Nav {
 
     // remove loading screen
     const loading = document.querySelector('.loading-screen');
-    loading.classList.remove('active');
-    setTimeout(() => {
-      loading.parentNode.removeChild(loading);
-    }, 500);
+    if (loading) {
+      loading.classList.remove('active');
+      setTimeout(() => {
+        loading.parentNode.removeChild(loading);
+      }, 500);
+    }
   }
 
   bindEvents() {
@@ -91,6 +96,16 @@ class Nav {
         if (evt.target.tagName !== 'A') {
           const data = this.parseExhibitionDataTags(el);
           this.ref.gallery.load(data);
+
+          // enable featured click to return
+          const target = this.el.preview ? this.el.preview : this.el.featured ? this.el.featured : this.el.default;
+          if (target && !target.classList.contains('clickable')) {
+            target.classList.add('clickable');
+            target.addEventListener('click', () => {
+              const data = this.parseExhibitionDataTags(target);
+              this.ref.gallery.load(data);
+            });
+          }
         }
       });
     });
@@ -108,8 +123,17 @@ class Nav {
         this.closeArtworkInfo();
       }
     });
+    this.el.gallery.controlsPopup.addEventListener('click', () => {
+      this.closeControlsPopup();
+    });
     this.el.gallery.artworkInfoPopupClose.addEventListener('click', () => {
       this.closeArtworkInfo();
+    });
+    this.el.gallery.artworkInfoPopup.addEventListener('click', evt => {
+      this.closeArtworkInfo();
+    });
+    this.el.gallery.artworkInfoPopupDetails.addEventListener('click', evt => {
+      evt.stopPropagation();
     });
 
     // trigger resize after orientationchange
@@ -134,6 +158,8 @@ class Nav {
       res.verticalOffset = parseFloat(res.verticalOffset);
       res.width = parseFloat(res.width);
       res.location = parseInt(res.location);
+      res.imageWidth = parseInt(res.imageWidth);
+      res.imageHeight = parseInt(res.imageHeight);
       data.images.push(res);
     });
     data.customValue = el.querySelector('.section__custom-value').dataset.customValue;
@@ -143,6 +169,7 @@ class Nav {
 
   onOpenGallery() {
     if (!this.el.openGallery.classList.contains('loading')) {
+      this.ref.logo.pause();
       this.el.openGallery.classList.remove('prompt-action');
       document.querySelector('html').classList.add('freeze');
       document.querySelector('.wrapper').classList.remove('active');
@@ -160,6 +187,8 @@ class Nav {
 
   onCloseGallery() {
     this.ref.gallery.pause();
+    this.ref.logo.start();
+    this.closeArtworkInfo();
     document.querySelector('html').classList.remove('freeze');
     document.querySelector('.gallery').classList.remove('active');
     document.querySelector('.wrapper').classList.add('active');
@@ -172,12 +201,34 @@ class Nav {
   openArtworkInfo(artwork) {
     // open popup
     if (!artwork.isArtworkMenuMine()) {
+      // set details
       this.el.gallery.artworkInfoPopup.dataset.id = artwork.id;
-      this.el.gallery.artworkInfoPopupImage.innerHTML = `<img src="${artwork.data.url}"/>`;
       this.el.gallery.artworkInfoPopupTitle.innerHTML = artwork.data.title;
       this.el.gallery.artworkInfoPopupSubtitle.innerHTML = artwork.data.subTitle;
       this.el.gallery.artworkInfoPopupDesc.innerHTML = artwork.data.description;
       this.el.gallery.artworkInfoPopupLink.innerHTML = artwork.data.link ? `<a href='${artwork.data.link}' target='_blank'>Link</a>` : '';
+
+      // set image
+      if (artwork.data.imageHeight && artwork.data.imageWidth) {
+        const w = artwork.data.imageWidth;
+        const h = artwork.data.imageHeight;
+        const ratio = w / h;
+        const windowRatio = window.innerWidth / window.innerHeight;
+        if (ratio < windowRatio) {
+          const y = window.innerHeight * 0.75;
+          const x = Math.min(y * (w / h), window.innerWidth * 0.95);
+          this.el.gallery.artworkInfoPopupInner.style.width = `${Math.round(x)}px`;
+          this.el.gallery.artworkInfoPopupInner.style.height = `${Math.round(y)}px`;
+        } else {
+          const x = window.innerWidth * 0.85;
+          const y = Math.min(x * (h / w), window.innerHeight * 0.75);
+          this.el.gallery.artworkInfoPopupInner.style.width = `${Math.round(x)}px`;
+          this.el.gallery.artworkInfoPopupInner.style.height = `${Math.round(y)}px`;
+        }
+
+        this.el.gallery.artworkInfoPopupImage.innerHTML = `<img src="${artwork.data.url}"/>`;
+
+      }
     }
     this.el.gallery.artworkInfoPopup.classList.add('active');
 

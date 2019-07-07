@@ -20,9 +20,6 @@ if ($query->have_posts()):
 
     <div class='section section--archive'>
       <?php getExhibitionDataTags(get_fields()); ?>
-      <div class='section--archive__prompt'>
-        Open
-      </div>
     </div>
 
 <?php

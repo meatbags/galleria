@@ -53,11 +53,11 @@ class Materials {
     }
 
     // temp
-    mat.map = null;
-    mat.normalMap = null;
-    mat.color = new THREE.Color(0xffffff);
-    mat.emissive = new THREE.Color(0x888888);
-    mat.needsUpdate = true;
+    //mat.map = null;
+    //mat.normalMap = null;
+    //mat.color = new THREE.Color(0xffffff);
+    //mat.emissive = new THREE.Color(0x888888);
+    //mat.needsUpdate = true;
 
     // update material
     this.addEnvironmentMap(mat);

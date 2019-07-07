@@ -1,5 +1,5 @@
 <div id='gallery' class='gallery'>
-  <nav class='nav'>
+  <nav class='nav nav--gallery'>
     <div class='nav__inner'>
       <div id='nav-item-gallery' class='nav__item active'>Gallery</div>
       <div id='nav-item-controls' class='nav__item'>Controls</div>
@@ -16,16 +16,16 @@
 
   <!-- popup artwork information -->
   <div id='popup-artwork-info' class='gallery__popup-artwork-info'>
-    <div class='popup-artwork-info__image'>
-      <div class='image'></div>
+    <div class='popup-artwork-info__inner'>
+      <div class='popup-artwork-info__image image'></div>
+      <div class='popup-artwork-info__details'>
+        <div class='title'></div>
+        <div class='subtitle'></div>
+        <div class='desc'></div>
+        <div class='link'></div>
+        <div id='popup-artwork-info-close' class='close'>&times;</div>
+      </div>
     </div>
-    <div class='popup-artwork-info__details'>
-      <div class='title'></div>
-      <div class='subtitle'></div>
-      <div class='desc'></div>
-      <div class='link'></div>
-    </div>
-    <div id='popup-artwork-info-close' class='close'>&times;</div>
   </div>
 
   <!-- onscreen controls -->
@@ -60,26 +60,24 @@
 
   <!-- controls help -->
   <div id='popup-gallery-controls' class='gallery__popup-gallery-controls'>
-    <div class='content'>
-      <div class='item'>
-        <div class='requires-activate control-mouse control-img'>
-          <img src='<?php echo get_template_directory_uri(); ?>/img/control-mouse.png' />
-        </div>
-        <div class='text'>Hold and drag to pan the camera.</div>
+    <div class='popup-gallery-controls__item'>
+      <div class='popup-gallery-controls__mouse'>
+        <img src='<?php echo get_template_directory_uri(); ?>/img/control-mouse.png' />
       </div>
-      <div class='item'>
-        <div class='requires-activate control-arrow control-img'>
-          <img src='<?php echo get_template_directory_uri(); ?>/img/control-arrow.png' />
-        </div>
-        <div class='text'>Use the arrows or your keyboard arrows to move.</div>
-      </div>
-      <div class='item'>
-        <div class='requires-activate control-artwork control-img'>
-          <img src='<?php echo get_template_directory_uri(); ?>/img/control-artwork.png' />
-        </div>
-        <div class='text'>Click on an artwork to view it up close.</div>
-      </div>
+      <div class='popup-gallery-controls__text'>Hold & drag to pan the camera</div>
     </div>
-    <div class='close-gallery-menu'>Close &times;</div>
+    <div class='popup-gallery-controls__item'>
+      <div class='popup-gallery-controls__arrow'>
+        <img src='<?php echo get_template_directory_uri(); ?>/img/control-arrow.png' />
+      </div>
+      <div class='popup-gallery-controls__text'>Move with your keyboard arrows</div>
+    </div>
+    <div class='popup-gallery-controls__item'>
+      <div class='popup-gallery-controls__artwork'>
+        <img src='<?php echo get_template_directory_uri(); ?>/img/control-artwork.png' />
+      </div>
+      <div class='popup-gallery-controls__text'>Click an artwork to view it closer</div>
+    </div>
+    <div class='popup-gallery-controls__close'>&times;</div>
   </div>
 </div>

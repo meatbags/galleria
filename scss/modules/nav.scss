@@ -33,4 +33,12 @@
       }
     }
   }
+
+  &.nav--gallery {
+    height: $heightNav + $space * 2;
+
+    .nav__inner {
+      justify-content: center;
+    }
+  }
 }

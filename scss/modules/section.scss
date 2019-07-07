@@ -1,11 +1,10 @@
 .section {
-  @include padding(4, 4);
+  @include padding(4, 2.5);
   @include margin(2, 2);
   width: 100%;
   background: $white;
   position: relative;
   pointer-events: all;
-  //box-shadow: 10px 10px $black;
 
   .section__note {
     font-family: $fontStackSerif;
@@ -24,7 +23,6 @@
     font-size: $fontSizeLarge;
     text-decoration: underline;
     text-transform: uppercase;
-    //text-transform: capitalize;
     user-select: text;
   }
 
@@ -35,8 +33,6 @@
   }
 
   .section__description {
-    //max-height: 200px;
-    //overflow: hidden;
     user-select: text;
   }
 
@@ -54,7 +50,7 @@
     .section__link-item {
       padding-right: $space;
       font-size: $fontSize;
-      //text-transform: uppercase;
+
       a {
         color: $colour;
       }
@@ -72,41 +68,19 @@
   }
 
   &.section--archive {
-    //width: calc(50% - #{$space * 4});
-    cursor: pointer;
-    overflow: hidden;
-
-    .section--archive__prompt {
-      @include margin(1, 1);
-      @include padding(1.5, 0.5);
-      position: absolute;
-      top: 0;
-      left: 0;
-      background: $colour;
-      color: $backgroundColour;
-      font-size: $fontSizeSmall;
-      text-transform: uppercase;
-      cursor: pointer;
-      opacity: 0;
-      transform: translateX(-100%);
-      //transition: transform $transitionFast, opacity $transitionFast;
-
-      &:hover {
-        color: $colourLink;
-      }
-    }
-
     .section__description {
       display: none;
     }
+  }
+
+  &.section--archive, &.clickable {
+    cursor: pointer;
 
     &:hover {
-      //outline: $border;
       box-shadow: 10px 10px $colourLink;
       color: $colourLink;
 
       .section--archive__prompt {
-        //opacity: 1;
         transform: translateX(0%);
       }
 
@@ -119,6 +93,7 @@
       }
     }
   }
+
 
   &.hidden {
     display: none;

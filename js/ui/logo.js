@@ -18,50 +18,43 @@ class Logo {
     this.loader.loadFBX('logo').then(obj => {
       this.logo = obj;
       this.children = [];
-      console.log(obj);
-      obj.children.forEach(child => {
-        child.material = new THREE.MeshPhysicalMaterial({
-          color: 0x333333,
-          metalness: 0.75,
-        });
-        const mat = child.material;
-        mat.emissive = new THREE.Color(0x333333);
-        mat.emissiveIntensity = 1;
-        /*
-        mat.transparent = true;
-        mat.depthTest = false;
-        mat.side = THREE.DoubleSide;
-        mat.color = new THREE.Color(0xffffff);
-        mat.alphaMap = mat.metalnessMap;
-        mat.blending = THREE.AdditiveBlending;
-        mat.metalness = 0.1;
-        this.children.push(child);
-        */
-      });
+      const mat = new THREE.MeshPhysicalMaterial({color: 0x333333, metalness: 0.75, emissive: 0x333333, emissiveIntensity: 1, side: THREE.DoubleSide});
+      const box = new THREE.Box3();
+      const process = child => {
+        if (child.type === 'Group') {
+          child.children.forEach(c => { process(c); });
+        } else {
+          child.material = mat;
+          box.setFromObject(child);
+          if (box.max.z - box.min.z < 2) {
+            child.customVector = new THREE.Vector3(0, 0, 0);
+            if (child.name.indexOf('x_pos') !== -1) {
+              child.customVector.x = 1;
+            } else if (child.name.indexOf('y_neg') !== -1) {
+              child.customVector.y = -1;
+            } else if (child.name.indexOf('y_pos') !== -1) {
+              child.customVector.y = 1;
+            } else if (child.name.indexOf('z_pos') !== -1) {
+              child.customVector.z = 1;
+            }
+            this.children.push(child);
+          }
+        }
+      };
+      process(obj);
       this.scene.add(obj);
       this.loaded = true;
       this.start();
     });
 
     // add some lights
-    this.dLight1 = new THREE.DirectionalLight(0xeeeeee, 1);
-    this.dLight2 = new THREE.DirectionalLight(0xeeeeee, 1);
-    this.dLight3 = new THREE.DirectionalLight(0xeeeeee, 1);
-    this.dLight1.position.set(-1, -1, 0);
-    this.dLight2.position.set(1, 0, -1);
+    this.dLight1 = new THREE.DirectionalLight(0xffffff, 1);
+    this.dLight2 = new THREE.DirectionalLight(0xff6f61, 1);
+    this.dLight3 = new THREE.DirectionalLight(0xffffff, 1);
+    this.dLight3.position.set(1, 0.5, -0.25);
     this.scene.add(this.dLight1);
     this.scene.add(this.dLight2);
     this.scene.add(this.dLight3);
-
-    this.pointLight1 = new THREE.PointLight(0xeeeeee, 1, 30, 1);
-    this.pointLight2 = new THREE.PointLight(0xeeeeee, 0, 30, 1);
-    this.pointLight3 = new THREE.PointLight(0xeeeeee, 0, 30, 1);
-    this.pointLight1.position.set(5, 5, 5);
-    this.pointLight2.position.set(0, -5, -10);
-    this.pointLight3.position.set(0, 0, 0);
-    //this.scene.add(this.pointLight1);
-    //this.scene.add(this.pointLight2);
-    //this.scene.add(this.pointLight3);
 
     // renderer
     this.renderer = new THREE.WebGLRenderer({alpha: true, antialias: true});
@@ -72,24 +65,19 @@ class Logo {
     window.addEventListener('resize', () => { this.resize(); });
     document.querySelector('#canvas-logo-target').appendChild(this.renderer.domElement);
     document.querySelector('#logo').addEventListener('mouseenter', () => {
-      /**
-      this.pointLight1.intensity = 1;
-      this.pointLight2.intensity = 1;
-      this.pointLight3.intensity = 1;
-      this.pointLight1.color.setHex(0xffefe1);
-      this.pointLight2.color.setHex(0xffefe1);
-      this.pointLight3.color.setHex(0xffefe1);
-      **/
+      if (this.children) {
+        this.children.forEach(child => {
+          child.material.color.setHex(0xff6f61);
+        });
+      }
     });
     document.querySelector('#logo').addEventListener('mouseleave', () => {
-      /**
-      this.pointLight1.intensity = 0.65;
-      this.pointLight2.intensity = 0.65;
-      this.pointLight3.intensity = 0.65;
-      this.pointLight1.color.setHex(0xffffff);
-      this.pointLight2.color.setHex(0xffffff);
-      this.pointLight3.color.setHex(0xffffff);
-      **/
+      if (this.children) {
+        this.children.forEach(child => {
+          child.material.color.setHex(0x333333);
+          child.position.set(0, 0, 0);
+        });
+      }
     });
 
     // start loop
@@ -99,6 +87,7 @@ class Logo {
   bind(root) {}
 
   start() {
+    this.age = this.age ? this.age : 0;
     this.timer = { previous: performance.now() };
     this.active = true;
     document.querySelector('#canvas-logo-target').classList.add('active');
@@ -111,9 +100,41 @@ class Logo {
 
   resize() {
     this.screenSize = window.innerWidth > window.innerHeight ?
-      Math.round(window.innerWidth * 0.35) :
-      Math.round(window.innerHeight * 0.33);
+      Math.round(window.innerWidth * 0.3) :
+      Math.round(window.innerHeight * 0.3);
     this.renderer.setSize(this.screenSize, this.screenSize);
+  }
+
+  updateChild(child, delta) {
+    // animate
+    if (child.customAnimation) {
+      const anim = child.customAnimation;
+      anim.age += delta;
+      const t = Math.max(anim.minT, Math.min(anim.maxT, anim.age / anim.duration));
+      child.position.x = anim.from.x + (anim.to.x - anim.from.x) * t;
+      child.position.y = anim.from.y + (anim.to.y - anim.from.y) * t;
+      child.position.z = anim.from.z + (anim.to.z - anim.from.z) * t;
+    }
+
+    // set new animation
+    if (Math.random() > 0.97) {
+      child.customAnimation = {
+        duration: 0.1 + Math.random() * 1,
+        from: child.position.clone(),
+        minT: Math.random() > 0.25 ? 0 : Math.random(),
+        maxT: Math.random() > 0.25 ? 1 : 1 + Math.random() * 0.25,
+        age: 0,
+      };
+
+      // set target
+      if (Math.random() > 0.65) {
+        child.customAnimation.to = new THREE.Vector3(0, 0, 0);
+      } else {
+        const n = 0.025 + Math.random() * 0.125;
+        child.customAnimation.to = child.customVector.clone();
+        child.customAnimation.to.multiplyScalar(n);
+      }
+    }
   }
 
   loop() {
@@ -122,15 +143,13 @@ class Logo {
       const now = performance.now();
       const delta = Math.min(0.1, (now - this.timer.previous) / 1000);
       this.timer.previous = now;
-      if (this.logo) {
-        //this.logo.rotation.y += delta * Math.PI / 24;
-        //const c = this.children[0];
-        //const o = this.children[1];
-        //const m = this.children[2];
-        //c.rotation.x += delta * Math.PI / 32;
-        //c.rotation.z += delta * Math.PI / 64;
-        //o.rotation.y -= delta * Math.PI / 100;
-        //m.rotation.y -= delta * Math.PI / 48;
+      this.age += delta * 0.125;
+      this.dLight1.position.set(Math.sin(this.age), Math.cos(this.age), 0);
+      this.dLight2.position.set(Math.cos(this.age), 0, -Math.sin(this.age));
+      if (this.children) {
+        this.children.forEach(child => {
+          this.updateChild(child, delta);
+        });
       }
       this.renderer.render(this.scene, this.camera);
     }

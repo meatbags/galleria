@@ -1,10 +1,12 @@
 /** Config */
 
 const space = 8;
+const padX = 0; // 7
+const padY = 10; // 8
 const Config = {
   renderer: {
-    getWidth: () => { return Math.max(100, window.innerWidth - space * 14); },
-    getHeight: () => { return Math.max(100, window.innerHeight - space * 16); },
+    getWidth: () => { return Math.max(100, window.innerWidth - space * padX * 2); },
+    getHeight: () => { return Math.max(100, window.innerHeight - space * padY * 2); },
   },
   floorPlan: {
     artworkPositions: [
