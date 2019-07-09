@@ -1,5 +1,4 @@
 .logo {
-  //position: absolute;
   position: fixed;
   width: $sizeLogo;
   height: $sizeLogo;
@@ -9,7 +8,7 @@
   z-index: $indexLogo;
   cursor: pointer;
   transition: transform $transitionMedium;
-
+  user-select: none;
 
   &.active {
     transform: translateX(0);
@@ -65,5 +64,15 @@
     .logo__prompt {
       color: $colourLink;
     }
+  }
+
+  @media screen and (max-width: $tablet) {
+    .logo__prompt {
+      transform: translate(33%, 10%);
+    }
+  }
+
+  @media screen and (max-width: $mobile) {
+    
   }
 }

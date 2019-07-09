@@ -65,10 +65,9 @@ class Nav {
     // remove loading screen
     const loading = document.querySelector('.loading-screen');
     if (loading) {
-      loading.classList.remove('active');
       setTimeout(() => {
         loading.parentNode.removeChild(loading);
-      }, 500);
+      }, 200);
     }
   }
 
@@ -135,6 +134,18 @@ class Nav {
     this.el.gallery.artworkInfoPopupDetails.addEventListener('click', evt => {
       evt.stopPropagation();
     });
+
+    // bind mobile menu button
+    document.querySelectorAll('.open-mobile-menu-button').forEach(el => {
+      el.addEventListener('click', () => {
+        if (el.classList.contains('active')) {
+          this.closeMobileMenu();
+        } else {
+          this.openMobileMenu(el);
+        }
+      });
+    });
+
 
     // trigger resize after orientationchange
     window.addEventListener('orientationchange', () => {
@@ -258,6 +269,19 @@ class Nav {
     this.el.gallery.controls.classList.add('active');
     this.el.gallery.navItemControls.classList.remove('active');
     this.el.gallery.navItemGallery.classList.add('active');
+  }
+
+  openMobileMenu(el) {
+    el.classList.add('active');
+    const target = document.querySelector(el.dataset.target);
+    if (target) {
+      target.classList.add('active');
+    }
+  }
+
+  closeMobileMenu() {
+    document.querySelectorAll('.mobile-menu__button').forEach(el => { el.classList.remove('active'); });
+    document.querySelectorAll('.mobile-menu').forEach(el => { el.classList.remove('active'); });
   }
 
   onWrapperNavItem(el) {

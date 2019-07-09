@@ -14,13 +14,13 @@ class Surface {
     };
     this.rotation = new THREE.Vector2();
     this.timestamp = null;
-    const isMobile = IsMobileDevice();
-    this.threshold = {click: 225, pan: 200, mouseDelta: isMobile ? 0.5 : 0.25};
-    this.scaleRotation = {x: isMobile ? 0.75 : 1, y: 1};
+    this.isMobile = IsMobileDevice();
+    this.threshold = {click: 225, pan: 200, mouseDelta: this.isMobile ? 0.4 : 0.25};
+    this.scaleRotation = {x: this.isMobile ? 0.75 : 1, y: 1};
 
     // events
     document.querySelectorAll('#gallery-controls .control').forEach(e => {
-      if (!isMobile) {
+      if (!this.isMobile) {
         e.addEventListener('mousedown', evt => { this.onControlDown(evt.currentTarget); });
         e.addEventListener('mouseup', evt => { this.onControlUp(evt.currentTarget); });
         e.addEventListener('mouseleave', evt => { this.onControlLeave(evt.currentTarget); });
@@ -99,8 +99,12 @@ class Surface {
   onMouseUp(evt) {
     const dt = performance.now() - this.timestamp;
     const dx = Math.hypot(this.mouse.delta.x, this.mouse.delta.y);
-    if (dt < this.threshold.click &&  dx < window.innerWidth * this.threshold.mouseDelta) {
+    if (dt < this.threshold.click && dx < window.innerWidth * this.threshold.mouseDelta) {
       this.ref.floorPlan.click(this.mouse.position.x, this.mouse.position.y);
+      if (this.isMobile) {
+        evt.preventDefault();
+        evt.stopPropagation();
+      }
     }
   }
 

@@ -1,6 +1,7 @@
 /** Mouse interface */
 
 import IsMobileDevice from '../utils/is_mobile_device';
+import Config from '../modules/config';
 
 class Mouse {
   constructor(params) {
@@ -13,22 +14,34 @@ class Mouse {
     this.onMouseUpCallback = params.onMouseUp || null;
     this.onMouseMoveCallback = params.onMouseMove || null;
 
+    // bind events
+    this.resize();
+    window.addEventListener('resize', () => { this.resize(); });
+
     if (!IsMobileDevice()) {
       this.domTarget.addEventListener('mousedown', evt => { this.onMouseDown(evt); });
       this.domTarget.addEventListener('mousemove', evt => { this.onMouseMove(evt); });
       this.domTarget.addEventListener('mouseup', evt => { this.onMouseUp(evt); });
       this.domTarget.addEventListener('mouseleave', evt => { this.onMouseUp(evt); });
     } else {
-      this.domTarget.addEventListener('touchstart', evt => { this.onMouseDown(evt.touches[0]); });
-      this.domTarget.addEventListener('touchmove', evt => { this.onMouseMove(evt.touches[0]); });
-      this.domTarget.addEventListener('touchend', evt => { this.onMouseUp(evt.touches[0]); });
+      this.domTarget.addEventListener('touchstart', evt => {
+        if (evt.touches && evt.touches.length) {
+          this.onMouseDown(evt.touches[0]);
+        }
+      });
+      this.domTarget.addEventListener('touchmove', evt => {
+        if (evt.touches && evt.touches.length) {
+          this.onMouseMove(evt.touches[0]);
+        }
+      });
+      this.domTarget.addEventListener('touchend', evt => { this.onMouseUp(evt); });
     }
   }
 
   onMouseDown(evt) {
     this.active = true;
-    this.origin.x = evt.offsetX;
-    this.origin.y = evt.offsetY;
+    this.origin.x = evt.clientX - this.left;
+    this.origin.y = evt.clientY - this.top;
     this.delta.x = 0;
     this.delta.y = 0;
 
@@ -40,8 +53,8 @@ class Mouse {
   }
 
   onMouseMove(evt) {
-    this.position.x = evt.offsetX;
-    this.position.y = evt.offsetY;
+    this.position.x = evt.clientX - this.left;
+    this.position.y = evt.clientY - this.top;
 
     if (this.active) {
       this.delta.x = this.position.x - this.origin.x;
@@ -58,6 +71,11 @@ class Mouse {
     if (this.onMouseUpCallback) {
       this.onMouseUpCallback(evt);
     }
+  }
+
+  resize() {
+    this.left = (window.innerWidth - Config.renderer.getWidth()) / 2;
+    this.top = (window.innerHeight - Config.renderer.getHeight()) / 2;
   }
 }
 

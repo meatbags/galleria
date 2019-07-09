@@ -34,10 +34,9 @@
 	<link rel='icon' type='image/png' href='<?php echo get_template_directory_uri(); ?>/img/favicon.png'>
 </head>
 <body <?php body_class(); ?>>
-	<!--
 	<div class='loading-screen active'>
-		<div class='loading-screen__bar'></div>
-		<div class='loading-screen__msg'>
+		<div class='loading-screen__image'>
+			Loading
+			<!-- <img src='<?php echo get_template_directory_uri(); ?>/img/logo-small-alt.png' /> -->
 		</div>
 	</div>
-	-->

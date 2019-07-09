@@ -5,8 +5,9 @@ import Clamp from '../maths/clamp';
 
 class CustomExhibition {
   constructor() {
-    this.assets = [];
     this.loader = new Loader('assets');
+    this.updateCallback = null;
+    this.unloadCallback = null;
   }
 
   bind(root) {
@@ -20,23 +21,18 @@ class CustomExhibition {
     // reset update callback
     this.updateCallback = null;
 
-    // remove any current exhibition assets from scene
-    this.assets.forEach(asset => {
-      if (asset.isMesh) {
-        this.ref.scene.scene.remove(asset);
-      } else if (asset.object) {
-        this.ref.scene.scene.remove(asset.object);
-        if (asset.sparks) {
-          asset.sparks.forEach(spark => {
-            this.ref.scene.scene.remove(spark.object);
-          });
-        }
-      }
-    });
-    this.assets = [];
+    // remove current exhibition
+    if (this.unloadCallback) {
+      this.unloadCallback();
+    }
+
+    // reset unload callback
+    this.unloadCallback = null;
 
     // new installation
     switch (data.customValue) {
+      case 'XAVIER':
+        break;
       case 'JACK_DE_LACY':
         this.loadJack();
         break;
@@ -51,6 +47,8 @@ class CustomExhibition {
     }
   }
 
+  loadXavier() {}
+
   loadJack() {
     // jack's assets
     this.assets = [
@@ -59,7 +57,7 @@ class CustomExhibition {
       {src: 'jack_de_lacy/sculpture_3', scale: 0.5, rot: Math.PI / 32, orientZ: 0}
     ];
 
-    // callback
+    // callbacks
     this.updateCallback = (delta) => {
       this.assets.forEach(asset => {
         if (asset.object) {
@@ -67,6 +65,12 @@ class CustomExhibition {
         }
       });
     };
+    this.unloadCallback = () => {
+      this.assets.forEach(asset => {
+        this.ref.scene.scene.remove(asset.object);
+      });
+      this.assets = [];
+    }
 
     // load
     for (var i=0; i<this.assets.length; ++i) {
@@ -97,6 +101,7 @@ class CustomExhibition {
 
   loadTiyan() {
     // load models
+    this.assets = [];
     this.loader.loadFBX('tiyan/separators').then(obj => {
       this.ref.materials.conformGroup(obj);
       this.ref.scene.scene.add(obj);
@@ -104,6 +109,14 @@ class CustomExhibition {
         object: obj
       });
     });
+
+    // unload callback
+    this.unloadCallback = () => {
+      this.assets.forEach(asset => {
+        this.ref.scene.scene.remove(asset.object);
+      });
+      this.assets = [];
+    };
 
     // add separator collisions
     const mesh1 = new THREE.Mesh(new THREE.BoxBufferGeometry(14, 4, 1.5), new THREE.MeshStandardMaterial({}));
@@ -122,6 +135,23 @@ class CustomExhibition {
     ].map(str => {
       return { src: str };
     });
+
+    // unload callback
+    this.unloadCallback = () => {
+      this.assets.forEach(asset => {
+        if (asset.isMesh) {
+          this.ref.scene.scene.remove(asset);
+        } else if (asset.object) {
+          this.ref.scene.scene.remove(asset.object);
+          if (asset.sparks) {
+            asset.sparks.forEach(spark => {
+              this.ref.scene.scene.remove(spark.object);
+            });
+          }
+        }
+      });
+      this.assets = [];
+    };
 
     const setInstallation = (child) => {
       // set material

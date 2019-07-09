@@ -2,8 +2,8 @@
 $black: #3f3f3f;
 $white: #fff;
 $colour: $black;
-$colourLink: #ff6f61; //#40c1ac;
-$backgroundColour: #eee; //#e8e5e4;
+$colourLink: #40c1ac;
+$backgroundColour: #eee;
 $backgroundCustom: linear-gradient(to right, #ffefe1, $backgroundColour);
 
 // size
@@ -12,6 +12,7 @@ $heightNav: 40px;
 $heightFooter: 200px;
 $widthPage: 50%;
 $sizeLogo: 300px;
+$sizeMobileMenuButton: 65px;
 
 // style
 $border: 1px solid $black;
@@ -21,14 +22,14 @@ $boxShadow: 5px 5px 0px black;
 // breakpoints
 $siteWidth: 1160px;
 $tablet: 1024px;
-$tabletPortrait: 800px;
-$mobile: 700px;
+$mobile: 768px;
 
 // height
 $indexLogo: 5;
 $indexWrapper: 10;
 $indexNav: 100;
 $indexLoadingScreen: 200;
+$indexMobileMenu: 100;
 
 // animation
 $transition: 0.35s;

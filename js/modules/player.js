@@ -36,7 +36,7 @@ class Player {
     this.rotationSpeed = Math.PI * 0.5;
     this.jump = 8;
     this.jumpSpeedMultiplier = 0.25;
-    this.height = 3;
+    this.height = 3.25;
     this.falling = false;
     this.fallTime = 0;
     this.fallTimeThreshold = 0.2;

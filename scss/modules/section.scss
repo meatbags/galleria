@@ -67,7 +67,7 @@
     }
   }
 
-  &.section--archive {
+  &.section--archive, &.section--upcoming {
     .section__description {
       display: none;
     }
@@ -94,8 +94,33 @@
     }
   }
 
-
   &.hidden {
     display: none;
+  }
+
+  @media screen and (max-width: $mobile) {
+    @include padding(2, 2.5);
+    @include margin(0, 2);
+
+    .section__date {
+      padding-bottom: 0;
+    }
+
+    .section__description, .section__description-short {
+      @include padding(0, 2);
+      border-left: none;
+      border-top: $borderThick;
+      font-size: 85%;
+
+      p {
+        &:nth-child(1) {
+          padding-top: 0;
+        }
+      }
+    }
+
+    .section__links {
+      padding: 0;
+    }
   }
 }

@@ -80,4 +80,12 @@
     </div>
     <div class='popup-gallery-controls__close'>&times;</div>
   </div>
+
+  <footer class='footer footer--gallery'>
+    <div class='footer__inner'>
+      <div class='footer__social-media'>
+        <?php get_template_part('wordpress/social-media-select'); ?>
+      </div>
+    </div>
+  </div>
 </div>

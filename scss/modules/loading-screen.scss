@@ -1,11 +1,11 @@
-@keyframes loading-flash {
-  0% { opacity: 0.25; }
-  100% { opacity: 1; }
+@keyframes loading-anim {
+  0% { border-color: transparent; }
+  50% { border-color: $white; }
 }
 
 .loading-screen {
   position: fixed;
-  background: $white;
+  background: darken($backgroundColour, 25%);
   top: 0;
   left: 0;
   width: 100%;
@@ -13,41 +13,30 @@
   z-index: $indexLoadingScreen;
   opacity: 0;
   pointer-events: none;
-  transition: opacity $transition;
-
-  //display: none;
+  transition: opacity 0.5s;
 
   &.active {
     opacity: 1;
     pointer-events: all;
   }
 
-  .loading-screen__bar {
-    width: 50%;
-    height: $space;
-    background: $colour;
-    position: absolute;
-    top: 50%;
-    left: 0;
-    transform: translateY(-50%);
-    display: none;
-  }
-
-  .loading-screen__msg {
+  .loading-screen__image {
     position: absolute;
     top: 50%;
     left: 50%;
+    color: $white;
     transform: translate(-50%, -50%);
-    font-family: $fontStackSerif;
-    font-size: $fontSizeHuge;
-    //animation: loading-flash;
-    //animation-duration: $transitionMedium;
-    //animation-iteration-count: infinite;
-    //animation-direction: alternate;
+    font-size: $fontSize;
+    border-bottom: 1px solid $white;
+    text-transform: uppercase;
+    animation-name: loading-anim;
+    animation-duration: 0.5s;
+    animation-iteration-count: infinite;
+    animation-timing-function: steps(1);
 
     img {
-      width: 150px;
-      height: 150px;
+      width: 100px;
+      height: auto;
     }
   }
 }

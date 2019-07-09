@@ -11,3 +11,17 @@
 	margin-top: $y * $space;
 	margin-bottom: $y * $space;
 }
+
+.mobile-show {
+	display: none;
+
+	@media screen and (max-width: $mobile) {
+		display: inherit;
+	}
+}
+
+.mobile-hide {
+	@media screen and (max-width: $mobile) {
+		display: none;
+	}
+}

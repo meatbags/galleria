@@ -2,6 +2,7 @@
 
 import '../glsl';
 import Config from './config';
+import IsMobileDevice from '../utils/is_mobile_device';
 
 class Renderer {
   constructor() {
@@ -28,16 +29,17 @@ class Renderer {
     const radius = 0.125;
     const threshold = 0.96;
     this.passRender = new THREE.RenderPass(this.ref.scene, this.ref.camera);
-    this.passPoster = new THREE.PosterPass(this.size);
     this.passBloom = new THREE.UnrealBloomPass(this.size, strength, radius, threshold);
-    this.passBloom.renderToScreen = true;
-    //this.passPoster.renderToScreen = true;
 
     // composer
     this.composer = new THREE.EffectComposer(this.renderer);
     this.composer.addPass(this.passRender);
-    //this.composer.addPass(this.passPoster);
-    this.composer.addPass(this.passBloom);
+    if (!IsMobileDevice()) {
+      this.composer.addPass(this.passBloom);
+      this.passBloom.renderToScreen = true;
+    } else {
+      this.passRender.renderToScreen = true;
+    }
 
     // bind events
     this.resize();

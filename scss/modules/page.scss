@@ -25,11 +25,11 @@
     display: flex;
   }
 
-  &#page-archive {
-    //align-items: flex-start;
+  @media screen and (max-width: $mobile) {
+    @include padding(2, 0);
 
-    .page__content, .page__header {
-      //width: 100%;
+    .page__content {
+      width: 100%;
     }
   }
 }
