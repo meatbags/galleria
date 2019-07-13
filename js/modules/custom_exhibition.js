@@ -47,7 +47,9 @@ class CustomExhibition {
 
   mouseMove(x, y) {
     if (this.exhibition && this.exhibition.mouseMove !== undefined) {
-      this.exhibition.mouseMove(x, y);
+      return this.exhibition.mouseMove(x, y);
+    } else {
+      return false;
     }
   }
 

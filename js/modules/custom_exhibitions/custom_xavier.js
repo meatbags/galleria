@@ -3,6 +3,7 @@
 import Loader from '../../loader/loader';
 import PerlinNoise from '../../glsl/fragments/perlin_noise';
 import InteractionPoint from '../../ui/interaction_point';
+import PlayerPosition from '../../ui/player_position';
 
 class CustomXavier {
   constructor(root) {
@@ -44,14 +45,18 @@ class CustomXavier {
       this.ribbons = [];
       this.applyToMeshes(obj, child => {
         child.material = this.ref.materials.createCustomMaterial(child.material, vertexShader, PerlinNoise);
+        child.material.color.setHex(0x888888);
+        child.material.metalness = 1;
+        child.material.envMapIntensity = 0;
         this.ribbons.push(child);
       });
     });
 
+    const pos = new PlayerPosition(this.ref.player, new THREE.Vector3(-8, 0.5, 14), new THREE.Vector3(-8, 4.5, 8));
     this.interactionPoints = [];
     this.interactionPoints.push(
       new InteractionPoint(
-        new THREE.Vector3(-8, 4.5, 8), 100, () => { console.log('Hello'); }, this.ref.camera.camera
+        new THREE.Vector3(-8, 4.5, 8), 100, () => { pos.apply(); }, this.ref.camera.camera
       )
     );
   }
@@ -82,13 +87,31 @@ class CustomXavier {
     }
   }
 
+  mouseMove(x, y) {
+    let res = false;
+    if (this.interactionPoints) {
+      this.interactionPoints.forEach(point => {
+        res = point.mouseMove(x, y) || res;
+      });
+    }
+    return res;
+  }
+
+  click(x, y) {
+    if (this.interactionPoints) {
+      this.interactionPoints.forEach(point => {
+        point.click(x, y);
+      });
+    }
+  }
+
   render() {
     if (this.interactionPoints) {
       const ctx = this.ref.canvas2d.ctx;
       ctx.globalAlpha = 1;
       this.interactionPoints.forEach(point => {
-        if (point.onscreen) {
-          this.ref.canvas2d.drawBoxHint(point.screenPosition.x, point.screenPosition.y, 20, 2);
+        if (point.onscreen && point.hover) {
+          this.ref.canvas2d.drawBoxHint(point.screenPosition.x, point.screenPosition.y, 30, 4);
         }
       });
     }

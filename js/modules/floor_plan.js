@@ -83,11 +83,7 @@ class FloorPlan {
       res.forceHover();
     }
 
-    if (isHovered.length) {
-      this.ref.surface.el.canvasTarget.classList.add('clickable');
-    } else {
-      this.ref.surface.el.canvasTarget.classList.remove('clickable');
-    }
+    return isHovered.length > 0;
   }
 
   click(x, y) {

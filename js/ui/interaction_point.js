@@ -32,16 +32,16 @@ class InteractionPoint {
     window.removeEventListener('resize', this.resize);
   }
 
-  mouseOver(x, y) {
+  mouseMove(x, y) {
     this.hover = (
       this.onscreen &&
-      Math.hypot(this.screenPosition.x - x, this.screenPosition.y) <= this.radius
+      Math.hypot(this.screenPosition.x - x, this.screenPosition.y - y) <= this.radius
     );
     return this.hover;
   }
 
   click(x, y) {
-    if (this.mouseOver(x, y)) {
+    if (this.mouseMove(x, y)) {
       this.callback();
     }
   }

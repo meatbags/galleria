@@ -1,8 +1,8 @@
-/** UI surface */
+/** UI surface -- distribute MKB input */
 
-import Config from './config';
-import Mouse from '../ui/mouse';
-import Keyboard from '../ui/keyboard';
+import Config from '../modules/config';
+import Mouse from './mouse';
+import Keyboard from './keyboard';
 import Clamp from '../maths/clamp';
 import IsMobileDevice from '../utils/is_mobile_device';
 
@@ -56,6 +56,7 @@ class Surface {
     this.ref.player = root.modules.player;
     this.ref.canvas2d = root.modules.canvas2d;
     this.ref.floorPlan = root.modules.floorPlan;
+    this.ref.customExhibition = root.modules.map.customExhibition;
 
     this.resize();
     window.addEventListener('resize', () => { this.resize(); });
@@ -91,8 +92,15 @@ class Surface {
         this.ref.player.setRotation(pitch, yaw);
       }
     } else {
-      // update artwork nodes
-      this.ref.floorPlan.mouseOver(this.mouse.position.x, this.mouse.position.y);
+      // update interaction nodes
+      if (
+        this.ref.floorPlan.mouseOver(this.mouse.position.x, this.mouse.position.y) ||
+        this.ref.customExhibition.mouseMove(this.mouse.position.x, this.mouse.position.y)
+      ) {
+        this.el.canvasTarget.classList.add('clickable');
+      } else {
+        this.el.canvasTarget.classList.remove('clickable');
+      }
     }
   }
 
@@ -101,6 +109,7 @@ class Surface {
     const dx = Math.hypot(this.mouse.delta.x, this.mouse.delta.y);
     if (dt < this.threshold.click && dx < window.innerWidth * this.threshold.mouseDelta) {
       this.ref.floorPlan.click(this.mouse.position.x, this.mouse.position.y);
+      this.ref.customExhibition.click(this.mouse.position.x, this.mouse.position.y);
       if (this.isMobile) {
         evt.preventDefault();
         evt.stopPropagation();

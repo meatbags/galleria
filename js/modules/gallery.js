@@ -9,7 +9,7 @@ import Materials from './materials';
 import Player from './player';
 import Renderer from './renderer';
 import Scene from './scene';
-import Surface from './surface';
+import Surface from '../ui/surface';
 
 class Gallery {
   constructor() {
