@@ -24,7 +24,7 @@ class FloorPlan {
   load(data) {
     this.unload();
 
-    if (data.images) {
+    if (data && data.images) {
       // create new artworks
       const slots = [];
       data.images.forEach(imageData => {

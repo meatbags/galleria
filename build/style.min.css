@@ -136,8 +136,7 @@ template {
     display: none; } }
 
 div, * {
-  box-sizing: border-box;
-  outline: 1px dashed rgba(0, 0, 0, 0.25); }
+  box-sizing: border-box; }
 
 html {
   touch-action: manipulation; }

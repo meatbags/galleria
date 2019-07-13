@@ -117,6 +117,10 @@ class Map {
     this.ref.materials.update(delta);
     this.customExhibition.update(delta);
   }
+
+  render() {
+    this.customExhibition.render();
+  }
 }
 
 export default Map;

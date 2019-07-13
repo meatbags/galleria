@@ -46,7 +46,7 @@ class Gallery {
     this.modules.scene.reset();
 
     // add artist name
-    document.querySelector('#open-gallery-artist').innerText = data.artistName || '';
+    document.querySelector('#open-gallery-artist').innerText = data && data.artistName ? data.artistName : '';
     document.querySelector('#open-gallery-prompt').classList.add('loading');
 
     // load map
@@ -89,6 +89,7 @@ class Gallery {
       // render
       this.modules.renderer.render(delta);
       this.modules.surface.render();
+      this.modules.map.render();
     }
   }
 }

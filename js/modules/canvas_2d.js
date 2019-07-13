@@ -11,7 +11,7 @@ class Canvas2D {
 
     // draw settings
     this.prompt = {};
-    this.prompt.touchMove = {alpha: {current: 0, min: 0, max: 1}, size: {current: 22, min: 22, max: 24}};
+    this.prompt.touchMove = {alpha: {current: 0, min: 0, max: 1}, size: {current: 44, min: 44, max: 50}};
     this.prompt.click = {alpha: {current: 0, min: 0, max: 1}};
   }
 
@@ -49,6 +49,23 @@ class Canvas2D {
     }
   }
 
+  drawBoxHint(x, y, size, hint) {
+    this.ctx.beginPath();
+    this.ctx.moveTo(x - size, y - size + hint);
+    this.ctx.lineTo(x - size, y - size);
+    this.ctx.lineTo(x - size + hint, y - size);
+    this.ctx.moveTo(x + size - hint, y - size);
+    this.ctx.lineTo(x + size, y - size);
+    this.ctx.lineTo(x + size, y - size + hint);
+    this.ctx.moveTo(x + size, y + size - hint);
+    this.ctx.lineTo(x + size, y + size);
+    this.ctx.lineTo(x + size - hint, y + size);
+    this.ctx.moveTo(x - size + hint, y + size);
+    this.ctx.lineTo(x - size, y + size);
+    this.ctx.lineTo(x - size, y + size - hint);
+    this.ctx.stroke();
+  }
+
   promptTouchMove(active) {
     // animate in/out prompt
     if (active) {
@@ -63,24 +80,8 @@ class Canvas2D {
     if (this.prompt.touchMove.alpha.current > 0) {
       const cx = this.cvs.width / 2;
       const cy = this.cvs.height / 2;
-      const s1 = this.prompt.touchMove.size.current;
-      const s2 = s1 * 2;
       this.ctx.globalAlpha = this.prompt.touchMove.alpha.current;
-      this.ctx.beginPath();
-      //this.ctx.arc(cx, cy, s1 / 2, 0, Math.PI * 2, false);
-      this.ctx.moveTo(cx - s2, cy - s2 + s1);
-      this.ctx.lineTo(cx - s2, cy - s2);
-      this.ctx.lineTo(cx - s2 + s1, cy - s2);
-      this.ctx.moveTo(cx + s2, cy + s2 - s1);
-      this.ctx.lineTo(cx + s2, cy + s2);
-      this.ctx.lineTo(cx + s2 - s1, cy + s2);
-      this.ctx.moveTo(cx - s2, cy + s2 - s1);
-      this.ctx.lineTo(cx - s2, cy + s2);
-      this.ctx.lineTo(cx - s2 + s1, cy + s2);
-      this.ctx.moveTo(cx + s2, cy - s2 + s1);
-      this.ctx.lineTo(cx + s2, cy - s2);
-      this.ctx.lineTo(cx + s2 - s1, cy - s2);
-      this.ctx.stroke();
+      this.drawBoxHint(cx, cy, this.prompt.touchMove.size.current, 10);
     }
   }
 

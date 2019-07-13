@@ -85,6 +85,17 @@ class Materials {
     mat.envMapIntensity = 0.5;
   }
 
+  createCustomMaterial(material, shaderText, funcs) {
+    const mat = material.clone();
+    mat.onBeforeCompile = (shader) => {
+      shader.vertexShader = `uniform float time;\n${funcs || ''}\n${shader.vertexShader}`;
+      shader.vertexShader = shader.vertexShader.replace('#include <begin_vertex>', shaderText);
+      shader.uniforms.time = this.uniforms.time;
+    };
+    return mat;
+  }
+
+  /*
   getCustomMaterial(matSource) {
     const mat = matSource.clone();
     mat.onBeforeCompile = (shader) => {
@@ -112,6 +123,7 @@ class Materials {
     //const index = shader.vertexShader.indexOf('#include <common>')''
     //shader.vertexShader = shader.vertexShader.slice(0, index) + '//funcs here' + shader.vertexShader.slice(index);
   }
+  */
 
   update(delta) {
     this.uniforms.time.value += delta;

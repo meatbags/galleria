@@ -55,35 +55,39 @@ class Lighting {
     this.ref.scene.fog = new THREE.FogExp2(0x000000, 0);
 
     // custom exhibition lighting
-    switch (data.customValue) {
-      case 'XAVIER':
-        // placeholder
-        break;
-      case 'TIYAN':
-        // remove lights outside temp exhibition region
-        this.ref.scene.remove(this.lights.directional.a);
-        this.ref.scene.remove(this.lights.point.b);
+    if (data) {
+      switch (data.customValue) {
+        case 'XAVIER':
+          // placeholder
+          this.lights.ambient.a.intensity = 0.125;
+          this.lights.spot.a.penumbra = 1;
+          break;
+        case 'TIYAN':
+          // remove lights outside temp exhibition region
+          this.ref.scene.remove(this.lights.directional.a);
+          this.ref.scene.remove(this.lights.point.b);
 
-        // reposition & colour lights
-        this.lights.ambient.a.intensity = 0.1;
-        this.lights.point.b.position.set(6, 10, 14);
-        this.lights.point.a.position.set(2, 9, 18);
-        this.lights.point.a.distance = 26;
-        this.lights.point.c.position.set(-22, 8, 18);
-        this.lights.hemisphere.a.intensity = 0.01;
-        break;
-      case 'BRENTON':
-        // spotlight for car
-        this.lights.spot.a.position.set(-26, 10, 1);
-        this.lights.spot.a.target.position.set(-22, 0, 1);
-        this.lights.spot.a.angle = Math.PI / 6;
-        this.lights.spot.a.penumbra = 0.1;
-        break;
-      case 'JACK_DE_LACY':
-      default:
-        this.ref.scene.remove(this.lights.spot.a);
-        this.ref.scene.remove(this.lights.spot.a.target);
-        break;
+          // reposition & colour lights
+          this.lights.ambient.a.intensity = 0.1;
+          this.lights.point.b.position.set(6, 10, 14);
+          this.lights.point.a.position.set(2, 9, 18);
+          this.lights.point.a.distance = 26;
+          this.lights.point.c.position.set(-22, 8, 18);
+          this.lights.hemisphere.a.intensity = 0.01;
+          break;
+        case 'BRENTON':
+          // spotlight for car
+          this.lights.spot.a.position.set(-26, 10, 1);
+          this.lights.spot.a.target.position.set(-22, 0, 1);
+          this.lights.spot.a.angle = Math.PI / 6;
+          this.lights.spot.a.penumbra = 0.1;
+          break;
+        case 'JACK_DE_LACY':
+        default:
+          this.ref.scene.remove(this.lights.spot.a);
+          this.ref.scene.remove(this.lights.spot.a.target);
+          break;
+      }
     }
   }
 }

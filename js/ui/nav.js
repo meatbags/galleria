@@ -5,6 +5,7 @@ import IsSafariMobile from '../utils/is_safari_mobile';
 
 class Nav {
   constructor() {
+    this.devMode = true;
     this.el = {
       openGallery: document.querySelector('.open-gallery-prompt'),
       archiveItems: document.querySelectorAll('.section--archive'),
@@ -12,6 +13,7 @@ class Nav {
       featured: document.querySelector('.section--featured'),
       default: document.querySelector('.section--default'),
       gallery: {
+        gallery: document.querySelector('.gallery'),
         controls: document.querySelector('#gallery-controls'),
         controlsPopup: document.querySelector('#popup-gallery-controls'),
         navItems: document.querySelector('.gallery .nav__item'),
@@ -29,7 +31,7 @@ class Nav {
       }
     };
 
-    // safari fix
+    // safari fix -- NOTE: check onscreen arrows Safari mobile
     if (IsSafariMobile()) {
       document.querySelectorAll('.fix-safari').forEach(el => { el.classList.add('safari'); });
     }
@@ -42,12 +44,20 @@ class Nav {
 
     // load initial exhibition
     const exhibition = this.el.preview ? this.el.preview : this.el.featured ? this.el.featured : this.el.default;
-    const data = this.parseExhibitionDataTags(exhibition);
+    let data = null;
+    if (exhibition) {
+      data = this.parseExhibitionDataTags(exhibition);
+    }
     this.ref.gallery.load(data);
 
     // display default gallery (fallback)
-    if (!this.el.preview && !this.el.featured) {
+    if (!this.el.preview && !this.el.featured && this.el.default) {
       this.el.default.classList.remove('hidden');
+    }
+
+    // dev -- open gallery
+    if (this.devMode) {
+      this.forceGalleryOpen();
     }
 
     // events
@@ -146,7 +156,6 @@ class Nav {
       });
     });
 
-
     // trigger resize after orientationchange
     window.addEventListener('orientationchange', () => {
       setTimeout(() => {
@@ -186,9 +195,9 @@ class Nav {
       document.querySelector('.wrapper').classList.remove('active');
       document.querySelector('.logo').classList.remove('active');
       document.documentElement.scrollTop = 0;
-      document.querySelector('.gallery').classList.add('transition');
+      this.el.gallery.gallery.classList.add('transition');
       setTimeout(() => {
-        document.querySelector('.gallery').classList.add('active');
+        this.el.gallery.gallery.classList.add('active');
       }, 100);
       setTimeout(() => {
         this.ref.gallery.start();
@@ -207,6 +216,18 @@ class Nav {
     setTimeout(() => {
       document.querySelector('.gallery').classList.remove('transition');
     }, 1100);
+  }
+
+  forceGalleryOpen() {
+    this.ref.logo.pause();
+    this.el.openGallery.classList.remove('prompt-action');
+    document.querySelector('html').classList.add('freeze');
+    document.querySelector('.wrapper').classList.remove('active');
+    document.querySelector('.logo').classList.remove('active');
+    document.documentElement.scrollTop = 0;
+    this.el.gallery.gallery.classList.add('active');
+    //this.el.gallery.gallery.classList.add('transition');
+    this.ref.gallery.start();
   }
 
   openArtworkInfo(artwork) {
