@@ -34,7 +34,9 @@
     @include padding(1, 1);
     font-family: $fontStackSerif;
     font-size: $fontSizeHuge;
-    bottom: 0; right: 0; transform: translate(64.5%, 6%);
+    bottom: 0;
+    right: 0;
+    transform: translate(64.5%, 6%);
 
     #open-gallery-artist {
       font-size: $fontSizeLarge;
@@ -60,6 +62,10 @@
     &.prompt-action {}
   }
 
+  .logo__more {
+    display: none;
+  }
+
   &:hover {
     .logo__prompt {
       color: $colourLink;
@@ -73,6 +79,40 @@
   }
 
   @media screen and (max-width: $mobile) {
-    
+    position: relative;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+
+    .logo__inner {
+      position: relative;
+      height: auto;
+    }
+
+    .logo__prompt {
+      position: relative;
+      bottom: auto;
+      right: auto;
+      width: 100%;
+      text-align: center;
+      transform: translate(0, -40%);
+    }
+
+    .logo__more {
+      display: block;
+      position: absolute;
+      bottom: 0;
+      right: 0;
+      font-size: $fontSizeLarge;
+      @include padding(1, 1);
+    }
+
+    &.hidden {
+      display: none;
+    }
   }
 }

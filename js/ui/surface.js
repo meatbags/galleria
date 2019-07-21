@@ -85,7 +85,7 @@ class Surface {
 
         // reset pitch origin if clamped
         if (pitch === this.ref.player.minPitch || pitch === this.ref.player.maxPitch) {
-          this.mouse.origin.y = evt.offsetY;
+          this.mouse.origin.y = evt.clientY - this.mouse.top;
           this.rotation.y = pitch;
         }
 

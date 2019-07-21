@@ -8,10 +8,16 @@ class CustomTiyan {
       scene: root.ref.scene,
       materials: root.ref.materials,
     };
-    this.load();
   }
 
   load() {
+    return new Promise((resolve, reject) => {
+      this.loadModels();
+      resolve();
+    });
+  }
+
+  loadModels() {
     // load models
     this.assets = [];
     const loader = new Loader('assets');

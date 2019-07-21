@@ -117,34 +117,43 @@
   }
 
   @media screen and (max-width: $mobile) {
-    height: auto;
+    height: 100vh;
+    //background: linear-gradient(to top, rgba($colourLink, 0.25), transparent);
+
+    &.footer--gallery {
+      display: none;
+    }
 
     .footer__inner {
       @include padding(2, 2);
       width: 100%;
+      height: 100%;
+      justify-content: center;
 
       .footer__social-media {
         .section__links {
-          width: 100%;
           font-size: $fontSizeSmall;
-          justify-content: space-between;
+          flex-direction: column;
+          align-items: center;
 
           .section__link-item {
-            margin: 0;
+            @include margin(0, 1);
+            width: 100%;
+            text-align: center;
+            font-size: $fontSizeLarge;
           }
         }
       }
 
       .footer__newsletter {
-        @include padding(0, 2);
+        display: none;
+        justify-content: center;
+        align-items: center;
         width: 100%;
 
         .footer__newsletter-form {
           width: 100%;
-
-          input {
-            width: 100%;
-          }
+          justify-content: center;
         }
       }
     }

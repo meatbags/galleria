@@ -49,20 +49,20 @@ class Canvas2D {
     }
   }
 
-  drawBoxHint(x, y, size, hint) {
+  drawBoxHint(x, y, w, h, hint) {
     this.ctx.beginPath();
-    this.ctx.moveTo(x - size, y - size + hint);
-    this.ctx.lineTo(x - size, y - size);
-    this.ctx.lineTo(x - size + hint, y - size);
-    this.ctx.moveTo(x + size - hint, y - size);
-    this.ctx.lineTo(x + size, y - size);
-    this.ctx.lineTo(x + size, y - size + hint);
-    this.ctx.moveTo(x + size, y + size - hint);
-    this.ctx.lineTo(x + size, y + size);
-    this.ctx.lineTo(x + size - hint, y + size);
-    this.ctx.moveTo(x - size + hint, y + size);
-    this.ctx.lineTo(x - size, y + size);
-    this.ctx.lineTo(x - size, y + size - hint);
+    this.ctx.moveTo(x - w, y - h + hint);
+    this.ctx.lineTo(x - w, y - h);
+    this.ctx.lineTo(x - w + hint, y - h);
+    this.ctx.moveTo(x + w - hint, y - h);
+    this.ctx.lineTo(x + w, y - h);
+    this.ctx.lineTo(x + w, y - h + hint);
+    this.ctx.moveTo(x + w, y + h - hint);
+    this.ctx.lineTo(x + w, y + h);
+    this.ctx.lineTo(x + w - hint, y + h);
+    this.ctx.moveTo(x - w + hint, y + h);
+    this.ctx.lineTo(x - w, y + h);
+    this.ctx.lineTo(x - w, y + h - hint);
     this.ctx.stroke();
   }
 
@@ -80,8 +80,9 @@ class Canvas2D {
     if (this.prompt.touchMove.alpha.current > 0) {
       const cx = this.cvs.width / 2;
       const cy = this.cvs.height / 2;
+      const size = this.prompt.touchMove.size.current;
       this.ctx.globalAlpha = this.prompt.touchMove.alpha.current;
-      this.drawBoxHint(cx, cy, this.prompt.touchMove.size.current, 10);
+      this.drawBoxHint(cx, cy, size, size, 10);
     }
   }
 

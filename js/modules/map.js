@@ -24,32 +24,43 @@ class Map {
 
   load(data) {
     return new Promise((resolve, reject) => {
-      this.customExhibition.load(data);
-      this.loadDefaultExhibition(() => {
-        resolve();
-      });
+      // both loaded callback
+      const callback = () => {
+        if (this.isLoaded() && this.customExhibition.isLoaded()) {
+          resolve();
+        }
+      };
+
+      // onload callback
+      this.toLoad = 2;
+      this.onLoad = () => {
+        this.toLoad -= 1;
+        if (this.toLoad <= 0) {
+          console.log('Default map loaded');
+          callback();
+        }
+      };
+
+      // load map & custom exhibition
+      this.customExhibition.load(data, callback);
+      this.loadDefaultExhibition(callback);
     });
   }
 
-  loadDefaultExhibition(callback) {
-    // load persistent assets
-    let requiredAssets = 2;
-    const checkLoaded = () => {
-      requiredAssets -= 1;
-      if (requiredAssets === 0) {
-        callback();
-      }
-    }
+  isLoaded() {
+    return this.toLoad <= 0;
+  }
 
+  loadDefaultExhibition(callback) {
     // add collision map async
     if (!this.assets.defaultCollisionMap) {
       this.loader.loadOBJ('collision').then(map => {
         this.assets.defaultCollisionMap = map;
         this.addCollisionMap(this.assets.defaultCollisionMap);
-        checkLoaded();
+        this.onLoad();
       }, (err) => { console.log(err); });
     } else {
-      checkLoaded();
+      this.onLoad();
       this.addCollisionMap(this.assets.defaultCollisionMap);
     }
 
@@ -58,10 +69,10 @@ class Map {
       this.loader.loadFBX('map').then((map) => {
         this.ref.scene.scene.add(map);
         this.ref.materials.conformGroup(map);
-        checkLoaded();
+        this.onLoad();
       }, (err) => { console.log(err); });
     } else {
-      checkLoaded();
+      this.onLoad();
     }
 
     // add floor collision map

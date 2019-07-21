@@ -3,15 +3,17 @@
 import Config from '../modules/config';
 
 class InteractionPoint {
-  constructor(position, radius, callback, camera) {
+  constructor(position, width, height, callback, camera) {
     this.position = position;
-    this.radius = radius;
+    this.width = width;
+    this.height = height;
     this.callback = callback;
-    this.screenPosition = new THREE.Vector2();
     this.helper = new THREE.Vector3();
     this.worldVector = new THREE.Vector3();
+    this.box = {position: new THREE.Vector2(), width: 0, height: 0};
     this.onscreen = false;
     this.hover = false;
+    this.activeThreshold = 30;
     this.ref = {};
     this.ref.camera = camera;
     this.bind();
@@ -21,8 +23,9 @@ class InteractionPoint {
     this.resize = () => {
       this.centre = {
         x: Config.renderer.getWidth() / 2,
-        y: Config.renderer.getHeight() / 2
+        y: Config.renderer.getHeight() / 2,
       };
+      this.ref.focalLength = this.ref.camera.getFocalLength();
     };
     this.resize();
     window.addEventListener('resize', this.resize);
@@ -35,7 +38,9 @@ class InteractionPoint {
   mouseMove(x, y) {
     this.hover = (
       this.onscreen &&
-      Math.hypot(this.screenPosition.x - x, this.screenPosition.y - y) <= this.radius
+      this.position.distanceTo(this.ref.camera.position) < this.activeThreshold &&
+      Math.abs(this.box.position.x - x) < this.box.width / 2 &&
+      Math.abs(this.box.position.y - y) < this.box.height / 2
     );
     return this.hover;
   }
@@ -53,11 +58,17 @@ class InteractionPoint {
     this.helper.normalize();
     this.ref.camera.getWorldDirection(this.worldVector);
     this.onscreen = this.helper.dot(this.worldVector) <= 0;
-    if (this.onscreen) {
+    const mag = this.position.distanceTo(this.ref.camera.position);
+    if (this.onscreen && mag < this.activeThreshold && mag != 0) {
       this.helper.copy(this.position);
       this.helper.project(this.ref.camera);
-      this.screenPosition.x = (this.helper.x + 1) * this.centre.x;
-      this.screenPosition.y = (-this.helper.y + 1) * this.centre.y;
+      this.box.position.x = (this.helper.x + 1) * this.centre.x;
+      this.box.position.y = (-this.helper.y + 1) * this.centre.y;
+
+      // calc object size by angular size
+      const scale = this.ref.focalLength / mag;
+      this.box.width = 2 * Math.atan(this.width / (2 * mag)) * window.innerHeight; // * scale;
+      this.box.height = 2 * Math.atan(this.height / (2 * mag)) * window.innerHeight; // * scale;
     }
   }
 }

@@ -3,10 +3,17 @@
 const space = 8;
 const padX = 0; // 7
 const padY = 10; // 8
+const padYMobile = 8;
 const Config = {
   renderer: {
     getWidth: () => { return Math.max(100, window.innerWidth - space * padX * 2); },
-    getHeight: () => { return Math.max(100, window.innerHeight - space * padY * 2); },
+    getHeight: () => {
+      if (window.innerWidth < 768) {
+        return Math.max(100, window.innerHeight - space * padYMobile * 2);
+      } else {
+        return Math.max(100, window.innerHeight - space * padY * 2);
+      }
+    },
   },
   floorPlan: {
     artworkPositions: [

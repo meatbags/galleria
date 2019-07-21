@@ -99,9 +99,11 @@ class Logo {
   }
 
   resize() {
-    this.screenSize = window.innerWidth > window.innerHeight ?
-      Math.round(window.innerWidth * 0.3) :
-      Math.round(window.innerHeight * 0.3);
+    if (window.innerWidth < 768) {
+      this.screenSize = window.innerWidth - 10;
+    } else {
+      this.screenSize = window.innerWidth > window.innerHeight ? Math.round(window.innerWidth * 0.3) : Math.round(window.innerHeight * 0.3);
+    }
     this.renderer.setSize(this.screenSize, this.screenSize);
   }
 

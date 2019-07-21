@@ -17,7 +17,7 @@ class CustomExhibition {
     this.ref.canvas2d = root.modules.canvas2d;
   }
 
-  load(data) {
+  load(data, callback) {
     // unload current exhibition
     if (this.exhibition && this.exhibition.unload !== undefined) {
       this.exhibition.unload();
@@ -42,6 +42,24 @@ class CustomExhibition {
         default:
           break;
       }
+    }
+
+    // load exhibition
+    if (this.exhibition) {
+      this.exhibition.load().then(() => {
+        console.log('Custom exhibition loaded:', data.customValue);
+        callback();
+      });
+    } else {
+      callback();
+    }
+  }
+
+  isLoaded() {
+    if (this.exhibition === null || this.exhibition.isLoaded === undefined) {
+      return true;
+    } else {
+      return this.exhibition.isLoaded();
     }
   }
 

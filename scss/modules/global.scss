@@ -5,10 +5,12 @@ div, * {
 
 html {
 	touch-action: manipulation;
+
 	&.freeze {
 		position: fixed;
 		overflow-y: scroll;
     width: 100%;
+		touch-action: none;
 	}
 }
 
@@ -23,8 +25,8 @@ body {
 	letter-spacing: $letterSpacing;
 	color: $colour;
 	overflow-x: hidden;
-	touch-action: none;
 	user-select: none;
+	-webkit-tap-highlight-color: rgba(0, 0, 0, 0);
 	background: $backgroundColour;
 }
 
@@ -51,4 +53,8 @@ a {
 
 ul {
 	list-style: square;
+
+	@media screen and (max-width: $mobile) {
+		padding-left: auto;
+	}
 }

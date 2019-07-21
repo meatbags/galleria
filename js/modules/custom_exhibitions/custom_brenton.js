@@ -10,10 +10,16 @@ class CustomBrenton {
       player: root.ref.player,
       materials: root.ref.materials,
     };
-    this.load();
   }
 
   load() {
+    return new Promise((resolve, reject) => {
+      this.loadModels();
+      resolve();
+    });
+  }
+
+  loadModels() {
     const loader = new Loader('assets');
     this.assets = [
       'brenton/crash7/crash_7', 'brenton/crash8/crash_8', 'brenton/crash9/crash_9',

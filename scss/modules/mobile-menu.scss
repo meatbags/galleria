@@ -18,17 +18,29 @@
     align-items: center;
     background: $backgroundColour;
     opacity: 0;
+    transition: $transition;
 
-    .mobile-menu__item {
-      @include margin(0, 1);
-      @include padding(0, 0.5);
-      cursor: pointer;
-      text-transform: uppercase;
-      border-bottom: $border;
+    .mobile-menu__list {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      transform: scale(0.9);
+      transition: $transition;
 
-      &.active {
-        color: $colourLink;
-        border-color: $colourLink;
+      .mobile-menu__item {
+        @include margin(0, 1);
+        @include padding(0, 0.5);
+        cursor: pointer;
+        text-transform: uppercase;
+        border-bottom: $border;
+        text-align: center;
+        font-size: $fontSizeLarge;
+
+
+        &.active {
+          color: $colourLink;
+          border-color: $colourLink;
+        }
       }
     }
   }
@@ -40,8 +52,8 @@
     right: 0;
     cursor: pointer;
     user-select: none;
-    width: $sizeMobileMenuButton;
-    height: $sizeMobileMenuButton;
+    width: $widthMobileMenuButton;
+    height: $heightMobileMenuButton;
     pointer-events: all;
 
     .mobile-menu__button-inner {
@@ -54,6 +66,7 @@
         width: 100%;
         border-bottom: $border;
         pointer-events: none;
+        transition: $transition;
 
         &:nth-child(1) { top: 0; }
         &:nth-child(2) { top: 50%; }
@@ -79,9 +92,14 @@
   }
 
   &.active {
+    pointer-events: all;
+
     .mobile-menu__inner {
       opacity: 1;
-      pointer-events: all;
+
+      .mobile-menu__list {
+        transform: scale(1);
+      }
     }
   }
 

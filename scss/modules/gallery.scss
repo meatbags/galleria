@@ -21,13 +21,15 @@
       // NOTE: #canvas-target
       .canvas-wrapper__inner {
         cursor: crosshair;
-        background: #111;
+        background-color: #111;
         box-sizing: content-box;
         position: absolute;
         top: 50%;
         left: 50%;
         transform: translate(-50%, -50%);
         user-select: none;
+        //transition: background-color $transitionSlow;
+        //transition-delay: background-color $transitionSlow;
 
         canvas {
           position: absolute;
@@ -42,8 +44,9 @@
         &.clickable {
           cursor: pointer;
         }
-
+        
         &.active {
+          //background-color: transparent;
           canvas {
             opacity: 1;
           }
@@ -177,6 +180,29 @@
       }
     }
   }
+
+  @media screen and (max-width: $mobile) {
+    .gallery__controls {
+      bottom: 12%;
+    }
+
+    .gallery__popup-artwork-info {
+      .popup-artwork-info__inner {
+        .popup-artwork-info__details {
+          position: absolute;
+          bottom: 0;
+          right: 0;
+          width: calc(100% - #{$space * 2});
+          @include padding(2, 1.5);
+          transform: translate($space * 2, 80%);
+
+          .title {
+            font-size: $fontSizeHuge - 10px;
+          }
+        }
+      }
+    }
+  }
 }
 
 @keyframes wiggle-x {
@@ -255,6 +281,19 @@
       animation-iteration-count: infinite;
       animation-direction: alternate;
       animation-timing-function: linear;
+    }
+  }
+
+  @media screen and (max-width: $mobile) {
+    flex-direction: column;
+    width: 80vw;
+
+    .popup-gallery-controls__item {
+      width: 100%;
+
+      .popup-gallery-controls__text {
+        @include padding(2, 2);
+      }
     }
   }
 }

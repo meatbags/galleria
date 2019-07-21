@@ -8,10 +8,16 @@ class CustomJack {
       materials: root.ref.materials,
       scene: root.ref.scene,
     };
-    this.load();
   }
 
   load() {
+    return new Promise((resolve, reject) => {
+      this.loadModels();
+      resolve();
+    });
+  }
+
+  loadModels() {
     // jack's assets
     this.assets = [
       {src: 'jack_de_lacy/sculpture_1', scale: 0.6, rot: Math.PI / 32, orientZ: Math.PI / 4},

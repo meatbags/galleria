@@ -95,35 +95,14 @@ class Materials {
     return mat;
   }
 
-  /*
-  getCustomMaterial(matSource) {
-    const mat = matSource.clone();
-    mat.onBeforeCompile = (shader) => {
-      shader.vertexShader = `uniform float time;\n${shader.vertexShader}`;
-      const beginVertex = `
-        vec4 mvp = modelMatrix * vec4(position, 1.0);
-        float theta = sin(time * 0.1 + mvp.x / 2.0);
-        float c = cos(theta);
-        float s = sin(theta);
-        float off = 1.0 * sin(time + position.x * 200.0);
-        mat3 roty = mat3(c, 0, s, 0, 1, 0, -s, 0, c);
-        // mat4 m = mat4(1, 0, 0, 0, 0, 1, 0, s * off * 2.0, 0, 0, 1, s * off, 0, 0, 0, 1);
-        vec3 p = position;
-        vec4 t = vec4(p.x + 0.25 * sin(time + p.y), p.y, p.z + 0.25 * cos(time + p.y), 1.0);
-        vec3 transformed = vec3(t.x, t.y, t.z);
-        vNormal = vNormal * roty;
-      `;
-      shader.vertexShader = shader.vertexShader.replace('#include <begin_vertex>', beginVertex);
-
-      // hook uniforms
-      shader.uniforms.time = this.uniforms.time;
-    };
-    //mat.roughness = 0.5;
-    return mat;
-    //const index = shader.vertexShader.indexOf('#include <common>')''
-    //shader.vertexShader = shader.vertexShader.slice(0, index) + '//funcs here' + shader.vertexShader.slice(index);
+  applyAlphaMap(material, map) {
+    material.color.setHex(0xffffff);
+    material.alphaMap = map;
+    material.transparent = true;
+    material.side = THREE.DoubleSide;
+    material.depthWrite = false;
+    //material.blending = THREE.AdditiveBlending;
   }
-  */
 
   update(delta) {
     this.uniforms.time.value += delta;
