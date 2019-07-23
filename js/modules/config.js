@@ -1,20 +1,22 @@
 /** Config */
 
 const space = 8;
-const padX = 0; // 7
-const padY = 10; // 8
+const padX = 0;
+const padY = 10;
 const padYMobile = 8;
+const mobileBreakpoint = 768;
 const Config = {
   renderer: {
     getWidth: () => { return Math.max(100, window.innerWidth - space * padX * 2); },
     getHeight: () => {
-      if (window.innerWidth < 768) {
+      if (window.innerWidth <= mobileBreakpoint) {
         return Math.max(100, window.innerHeight - space * padYMobile * 2);
       } else {
         return Math.max(100, window.innerHeight - space * padY * 2);
       }
     },
   },
+  mobileBreakpoint: mobileBreakpoint,
   floorPlan: {
     artworkPositions: [
       // 32 in total

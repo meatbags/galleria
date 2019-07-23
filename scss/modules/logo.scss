@@ -7,8 +7,11 @@
   transform: translateX(100vw);
   z-index: $indexLogo;
   cursor: pointer;
-  transition: transform $transitionMedium;
   user-select: none;
+
+  &.transition {
+    transition: transform $transitionMedium;
+  }
 
   &.active {
     transform: translateX(0);
@@ -87,6 +90,7 @@
     display: flex;
     flex-direction: column;
     justify-content: center;
+    //background: linear-gradient(to bottom, rgba($backgroundColour, 0.25), white);
 
     .logo__inner {
       position: relative;
@@ -100,6 +104,11 @@
       width: 100%;
       text-align: center;
       transform: translate(0, -40%);
+      font-size: $fontSizeHuge * 2;
+
+      #open-gallery-artist {
+        font-size: $fontSizeLarge * 1.5;
+      }
     }
 
     .logo__more {
@@ -108,11 +117,22 @@
       bottom: 0;
       right: 0;
       font-size: $fontSizeLarge;
+      text-transform: uppercase;
       @include padding(1, 1);
     }
 
     &.hidden {
       display: none;
+    }
+  }
+
+  @media screen and (max-width: $mobileSmall) {
+    .logo__prompt {
+      font-size: $fontSizeHugeMobile;
+
+      #open-gallery-artist {
+        font-size: $fontSizeLargeMobile;
+      }
     }
   }
 }

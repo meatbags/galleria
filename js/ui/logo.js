@@ -1,6 +1,7 @@
 /** 3D Logo */
 
 import Loader from '../loader/loader';
+import Config from '../modules/config';
 
 class Logo {
   constructor() {
@@ -99,7 +100,7 @@ class Logo {
   }
 
   resize() {
-    if (window.innerWidth < 768) {
+    if (window.innerWidth <= Config.mobileBreakpoint) {
       this.screenSize = window.innerWidth - 10;
     } else {
       this.screenSize = window.innerWidth > window.innerHeight ? Math.round(window.innerWidth * 0.3) : Math.round(window.innerHeight * 0.3);

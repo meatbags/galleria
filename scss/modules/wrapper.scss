@@ -13,4 +13,9 @@
   &.active {
     transform: translateX(0);
   }
+
+  @media screen and (max-width: $mobile) {
+    min-height: auto;
+    padding-top: 0;
+  }
 }

@@ -118,7 +118,7 @@
 
   @media screen and (max-width: $mobile) {
     height: 100vh;
-    //background: linear-gradient(to top, rgba($colourLink, 0.25), transparent);
+    background: linear-gradient(to top, rgba($backgroundColour, 0.25), white);
 
     &.footer--gallery {
       display: none;
@@ -132,15 +132,15 @@
 
       .footer__social-media {
         .section__links {
-          font-size: $fontSizeSmall;
           flex-direction: column;
           align-items: center;
+          justify-content: center;
 
           .section__link-item {
             @include margin(0, 1);
-            width: 100%;
             text-align: center;
-            font-size: $fontSizeLarge;
+            font-size: $fontSizeHuge;
+            border: none;
           }
         }
       }

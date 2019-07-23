@@ -6,7 +6,7 @@
   height: 100vh;
   display: flex;
   align-items: center;
-  transform: translateX(-100vw);
+  transform: translateX(-101vw);
 
   &.transition {
     transition: transform $transitionMedium;
@@ -44,7 +44,7 @@
         &.clickable {
           cursor: pointer;
         }
-        
+
         &.active {
           //background-color: transparent;
           canvas {
@@ -182,6 +182,8 @@
   }
 
   @media screen and (max-width: $mobile) {
+    //background: linear-gradient(to bottom, rgba($backgroundColour, 0.25), white);
+
     .gallery__controls {
       bottom: 12%;
     }

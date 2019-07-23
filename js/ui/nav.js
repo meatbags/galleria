@@ -3,10 +3,11 @@
 import CreateElement from '../utils/create_element';
 import IsSafariMobile from '../utils/is_safari_mobile';
 import IsMobileDevice from '../utils/is_mobile_device';
+import Config from '../modules/config';
 
 class Nav {
   constructor() {
-    this.devMode = false;//true;
+    this.devMode = true;
     this.isMobile = IsMobileDevice();
     this.el = {
       openGallery: document.querySelector('.open-gallery-prompt'),
@@ -47,6 +48,7 @@ class Nav {
 
     // load initial exhibition
     const exhibition = this.el.preview ? this.el.preview : this.el.featured ? this.el.featured : this.el.default;
+    console.log(exhibition);
     let data = null;
     if (exhibition) {
       data = this.parseExhibitionDataTags(exhibition);
@@ -65,15 +67,6 @@ class Nav {
 
     // events
     this.bindEvents();
-
-    // get page from hash
-    if (window.location.hash) {
-      const id = `#page-${window.location.hash.replace('#', '')}`;
-      const target = document.querySelector(`[data-target="${id}"]`);
-      if (target) {
-        target.click();
-      }
-    }
 
     // remove loading screen
     const loading = document.querySelector('.loading-screen');
@@ -117,7 +110,7 @@ class Nav {
           this.ref.gallery.load(data);
 
           // go to home page on mobile
-          if (this.isMobile && window.innerWidth < 768) {
+          if (this.isMobile && window.innerWidth <= Config.mobileBreakpoint) {
             const target = document.querySelector('.mobile-menu__item[data-target="#page-home"]');
             if (target) {
               target.click();
@@ -180,6 +173,15 @@ class Nav {
         window.dispatchEvent(new Event('resize'));
       }, 500);
     });
+
+    // get page from hash
+    if (window.location.hash) {
+      const id = `#page-${window.location.hash.replace('#', '')}`;
+      const target = document.querySelector(`[data-target="${id}"]`);
+      if (target) {
+        target.click();
+      }
+    }
   }
 
   parseExhibitionDataTags(el) {
@@ -211,7 +213,7 @@ class Nav {
       this.el.openGallery.classList.remove('prompt-action');
       document.querySelector('html').classList.add('freeze');
       document.querySelector('.wrapper').classList.remove('active');
-      document.querySelector('.logo').classList.remove('active');
+      this.el.logo.classList.remove('active');
       document.querySelectorAll('.mobile-menu__item.active').forEach(el => { el.classList.remove('active'); });
       document.documentElement.scrollTop = 0;
       this.el.gallery.gallery.classList.add('transition');
@@ -219,11 +221,12 @@ class Nav {
         this.el.gallery.gallery.classList.add('active');
       }, 100);
       setTimeout(() => {
+        this.el.logo.classList.remove('transition');
         this.ref.gallery.start();
       }, 1000);
 
       // show controls on mobile
-      if (this.isMobile && window.innerWidth < 768) {
+      if (this.isMobile && window.innerWidth <= Config.mobileBreakpoint) {
         this.openControlsPopup();
       }
     }
@@ -235,8 +238,11 @@ class Nav {
     this.closeArtworkInfo();
     document.querySelector('html').classList.remove('freeze');
     document.querySelector('.gallery').classList.remove('active');
-    document.querySelector('.wrapper').classList.add('active');
-    document.querySelector('.logo').classList.add('active');
+    this.el.logo.classList.add('transition');
+    setTimeout(() => {
+      document.querySelector('.wrapper').classList.add('active');
+      this.el.logo.classList.add('active');
+    }, 100);
     setTimeout(() => {
       document.querySelector('.gallery').classList.remove('transition');
     }, 1100);

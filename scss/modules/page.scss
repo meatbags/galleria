@@ -26,7 +26,17 @@
   }
 
   @media screen and (max-width: $mobile) {
-    @include padding(0, 0);
+    padding: 0;
+    margin: 0;
+
+    .page__content {
+      width: 100%;
+    }
+  }
+
+  @media screen and (max-width: $mobileSmall) {
+    padding: 0;
+    margin: 0;
 
     .page__content {
       width: 100%;

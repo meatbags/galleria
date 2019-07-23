@@ -32,7 +32,7 @@ class CustomXavier {
       this.updateCallbacks = [];
 
       // load
-      //this.loadIntestines();
+      this.loadIntestines();
       //this.loadRibbons();
       this.loadDisplayCases();
       this.loadStatic();
@@ -244,12 +244,27 @@ class CustomXavier {
       vNormal.y += noise * 0.75;
       vNormal.x += noise * -0.5;
     `;
-    this.loader.loadFBX('monster').then(obj => {
-      obj.position.set(31.5, 2.5, 13);
+    const jitter = [];
+    this.updateCallbacks.push(delta => {
+      jitter.forEach(mesh => {
+        if (Math.random() > 0.97) {
+        mesh.rotation.x += (Math.random() * 2 - 1) * 0.05;
+        mesh.rotation.y += (Math.random() * 2 - 1) * 0.05;
+        mesh.rotation.z += (Math.random() * 2 - 1) * 0.05;
+      }
+      });
+    });
+
+    this.loader.loadFBX('intestines_1').then(obj => {
       this.ref.materials.conformGroup(obj);
       this.applyToMeshes(obj, mesh => {
-        mesh.material.envMapIntensity = 1;
-        mesh.material = this.ref.materials.createCustomMaterial(mesh.material, vertexShader, PerlinNoise);
+        mesh.material.envMapIntensity = 0.25;
+        if (mesh.material.name.indexOf('neon') == -1) {
+          jitter.push(mesh);
+        }
+        if (mesh.material.name.indexOf('intestines') !== -1) {
+          mesh.material = this.ref.materials.createCustomMaterial(mesh.material, vertexShader, PerlinNoise);
+        }
       });
       this.ref.scene.scene.add(obj);
 
