@@ -276,13 +276,17 @@ class Nav {
         const ratio = w / h;
         const windowRatio = window.innerWidth / window.innerHeight;
         if (ratio < windowRatio) {
-          const y = window.innerHeight * 0.75;
-          const x = Math.min(y * (w / h), window.innerWidth * 0.95);
+          const scaleY = this.isMobile ? 0.65 : 0.75;
+          const scaleX = this.isMobile ? 0.85 : 0.95;
+          const y = window.innerHeight * scaleY;
+          const x = Math.min(y * (w / h), window.innerWidth * scaleX);
           this.el.gallery.artworkInfoPopupInner.style.width = `${Math.round(x)}px`;
           this.el.gallery.artworkInfoPopupInner.style.height = `${Math.round(y)}px`;
         } else {
-          const x = window.innerWidth * 0.85;
-          const y = Math.min(x * (h / w), window.innerHeight * 0.75);
+          const scaleX = this.isMobile ? 0.75 : 0.85;
+          const scaleY = this.isMobile ? 0.65 : 0.75;
+          const x = window.innerWidth * scaleX;
+          const y = Math.min(x * (h / w), window.innerHeight * scaleY);
           this.el.gallery.artworkInfoPopupInner.style.width = `${Math.round(x)}px`;
           this.el.gallery.artworkInfoPopupInner.style.height = `${Math.round(y)}px`;
         }

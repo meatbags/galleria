@@ -42,7 +42,6 @@ class Gallery {
     if (!this.isMobile) {
       this.loop();
     } else {
-      console.log(this.isMobile);
       this.mobileLoop();
     }
   }
