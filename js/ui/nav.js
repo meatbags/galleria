@@ -221,7 +221,7 @@ class Nav {
       document.querySelector('.wrapper').classList.remove('active');
       this.el.logo.classList.remove('active');
       document.querySelectorAll('.mobile-menu__item.active').forEach(el => { el.classList.remove('active'); });
-      document.documentElement.scrollTop = 0;
+      this.scrollToTop();
       this.el.gallery.gallery.classList.add('transition');
       setTimeout(() => {
         this.el.gallery.gallery.classList.add('active');
@@ -260,7 +260,7 @@ class Nav {
     document.querySelector('html').classList.add('freeze');
     document.querySelector('.wrapper').classList.remove('active');
     document.querySelector('.logo').classList.remove('active');
-    document.documentElement.scrollTop = 0;
+    this.scrollToTop();
     this.el.gallery.gallery.classList.add('active');
     //this.el.gallery.gallery.classList.add('transition');
     this.ref.gallery.start();
@@ -355,9 +355,7 @@ class Nav {
 
         // close menu
         this.closeMobileMenu();
-
-        // go to top
-        document.documentElement.scrollTop = 0;
+        this.scrollToTop();
 
         // close gallery
         if (this.ref.gallery.active) {
@@ -384,6 +382,11 @@ class Nav {
         window.location.hash = `${el.dataset.target.split('-')[1]}`;
       }
     }
+  }
+
+  scrollToTop() {
+    document.documentElement.scrollTop = 0;
+    window.scrollTo(0, 0);
   }
 }
 
