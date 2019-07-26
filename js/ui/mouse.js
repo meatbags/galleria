@@ -25,16 +25,21 @@ class Mouse {
       this.domTarget.addEventListener('mouseleave', evt => { this.onMouseUp(evt); });
     } else {
       this.domTarget.addEventListener('touchstart', evt => {
+        evt.preventDefault();
         if (evt.touches && evt.touches.length) {
           this.onMouseDown(evt.touches[0]);
         }
       });
       this.domTarget.addEventListener('touchmove', evt => {
+        evt.preventDefault();
         if (evt.touches && evt.touches.length) {
           this.onMouseMove(evt.touches[0]);
         }
       });
-      this.domTarget.addEventListener('touchend', evt => { this.onMouseUp(evt); });
+      this.domTarget.addEventListener('touchend', evt => {
+        evt.preventDefault();
+        this.onMouseUp(evt);
+      });
     }
   }
 
