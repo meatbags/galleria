@@ -1,4 +1,4 @@
-<div id='gallery' class='gallery fix-safari'>
+<div id='gallery' class='gallery mobile-set-height'>
   <nav class='nav nav--gallery'>
     <div class='nav__inner'>
       <div id='nav-item-gallery' class='nav__item active'>Gallery</div>
@@ -78,7 +78,12 @@
       </div>
       <div class='popup-gallery-controls__text'>Click an artwork to view it closer</div>
     </div>
-    <div class='popup-gallery-controls__close'>&times;</div>
+    <div class='popup-gallery-controls__close'>
+      <div class='popup-gallery-controls__close-inner'>
+        <div></div>
+        <div></div>
+      </div>
+    </div>
   </div>
 
   <footer class='footer footer--gallery'>

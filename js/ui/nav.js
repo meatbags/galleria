@@ -34,11 +34,6 @@ class Nav {
         artworkInfoPopupClose: document.querySelector('#popup-artwork-info-close'),
       }
     };
-
-    // safari fix -- NOTE: check onscreen arrows Safari mobile
-    if (IsSafariMobile()) {
-      document.querySelectorAll('.fix-safari').forEach(el => { el.classList.add('safari'); });
-    }
   }
 
   bind(root) {
@@ -167,6 +162,8 @@ class Nav {
     });
 
     // trigger resize after orientationchange
+    this.resize();
+    window.addEventListener('resize', () => { this.resize(); });
     window.addEventListener('orientationchange', () => {
       setTimeout(() => {
         window.dispatchEvent(new Event('resize'));
@@ -180,6 +177,16 @@ class Nav {
       if (target) {
         target.click();
       }
+    }
+  }
+
+  resize() {
+    // set mobile height
+    if (this.isMobile) {
+      const h = window.innerHeight + 'px';
+      document.querySelectorAll('.gallery, .logo').forEach(el => {
+        el.style.height = h;
+      });
     }
   }
 
