@@ -28,9 +28,6 @@
     // NOTE: #canvas-logo-target
     .logo__canvas-wrapper {
       position: relative;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
 
       canvas {
         position: absolute;
@@ -135,6 +132,12 @@
 
     &.hidden {
       display: none;
+    }
+
+    &.fix-safari {
+      &.safari {
+        height: 90vh;
+      }
     }
   }
 
