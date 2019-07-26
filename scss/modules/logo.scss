@@ -30,8 +30,13 @@
 
     // NOTE: #canvas-logo-target
     .logo__canvas-wrapper {
-      //border: 1px solid blue;
-      canvas {}
+      //border: 1px solid black;
+      flex-shrink: 0;
+
+      canvas {
+        width: 100% !important;
+        height: 100% !important;
+      }
     }
   }
 
@@ -101,11 +106,6 @@
 
       .logo__canvas-wrapper {
         position: relative;
-
-        canvas {
-          width: 100% !important;
-          height: 100% !important;
-        }
       }
     }
 

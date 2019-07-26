@@ -432,7 +432,8 @@ ul {
     background: rgba(17, 17, 17, 0.85);
     transition: opacity 0.5s;
     pointer-events: none;
-    z-index: 9999; }
+    z-index: 9999;
+    user-select: none; }
     .gallery .gallery__popup-artwork-info .popup-artwork-info__inner {
       position: relative;
       transition: transform 0.5s;
@@ -658,6 +659,11 @@ ul {
     display: flex;
     justify-content: center;
     align-items: center; }
+    .logo .logo__inner .logo__canvas-wrapper {
+      flex-shrink: 0; }
+      .logo .logo__inner .logo__canvas-wrapper canvas {
+        width: 100% !important;
+        height: 100% !important; }
   .logo .logo__prompt {
     position: absolute;
     padding-left: 8px;
@@ -702,9 +708,6 @@ ul {
         height: auto; }
         .logo .logo__inner .logo__canvas-wrapper {
           position: relative; }
-          .logo .logo__inner .logo__canvas-wrapper canvas {
-            width: 100% !important;
-            height: 100% !important; }
       .logo .logo__prompt {
         position: relative;
         bottom: auto;

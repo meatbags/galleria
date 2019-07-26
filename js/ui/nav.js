@@ -184,9 +184,8 @@ class Nav {
     // set mobile height
     if (this.isMobile) {
       const h = window.innerHeight + 'px';
-      document.querySelectorAll('.gallery, .logo').forEach(el => {
-        el.style.height = h;
-      });
+      document.querySelector('.gallery').style.height = h;
+      document.querySelector('.logo').style.height = window.innerWidth <= Config.mobileBreakpoint ? h : '300px';
     }
   }
 

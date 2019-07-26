@@ -68,6 +68,7 @@
     transition: opacity 0.5s;
     pointer-events: none;
     z-index: 9999;
+    user-select: none;
 
     .popup-artwork-info__inner {
       position: relative;
