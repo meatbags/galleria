@@ -181,6 +181,12 @@
     }
   }
 
+  &.fix-safari {
+    &.safari {
+      height: 90vh;
+    }
+  }
+
   @media screen and (max-width: $mobile) {
     .gallery__controls {
       bottom: 12%;

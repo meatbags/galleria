@@ -517,6 +517,8 @@ ul {
         .gallery .gallery__controls .gallery__control-block .control.active svg {
           transform: scale(1.25, 1.25);
           fill: #40c1ac; }
+  .gallery.fix-safari.safari {
+    height: 90vh; }
   @media screen and (max-width: 768px) {
     .gallery .gallery__controls {
       bottom: 12%; }

@@ -1,4 +1,4 @@
-<div id='gallery' class='gallery'>
+<div id='gallery' class='gallery fix-safari'>
   <nav class='nav nav--gallery'>
     <div class='nav__inner'>
       <div id='nav-item-gallery' class='nav__item active'>Gallery</div>

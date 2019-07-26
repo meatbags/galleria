@@ -14,10 +14,8 @@
 	<meta property='og:description' content='Virtual. Art. Space.'>
 	<?php date_default_timezone_set('Australia/Sydney'); ?>
 	<?php wp_head(); ?>
-	<!--<link href='https://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet'>-->
   <link href='https://fonts.googleapis.com/css?family=Karla' rel='stylesheet'>
   <link href='https://fonts.googleapis.com/css?family=Playfair+Display:900&display=swap' rel='stylesheet'>
-  <!--<link href='https://fonts.googleapis.com/css?family=Lato&display=swap' rel='stylesheet'>-->
 	<script type='text/javascript'>
 		//<![CDATA[
 			var SITE_URL = '<?php echo get_site_url(); ?>';
