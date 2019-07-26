@@ -1,7 +1,9 @@
 <?php get_template_part('wordpress/header'); ?>
 
 <div id='logo' class='logo active transition open-gallery-prompt'>
-  <div id='canvas-logo-target' class='logo__inner'></div>
+  <div class='logo__inner'>
+    <div id='canvas-logo-target' class='logo__canvas-wrapper'></div>
+  </div>
   <div id='open-gallery-prompt' class='logo__prompt loading'>
     <span class='logo__prompt-loading'>Loading</span>
     <span class='logo__prompt-ready'>Open Gallery</span>

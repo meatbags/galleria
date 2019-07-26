@@ -62,9 +62,10 @@ class Logo {
     this.renderer.setClearColor(0x0, 0);
 
     // resize, bind, add to doc
+    this.domTarget = document.querySelector('#canvas-logo-target');
     this.resize();
     window.addEventListener('resize', () => { this.resize(); });
-    document.querySelector('#canvas-logo-target').appendChild(this.renderer.domElement);
+    this.domTarget.appendChild(this.renderer.domElement);
     document.querySelector('#logo').addEventListener('mouseenter', () => {
       if (this.children) {
         this.children.forEach(child => {
@@ -105,6 +106,17 @@ class Logo {
     } else {
       this.screenSize = window.innerWidth > window.innerHeight ? Math.round(window.innerWidth * 0.3) : Math.round(window.innerHeight * 0.3);
     }
+
+    // resize container
+    this.domTarget.style.width = `${this.screenSize}px`;
+    this.domTarget.style.height = `${this.screenSize}px`;
+
+    // adjust for mobile devices
+    if (window.devicePixelRatio > 1) {
+      this.screenSize *= window.devicePixelRatio;
+    }
+
+    // resize renderer
     this.renderer.setSize(this.screenSize, this.screenSize);
   }
 
@@ -140,8 +152,7 @@ class Logo {
     }
   }
 
-  loop() {
-    requestAnimationFrame(() => { this.loop(); });
+  update() {
     if (this.active) {
       const now = performance.now();
       const delta = Math.min(0.1, (now - this.timer.previous) / 1000);
@@ -156,6 +167,16 @@ class Logo {
       }
       this.renderer.render(this.scene, this.camera);
     }
+  }
+
+  mobileLoop() {
+    setTimeout(() => { this.mobileLoop(); }, Math.round(1000 / 30));
+    this.update();
+  }
+
+  loop() {
+    requestAnimationFrame(() => { this.loop(); });
+    this.update();
   }
 }
 
