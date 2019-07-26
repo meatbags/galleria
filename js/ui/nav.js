@@ -48,7 +48,6 @@ class Nav {
 
     // load initial exhibition
     const exhibition = this.el.preview ? this.el.preview : this.el.featured ? this.el.featured : this.el.default;
-    console.log(exhibition);
     let data = null;
     if (exhibition) {
       data = this.parseExhibitionDataTags(exhibition);

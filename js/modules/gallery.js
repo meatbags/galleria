@@ -10,9 +10,11 @@ import Player from './player';
 import Renderer from './renderer';
 import Scene from './scene';
 import Surface from '../ui/surface';
+import IsMobileDevice from '../utils/is_mobile_device';
 
 class Gallery {
   constructor() {
+    this.isMobile = IsMobileDevice();
     this.modules = {
       renderer: new Renderer(),
       scene: new Scene(),
@@ -37,7 +39,12 @@ class Gallery {
     });
 
     // start main loop
-    this.loop();
+    if (!this.isMobile) {
+      this.loop();
+    } else {
+      console.log(this.isMobile);
+      this.mobileLoop();
+    }
   }
 
   load(data) {
@@ -72,8 +79,7 @@ class Gallery {
     document.querySelector('#canvas-target').classList.remove('active');
   }
 
-  loop() {
-    requestAnimationFrame(() => { this.loop(); });
+  update() {
     if (this.active) {
       const now = performance.now();
       const delta = Math.min(0.1, (now - this.timer.previous) / 1000);
@@ -91,6 +97,16 @@ class Gallery {
       this.modules.surface.render();
       this.modules.map.render();
     }
+  }
+
+  mobileLoop() {
+    setTimeout(() => { this.mobileLoop(); }, Math.round(1000 / 45));
+    this.update();
+  }
+
+  loop() {
+    requestAnimationFrame(() => { this.loop(); });
+    this.update();
   }
 }
 
