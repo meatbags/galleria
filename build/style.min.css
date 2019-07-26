@@ -612,14 +612,17 @@ ul {
   @media screen and (max-width: 768px) {
     .gallery__popup-gallery-controls {
       flex-direction: column;
-      width: 80vw; }
+      width: 80vw;
+      box-shadow: 5px 5px 10px rgba(63, 63, 63, 0.5); }
       .gallery__popup-gallery-controls .popup-gallery-controls__item {
         width: 100%; }
         .gallery__popup-gallery-controls .popup-gallery-controls__item .popup-gallery-controls__text {
-          padding-left: 16px;
-          padding-right: 16px;
-          padding-top: 16px;
-          padding-bottom: 16px; } }
+          padding-left: 8px;
+          padding-right: 8px;
+          padding-top: 8px;
+          padding-bottom: 8px; }
+      .gallery__popup-gallery-controls .popup-gallery-controls__close {
+        font-size: 20px; } }
 
 .logo {
   position: fixed;

@@ -291,13 +291,18 @@
   @media screen and (max-width: $mobile) {
     flex-direction: column;
     width: 80vw;
+    box-shadow: 5px 5px 10px rgba($black, 0.5);
 
     .popup-gallery-controls__item {
       width: 100%;
 
       .popup-gallery-controls__text {
-        @include padding(2, 2);
+        @include padding(1, 1);
       }
+    }
+
+    .popup-gallery-controls__close {
+      font-size: $fontSizeLarge;
     }
   }
 }
