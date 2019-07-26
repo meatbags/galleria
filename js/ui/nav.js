@@ -7,7 +7,7 @@ import Config from '../modules/config';
 
 class Nav {
   constructor() {
-    this.devMode = false;// true;
+    this.devMode = true;
     this.isMobile = IsMobileDevice();
     this.el = {
       openGallery: document.querySelector('.open-gallery-prompt'),
@@ -61,14 +61,6 @@ class Nav {
 
     // events
     this.bindEvents();
-
-    // remove loading screen
-    const loading = document.querySelector('.loading-screen');
-    if (loading) {
-      setTimeout(() => {
-        loading.parentNode.removeChild(loading);
-      }, 200);
-    }
   }
 
   bindEvents() {
@@ -180,6 +172,16 @@ class Nav {
     }
   }
 
+  removeLoadingScreen() {
+    // remove loading screen
+    const loading = document.querySelector('.loading-screen');
+    if (loading) {
+      setTimeout(() => {
+        loading.parentNode.removeChild(loading);
+      }, 200);
+    }
+  }
+
   resize() {
     // set mobile height
     if (this.isMobile) {
@@ -208,7 +210,6 @@ class Nav {
       data.images.push(res);
     });
     data.customValue = el.querySelector('.section__custom-value').dataset.customValue;
-
     return data;
   }
 
@@ -228,7 +229,7 @@ class Nav {
       setTimeout(() => {
         this.el.logo.classList.remove('transition');
         this.ref.gallery.start();
-      }, 1000);
+      }, 1100);
 
       // show controls on mobile
       if (this.isMobile && window.innerWidth <= Config.mobileBreakpoint) {

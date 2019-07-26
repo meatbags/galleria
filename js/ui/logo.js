@@ -16,37 +16,6 @@ class Logo {
     // load logo model
     this.loaded = false;
     this.loader = new Loader('assets/logo');
-    this.loader.loadFBX('logo').then(obj => {
-      this.logo = obj;
-      this.children = [];
-      const mat = new THREE.MeshPhysicalMaterial({color: 0x333333, metalness: 0.75, emissive: 0x333333, emissiveIntensity: 1, side: THREE.DoubleSide});
-      const box = new THREE.Box3();
-      const process = child => {
-        if (child.type === 'Group') {
-          child.children.forEach(c => { process(c); });
-        } else {
-          child.material = mat;
-          box.setFromObject(child);
-          if (box.max.z - box.min.z < 2) {
-            child.customVector = new THREE.Vector3(0, 0, 0);
-            if (child.name.indexOf('x_pos') !== -1) {
-              child.customVector.x = 1;
-            } else if (child.name.indexOf('y_neg') !== -1) {
-              child.customVector.y = -1;
-            } else if (child.name.indexOf('y_pos') !== -1) {
-              child.customVector.y = 1;
-            } else if (child.name.indexOf('z_pos') !== -1) {
-              child.customVector.z = 1;
-            }
-            this.children.push(child);
-          }
-        }
-      };
-      process(obj);
-      this.scene.add(obj);
-      this.loaded = true;
-      this.start();
-    });
 
     // add some lights
     this.dLight1 = new THREE.DirectionalLight(0xffffff, 1);
@@ -86,7 +55,48 @@ class Logo {
     this.loop();
   }
 
-  bind(root) {}
+  bind(root) {
+    this.ref = {};
+    this.ref.nav = root.modules.nav;
+
+    // load logo model
+    this.loader.loadFBX('logo').then(obj => {
+      this.logo = obj;
+      this.children = [];
+      const mat = new THREE.MeshPhysicalMaterial({color: 0x333333, metalness: 0.75, emissive: 0x333333, emissiveIntensity: 1, side: THREE.DoubleSide});
+      const box = new THREE.Box3();
+      const process = child => {
+        if (child.type === 'Group') {
+          child.children.forEach(c => { process(c); });
+        } else {
+          child.material = mat;
+          box.setFromObject(child);
+          if (box.max.z - box.min.z < 2) {
+            child.customVector = new THREE.Vector3(0, 0, 0);
+            if (child.name.indexOf('x_pos') !== -1) {
+              child.customVector.x = 1;
+            } else if (child.name.indexOf('y_neg') !== -1) {
+              child.customVector.y = -1;
+            } else if (child.name.indexOf('y_pos') !== -1) {
+              child.customVector.y = 1;
+            } else if (child.name.indexOf('z_pos') !== -1) {
+              child.customVector.z = 1;
+            }
+            this.children.push(child);
+          }
+        }
+      };
+      process(obj);
+
+      // start scene
+      this.scene.add(obj);
+      this.loaded = true;
+      this.start();
+
+      // remove loading screen
+      this.ref.nav.removeLoadingScreen();
+    });
+  }
 
   start() {
     this.age = this.age ? this.age : 0;

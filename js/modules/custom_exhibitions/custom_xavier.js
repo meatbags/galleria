@@ -247,11 +247,14 @@ class CustomXavier {
     const jitter = [];
     this.updateCallbacks.push(delta => {
       jitter.forEach(mesh => {
-        if (Math.random() > 0.97) {
-        mesh.rotation.x += (Math.random() * 2 - 1) * 0.05;
-        mesh.rotation.y += (Math.random() * 2 - 1) * 0.05;
-        mesh.rotation.z += (Math.random() * 2 - 1) * 0.05;
-      }
+        mesh.rotation.x += delta * Math.PI / 12;
+
+        if (Math.random() > 0.95) {
+          //mesh.rotation.x += (Math.random() * 1) * .2;
+          //mesh.rotation.y += (Math.random() * 2 - 1) * 0.05;
+          //mesh.rotation.z += (Math.random() * 2 - 1) * 0.05;
+        }
+
       });
     });
 
@@ -260,6 +263,7 @@ class CustomXavier {
       this.applyToMeshes(obj, mesh => {
         mesh.material.envMapIntensity = 0.25;
         if (mesh.material.name.indexOf('neon') == -1) {
+          mesh.rotation.x = Math.random() * Math.PI * 2;
           jitter.push(mesh);
         }
         if (mesh.material.name.indexOf('intestines') !== -1) {
