@@ -39,11 +39,28 @@
           transition: opacity $transitionSlow;
         }
 
+        .canvas-wrapper__inner-loading-msg {
+          @include padding(0.25, 0.25);
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          color: $white;
+          transform: translate(-50%, -50%);
+          text-transform: uppercase;
+          border-bottom: $border;
+          pointer-events: none;
+          font-size: $fontSizeLarge;
+          border-color: $white;
+        }
+
         &.clickable {
           cursor: pointer;
         }
 
         &.active {
+          .canvas-wrapper__inner-loading-msg {
+            display: none;
+          }
           //background-color: transparent;
           canvas {
             opacity: 1;

@@ -10,7 +10,9 @@
   <!-- canvas target -->
   <div class='gallery__inner'>
     <div class='canvas-wrapper'>
-      <div id='canvas-target' class='canvas-wrapper__inner'></div>
+      <div id='canvas-target' class='canvas-wrapper__inner'>
+        <div class='canvas-wrapper__inner-loading-msg'>Building Assets...</div>
+      </div>
     </div>
   </div>
 

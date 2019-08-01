@@ -9,8 +9,9 @@ class Materials {
     this.mat.metal = new THREE.MeshPhysicalMaterial({color: 0xa88e79, emissive: 0x0, roughness: 0.25, metalness: 1.0, envMapIntensity: 0.5});
     this.mat.neon = new THREE.MeshPhysicalMaterial({emissive: 0xffffff, emissiveIntensity: 1.0});
     this.mat.dark = new THREE.MeshPhysicalMaterial({color: 0x0, roughness: 0.5, metalness: 0});
-    const envMapSources = ['posx', 'negx', 'posy', 'negy', 'posz', 'negz'].map(filename => `${this.path}envmap/${filename}.jpg`);
-    this.envMap = new THREE.CubeTextureLoader().load(envMapSources);
+    this.envMap = this.createEnvMap('envmap');
+    //const envMapSources = ['posx', 'negx', 'posy', 'negy', 'posz', 'negz'].map(filename => `${this.path}envmap/${filename}.jpg`);
+    //this.envMap = new THREE.CubeTextureLoader().load(envMapSources);
     this.normalMap = new THREE.TextureLoader().load(this.path + 'textures/noise.jpg');
     this.normalMap.wrapS = this.normalMap.wrapT = THREE.RepeatWrapping;
     this.normalMap.repeat.set(32, 32);
@@ -30,6 +31,12 @@ class Materials {
   }
 
   bind(root) {}
+
+  createEnvMap(path) {
+    const envMapSources = ['posx', 'negx', 'posy', 'negy', 'posz', 'negz'].map(filename => `${this.path}${path}/${filename}.jpg`);
+    const envMap = new THREE.CubeTextureLoader().load(envMapSources);
+    return envMap;
+  }
 
   getTexture(path) {
     const texture = new THREE.TextureLoader().load(this.path + path);

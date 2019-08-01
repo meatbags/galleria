@@ -21,8 +21,7 @@ class CustomXavier {
     return new Promise((resolve, reject) => {
       this.toLoad = 0;
       this.onLoad = () => {
-        this.toLoad -=1;
-        if (this.toLoad <= 0) {
+        if (--this.toLoad <= 0) {
           resolve();
         }
       };
@@ -30,49 +29,72 @@ class CustomXavier {
       // containers
       this.interactionPoints = [];
       this.updateCallbacks = [];
+      this.meshes = [];
 
-      // load
-      this.loadIntestines();
-      //this.loadRibbons();
+      // finalised artworks
+      this.loadStaticArtworks();
       this.loadDisplayCases();
-      this.loadStatic();
+      this.loadPlatformer()
+      this.loadWaves();
+
+      this.loadTest();
+
     });
   }
 
-  isLoaded() {
-    return this.toLoad <= 0;
+  loadTest() {
+    // envmap
+    this.envMap = this.ref.materials.createEnvMap('xavier/env');
+
+    const lasers = [];
+    this.updateCallbacks.push(delta => {
+      for (let i=0; i<lasers.length; i++) {
+        lasers[i].rotation.x += Math.PI / 100 * delta;
+      }
+    });
+    const mat = this.ref.materials.mat.neon.clone();
+    //mat.transparent = true;
+    //mat.opacity = 0.25;
+    for (let x=-22; x<22; x+=0.25) {
+      const size = 80 * (Math.abs(x) - 23) / 23;
+      const mesh = new THREE.Mesh(new THREE.BoxBufferGeometry(0.05, 0.05, size), mat);
+      mesh.position.set(x, 14, 6);
+      mesh.rotation.x = Math.PI / 2 + Math.PI / 32 * x;
+      lasers.push(mesh);
+      this.ref.scene.scene.add(mesh);
+    }
   }
 
-  loadRibbons() {
+  loadWaves() {
     // ribbons
     const vertexShader = `
       vec3 p = position;
       float f = time * 0.2;
       float noise = perlinNoise(vec2(f + p.y, f + p.x));
       float t = 0.0;
-      float tMin = 2.5;
-      float tMax = 6.5;
+      float tMin = 3.0;
+      float tMax = 6.0;
       if (p.y < tMax && p.y > tMin) {
-        t = sin((tMax - p.y) / (tMax - tMin) * 3.14159) * 0.5;
+        t = sin((tMax - p.y) / (tMax - tMin) * 3.14159) * 0.12;
       }
       float x = t * noise;
       float z = t * ((noise + 1.0) / 2.0);
       vec3 noiseVec = vec3(x, 0.0, z);
       vec3 transformed = p + noiseVec;
-      vNormal.y = sin(x);
+      vNormal.y = sin(x) * 2.0;
+      vNormal.z = cos(x) * 6.0;
     `;
-    this.loader.loadFBX('ribbons').then(obj => {
+    this.loader.loadFBX('final/waves/waves').then(obj => {
       this.ref.scene.scene.add(obj);
-      obj.position.set(-8, 0, 8);
       this.ref.materials.conformGroup(obj);
-      this.ribbons = [];
       this.applyToMeshes(obj, child => {
-        child.material = this.ref.materials.createCustomMaterial(child.material, vertexShader, PerlinNoise);
-        child.material.metalness = 0.25;
-        child.material.roughness = 0.125;
-        child.material.envMapIntensity = 1;
-        child.material.color.setHex(0x0);
-        this.ribbons.push(child);
+        if (child.name.indexOf('frame') === -1) {
+          child.material = this.ref.materials.createCustomMaterial(child.material, vertexShader, PerlinNoise);
+          child.material.metalness = 1;
+          child.material.roughness = 0.125;
+          child.material.envMapIntensity = 1;
+          child.material.color.setHex(0x0);
+        }
       });
       // view point
       const pos = new PlayerPosition(this.ref.player, new THREE.Vector3(-8, 0.5, 14), new THREE.Vector3(-8, 4.5, 8));
@@ -93,8 +115,8 @@ class CustomXavier {
 
     // load assets
     this.toLoad += 2;
-    this.loader.loadFBX('display-case-1').then(obj => {
-      obj.position.set(-8, 2.5, 16);
+    this.loader.loadFBX('final/display_case/display_case_1').then(obj => {
+      //obj.position.set(-8, 2.5, 16);
       this.ref.materials.conformGroup(obj);
       this.ref.scene.scene.add(obj);
       this.applyToMeshes(obj, mesh => {
@@ -106,8 +128,8 @@ class CustomXavier {
       });
       this.onLoad();
     });
-    this.loader.loadFBX('display-case-2').then(obj => {
-      obj.position.set(8, 2.5, 16);
+    this.loader.loadFBX('final/display_case/display_case_2').then(obj => {
+      //obj.position.set(8, 2.5, 16);
       this.ref.materials.conformGroup(obj);
       this.ref.scene.scene.add(obj);
       this.applyToMeshes(obj, mesh => {
@@ -153,85 +175,36 @@ class CustomXavier {
     this.ref.scene.colliderSystem.add(box2);
   }
 
-  loadStatic() {
-    /*
-    const ballBearings = [];
-    this.updateCallbacks.push(delta => {
-      ballBearings.forEach(ball => {
-        const p = ball.mesh.position;
-        const dx = ball.vec.x * delta;
-        const dy = ball.vec.y * delta;
-        p.x += dx;
-        p.y += dy;
-        if (p.x < ball.box.outer.min.x || p.x > ball.box.outer.max.x) {
-          ball.vec.x *= -1;
-          p.x -= dx;
-        }
-        if (p.y < ball.box.outer.min.y || p.y > ball.box.outer.max.y) {
-          ball.vec.y *= -1;
-          p.y -= dy;
-        }
-        if (ball.box.inner.containsPoint(p)) {
-          if (p.x - dx < ball.box.inner.min.x || p.x - dx > ball.box.inner.max.x) {
-            ball.vec.x *= -1;
-            p.x -= dx;
-          } else {
-            ball.vec.y *= -1;
-            p.y -= dy;
-          }
-        }
-      });
-    });
-    const createBallBearings = (p, size, n, innerSize, outerSize) => {
-      const mat = this.ref.materials.mat.neon;
-      for (let i=0; i<n; ++i) {
-        const mesh = new THREE.Mesh(new THREE.SphereBufferGeometry(size, 8, 8), mat);
-        mesh.position.set(p.x, p.y + innerSize + (outerSize - innerSize) / 2, p.z - size / 2);
-        const vec = new THREE.Vector2(Math.random() * 2 - 1, Math.random() * 2 - 1);
-        vec.normalize();
-        //vec.multiplyScalar(0.1);
-        const outer = new THREE.Box2(new THREE.Vector2(p.x - outerSize, p.y - outerSize), new THREE.Vector2(p.x + outerSize, p.y + outerSize));
-        const inner = new THREE.Box2(new THREE.Vector2(p.x - innerSize, p.y - innerSize), new THREE.Vector2(p.x + innerSize, p.y + innerSize));
-        ballBearings.push({mesh: mesh, vec: vec, box: { outer: outer, inner: inner }});
-        this.ref.scene.scene.add(mesh);
-      }
-    };
-    */
-
+  loadStaticArtworks() {
     // load models
     this.toLoad += 2;
-    this.loader.loadFBX('abstract-1').then(obj => {
-      const x = -8;
-      const y = 5;
-      const z = 22.99;
-      obj.position.set(x, y, z);
+    this.loader.loadFBX('final/dunes/dunes_1').then(obj => {
+      const p = new THREE.Vector3(-8, 5, 22.99);
+      obj.position.copy(p);
       this.ref.materials.conformGroup(obj);
       this.ref.scene.scene.add(obj);
       // view point
-      const pos = new PlayerPosition(this.ref.player, new THREE.Vector3(x, 0.5, 18), new THREE.Vector3(x, y, z));
+      const pos = new PlayerPosition(this.ref.player, new THREE.Vector3(p.x, 0.5, 18), p);
       this.interactionPoints.push(
-        new InteractionPoint( new THREE.Vector3(x, y, z), 2, 2, () => { pos.apply(); }, this.ref.camera.camera )
+        new InteractionPoint(p, 2, 2, () => { pos.apply(); }, this.ref.camera.camera )
       );
-      // create some ball bearings
       this.onLoad();
     });
-    this.loader.loadFBX('abstract-2').then(obj => {
-      const x = 8;
-      const y = 5;
-      const z = 22.99;
-      obj.position.set(x, y, z);
+    this.loader.loadFBX('final/dunes/dunes_2').then(obj => {
+      const p = new THREE.Vector3(8, 5, 22.99);
+      obj.position.copy(p);
       this.ref.materials.conformGroup(obj);
       this.ref.scene.scene.add(obj);
       // view point
-      const pos = new PlayerPosition(this.ref.player, new THREE.Vector3(x, 0.5, 18), new THREE.Vector3(x, y, z));
+      const pos = new PlayerPosition(this.ref.player, new THREE.Vector3(p.x, 0.5, 18), p);
       this.interactionPoints.push(
-        new InteractionPoint( new THREE.Vector3(x, y, z), 2, 2, () => { pos.apply(); }, this.ref.camera.camera )
+        new InteractionPoint(p, 2, 2, () => { pos.apply(); }, this.ref.camera.camera )
       );
       this.onLoad();
     });
   }
 
-  loadIntestines() {
+  loadPlatformer() {
     const vertexShader = `
       vec3 p = position;
       float f = time * 0.5 + 0.5 * sin(time * 0.25);
@@ -246,23 +219,14 @@ class CustomXavier {
     `;
     const jitter = [];
     this.updateCallbacks.push(delta => {
-      jitter.forEach(mesh => {
-        mesh.rotation.x += delta * Math.PI / 12;
-
-        if (Math.random() > 0.95) {
-          //mesh.rotation.x += (Math.random() * 1) * .2;
-          //mesh.rotation.y += (Math.random() * 2 - 1) * 0.05;
-          //mesh.rotation.z += (Math.random() * 2 - 1) * 0.05;
-        }
-
-      });
+      jitter.forEach(mesh => { mesh.rotation.x += delta * Math.PI / 12; });
     });
 
-    this.loader.loadFBX('intestines_1').then(obj => {
+    this.loader.loadFBX('final/platformer/platformer').then(obj => {
       this.ref.materials.conformGroup(obj);
       this.applyToMeshes(obj, mesh => {
         mesh.material.envMapIntensity = 0.25;
-        if (mesh.material.name.indexOf('neon') == -1) {
+        if (mesh.name.indexOf('frame') === -1) {
           mesh.rotation.x = Math.random() * Math.PI * 2;
           jitter.push(mesh);
         }
@@ -271,19 +235,22 @@ class CustomXavier {
         }
       });
       this.ref.scene.scene.add(obj);
-
-      // view point
-      const pos = new PlayerPosition(this.ref.player, new THREE.Vector3(23, 1, 13), new THREE.Vector3(31.5, 7.25, 13));
-      this.interactionPoints.push(
-        new InteractionPoint( new THREE.Vector3(31.5, 7.25, 13), 2, 2, () => { pos.apply(); }, this.ref.camera.camera )
-      );
     });
+
+    // view point
+    const pos = new PlayerPosition(this.ref.player, new THREE.Vector3(8, 0.5, 14), new THREE.Vector3(8, 4.5, 8));
+    this.interactionPoints.push(
+      new InteractionPoint( new THREE.Vector3(8, 4.5, 8), 2, 2, () => { pos.apply(); }, this.ref.camera.camera )
+    );
   }
 
   unload() {
-    this.interactionPoints.forEach(point => {
-      point.delete();
-    });
+    this.interactionPoints.forEach(point => { point.delete(); });
+    this.meshes.forEach(mesh => { this.ref.scene.scene.remove(mesh); });
+  }
+
+  isLoaded() {
+    return this.toLoad <= 0;
   }
 
   applyToMeshes(obj, callback) {
