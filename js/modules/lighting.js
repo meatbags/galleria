@@ -20,9 +20,13 @@ class Lighting {
   bind(root) {
     this.ref = {};
     this.ref.scene = root.modules.scene.scene;
+    this.ref.materials = root.modules.materials;
   }
 
   load(data) {
+    // default callback
+    this.updateCallback = null;
+
     // default positions
     this.lights.point.a.position.set(-8, 10, 14);
     this.lights.point.b.position.set(0, 10, -4);
@@ -31,11 +35,20 @@ class Lighting {
     this.lights.spot.a.position.set(0, 10, 14);
     this.lights.spot.a.target.position.set(-4, 0, 6);
 
-    // default settings
-    this.lights.point.a.distance = 24;
-    this.lights.hemisphere.a.intensity = 0.25;
+    // default intensity
+    this.lights.point.a.intensity = 1;
+    this.lights.point.b.intensity = 1;
+    this.lights.point.c.intensity = 1;
     this.lights.ambient.a.intensity = 0.3;
+    this.lights.directional.a.intensity = 0.5;
+    this.lights.hemisphere.a.intensity = 0.25;
     this.lights.spot.a.intensity = 1;
+
+    // misc
+    this.lights.point.a.distance = 24;
+    this.lights.point.a.color.setHex(0xffffff);
+    this.lights.point.b.color.setHex(0xffffff);
+    this.lights.ambient.a.color.setHex(0xffffff);
     this.lights.spot.a.distance = 32;
     this.lights.spot.a.angle = Math.PI / 3;
     this.lights.spot.a.penumbra = 0.25;
@@ -58,9 +71,26 @@ class Lighting {
     if (data) {
       switch (data.customValue) {
         case 'XAVIER':
-          // placeholder
-          this.lights.ambient.a.intensity = 0.125;
-          this.lights.spot.a.penumbra = 1;
+          Object.keys(this.lights).forEach(type => {
+            Object.keys(this.lights[type]).forEach(key => {
+              this.lights[type][key].intensity = 0;
+            });
+          });
+
+          // red glow
+          this.lights.point.b.position.set(4, 10, 0);
+          this.lights.point.a.position.set(-4, 10, 12);
+          this.lights.point.a.color.setHex(0xff0000);
+          this.lights.point.b.color.setHex(0x0000ff);
+          this.lights.ambient.a.color.setHex(0xff0808);
+          let age = 0;
+          this.updateCallback = delta => {
+            age += delta;
+            const t = ((Math.cos(age) + 1) * 0.5);
+            this.lights.ambient.a.intensity = 0.005 + t * 0.025;
+            this.lights.point.a.intensity = t * 0.5;
+            this.lights.point.b.intensity = (1 - t) * 0.8;
+          };
           break;
         case 'TIYAN':
           // remove lights outside temp exhibition region
@@ -88,6 +118,12 @@ class Lighting {
           this.ref.scene.remove(this.lights.spot.a.target);
           break;
       }
+    }
+  }
+
+  update(delta) {
+    if (this.updateCallback) {
+      this.updateCallback(delta);
     }
   }
 }

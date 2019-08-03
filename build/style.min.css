@@ -691,7 +691,7 @@ ul {
     font-size: 40px;
     bottom: 0;
     right: 0;
-    transform: translate(64.5%, 6%); }
+    transform: translate(64.5%, 6.5%); }
     .logo .logo__prompt #open-gallery-artist {
       font-size: 20px;
       text-transform: uppercase;
@@ -811,7 +811,8 @@ ul {
   width: 100%;
   background: #fff;
   position: relative;
-  pointer-events: all; }
+  pointer-events: all;
+  box-shadow: 10px 10px #3f3f3f; }
   .section .section__note {
     font-family: "Playfair Display", sans-serif;
     text-transform: uppercase;

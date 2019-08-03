@@ -10,6 +10,7 @@ class Materials {
     this.mat.neon = new THREE.MeshPhysicalMaterial({emissive: 0xffffff, emissiveIntensity: 1.0});
     this.mat.dark = new THREE.MeshPhysicalMaterial({color: 0x0, roughness: 0.5, metalness: 0});
     this.envMap = this.createEnvMap('envmap');
+    this.envMapIntensity = 0.5;
     //const envMapSources = ['posx', 'negx', 'posy', 'negy', 'posz', 'negz'].map(filename => `${this.path}envmap/${filename}.jpg`);
     //this.envMap = new THREE.CubeTextureLoader().load(envMapSources);
     this.normalMap = new THREE.TextureLoader().load(this.path + 'textures/noise.jpg');
@@ -31,6 +32,21 @@ class Materials {
   }
 
   bind(root) {}
+
+  load(data) {
+    // defaults
+    this.envMapDisabled = false;
+
+    if (data) {
+      switch (data.customValue) {
+        case 'XAVIER':
+          this.envMapDisabled = true;
+          break;
+        default:
+          break;
+      }
+    }
+  }
 
   createEnvMap(path) {
     const envMapSources = ['posx', 'negx', 'posy', 'negy', 'posz', 'negz'].map(filename => `${this.path}${path}/${filename}.jpg`);
@@ -59,13 +75,6 @@ class Materials {
       this.loaded[mat.name] = mat;
     }
 
-    // temp
-    //mat.map = null;
-    //mat.normalMap = null;
-    //mat.color = new THREE.Color(0xffffff);
-    //mat.emissive = new THREE.Color(0x888888);
-    //mat.needsUpdate = true;
-
     // update material
     this.addEnvironmentMap(mat);
     this.applyMaterialSettings(mat);
@@ -88,8 +97,10 @@ class Materials {
   }
 
   addEnvironmentMap(mat) {
-    mat.envMap = this.envMap;
-    mat.envMapIntensity = 0.5;
+    if (!this.envMapDisabled) {
+      mat.envMap = this.envMap;
+      mat.envMapIntensity = this.envMapIntensity;
+    }
   }
 
   createCustomMaterial(material, shaderText, funcs) {

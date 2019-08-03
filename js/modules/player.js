@@ -63,6 +63,21 @@ class Player {
     this.ref.scene.scene.add(this.group);
   }
 
+  load(data) {
+    // defaults
+    this.light.intensity = 0.75;
+
+    if (data) {
+      switch (data.customValue) {
+        case 'XAVIER':
+          this.light.intensity = 0;
+          break;
+        default:
+          break;
+      }
+    }
+  }
+
   reset() {
     this.position.set(-24, 1, 16);
     this.rotation.set(Math.PI * 0.55, Math.PI * -0.05);

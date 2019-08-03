@@ -31,38 +31,21 @@ class CustomXavier {
       this.updateCallbacks = [];
       this.meshes = [];
 
+      // settings
+      this.envMap = this.ref.materials.createEnvMap('xavier/env');
+
       // finalised artworks
       this.loadStaticArtworks();
       this.loadDisplayCases();
       this.loadPlatformer()
-      this.loadWaves();
+      //this.loadWaves();
 
-      this.loadTest();
+      this.loader.loadFBX('final/peripherals').then(obj => {
+        this.ref.materials.conformGroup(obj);
+        this.ref.scene.scene.add(obj);
+      });
 
     });
-  }
-
-  loadTest() {
-    // envmap
-    this.envMap = this.ref.materials.createEnvMap('xavier/env');
-
-    const lasers = [];
-    this.updateCallbacks.push(delta => {
-      for (let i=0; i<lasers.length; i++) {
-        lasers[i].rotation.x += Math.PI / 100 * delta;
-      }
-    });
-    const mat = this.ref.materials.mat.neon.clone();
-    //mat.transparent = true;
-    //mat.opacity = 0.25;
-    for (let x=-22; x<22; x+=0.25) {
-      const size = 80 * (Math.abs(x) - 23) / 23;
-      const mesh = new THREE.Mesh(new THREE.BoxBufferGeometry(0.05, 0.05, size), mat);
-      mesh.position.set(x, 14, 6);
-      mesh.rotation.x = Math.PI / 2 + Math.PI / 32 * x;
-      lasers.push(mesh);
-      this.ref.scene.scene.add(mesh);
-    }
   }
 
   loadWaves() {
@@ -227,11 +210,10 @@ class CustomXavier {
       this.applyToMeshes(obj, mesh => {
         mesh.material.envMapIntensity = 0.25;
         if (mesh.name.indexOf('frame') === -1) {
+          mesh.material.envMap = this.envMap;
+          mesh.material.envMapIntensity = 0.125;
           mesh.rotation.x = Math.random() * Math.PI * 2;
           jitter.push(mesh);
-        }
-        if (mesh.material.name.indexOf('intestines') !== -1) {
-          mesh.material = this.ref.materials.createCustomMaterial(mesh.material, vertexShader, PerlinNoise);
         }
       });
       this.ref.scene.scene.add(obj);

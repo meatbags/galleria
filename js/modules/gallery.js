@@ -55,10 +55,14 @@ class Gallery {
     document.querySelector('#open-gallery-artist').innerText = data && data.artistName ? data.artistName : '';
     document.querySelector('#open-gallery-prompt').classList.add('loading');
 
+    // load settings
+    this.modules.player.load(data);
+    this.modules.materials.load(data);
+    this.modules.lighting.load(data);
+
     // load map
     this.modules.map.load(data).then(() => {
       this.modules.floorPlan.load(data);
-      this.modules.lighting.load(data);
 
       // reset "open" prompt
       const prompt = document.querySelector('#open-gallery-prompt');
