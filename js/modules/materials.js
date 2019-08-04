@@ -8,7 +8,6 @@ class Materials {
     this.mat.porcelain = new THREE.MeshPhysicalMaterial({color: 0xffffff, emissive: 0x888888, emissiveIntensity: 0.6, roughness: 0.55, metalness: 0.125, envMapIntensity: 0.5});
     this.mat.metal = new THREE.MeshPhysicalMaterial({color: 0xa88e79, emissive: 0x0, roughness: 0.25, metalness: 1.0, envMapIntensity: 0.5});
     this.mat.neon = new THREE.MeshPhysicalMaterial({emissive: 0xffffff, emissiveIntensity: 1.0});
-    this.mat.dark = new THREE.MeshPhysicalMaterial({color: 0x0, roughness: 0.5, metalness: 0});
     this.envMap = this.createEnvMap('envmap');
     this.envMapIntensity = 0.5;
     //const envMapSources = ['posx', 'negx', 'posy', 'negy', 'posz', 'negz'].map(filename => `${this.path}envmap/${filename}.jpg`);
@@ -23,6 +22,7 @@ class Materials {
         this.mat[key].envMap = this.envMap;
       }
     });
+    this.mat.dark = new THREE.MeshPhysicalMaterial({color: 0x0, roughness: 0.5, metalness: 0});
 
     // custom shader uniforms
     this.uniforms = {time: {value: 0}};

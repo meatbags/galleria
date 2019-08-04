@@ -15,6 +15,7 @@ class Lighting {
     this.lights.directional.a = new THREE.DirectionalLight(0xffffff, 0.5);
     this.lights.hemisphere.a = new THREE.HemisphereLight(0x0, 0x0000ff, 0.25);
     this.lights.spot.a = new THREE.SpotLight(0xffffff, 1, 32, Math.PI / 3, 0.25);
+    this.lights.spot.b = new THREE.SpotLight(0xffffff, 0, 32, Math.PI / 3, 0.25);
   }
 
   bind(root) {
@@ -34,6 +35,8 @@ class Lighting {
     this.lights.directional.a.position.set(-1, 1.5, -1);
     this.lights.spot.a.position.set(0, 10, 14);
     this.lights.spot.a.target.position.set(-4, 0, 6);
+    this.lights.spot.b.position.set(0, -1, 0); // disabled by default
+    this.lights.spot.b.target.position.set(0, -2, 0);
 
     // default intensity
     this.lights.point.a.intensity = 1;
@@ -43,12 +46,19 @@ class Lighting {
     this.lights.directional.a.intensity = 0.5;
     this.lights.hemisphere.a.intensity = 0.25;
     this.lights.spot.a.intensity = 1;
+    this.lights.spot.b.intensity = 0;
+
+    // default colour
+    this.lights.point.a.color.setHex(0xffffff);
+    this.lights.point.b.color.setHex(0xffffff);
+    this.lights.point.c.color.setHex(0xffffff);
+    this.lights.ambient.a.color.setHex(0xffffff);
+    this.lights.spot.a.color.setHex(0xffffff);
+    this.lights.spot.b.color.setHex(0xffffff);
 
     // misc
     this.lights.point.a.distance = 24;
-    this.lights.point.a.color.setHex(0xffffff);
-    this.lights.point.b.color.setHex(0xffffff);
-    this.lights.ambient.a.color.setHex(0xffffff);
+    this.lights.point.c.distance = 20;
     this.lights.spot.a.distance = 32;
     this.lights.spot.a.angle = Math.PI / 3;
     this.lights.spot.a.penumbra = 0.25;
@@ -76,6 +86,18 @@ class Lighting {
               this.lights[type][key].intensity = 0;
             });
           });
+
+          // spot lights
+          this.lights.spot.a.intensity = 0.5;
+          this.lights.spot.a.color.setHex(0xff0000);
+          this.lights.spot.a.angle = Math.PI / 6;
+          this.lights.spot.a.position.set(-24, 14, 8);
+          this.lights.spot.a.target.position.set(-26, 4, -6);
+          this.lights.spot.b.intensity = 1;
+          this.lights.spot.b.color.setHex(0x0000ff);
+          this.lights.spot.b.position.set(20, 12, 8);
+          this.lights.spot.b.target.position.set(28, 5.5, 4);
+          this.lights.spot.b.penumbra = Math.PI / 2;
 
           // red glow
           this.lights.point.b.position.set(4, 10, 0);

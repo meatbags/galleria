@@ -96,7 +96,7 @@ class Map {
       const size = 0.1;
       const rodSize = 4;
       for (var x=-16; x<=16; x+=8) {
-        const y = 19;
+        const y = 19; // 19
         const mesh = new THREE.Mesh(new THREE.BoxBufferGeometry(size, size, rodSize), this.ref.materials.mat.neon);
         const holster = new THREE.Mesh(new THREE.BoxBufferGeometry(size, size * 4, rodSize), this.ref.materials.mat.dark);
         const rod1 = new THREE.Mesh(new THREE.BoxBufferGeometry(size, 1, size), this.ref.materials.mat.dark);
@@ -107,6 +107,7 @@ class Map {
         rod2.position.set(x, y + size * 4.5 + 0.5, 6 - rodSize / 3);
         rod1.rotation.y = Math.PI / 4;
         rod2.rotation.y = Math.PI / 4;
+        //this.ref.scene.scene.add(mesh);
         this.ref.scene.scene.add(mesh, holster, rod1, rod2);
       }
       this.assets.ceilingLights = true;

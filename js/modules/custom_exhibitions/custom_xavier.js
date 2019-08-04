@@ -1,9 +1,10 @@
 /** Custom exhibition */
 
 import Loader from '../../loader/loader';
-import PerlinNoise from '../../glsl/fragments/perlin_noise';
 import InteractionPoint from '../../ui/interaction_point';
 import PlayerPosition from '../../ui/player_position';
+import PerlinNoise from '../../glsl/fragments/perlin_noise';
+import IntestineVertexShader from '../../glsl/fragments/intestine_vertex_shader';
 
 class CustomXavier {
   constructor(root) {
@@ -34,18 +35,56 @@ class CustomXavier {
       // settings
       this.envMap = this.ref.materials.createEnvMap('xavier/env');
 
-      // finalised artworks
-      this.loadStaticArtworks();
-      this.loadDisplayCases();
-      this.loadPlatformer()
-      //this.loadWaves();
+      // this.loadIntestines();
+       //this.loadStaticArtworks();
+       //this.loadDisplayCases();
+       this.loadPlatformer();
+      // this.loadWaves();
 
       this.loader.loadFBX('final/peripherals').then(obj => {
         this.ref.materials.conformGroup(obj);
         this.ref.scene.scene.add(obj);
       });
 
+      this.loadVectorField();
     });
+  }
+
+  loadVectorField() {
+    this.fields = [];
+    this.fieldCentre = new THREE.Vector3(-8, 4.5, 8);
+    this.updateCallbacks.push(delta => {
+      if (this.ref.player.position.z > 8 && this.ref.player.position.distanceTo(this.fieldCentre) < 20) {
+        const amt = delta * Math.PI / 8;
+        this.fields.forEach(mesh => {
+          mesh.rotation.x += amt;
+          mesh.rotation.y -= amt;
+          mesh.rotation.z += amt;
+        });
+      }
+    });
+
+    const step = 0.25;
+    const w = 10.75;
+    const h = 4;
+    for (let x=this.fieldCentre.x - w/2; x <= this.fieldCentre.x + w/2; x+=step) {
+      for (let y=this.fieldCentre.y - h/2; y<= this.fieldCentre.y + h/2; y+=step) {
+        const mesh = new THREE.Mesh(new THREE.BoxBufferGeometry(0.045, 0.25, 0.045), this.ref.materials.mat.neon);
+        const rx = Math.sin((x + y) / 5) * Math.PI;
+        const ry = Math.cos(x /5 ) * Math.PI;
+        const rz = Math.sin((x * 2 + y / 2) / 5) * Math.PI;
+        mesh.rotation.set(rx, ry, rz);
+        mesh.position.set(x, y, 8.05);
+        this.ref.scene.scene.add(mesh);
+        this.fields.push(mesh);
+      }
+    }
+
+    // view point
+    const pos = new PlayerPosition(this.ref.player, new THREE.Vector3(-8, 0.5, 14), this.fieldCentre);
+    this.interactionPoints.push(
+      new InteractionPoint(this.fieldCentre, 3, 3, () => { pos.apply(); }, this.ref.camera.camera)
+    );
   }
 
   loadWaves() {
@@ -224,6 +263,33 @@ class CustomXavier {
     this.interactionPoints.push(
       new InteractionPoint( new THREE.Vector3(8, 4.5, 8), 2, 2, () => { pos.apply(); }, this.ref.camera.camera )
     );
+  }
+
+  loadIntestines() {
+    const jitter = [];
+    this.updateCallbacks.push(delta => {
+      jitter.forEach(mesh => {
+        if (Math.random() > 0.97) {
+          mesh.rotation.x += (Math.random() * 2 - 1) * 0.05;
+          mesh.rotation.y += (Math.random() * 2 - 1) * 0.05;
+          mesh.rotation.z += (Math.random() * 2 - 1) * 0.05;
+        }
+      });
+    });
+
+    this.loader.loadFBX('final/intestines/intestines_1').then(obj => {
+      this.ref.materials.conformGroup(obj);
+      this.applyToMeshes(obj, mesh => {
+        if (mesh.material.name.indexOf('intestines') !== -1) {
+          mesh.material = this.ref.materials.createCustomMaterial(mesh.material, IntestineVertexShader, PerlinNoise);
+          console.log(mesh.material);
+          this.ref.materials.applyAlphaMap(mesh.material, mesh.material.map);
+        }
+      });
+      this.ref.scene.scene.add(obj);
+
+      dwdadw
+    });
   }
 
   unload() {
