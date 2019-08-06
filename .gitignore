@@ -1,4 +1,7 @@
 node_modules
+assets/xavier/*
+!assets/xavier/final
+!assets/xavier/env
 legacy
 assets/**.mb
 docs
@@ -6,5 +9,8 @@ docs
 **.dds
 **.mb
 **.swatches
-.mayaSwatches
-assets/xavier
+*/.mayaSwatches
+*/**/.mayaSwatches
+**/*.blend
+**/*.dds
+**/*.mb
