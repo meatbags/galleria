@@ -34,7 +34,8 @@ body {
 	overflow-x: hidden;
 	user-select: none;
 	-webkit-tap-highlight-color: rgba(0, 0, 0, 0);
-	background: $backgroundColour;
+	background: $backgroundColour; // fallback
+	background: linear-gradient(-45deg, lighten($colourLink, 40%) 12.5%, $backgroundColour 50%, $white 100%);
 }
 
 .admin-notify {

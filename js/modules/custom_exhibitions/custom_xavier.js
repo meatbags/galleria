@@ -2,6 +2,7 @@
 
 import Loader from '../../loader/loader';
 import InteractionPoint from '../../ui/interaction_point';
+import { EaseInAndOut } from '../../maths/easing';
 import PlayerPosition from '../../ui/player_position';
 import PerlinNoise from '../../glsl/fragments/perlin_noise';
 import IntestineVertexShader from '../../glsl/fragments/intestine_vertex_shader';
@@ -27,6 +28,19 @@ class CustomXavier {
         }
       };
 
+      // load peripherals & async artworks
+      this.toLoad += 1;
+      this.loader.loadFBX('final/peripherals').then(obj => {
+        this.ref.materials.conformGroup(obj);
+        this.ref.scene.scene.add(obj);
+        this.applyToMeshes(obj, mesh => {
+          if (mesh.name.indexOf("transparent") !== -1) {
+            this.ref.materials.applyAlphaMap(mesh.material, mesh.material.map);
+          }
+        });
+        this.onLoad();
+      });
+
       // containers
       this.interactionPoints = [];
       this.updateCallbacks = [];
@@ -35,28 +49,26 @@ class CustomXavier {
       // settings
       this.envMap = this.ref.materials.createEnvMap('xavier/env');
 
-      // this.loadIntestines();
-       //this.loadStaticArtworks();
-       //this.loadDisplayCases();
-       this.loadPlatformer();
-      // this.loadWaves();
-
-      this.loader.loadFBX('final/peripherals').then(obj => {
-        this.ref.materials.conformGroup(obj);
-        this.ref.scene.scene.add(obj);
-      });
-
+      // load sync artworks
       this.loadVectorField();
+      this.loadOscillators();
+      this.loadIntersectors();
+
+      // this.loadIntestines();
+      // this.loadStaticArtworks();
+      // this.loadDisplayCases();
+      // this.loadPlatformer();
+      // this.loadWaves();
     });
   }
 
   loadVectorField() {
-    this.fields = [];
-    this.fieldCentre = new THREE.Vector3(-8, 4.5, 8);
+    const fields = [];
+    const fieldCentre = new THREE.Vector3(-8, 4.5, 8);
     this.updateCallbacks.push(delta => {
-      if (this.ref.player.position.z > 8 && this.ref.player.position.distanceTo(this.fieldCentre) < 20) {
+      if (this.ref.player.position.z > 8 && Math.abs(this.ref.player.position.x - fieldCentre.x) <= 16) {
         const amt = delta * Math.PI / 8;
-        this.fields.forEach(mesh => {
+        fields.forEach(mesh => {
           mesh.rotation.x += amt;
           mesh.rotation.y -= amt;
           mesh.rotation.z += amt;
@@ -67,8 +79,8 @@ class CustomXavier {
     const step = 0.25;
     const w = 10.75;
     const h = 4;
-    for (let x=this.fieldCentre.x - w/2; x <= this.fieldCentre.x + w/2; x+=step) {
-      for (let y=this.fieldCentre.y - h/2; y<= this.fieldCentre.y + h/2; y+=step) {
+    for (let x=fieldCentre.x - w/2; x <= fieldCentre.x + w/2; x+=step) {
+      for (let y=fieldCentre.y - h/2; y<= fieldCentre.y + h/2; y+=step) {
         const mesh = new THREE.Mesh(new THREE.BoxBufferGeometry(0.045, 0.25, 0.045), this.ref.materials.mat.neon);
         const rx = Math.sin((x + y) / 5) * Math.PI;
         const ry = Math.cos(x /5 ) * Math.PI;
@@ -76,14 +88,92 @@ class CustomXavier {
         mesh.rotation.set(rx, ry, rz);
         mesh.position.set(x, y, 8.05);
         this.ref.scene.scene.add(mesh);
-        this.fields.push(mesh);
+        fields.push(mesh);
       }
     }
 
     // view point
-    const pos = new PlayerPosition(this.ref.player, new THREE.Vector3(-8, 0.5, 14), this.fieldCentre);
+    const pos = new PlayerPosition(this.ref.player, new THREE.Vector3(-8, 0.5, 14), fieldCentre);
     this.interactionPoints.push(
-      new InteractionPoint(this.fieldCentre, 3, 3, () => { pos.apply(); }, this.ref.camera.camera)
+      new InteractionPoint(fieldCentre, 4, 3, () => { pos.apply(); }, this.ref.camera.camera, new THREE.Vector3(0, 0, 1))
+    );
+  }
+
+  loadOscillators() {
+    const group = [];
+    let age = 0;
+    this.updateCallbacks.push(delta => {
+      if (this.ref.player.position.z > 8 && Math.abs(this.ref.player.position.x + 8) <= 16) {
+        age += delta;
+        for (let i=0; i<group.length; i++) {
+          const f = age + i * 0.125;
+          const t = (f % 2) / 2;
+          const ease = EaseInAndOut((f % 4 < 2) ? 1 - t : t);
+          const max = 0.3 + (i % 3) * 0.3;
+          group[i].position.z = 23 - max * ease;
+        }
+      }
+    });
+
+    this.loader.loadFBX('final/oscillators/oscillators').then(obj => {
+      this.ref.materials.conformGroup(obj);
+      this.ref.scene.scene.add(obj);
+      let index = 1;
+      this.applyToMeshes(obj, mesh => {
+        mesh.scale.x = Math.random() > 0.5 ? 0.85 : 0.95;
+        mesh.scale.y = Math.random() > 0.5 ? 0.85 : 0.95;
+        group.push(mesh);
+      });
+      group.reverse();
+    });
+
+    // view point
+    const centre = new THREE.Vector3(-8, 7.75, 23);
+    const pos = new PlayerPosition(this.ref.player, new THREE.Vector3(-8, 0.5, 14), centre);
+    this.interactionPoints.push(
+      new InteractionPoint(centre, 3, 6, () => { pos.apply(); }, this.ref.camera.camera, new THREE.Vector3(0, 0, -1))
+    );
+  }
+
+  loadIntersectors() {
+    const group = [];
+    const min = 2.75;
+    const max = 14.75;
+    const range = max - min;
+
+    // create bars
+    for (let y=min; y<max; y+=0.125) {
+      const mesh = new THREE.Mesh(new THREE.BoxBufferGeometry(3, 0.05, 0.05), this.ref.materials.mat.neon);
+      mesh.position.set(8, y, 23);
+      this.ref.scene.scene.add(mesh);
+      group.push(mesh);
+    };
+
+    // group update callback
+    const updateCallback = delta => {
+      for (let i=0; i<group.length; ++i) {
+        const mesh = group[i];
+        mesh.position.y -= delta;
+        if (mesh.position.y <= min) {
+          mesh.position.y += range;
+        }
+        let t = 1 - (mesh.position.y - min) / range;
+        t = i % 6 == 0 ? Math.sin(t * Math.PI) : t;
+        mesh.scale.x = t;
+        mesh.position.x = 8 + (i % 2 ? 1 : -1) * (1 - t) * 1.5;
+      }
+    };
+    this.updateCallbacks.push(delta => {
+      if (this.ref.player.position.z > 8 && Math.abs(this.ref.player.position.x - 8) <= 32) {
+        updateCallback(delta);
+      }
+    });
+
+    // view point
+    const centre = new THREE.Vector3(8, 7.75, 23);
+    const pos = new PlayerPosition(this.ref.player, new THREE.Vector3(8, 0.5, 14), centre);
+    this.interactionPoints.push(
+      new InteractionPoint(centre, 3, 6, () => { pos.apply(); }, this.ref.camera.camera, new THREE.Vector3(0, 0, -1))
     );
   }
 

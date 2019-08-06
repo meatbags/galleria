@@ -19,7 +19,7 @@ class Logo {
 
     // add some lights
     this.dLight1 = new THREE.DirectionalLight(0xffffff, 1);
-    this.dLight2 = new THREE.DirectionalLight(0x40c1ac, 1);//0xff6f61, 1);
+    this.dLight2 = new THREE.DirectionalLight(0x40c1ac, 1);
     this.dLight3 = new THREE.DirectionalLight(0xffffff, 1);
     this.dLight3.position.set(1, 0.5, -0.25);
     this.scene.add(this.dLight1);
@@ -38,7 +38,7 @@ class Logo {
     document.querySelector('#logo').addEventListener('mouseenter', () => {
       if (this.children) {
         this.children.forEach(child => {
-          child.material.color.setHex(0x40c1ac);//0xff6f61);
+          child.material.color.setHex(0x40c1ac);
         });
       }
     });

@@ -34,7 +34,6 @@
 <body <?php body_class(); ?>>
 	<div class='loading-screen active'>
 		<div class='loading-screen__image'>
-			Loading
-			<!-- <img src='<?php echo get_template_directory_uri(); ?>/img/logo-small-alt.png' /> -->
+			Loading...
 		</div>
 	</div>

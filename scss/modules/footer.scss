@@ -118,7 +118,7 @@
 
   @media screen and (max-width: $mobile) {
     height: 100vh;
-    background: linear-gradient(to top, rgba($backgroundColour, 0.25), white);
+    background: linear-gradient(to top, lighten($backgroundColour, 25%), white);
 
     &.footer--gallery {
       display: none;

@@ -88,12 +88,14 @@ class Canvas2D {
 
   promptGodMode() {
     this.ctx.globalAlpha = 1;
-    this.ctx.fillText('You can fly', 20, this.cvs.height - 40);
+    this.ctx.fillText('FREE MODE', 20, this.cvs.height - 60);
+    const sx = Math.round(Math.sin(this.ref.player.rotation.x) * 100) / 100;
+    const cx = Math.round(Math.cos(this.ref.player.rotation.x) * 100) / 100;
+    this.ctx.fillText(`sinx ${sx}, cosx ${cx}`, 20, this.cvs.height - 40);
     const x = Math.round(this.ref.player.position.x * 10) / 10;
     const y = Math.round(this.ref.player.position.y * 10) / 10;
     const z = Math.round(this.ref.player.position.z * 10) / 10;
-    const rx = Math.round(this.ref.player.rotation.x * 100) / 100;
-    this.ctx.fillText(`${x}, ${y}, ${z}, ${rx}`, 20, this.cvs.height - 20);
+    this.ctx.fillText(`x ${x}, y ${y}, z ${z}`, 20, this.cvs.height - 20);
   }
 
   drawDevOverlay() {

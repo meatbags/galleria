@@ -3,11 +3,13 @@
 import Config from '../modules/config';
 
 class InteractionPoint {
-  constructor(position, width, height, callback, camera) {
+  constructor(position, width, height, callback, camera, normal) {
     this.position = position;
     this.width = width;
     this.height = height;
     this.callback = callback;
+    this.normal = normal;
+    this.side = Math.sign(position.z - 6); // z=6 is centre of pillar
     this.helper = new THREE.Vector3();
     this.worldVector = new THREE.Vector3();
     this.box = {position: new THREE.Vector2(), width: 0, height: 0};
@@ -57,8 +59,11 @@ class InteractionPoint {
     this.helper.sub(this.position);
     this.helper.normalize();
     this.ref.camera.getWorldDirection(this.worldVector);
-    this.onscreen = this.helper.dot(this.worldVector) <= 0;
+    this.onscreen = this.helper.dot(this.worldVector) <= 0
+      && this.normal.dot(this.helper) >= 0
+      && Math.sign(this.ref.camera.position.z - 6) == this.side;
     const mag = this.position.distanceTo(this.ref.camera.position);
+
     if (this.onscreen && mag < this.activeThreshold && mag != 0) {
       this.helper.copy(this.position);
       this.helper.project(this.ref.camera);

@@ -7,7 +7,7 @@ import Config from '../modules/config';
 
 class Nav {
   constructor() {
-    this.devMode = true; //false;
+    this.devMode = false;
     this.isMobile = IsMobileDevice();
     this.el = {
       openGallery: document.querySelector('.open-gallery-prompt'),
@@ -176,9 +176,10 @@ class Nav {
     // remove loading screen
     const loading = document.querySelector('.loading-screen');
     if (loading) {
+      loading.classList.remove('active');
       setTimeout(() => {
         loading.parentNode.removeChild(loading);
-      }, 200);
+      }, 500);
     }
   }
 

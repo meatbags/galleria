@@ -40,17 +40,25 @@
         }
 
         .canvas-wrapper__inner-loading-msg {
-          @include padding(0.25, 0.25);
+          @include padding(2, 1);
           position: absolute;
           top: 50%;
           left: 50%;
           color: $white;
           transform: translate(-50%, -50%);
           text-transform: uppercase;
-          border-bottom: $border;
           pointer-events: none;
           font-size: $fontSizeLarge;
+          border: $border;
           border-color: $white;
+          font-size: $fontSize;
+          border: 1px solid $white;
+          text-transform: uppercase;
+          animation-name: loading-anim;
+          animation-duration: 1s;
+          animation-timing-function: steps(1);
+          animation-iteration-count: infinite;
+          background: black;
         }
 
         &.clickable {
@@ -60,6 +68,7 @@
         &.active {
           .canvas-wrapper__inner-loading-msg {
             display: none;
+            animation-name: none;
           }
           //background-color: transparent;
           canvas {

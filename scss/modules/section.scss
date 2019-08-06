@@ -5,7 +5,8 @@
   background: $white;
   position: relative;
   pointer-events: all;
-  box-shadow: 10px 10px rgba($colour, 1);
+  //border: 1px solid $colour;
+  //box-shadow: 10px 10px rgba($colour, 1);
 
   .section__note {
     font-family: $fontStackSerif;
