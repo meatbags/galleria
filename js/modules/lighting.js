@@ -105,6 +105,7 @@ class Lighting {
           this.lights.point.a.color.setHex(0xff0000);
           this.lights.point.b.color.setHex(0x0000ff);
           this.lights.ambient.a.color.setHex(0xff0808);
+
           let age = 0;
           this.updateCallback = delta => {
             age += delta;
