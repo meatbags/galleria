@@ -71,9 +71,6 @@ class Player {
       switch (data.customValue) {
         case 'XAVIER':
           this.light.intensity = 0;
-          this.position.set(-8, 0.5, -2);
-          this.target.position.copy(this.position);
-          this.automove.position.copy(this.position);
           break;
         default:
           break;
