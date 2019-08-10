@@ -49,7 +49,7 @@ class Canvas2D {
     }
   }
 
-  drawBoxHint(x, y, w, h, hint) {
+  drawBoxHint(x, y, w, h, hint, label) {
     this.ctx.beginPath();
     this.ctx.moveTo(x - w, y - h + hint);
     this.ctx.lineTo(x - w, y - h);
@@ -64,6 +64,14 @@ class Canvas2D {
     this.ctx.lineTo(x - w, y + h);
     this.ctx.lineTo(x - w, y + h - hint);
     this.ctx.stroke();
+    if (label) {
+      const tx = x - w + 5;
+      const ty = y - h + 14;
+      this.ctx.fillStyle = "#f00";
+      this.ctx.fillText(label, tx + 2, ty + 2);
+      this.ctx.fillStyle = "#fff";
+      this.ctx.fillText(label, tx, ty);
+    }
   }
 
   promptTouchMove(active) {

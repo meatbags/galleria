@@ -7,7 +7,7 @@ import Config from '../modules/config';
 
 class Nav {
   constructor() {
-    this.devMode = false;//
+    this.devMode = false;
     this.isMobile = IsMobileDevice();
     this.el = {
       openGallery: document.querySelector('.open-gallery-prompt'),
