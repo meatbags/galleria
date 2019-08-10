@@ -7,8 +7,8 @@
   <meta name='keywords' content='virtual gallery, online gallery, art gallery, sydney gallery'>
   <meta name='author' content='http://xavierburrow.com'>
 	<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no'>
-	<meta property='og:url' content='http://closedonmondaygallery.com/'>
-	<meta property='og:title' content='Closed On Monday'>
+	<meta property='og:url' content='https://closedonmondaygallery.com/'>
+	<meta property='og:title' content='Closed On Monday Gallery'>
 	<meta property='og:image' content='<?php echo get_template_directory_uri(); ?>/img/closedonmondaygallery-og-image-alt.jpg'>
 	<meta property='og:site_name' content='COM Gallery'>
 	<meta property='og:description' content='Closed On Monday is a virtual gallery based in Sydney, Australia.'>
