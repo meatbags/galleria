@@ -9,9 +9,9 @@
 	<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no'>
 	<meta property='og:url' content='http://closedonmondaygallery.com/'>
 	<meta property='og:title' content='Closed On Monday'>
-	<meta property='og:image' content='<?php echo get_template_directory_uri(); ?>/img/closedonmondaygallery-og-image.jpg'>
-	<meta property='og:site_name' content='Closed On Monday'>
-	<meta property='og:description' content='Virtual. Art. Space.'>
+	<meta property='og:image' content='<?php echo get_template_directory_uri(); ?>/img/closedonmondaygallery-og-image-alt.jpg'>
+	<meta property='og:site_name' content='COM Gallery'>
+	<meta property='og:description' content='Closed On Monday is a virtual gallery based in Sydney, Australia.'>
 	<?php date_default_timezone_set('Australia/Sydney'); ?>
 	<?php wp_head(); ?>
   <link href='https://fonts.googleapis.com/css?family=Karla' rel='stylesheet'>

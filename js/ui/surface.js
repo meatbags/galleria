@@ -172,6 +172,14 @@ class Surface {
           if (this.keyboard.keys['x'] || this.keyboard.keys['X']) {
             if (this.keyboard.isControl()) {
               this.ref.player.toggleNoclip();
+              const controls = document.querySelector('.gallery__controls');
+              if (controls) {
+                if (this.ref.player.noclip) {
+                  controls.classList.add('hidden');
+                } else {
+                  controls.classList.remove('hidden');
+                }
+              }
             }
             this.keyboard.release('x');
             this.keyboard.release('X');
