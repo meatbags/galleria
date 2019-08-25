@@ -69,9 +69,11 @@ class Map {
       this.loader.loadFBX('map').then((map) => {
         this.ref.scene.scene.add(map);
         this.ref.materials.conformGroup(map);
+        this.assets.map = map;
         this.onLoad();
       }, (err) => { console.log(err); });
     } else {
+      this.ref.materials.conformGroup(this.assets.map);
       this.onLoad();
     }
 

@@ -48,6 +48,8 @@
     bottom: 0;
     right: 0;
     transform: translate(64.5%, 6.5%);
+    //transform: translate(64.5%, -50%);
+    text-shadow: -1px -0.5px $backgroundColour, 0.5px 0px rgba($backgroundColour, 0.5);
 
     #open-gallery-artist {
       font-size: $fontSizeLarge;

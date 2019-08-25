@@ -101,6 +101,7 @@ class Materials {
       mat.envMap = this.envMap;
       mat.envMapIntensity = this.envMapIntensity;
     } else {
+      mat.envMap = null;
       mat.envMapIntensity = 0;
     }
   }
