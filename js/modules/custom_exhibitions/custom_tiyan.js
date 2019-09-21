@@ -37,11 +37,9 @@ class CustomTiyan {
   }
 
   unload() {
-    this.unloadCallback = () => {
-      this.assets.forEach(obj => {
-        this.ref.scene.scene.remove(obj);
-      });
-    };
+    this.assets.forEach(obj => {
+      this.ref.scene.scene.remove(obj);
+    });
   }
 }
 

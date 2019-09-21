@@ -4,6 +4,7 @@ import CustomXavier from './custom_exhibitions/custom_xavier';
 import CustomJack from './custom_exhibitions/custom_jack';
 import CustomTiyan from './custom_exhibitions/custom_tiyan';
 import CustomBrenton from './custom_exhibitions/custom_brenton';
+import CustomCement from './custom_exhibitions/custom_cement';
 
 class CustomExhibition {
   constructor() {}
@@ -27,6 +28,9 @@ class CustomExhibition {
     // new installation
     if (data) {
       switch (data.customValue) {
+        case 'CEMENT':
+          this.exhibition = new CustomCement(this);
+          break;
         case 'XAVIER':
           this.exhibition = new CustomXavier(this);
           break;

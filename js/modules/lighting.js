@@ -80,7 +80,7 @@ class Lighting {
     // custom exhibition lighting
     if (data) {
       switch (data.customValue) {
-        case 'XAVIER':
+        case 'XAVIER': case 'CEMENT':
           Object.keys(this.lights).forEach(type => {
             Object.keys(this.lights[type]).forEach(key => {
               this.lights[type][key].intensity = 0;
