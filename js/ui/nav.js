@@ -3,6 +3,7 @@
 import CreateElement from '../utils/create_element';
 import IsSafariMobile from '../utils/is_safari_mobile';
 import IsMobileDevice from '../utils/is_mobile_device';
+import GetMode from '../utils/get_mode';
 import Config from '../modules/config';
 
 class Nav {
@@ -56,6 +57,22 @@ class Nav {
 
     // dev -- open gallery
     if (this.devMode) {
+      this.forceGalleryOpen();
+    }
+
+    // fullscreen single mode -- remove menus
+    const mode = GetMode();
+    if (mode && mode == 'single') {
+      const nav = document.querySelector('.nav--gallery');
+      const footer = document.querySelector('.footer--gallery');
+      if (nav) {
+        nav.style.opacity = 0;
+        nav.style.pointerEvents = 'none';
+      }
+      if (footer) {
+        footer.style.opacity = 0;
+        footer.style.pointerEvents = 'none';
+      }
       this.forceGalleryOpen();
     }
 

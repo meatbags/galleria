@@ -1,10 +1,14 @@
 /** Config */
 
+import GetMode from '../utils/get_mode';
+
+const mode = GetMode();
 const space = 8;
 const padX = 0;
-const padY = 10;
+const padY = mode === 'single' ? 0 : 10;
 const padYMobile = 8;
 const mobileBreakpoint = 768;
+
 const Config = {
   renderer: {
     getWidth: () => { return Math.max(100, window.innerWidth - space * padX * 2); },

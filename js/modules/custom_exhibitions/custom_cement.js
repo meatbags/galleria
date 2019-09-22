@@ -62,9 +62,6 @@ class CustomCement {
     let i = 0;
     this.meshes.forEach(mesh => {
       mesh.rotation.x += delta / 4;
-      //i += 1;
-      //const t = (mesh.refX / 16) + (i / 2) + this.age;
-      //mesh.position.x = mesh.refX + Math.sin(t) * 0.875;
     });
   }
 }

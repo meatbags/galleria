@@ -39,7 +39,7 @@ class Materials {
 
     if (data) {
       switch (data.customValue) {
-        case 'XAVIER': case 'CEMENT':
+        case 'XAVIER':
           this.envMapDisabled = true;
           break;
         default:
