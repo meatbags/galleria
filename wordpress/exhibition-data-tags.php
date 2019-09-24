@@ -33,6 +33,7 @@ function getExhibitionDataTags($fields, $limited = false) { ?>
           data-url='<?php echo $img['image_file']['sizes']['large']; ?>'
           data-image-width='<?php echo $img['image_file']['width']; ?>'
           data-image-height='<?php echo $img['image_file']['height']; ?>'
+          data-alpha-map='<?php echo $img['alpha_map'] == '' ? '' : $img['alpha_map']['sizes']['large']; ?>'
           data-sub-title='<?php echo sanitiseQuotes($img['sub_title']); ?>'
           data-description='<?php echo sanitiseQuotes($img['description']); ?>'
           data-horizontal-offset='<?php echo $img['horizontal_offset']; ?>'

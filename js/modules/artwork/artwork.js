@@ -6,7 +6,9 @@ import VideoElement from './video_element';
 class Artwork {
   constructor(root, index, data, isMobile) {
     this.root = root;
-    this.ref = { nav: root.ref.nav };
+    this.ref = {};
+    this.ref.nav = root.ref.nav;
+    this.ref.materials = root.ref.materials;
     this.id = 'artwork-' + index;
     this.index = index;
     this.data = data;
@@ -121,9 +123,21 @@ class Artwork {
       this.plane.rotation.y = Math.PI * 1.5;
     }
 
+    // handle alpha map
+    if (this.data.alphaMap) {
+      const alphaMap = new THREE.TextureLoader().load(this.data.alphaMap, (tex) => {});
+      // required for NPOT textures
+      alphaMap.wrapS = alphaMap.wrapT = THREE.ClampToEdgeWrapping;
+      alphaMap.minFilter = THREE.LinearFilter;
+      // add map
+      this.ref.materials.applyAlphaMap(this.plane.material, alphaMap);
+    }
+
     // add
     scene.add(this.plane);
-    scene.add(this.board);
+    if (!this.data.alphaMap) {
+      scene.add(this.board);
+    }
   }
 
   mouseOver(x, y, player) {

@@ -19,6 +19,7 @@ class FloorPlan {
     this.ref.surface = root.modules.surface;
     this.ref.cameraDirection = new THREE.Vector3();
     this.ref.nav = root.ref.nav;
+    this.ref.materials = root.modules.materials;
   }
 
   load(data) {
