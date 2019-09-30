@@ -1,6 +1,8 @@
 /** Custom exhibition */
 
 import Loader from '../../loader/loader';
+import CreateArc from '../../maths/create_arc';
+import CircleLineIntersect from '../../maths/circle_line_intersect';
 
 class CustomCement {
   constructor(root) {
@@ -35,20 +37,59 @@ class CustomCement {
   }
 
   loadModels() {
-    // const loader = new Loader('assets');
     this.toUnload = [];
     this.meshes = [];
     this.age = 0;
-    for (let x=-16; x<=16; x+=0.5) {
-      const group = this.makeSquare(4, 0.05);
-      group.position.set(x, 13, 6);
-      group.rotation.x = -Math.PI / 4;
-      group.refX = x;
-      group.rotation.x = x / 16;
-      this.ref.scene.scene.add(group);
-      this.meshes.push(group);
-      this.toUnload.push(group);
+
+    for (let x=-15; x<=15; x+=1) {
+      const door = this.makeDoor(5, 6, 0.03);
+      door.position.set(x, 11, -7.25);
+      this.ref.scene.scene.add(door);
+      this.toUnload.push(door);
     }
+  }
+
+  makeDoor(width, height, thickness) {
+    const w = width/2 - thickness/2;
+    const h = height/2 - thickness/2;
+    const group = new THREE.Group();
+    const frameTop = new THREE.Mesh(new THREE.BoxBufferGeometry(thickness, thickness, width), this.ref.materials.mat.neon);
+    const frameBottom = new THREE.Mesh(new THREE.BoxBufferGeometry(thickness, thickness, width), this.ref.materials.mat.neon);
+    const frameLeft = new THREE.Mesh(new THREE.BoxBufferGeometry(thickness, height, thickness), this.ref.materials.mat.neon);
+    const frameRight = new THREE.Mesh(new THREE.BoxBufferGeometry(thickness, height, thickness), this.ref.materials.mat.neon);
+    frameTop.position.y = h
+    frameBottom.position.y = -h;
+    frameLeft.position.z = w;
+    frameRight.position.z = -w;
+
+    // create arc
+    const p1 = new THREE.Vector2(-w, h);
+    const p2 = new THREE.Vector2(w, h);
+    const p3 = new THREE.Vector2(-w, -h);
+    const p4 = new THREE.Vector2(w, -h);
+    const centre = new THREE.Vector2(-w * 2, 0.5);
+    const radius = width * 1.25;
+    const int1 = CircleLineIntersect(centre, radius, p1, p2);
+    const int2 = CircleLineIntersect(centre, radius, p3, p4);
+
+    if (int1 && int2) {
+      const angle1 = Math.atan2(int1.y - centre.y, int1.x - centre.x);
+      const angle2 = Math.atan2(int2.y - centre.y, int2.x - centre.x);
+      const arc1 = CreateArc(radius, thickness, angle2, angle1);
+      const arc2 = arc1.clone();
+      arc1.position.set(0, centre.y, centre.x - 0.125 + radius * 2);
+      arc2.position.set(0, centre.y, centre.x + 0.125 + radius * 2);
+      group.add(arc1, arc2);
+      const marker1 = new THREE.Mesh(new THREE.BoxBufferGeometry(thickness, 0.5, thickness), this.ref.materials.mat.neon);
+      const marker2 = new THREE.Mesh(new THREE.BoxBufferGeometry(thickness, 0.5, thickness), this.ref.materials.mat.neon);
+      marker1.position.set(0, int1.y, int1.x);
+      marker2.position.set(0, int2.y, int2.x);
+      group.add(marker1, marker2);
+    }
+
+    //group.add(arc);
+    group.add(frameTop, frameBottom, frameLeft, frameRight);
+    return group;
   }
 
   unload() {
