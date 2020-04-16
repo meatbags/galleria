@@ -7,10 +7,16 @@ function sanitiseQuotes($str) {
 }
 
 // get formatted section data
-function getExhibitionDataTags($fields, $limited = false) { ?>
+function getExhibitionDataTags($fields, $limited = false, $fromTheArchive = false) { ?>
+  <?php $name = $fields['artist_name']; ?>
+  <?php $title = $fields['exhibition_title']; ?>
+
   <div class='section__id' data-id='exhibition-<?php echo get_the_ID(); ?>' style='display:none'></div>
-  <div class='section__heading'><?php echo get_field('artist_name'); ?></div>
-  <div class='section__title<?php if (empty(get_field('exhibition_title'))) { echo ' hidden'; } ?>'><?php echo get_field('exhibition_title'); ?></div>
+  <?php if ($fromTheArchive): ?>
+    <div>FROM THE ARCHIVE:</div>
+  <?php endif; ?>
+  <div class='section__heading'><?php echo $name; ?></div>
+  <div class='section__title<?php if (empty($title)) { echo ' hidden'; } ?>'><?php echo $title; ?></div>
   <div class='section__date'><?php echo get_field('start_date'); ?> &mdash; <?php echo get_field('end_date'); ?></div>
   <div class='section__description'><?php echo get_field('artist_description'); ?></div>
   <div class='section__description-short'><?php echo get_field('artist_short_description'); ?></div>

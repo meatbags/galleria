@@ -39,8 +39,8 @@ class CustomCement {
     const w = width/2 - thickness/2;
     const h = height/2 - thickness/2;
     const group = new THREE.Group();
-    const matL = new THREE.MeshStandardMaterial({color: 0x9a56ff, emissive: 0x0, metalness: 0.5, roughness: 0.4});
-    const matR = new THREE.MeshStandardMaterial({color: 0xff3286, emissive: 0x0, metalness: 0.5, roughness: 0.4});
+    const matL = new THREE.MeshStandardMaterial({color: 0xbc13fe, emissive: 0x0, metalness: 0.5, roughness: 0.4});
+    const matR = new THREE.MeshStandardMaterial({color: 0xfe019a, emissive: 0x0, metalness: 0.5, roughness: 0.4});
 
     // static frame
     const frameLeft = new THREE.Mesh(new THREE.BoxBufferGeometry(thickness, height, thickness), matL);

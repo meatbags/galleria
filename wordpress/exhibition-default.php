@@ -3,7 +3,7 @@ require_once('exhibition-data-tags.php');
 $query = new WP_Query(array(
   'post_type' => 'gallery',
   'posts_per_page' => -1,
-  'order_by' => 'menu_order',
+  'orderby' => 'menu_order',
   'meta_query' => array(
     array(
       'key' => 'default_exhibition',
