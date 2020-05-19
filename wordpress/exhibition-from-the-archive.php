@@ -16,10 +16,9 @@ $query = new WP_Query(array(
 wp_reset_postdata();
 if ($query->have_posts()):
   while ($query->have_posts()):
-    $query->the_post();
-    ?>
+    $query->the_post(); ?>
 
-    <div class='section section--featured'>
+    <div class='section section--from-the-archive'>
       <?php getExhibitionDataTags(get_fields(), false, true); ?>
     </div>
 

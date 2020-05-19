@@ -1,0 +1,587 @@
+[
+    {
+        "key": "group_5912f49ba07b2",
+        "title": "Galleries",
+        "fields": [
+            {
+                "key": "field_5b931b139f199",
+                "label": "Artist Name",
+                "name": "artist_name",
+                "type": "text",
+                "instructions": "",
+                "required": 0,
+                "conditional_logic": 0,
+                "wrapper": {
+                    "width": "",
+                    "class": "",
+                    "id": ""
+                },
+                "default_value": "",
+                "placeholder": "",
+                "prepend": "",
+                "append": "",
+                "maxlength": ""
+            },
+            {
+                "key": "field_5b931b1c9f19a",
+                "label": "Exhibition Title",
+                "name": "exhibition_title",
+                "type": "text",
+                "instructions": "Optional, ie: if different to artist name,",
+                "required": 0,
+                "conditional_logic": 0,
+                "wrapper": {
+                    "width": "",
+                    "class": "",
+                    "id": ""
+                },
+                "default_value": "",
+                "placeholder": "",
+                "prepend": "",
+                "append": "",
+                "maxlength": ""
+            },
+            {
+                "key": "field_5b931d7bbfb08",
+                "label": "Artist Description",
+                "name": "artist_description",
+                "type": "textarea",
+                "instructions": "",
+                "required": 0,
+                "conditional_logic": 0,
+                "wrapper": {
+                    "width": "",
+                    "class": "",
+                    "id": ""
+                },
+                "default_value": "",
+                "placeholder": "",
+                "maxlength": "",
+                "rows": "",
+                "new_lines": "br"
+            },
+            {
+                "key": "field_5b99d6f32c093",
+                "label": "Artist Short Description",
+                "name": "artist_short_description",
+                "type": "textarea",
+                "instructions": "Shorter description (appears in Upcoming Exhibitions section).",
+                "required": 0,
+                "conditional_logic": 0,
+                "wrapper": {
+                    "width": "",
+                    "class": "",
+                    "id": ""
+                },
+                "default_value": "",
+                "placeholder": "",
+                "maxlength": "",
+                "rows": "",
+                "new_lines": "wpautop"
+            },
+            {
+                "key": "field_5b931b509f19b",
+                "label": "Start Date",
+                "name": "start_date",
+                "type": "date_picker",
+                "instructions": "",
+                "required": 0,
+                "conditional_logic": 0,
+                "wrapper": {
+                    "width": "",
+                    "class": "",
+                    "id": ""
+                },
+                "display_format": "F j, Y",
+                "return_format": "F j, Y",
+                "first_day": 1
+            },
+            {
+                "key": "field_5b931b739f19c",
+                "label": "End Date",
+                "name": "end_date",
+                "type": "date_picker",
+                "instructions": "",
+                "required": 0,
+                "conditional_logic": 0,
+                "wrapper": {
+                    "width": "",
+                    "class": "",
+                    "id": ""
+                },
+                "display_format": "F j, Y",
+                "return_format": "F j, Y",
+                "first_day": 1
+            },
+            {
+                "key": "field_59e44e2b53f28",
+                "label": "Images",
+                "name": "images",
+                "type": "repeater",
+                "instructions": "Artworks for exhibition. <a href='https:\/\/docs.google.com\/document\/d\/1YN0Ic9sFlxJQzAlkMz7w1WechBlzZu8evRsH8dlV4hs\/edit?usp=sharing' target='_blank'>Floor Plan Reference<\/a>",
+                "required": 0,
+                "conditional_logic": 0,
+                "wrapper": {
+                    "width": "",
+                    "class": "",
+                    "id": ""
+                },
+                "collapsed": "field_5b931be89f19d",
+                "min": 0,
+                "max": 0,
+                "layout": "row",
+                "button_label": "",
+                "sub_fields": [
+                    {
+                        "key": "field_5b931f3d498e8",
+                        "label": "Artwork",
+                        "name": "",
+                        "type": "tab",
+                        "instructions": "",
+                        "required": 0,
+                        "conditional_logic": 0,
+                        "wrapper": {
+                            "width": "",
+                            "class": "",
+                            "id": ""
+                        },
+                        "placement": "top",
+                        "endpoint": 0
+                    },
+                    {
+                        "key": "field_5b931be89f19d",
+                        "label": "Title",
+                        "name": "title",
+                        "type": "text",
+                        "instructions": "",
+                        "required": 0,
+                        "conditional_logic": 0,
+                        "wrapper": {
+                            "width": "",
+                            "class": "",
+                            "id": ""
+                        },
+                        "default_value": "",
+                        "placeholder": "",
+                        "prepend": "",
+                        "append": "",
+                        "maxlength": ""
+                    },
+                    {
+                        "key": "field_5b931c109f19f",
+                        "label": "Image File",
+                        "name": "image_file",
+                        "type": "file",
+                        "instructions": "",
+                        "required": 0,
+                        "conditional_logic": 0,
+                        "wrapper": {
+                            "width": "",
+                            "class": "",
+                            "id": ""
+                        },
+                        "return_format": "array",
+                        "library": "all",
+                        "min_size": "",
+                        "max_size": "",
+                        "mime_types": ""
+                    },
+                    {
+                        "key": "field_5d8a73f717070",
+                        "label": "Alpha Map",
+                        "name": "alpha_map",
+                        "type": "image",
+                        "instructions": "Optional alpha map for transparency.",
+                        "required": 0,
+                        "conditional_logic": 0,
+                        "wrapper": {
+                            "width": "",
+                            "class": "",
+                            "id": ""
+                        },
+                        "return_format": "array",
+                        "preview_size": "medium",
+                        "library": "all",
+                        "min_width": "",
+                        "min_height": "",
+                        "min_size": "",
+                        "max_width": "",
+                        "max_height": "",
+                        "max_size": "",
+                        "mime_types": ""
+                    },
+                    {
+                        "key": "field_5b931f8a328ab",
+                        "label": "Information",
+                        "name": "",
+                        "type": "tab",
+                        "instructions": "",
+                        "required": 0,
+                        "conditional_logic": 0,
+                        "wrapper": {
+                            "width": "",
+                            "class": "",
+                            "id": ""
+                        },
+                        "placement": "top",
+                        "endpoint": 0
+                    },
+                    {
+                        "key": "field_5b931bf19f19e",
+                        "label": "Sub Title",
+                        "name": "sub_title",
+                        "type": "text",
+                        "instructions": "Year\/ Format\/ etc.",
+                        "required": 0,
+                        "conditional_logic": 0,
+                        "wrapper": {
+                            "width": "",
+                            "class": "",
+                            "id": ""
+                        },
+                        "default_value": "",
+                        "placeholder": "",
+                        "prepend": "",
+                        "append": "",
+                        "maxlength": ""
+                    },
+                    {
+                        "key": "field_5b931c379f1a0",
+                        "label": "Description",
+                        "name": "description",
+                        "type": "textarea",
+                        "instructions": "",
+                        "required": 0,
+                        "conditional_logic": 0,
+                        "wrapper": {
+                            "width": "",
+                            "class": "",
+                            "id": ""
+                        },
+                        "default_value": "",
+                        "placeholder": "",
+                        "maxlength": "",
+                        "rows": "",
+                        "new_lines": "wpautop"
+                    },
+                    {
+                        "key": "field_5b931c3f9f1a1",
+                        "label": "Link",
+                        "name": "link",
+                        "type": "url",
+                        "instructions": "Optional link.",
+                        "required": 0,
+                        "conditional_logic": 0,
+                        "wrapper": {
+                            "width": "",
+                            "class": "",
+                            "id": ""
+                        },
+                        "default_value": "",
+                        "placeholder": ""
+                    },
+                    {
+                        "key": "field_5b931cb29f1a3",
+                        "label": "Placement",
+                        "name": "",
+                        "type": "tab",
+                        "instructions": "",
+                        "required": 0,
+                        "conditional_logic": 0,
+                        "wrapper": {
+                            "width": "",
+                            "class": "",
+                            "id": ""
+                        },
+                        "placement": "top",
+                        "endpoint": 0
+                    },
+                    {
+                        "key": "field_5b9b89baa029e",
+                        "label": "Location",
+                        "name": "location",
+                        "type": "number",
+                        "instructions": "Image Slot Number <a href='https:\/\/docs.google.com\/document\/d\/1YN0Ic9sFlxJQzAlkMz7w1WechBlzZu8evRsH8dlV4hs\/edit?usp=sharing' target='_blank'>Floor Plan Reference<\/a>",
+                        "required": 1,
+                        "conditional_logic": 0,
+                        "wrapper": {
+                            "width": "",
+                            "class": "",
+                            "id": ""
+                        },
+                        "default_value": "",
+                        "placeholder": "",
+                        "prepend": "",
+                        "append": "",
+                        "min": "",
+                        "max": "",
+                        "step": ""
+                    },
+                    {
+                        "key": "field_5b931c549f1a2",
+                        "label": "Horizontal Offset",
+                        "name": "horizontal_offset",
+                        "type": "number",
+                        "instructions": "Horizontal offset in metres.",
+                        "required": 0,
+                        "conditional_logic": 0,
+                        "wrapper": {
+                            "width": "",
+                            "class": "",
+                            "id": ""
+                        },
+                        "default_value": 0,
+                        "placeholder": "",
+                        "prepend": "",
+                        "append": "",
+                        "min": -5,
+                        "max": 5,
+                        "step": "0.25"
+                    },
+                    {
+                        "key": "field_5b931cf99f1a4",
+                        "label": "Vertical Offset",
+                        "name": "vertical_offset",
+                        "type": "number",
+                        "instructions": "Vertical offset in metres.",
+                        "required": 0,
+                        "conditional_logic": 0,
+                        "wrapper": {
+                            "width": "",
+                            "class": "",
+                            "id": ""
+                        },
+                        "default_value": 0,
+                        "placeholder": "",
+                        "prepend": "",
+                        "append": "",
+                        "min": -3,
+                        "max": 10,
+                        "step": "0.25"
+                    },
+                    {
+                        "key": "field_5b931d0c9f1a5",
+                        "label": "Width",
+                        "name": "width",
+                        "type": "number",
+                        "instructions": "Width in metres. Height will scale to correct ratio.",
+                        "required": 0,
+                        "conditional_logic": 0,
+                        "wrapper": {
+                            "width": "",
+                            "class": "",
+                            "id": ""
+                        },
+                        "default_value": 2,
+                        "placeholder": "",
+                        "prepend": "",
+                        "append": "",
+                        "min": 1,
+                        "max": 20,
+                        "step": "0.25"
+                    },
+                    {
+                        "key": "field_5c4140302b6c8",
+                        "label": "Video",
+                        "name": "",
+                        "type": "tab",
+                        "instructions": "",
+                        "required": 0,
+                        "conditional_logic": 0,
+                        "wrapper": {
+                            "width": "",
+                            "class": "",
+                            "id": ""
+                        },
+                        "placement": "top",
+                        "endpoint": 0
+                    },
+                    {
+                        "key": "field_5c4140372b6c9",
+                        "label": "Video File",
+                        "name": "video_file",
+                        "type": "file",
+                        "instructions": "Video file (mp4). Expected ratio is 16:9 (1920x1080, 1280x720, etc).",
+                        "required": 0,
+                        "conditional_logic": 0,
+                        "wrapper": {
+                            "width": "",
+                            "class": "",
+                            "id": ""
+                        },
+                        "return_format": "url",
+                        "library": "all",
+                        "min_size": "",
+                        "max_size": "",
+                        "mime_types": ""
+                    },
+                    {
+                        "key": "field_5c4140612b6ca",
+                        "label": "Audio File",
+                        "name": "audio_file",
+                        "type": "file",
+                        "instructions": "Audio track for video. Expects mp3.",
+                        "required": 0,
+                        "conditional_logic": 0,
+                        "wrapper": {
+                            "width": "",
+                            "class": "",
+                            "id": ""
+                        },
+                        "return_format": "url",
+                        "library": "all",
+                        "min_size": "",
+                        "max_size": "",
+                        "mime_types": ""
+                    }
+                ]
+            },
+            {
+                "key": "field_5b931d90bfb09",
+                "label": "Artist Social Media Links",
+                "name": "artist_social_media_links",
+                "type": "repeater",
+                "instructions": "",
+                "required": 0,
+                "conditional_logic": 0,
+                "wrapper": {
+                    "width": "",
+                    "class": "",
+                    "id": ""
+                },
+                "collapsed": "",
+                "min": 0,
+                "max": 0,
+                "layout": "table",
+                "button_label": "",
+                "sub_fields": [
+                    {
+                        "key": "field_5b931d9ebfb0a",
+                        "label": "Link Label",
+                        "name": "link_label",
+                        "type": "text",
+                        "instructions": "",
+                        "required": 0,
+                        "conditional_logic": 0,
+                        "wrapper": {
+                            "width": "",
+                            "class": "",
+                            "id": ""
+                        },
+                        "default_value": "",
+                        "placeholder": "",
+                        "prepend": "",
+                        "append": "",
+                        "maxlength": ""
+                    },
+                    {
+                        "key": "field_5b931da7bfb0b",
+                        "label": "URL",
+                        "name": "url",
+                        "type": "url",
+                        "instructions": "",
+                        "required": 0,
+                        "conditional_logic": 0,
+                        "wrapper": {
+                            "width": "",
+                            "class": "",
+                            "id": ""
+                        },
+                        "default_value": "",
+                        "placeholder": ""
+                    }
+                ]
+            },
+            {
+                "key": "field_5bc6ad2fabbc4",
+                "label": "Preview As Admin",
+                "name": "preview_as_admin",
+                "type": "checkbox",
+                "instructions": "Select to preview as admin (remember to deselect when done editing).",
+                "required": 0,
+                "conditional_logic": 0,
+                "wrapper": {
+                    "width": "",
+                    "class": "",
+                    "id": ""
+                },
+                "choices": {
+                    "preview": "Preview"
+                },
+                "allow_custom": 0,
+                "save_custom": 0,
+                "default_value": [],
+                "layout": "vertical",
+                "toggle": 0,
+                "return_format": "value"
+            },
+            {
+                "key": "field_5d155ad63ece0",
+                "label": "Default Exhibition",
+                "name": "default_exhibition",
+                "type": "checkbox",
+                "instructions": "Set as default exhibition (shown when gallery empty)",
+                "required": 0,
+                "conditional_logic": 0,
+                "wrapper": {
+                    "width": "",
+                    "class": "",
+                    "id": ""
+                },
+                "choices": {
+                    "default": "Default"
+                },
+                "allow_custom": 0,
+                "default_value": [],
+                "layout": "vertical",
+                "toggle": 0,
+                "return_format": "value",
+                "save_custom": 0
+            },
+            {
+                "key": "field_5bf64511e063a",
+                "label": "Custom Exhibition Installation",
+                "name": "custom_exhibition_installation",
+                "type": "select",
+                "instructions": "Choose a custom installation to load.",
+                "required": 0,
+                "conditional_logic": 0,
+                "wrapper": {
+                    "width": "",
+                    "class": "",
+                    "id": ""
+                },
+                "choices": {
+                    "default": "Default",
+                    "custom": "Custom"
+                },
+                "default_value": [
+                    "default"
+                ],
+                "allow_null": 0,
+                "multiple": 0,
+                "ui": 0,
+                "return_format": "value",
+                "ajax": 0,
+                "placeholder": ""
+            }
+        ],
+        "location": [
+            [
+                {
+                    "param": "post_type",
+                    "operator": "==",
+                    "value": "gallery"
+                }
+            ]
+        ],
+        "menu_order": 0,
+        "position": "normal",
+        "style": "default",
+        "label_placement": "top",
+        "instruction_placement": "label",
+        "hide_on_screen": "",
+        "active": true,
+        "description": ""
+    }
+]

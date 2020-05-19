@@ -47,6 +47,8 @@ class Gallery {
   }
 
   load(data) {
+    console.log('[Gallery] loading data:', data);
+    
     // reset player position & scene
     this.modules.player.reset();
     this.modules.scene.reset();

@@ -15,6 +15,7 @@ class Nav {
       archiveItems: document.querySelectorAll('.section--archive'),
       preview: document.querySelector('.section--preview'),
       featured: document.querySelector('.section--featured'),
+      fromTheArchive: document.querySelector('.section--from-the-archive'),
       default: document.querySelector('.section--default'),
       logo: document.querySelector('#logo'),
       gallery: {
@@ -42,8 +43,12 @@ class Nav {
     this.ref.gallery = root.modules.gallery;
     this.ref.logo = root.modules.logo;
 
-    // load initial exhibition
-    const exhibition = this.el.preview ? this.el.preview : this.el.featured ? this.el.featured : this.el.default;
+    // load initial exhibition (ORDER: admin preview, featured, from the archive, default)
+    const exhibition = this.el.preview ? this.el.preview
+      : this.el.featured ? this.el.featured
+      : this.el.fromTheArchive ? this.el.fromTheArchive
+      : this.el.default;
+
     let data = null;
     if (exhibition) {
       data = this.parseExhibitionDataTags(exhibition);
@@ -51,8 +56,21 @@ class Nav {
     this.ref.gallery.load(data);
 
     // display default gallery (fallback)
-    if (!this.el.preview && !this.el.featured && this.el.default) {
+    if (!this.el.preview && !this.el.featured && !this.el.fromTheArchive && this.el.default) {
       this.el.default.classList.remove('hidden');
+    }
+
+    // enable from the archive (if not already)
+    if (this.el.featured && this.el.fromTheArchive) {
+      const target = this.el.fromTheArchive;
+      if (target && !target.classList.contains('clickable')) {
+        target.classList.add('clickable');
+        target.addEventListener('click', () => {
+          const data = this.parseExhibitionDataTags(target);
+          this.ref.gallery.load(data);
+          this.makeClickable(this.el.featured);
+        });
+      }
     }
 
     // dev -- open gallery
@@ -121,14 +139,11 @@ class Nav {
           }
 
           // enable featured click to reload
-          const target = this.el.preview ? this.el.preview : this.el.featured ? this.el.featured : this.el.default;
-          if (target && !target.classList.contains('clickable')) {
-            target.classList.add('clickable');
-            target.addEventListener('click', () => {
-              const data = this.parseExhibitionDataTags(target);
-              this.ref.gallery.load(data);
-            });
-          }
+          const target = this.el.preview ? this.el.preview
+            : this.el.featured ? this.el.featured
+            : this.el.fromTheArchive ? this.el.fromTheArchive
+            : this.el.default;
+          this.makeClickable(target);
         }
       });
     });
@@ -186,6 +201,16 @@ class Nav {
       if (target) {
         target.click();
       }
+    }
+  }
+
+  makeClickable(target) {
+    if (target && !target.classList.contains('clickable')) {
+      target.classList.add('clickable');
+      target.addEventListener('click', () => {
+        const data = this.parseExhibitionDataTags(target);
+        this.ref.gallery.load(data);
+      });
     }
   }
 

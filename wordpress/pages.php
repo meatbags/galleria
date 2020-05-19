@@ -11,9 +11,9 @@
 
   <div id='page-home' class='page active'>
     <div class='page__content'>
-      <?php get_template_part('wordpress/exhibition-from-the-archive'); ?>
       <?php get_template_part('wordpress/exhibition-preview'); ?>
       <?php get_template_part('wordpress/exhibition-current'); ?>
+      <?php get_template_part('wordpress/exhibition-from-the-archive'); ?>
       <?php get_template_part('wordpress/exhibition-default'); ?>
     </div>
     <div class='page__content'>
